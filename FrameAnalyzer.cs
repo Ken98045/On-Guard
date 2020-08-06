@@ -185,7 +185,7 @@ namespace SAAI
         }
         else { failureReasons.Add("No Interesting Objects"); }
 
-        InterestingObjects = RemoveDuplicateAreas(InterestingObjects);
+        // InterestingObjects = RemoveDuplicateAreas(InterestingObjects);
       }
       else { failureReasons.Add("No areas define"); }
 

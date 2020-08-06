@@ -16,7 +16,7 @@ namespace SAAI
 
       int count = 0;
 
-      if (area.Notifications.Urls != null)
+      if (area.Notifications != null && area.Notifications.Urls != null)
       {
         foreach (var url in area.Notifications.Urls)
         {
