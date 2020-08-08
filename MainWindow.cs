@@ -32,10 +32,8 @@ namespace SAAI
     bool _showObjects = true;
     bool _mouseIsDown = false;
     bool _mouseInBounds = false;
-    Point _upperLeft = new Point();
-    Point _lowerRight = new Point();
     Bitmap _screenBitmap;
-    Bitmap _rectBackground;
+    Bitmap _areaBackgroundBitmap;
     double _xScale;
     double _yScale;
     bool _showingLiveView;
@@ -48,6 +46,12 @@ namespace SAAI
     AllCameras _allCameras;
 
     Rectangle _previousRectangle = new Rectangle(0, 0, 0, 0);
+
+    bool _modifyingArea = false;    // Flag that we are modifying an area
+    Rectangle _originalRect = Rectangle.Empty;
+    SemiTransparentBox _modifyBox;
+    Guid _modifyingAreaID = Guid.Empty;
+
     List<ImageObject> _frameObjects = new List<ImageObject>();
     readonly Color aoiColor = Color.FromArgb(80, Color.DarkOrange);
     readonly Color aoiRegistrationColor = Color.FromArgb(120, Color.Purple);
@@ -58,12 +62,26 @@ namespace SAAI
     System.Windows.Forms.Timer _liveTimer;
 
 
+
     readonly ConcurrentDictionary<string, string> _filesPendingProcessing = new ConcurrentDictionary<string, string>(); // very short period of time where the file has been removed from the queue yet still hasn't been opened
     readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);  // set to shut down the MonitorQueue thread (and anything else)
 
     CameraData _currentCamera;  // This is only a reference to the data in the AllCamera collection.  It saves a lot of typing and adds clarity
     readonly private PerformanceCounter theCPUCounter =
        new PerformanceCounter("Processor", "% Processor Time", "_Total");
+
+    enum Direction // For modifying areas
+    {
+      None,
+      West,
+      East,
+      North,
+      South,
+      NorthWest,
+      NorthEast,
+      SouthEast,
+      SouthWest
+    }
 
 
     public MainWindow()
@@ -122,6 +140,7 @@ namespace SAAI
 
       KeyPreview = true;
       Focus();
+
     }
 
     private void Default_SettingChanging(object sender, SettingChangingEventArgs e)
@@ -255,8 +274,6 @@ namespace SAAI
       pictureImage.Image = null;
       _showObjects = true;
       showAreasOfInterestCheck.Checked = false;
-      _upperLeft = Point.Empty;
-      _lowerRight = Point.Empty;
 
       if (null != _screenBitmap)
       {
@@ -264,10 +281,10 @@ namespace SAAI
         _screenBitmap = null;
       }
 
-      if (null != _rectBackground)
+      if (null != _areaBackgroundBitmap)
       {
-        _rectBackground.Dispose();
-        _rectBackground = null;
+        _areaBackgroundBitmap.Dispose();
+        _areaBackgroundBitmap = null;
         _previousRectangle = Rectangle.Empty;
       }
 
@@ -299,13 +316,14 @@ namespace SAAI
           }
         }
       }
+
+
     }
 
     private void ButtonLeft_Click(object sender, EventArgs e)
     {
       using (WaitCursor _ = new WaitCursor())
       {
-
         lock (_fileLock)
         {
           if (_fileNames != null && _current > 0)
@@ -470,14 +488,17 @@ namespace SAAI
 
     private async void GoToFileButton_Click(object sender, EventArgs e)
     {
-      lock (_fileLock)
+      using (WaitCursor _ = new WaitCursor())
       {
-        if (_fileNames.Count > 0)
+        lock (_fileLock)
         {
-          if (_fileNames.Count > (int)(fileNumberUpDown.Value))
+          if (_fileNames.Count > 0)
           {
-            LoadImage(_fileNames[(int)fileNumberUpDown.Value - 1]);
-            _current = (int)fileNumberUpDown.Value - 1;
+            if (_fileNames.Count > (int)(fileNumberUpDown.Value))
+            {
+              LoadImage(_fileNames[(int)fileNumberUpDown.Value - 1]);
+              _current = (int)fileNumberUpDown.Value - 1;
+            }
           }
         }
       }
@@ -485,11 +506,14 @@ namespace SAAI
 
     private async void GoToFileNameButton_Click(object sender, EventArgs e)
     {
-      lock (_fileLock)
+      using (WaitCursor _ = new WaitCursor())
       {
-        if (!string.IsNullOrEmpty(goToFileTextBox.Text) && File.Exists(goToFileTextBox.Text))
+        lock (_fileLock)
         {
-          LoadImage(goToFileTextBox.Text);
+          if (!string.IsNullOrEmpty(goToFileTextBox.Text) && File.Exists(goToFileTextBox.Text))
+          {
+            LoadImage(goToFileTextBox.Text);
+          }
         }
       }
     }
@@ -497,11 +521,14 @@ namespace SAAI
 
     private async void OnReverseListButton(object sender, EventArgs e)
     {
-      lock (_fileLock)
+      using (WaitCursor _ = new WaitCursor())
       {
-        _fileNames.Reverse();
-        _current = 0;
-        LoadImage(_fileNames[0]);
+        lock (_fileLock)
+        {
+          _fileNames.Reverse();
+          _current = 0;
+          LoadImage(_fileNames[0]);
+        }
       }
     }
 
@@ -512,29 +539,103 @@ namespace SAAI
 
     private void ShowObjectRectangelsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      lock (_fileLock)
+      if (!_modifyingArea)
       {
-        ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
-        if (_fileNames != null && _fileNames.Count > 0 && _showObjects != menuItem.Checked)
+        lock (_fileLock)
         {
-          _showObjects = menuItem.Checked;
-          LoadImage(_fileNames[_current]);
+          ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
+          if (_fileNames != null && _fileNames.Count > 0 && _showObjects != menuItem.Checked)
+          {
+            _showObjects = menuItem.Checked;
+            LoadImage(_fileNames[_current]);
+          }
         }
       }
     }
 
     private void OnKeyDown(object sender, KeyEventArgs e)
     {
-      if (e.KeyCode == Keys.PageUp)
+      switch (e.KeyCode)
       {
-        e.Handled = true;
-        ButtonRight_Click(sender, e);
+        case Keys.PageUp:
+          if (!_modifyingArea)
+          {
+            e.Handled = true;
+            ButtonRight_Click(sender, e);
+          }
+          break;
+        case Keys.PageDown:
+          if (!_modifyingArea)
+          {
+            e.Handled = true;
+            ButtonLeft_Click(sender, e);
+          }
+          break;
+
+        case Keys.Escape:
+          _modifyingArea = false;
+          ControlMoverOrResizer.Stop(_modifyBox);
+          _modifyBox.Dispose();
+          _modifyBox = null;
+          StopEditingEnvironment();
+          break;
+
+        case Keys.F1:
+          AcceptAreaOfInterest();
+          break;
       }
-      else if (e.KeyCode == Keys.PageDown)
+    }
+
+    void AcceptAreaOfInterest()
+    {
+      Rectangle rect = new Rectangle(_modifyBox.Location.X, _modifyBox.Location.Y, _modifyBox.Width, _modifyBox.Height);
+      Rectangle scaledRect = ScaleScreenToData(rect);
+      Rectangle areaRect = Rectangle.Intersect(scaledRect, new Rectangle(0, 0, BitmapResolution.XResolution, BitmapResolution.YResolution));
+      _modifyingArea = false;
+      ControlMoverOrResizer.Stop(_modifyBox);
+      StopEditingEnvironment();
+      _modifyBox.Dispose();
+      _modifyBox = null;
+
+      if (_modifyingAreaID == Guid.Empty)
       {
-        e.Handled = true;
-        ButtonLeft_Click(sender, e);
+
+        using (CreateAOI dlg = new CreateAOI(areaRect))
+        {
+          DialogResult result = dlg.ShowDialog(pictureImage);
+
+          switch (result)
+          {
+            case DialogResult.OK:
+              if (_modifyingAreaID == Guid.Empty)
+              {
+                _currentCamera.AOI.AddArea(dlg.Area);
+              }
+              else
+              {
+                _currentCamera.AOI[_modifyingAreaID].AreaRect = areaRect; // just update the area
+                _currentCamera.AOI.Save();
+                MessageBox.Show(pictureImage, "The Area of Interest was saved with new boundaries!", "Area Saved");
+                _modifyingAreaID = Guid.Empty;
+              }
+              break;
+
+            case DialogResult.Yes:
+              // An artificial response saying "edit this area"
+              _currentCamera.AOI.AddArea(dlg.Area); // Even if we are modifying an area bounds we still save it
+              StartEditingArea(dlg.Area.ID);
+              break;
+          }
+        }
       }
+      else
+      {
+        // If we are already modifying an area all we do is update the rectangle
+        _currentCamera.AOI[_modifyingAreaID].AreaRect = areaRect;
+        _currentCamera.AOI.Save();
+        MessageBox.Show(pictureImage, "The boundaries of the current Area of Interest have been modified", "Area of Interest Changed!");
+      }
+
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -548,95 +649,10 @@ namespace SAAI
       int mouseY = (int)Math.Round(e.Location.Y * _yScale);
       xPosLabel.Text = mouseX.ToString();
       yPosLabel.Text = mouseY.ToString();
-
-
-      if (_mouseIsDown && _mouseInBounds)
-      {
-
-        if (mouseX != 0 && mouseY != 0)
-        {
-          if (!(mouseX > _upperLeft.X && mouseY > _upperLeft.Y))
-          { }
-          else
-          {
-            // Here we have a valid mouse position that is greater than the previous one
-            _lowerRight = new Point();
-
-            if (e.X >= pictureImage.Width - 1)
-            {
-              _lowerRight.X = BitmapResolution.XResolution - 2;
-            }
-            else
-            {
-              _lowerRight.X = mouseX;
-            }
-
-            if (mouseY >= BitmapResolution.YResolution - 1)
-            {
-              _lowerRight.Y = _screenBitmap.Height - 2;
-            }
-            else
-            {
-              _lowerRight.Y = mouseY;
-            }
-
-            Rectangle newRectangle = new Rectangle(_upperLeft.X, _upperLeft.Y, _lowerRight.X - _upperLeft.X, _lowerRight.Y - _upperLeft.Y);
-
-            using (var graphics = Graphics.FromImage(_screenBitmap))
-            {
-              RestoreBackgroundImage(graphics);
-              SaveBackgroundImage(newRectangle);
-              newRectangle = Rectangle.Intersect(newRectangle, new Rectangle(0, 0, _screenBitmap.Width, _screenBitmap.Height)); // ensure it is cropped
-
-              // Now we can finally draw the rectangle we want
-              using (SolidBrush brush = new SolidBrush(aoiColor))
-              {
-                graphics.FillRectangle(brush, newRectangle);
-                pictureImage.Invalidate();
-
-              }
-            }
-          }
-        }
-
-      }
     }
 
-    // newRectangle is in bitmap coordinates, not screen
-    void SaveBackgroundImage(Rectangle newRectangle)
-    {
-      _previousRectangle = new Rectangle(Math.Max(newRectangle.X - 1, 0), Math.Max(newRectangle.Y - 1, 0), newRectangle.Width + 3, newRectangle.Height + 3);
-      _previousRectangle = Rectangle.Intersect(_previousRectangle, new Rectangle(0, 0, _screenBitmap.Width, _screenBitmap.Height));
 
-      if (_screenBitmap == null)
-      {
-        Dbg.Write("MainWindows.SaveBackgroundImage - _screenBitmap is null");
-      }
 
-      if (null != _rectBackground)
-      {
-        _rectBackground.Dispose();
-      }
-
-      try
-      {
-        _rectBackground = _screenBitmap.Clone(_previousRectangle, _screenBitmap.PixelFormat);
-      }
-      catch (OutOfMemoryException ex)
-      {
-        Dbg.Write("MainWindows.SaveBackgroundImage - Invalid bitmap rectangle " + ex.Message);
-      }
-    }
-
-    void RestoreBackgroundImage(Graphics graphics)
-    {
-      // We need to restore the background of the previous rectangle
-      if (_previousRectangle.Width > 0 && _previousRectangle.Height > 0) // our old value of the rectangle exists?
-      {
-        graphics.DrawImage(_rectBackground, _previousRectangle, new Rectangle(0, 0, _rectBackground.Width, _rectBackground.Height), GraphicsUnit.Pixel);
-        _rectBackground.Dispose();
-      }
-    }
 
     void AdjustAreasOfInterest(int clickX, int clickY)
     {
@@ -684,30 +700,29 @@ namespace SAAI
 
     private void OnMouseDown(object sender, MouseEventArgs e)
     {
-      if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+      if (!_modifyingArea)
       {
-        if (MessageBox.Show("You are about to set the registration point for this camera.  This helps you ensure that your camera is in the right position.  If the registration point has already been set, then any existing areas of interest will be shifted accordingly.  Are you sure you want to do this?", "Reset Camera Registration Point", MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (e.Button == MouseButtons.Right)
         {
-          AdjustAreasOfInterest(e.X, e.Y);
-        }
-      }
-      else
-      {
+          _modifyingArea = true;
+          _modifyingAreaID = Guid.Empty;  // signal that this is a new area not a mod
 
-        if (_mouseInBounds)
+          _modifyBox = new SemiTransparentBox();
+          _modifyBox.Parent = pictureImage;
+          _modifyBox.Location = new Point(e.X, e.Y);
+          _modifyBox.Size = new Size(100, 100);
+          _modifyBox.Show();
+          ControlMoverOrResizer.Start(_modifyBox);
+          SetupEditingEnvironment();
+        }
+        else
         {
-          if (!_mouseIsDown)
+          if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
           {
-            _mouseIsDown = true;
-            _upperLeft = new Point((int)Math.Round(e.X * _xScale), (int)Math.Round(e.Y * _yScale));
-            _previousRectangle = new Rectangle(0, 0, 0, 0);
-            if (null != _rectBackground)
+            if (MessageBox.Show("You are about to set the registration point for this camera.  This helps you ensure that your camera is in the right position.  If the registration point has already been set, then any existing areas of interest will be shifted accordingly.  Are you sure you want to do this?", "Reset Camera Registration Point", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-              _rectBackground.Dispose();
+              AdjustAreasOfInterest(e.X, e.Y);
             }
-          }
-          else
-          {
           }
         }
       }
@@ -716,48 +731,17 @@ namespace SAAI
     private void OnMouseUp(object sender, MouseEventArgs e)
     {
       _mouseIsDown = false;
-      Rectangle areaRect = Rectangle.FromLTRB(_upperLeft.X, _upperLeft.Y, _lowerRight.X, _lowerRight.Y);
-      if (areaRect.Width > 0 && areaRect.Height > 0)
+
+      if (_currentCamera.RegistrationX == 0 || _currentCamera.RegistrationY == 0)
       {
-        if (_currentCamera.RegistrationX == 0 || _currentCamera.RegistrationY == 0)
+        if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
         {
-          if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
-          {
-            MessageBox.Show("You can create areas of interest by using a mouse click down and drag.  However, before you can do this you must set a camera registration point so that you can ensure that your camera is always position correctly.  You do this by holding the control key and then clicking in the desired position for the registration point.  That point should be on a spot that is easily recoginzed when viewing the camera.", "Set Camera Registration Point First!");
-          }
-        }
-        else
-        {
-          using (CreateAOI dlg = new CreateAOI(areaRect))
-          {
-
-            DialogResult result = dlg.ShowDialog();
-
-            if (result == DialogResult.Cancel)
-            {
-              using (var graphics = Graphics.FromImage(_screenBitmap))
-              {
-                RestoreBackgroundImage(graphics);
-                if (null != _rectBackground)
-                {
-                  _rectBackground.Dispose();
-                }
-
-                _previousRectangle = Rectangle.Empty;
-                _lowerRight = Point.Empty;
-                pictureImage.Invalidate();
-
-              }
-            }
-            else
-            {
-
-              _currentCamera.AOI.AddArea(dlg.Area);
-            }
-          }
+          MessageBox.Show("You can create areas of interest by using a mouse click down and drag.  However, before you can do this you must set a camera registration point so that you can ensure that your camera is always position correctly.  You do this by holding the control key and then clicking in the desired position for the registration point.  That point should be on a spot that is easily recoginzed when viewing the camera.", "Set Camera Registration Point First!");
         }
       }
+
     }
+
 
     private void OnMouseLeave(object sender, EventArgs e)
     {
@@ -792,37 +776,80 @@ namespace SAAI
 
     private void ShowAreasOfInterest()
     {
-      using (var graphics = Graphics.FromImage(_screenBitmap))
+      if (!_modifyingArea)
       {
-        using (SolidBrush brush = new SolidBrush(aoiColor))
+        using (var graphics = Graphics.FromImage(_screenBitmap))
         {
-
-          foreach (AreaOfInterest area in _currentCamera.AOI)
+          using (SolidBrush brush = new SolidBrush(aoiColor))
           {
 
-            Rectangle rect = area.AreaRect;
-            graphics.FillRectangle(brush, rect);
+            foreach (AreaOfInterest area in _currentCamera.AOI)
+            {
+
+              Rectangle rect = area.AreaRect;
+              graphics.FillRectangle(brush, rect);
+            }
           }
         }
-      }
 
-      pictureImage.Invalidate();
+        pictureImage.Invalidate();
+      }
     }
 
     private void EditAreasOfInterestToolStripMenuItem_Click(object sender, EventArgs e)
     {
       using (EditAreasOfInterest edit = new EditAreasOfInterest(_currentCamera.AOI)) // handles any changes in registration
       {
-        edit.ShowDialog();
-      }
-      lock (_fileLock)
-      {
-        if (_fileNames != null && _fileNames.Count > 0)
+        DialogResult result = edit.ShowDialog();
+        if (result == DialogResult.Yes)
         {
-          LoadImage(_fileNames[_current]);
+          // An artificial response showing that we have an Area of Interest boundary to change
+          StartEditingArea(edit.EditAreaID);
+        }
+        else
+        {
+          lock (_fileLock)
+          {
+            if (_fileNames != null && _fileNames.Count > 0)
+            {
+              LoadImage(_fileNames[_current]);
+            }
+          }
         }
       }
     }
+
+    void StartEditingArea(Guid areaID)
+    {
+      _modifyingAreaID = areaID;
+      _modifyingArea = true;
+      _modifyBox = new SemiTransparentBox();
+      _modifyBox.Parent = pictureImage;
+      Rectangle screenRect = ScaleDataToScreen(_currentCamera.AOI[_modifyingAreaID].AreaRect);
+      _modifyBox.Location = new Point(screenRect.X, screenRect.Y);
+      _modifyBox.Size = screenRect.Size;
+      SetupEditingEnvironment();
+      _modifyBox.Show();
+      ControlMoverOrResizer.Start(_modifyBox);
+    }
+
+    void SetupEditingEnvironment()
+    {
+      toolsPanel.BackColor = SystemColors.ControlDarkDark;
+      toolsPanel.Enabled = false;
+      menuStrip2.Enabled = false;
+      Text = "On Guard ****** Creating/Modifying Area of Interest - Escape to Quit, F1 to Accept ******";
+    }
+
+    void StopEditingEnvironment()
+    {
+      toolsPanel.BackColor = SystemColors.Control;
+      toolsPanel.Enabled = true;
+      menuStrip2.Enabled = true;
+      Text = "On Guard";
+
+    }
+
 
 
     // Currently unused, but it may be in the future
@@ -853,6 +880,12 @@ namespace SAAI
     public Rectangle ScaleScreenToData(Rectangle rect)
     {
       Rectangle result = new Rectangle((int)Math.Round(rect.X * _xScale), (int)Math.Round(rect.Y * _yScale), (int)Math.Round(rect.Width * _xScale), (int)Math.Round(rect.Height * _yScale));
+      return result;
+    }
+
+    public Rectangle ScaleDataToScreen(Rectangle rect)
+    {
+      Rectangle result = new Rectangle((int)Math.Round(rect.X / _xScale), (int)Math.Round(rect.Y / _yScale), (int)Math.Round(rect.Width / _xScale), (int)Math.Round(rect.Height / _yScale));
       return result;
     }
 
@@ -1171,7 +1204,6 @@ namespace SAAI
     {
       using (WaitCursor _ = new WaitCursor())
       {
-
         string urlString = string.Format("http://{0}:{1}/admin?camera={2}&preset={3}&user={4}&pw={5}",
         _currentCamera.LiveContactData.CameraIPAddress,
         _currentCamera.LiveContactData.Port.ToString(),
@@ -1300,10 +1332,13 @@ namespace SAAI
 
     private void Refresh_Click(object sender, EventArgs e)
     {
-      lock (_fileLock)
+      using (WaitCursor _ = new WaitCursor())
       {
-        _current = 0;
-        InitAnalyzer(_currentCamera.CameraPrefix, _currentCamera.Path);
+        lock (_fileLock)
+        {
+          _current = 0;
+          InitAnalyzer(_currentCamera.CameraPrefix, _currentCamera.Path);
+        }
       }
     }
 
@@ -1690,7 +1725,7 @@ namespace SAAI
 
     private void OnCameraSelected(object sender, EventArgs e)
     {
-
+      
       if (cameraCombo.SelectedItem != _currentCamera)
       {
         SetCurrentCamera((CameraData)cameraCombo.SelectedItem);
@@ -1718,7 +1753,6 @@ namespace SAAI
       {
         using (WaitCursor _ = new WaitCursor())
         {
-
           foreach (var info in expiredFiles)
           {
             try
@@ -1745,9 +1779,12 @@ namespace SAAI
 
     private void AreasOfInterestToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
-      showAreasOfInterestCheck.Checked = menuItem.Checked;
-      ShowAreasOfInterestCheckChanged(null, null);
+      if (!_modifyingArea)
+      {
+        ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
+        showAreasOfInterestCheck.Checked = menuItem.Checked;
+        ShowAreasOfInterestCheckChanged(null, null);
+      }
 
     }
 
@@ -1801,6 +1838,11 @@ namespace SAAI
     private void logFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Process.Start("OnGuard.txt");
+    }
+
+    private void cameraCombo_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
     }
   }
 

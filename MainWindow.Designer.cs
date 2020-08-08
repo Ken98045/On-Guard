@@ -20,7 +20,7 @@
         _wakeFileQueue.Dispose();
         theCPUCounter.Dispose();
         if (null != _screenBitmap) _screenBitmap.Dispose();
-        if (null != _rectBackground) _rectBackground.Dispose();
+        if (null != _areaBackgroundBitmap) _areaBackgroundBitmap.Dispose();
         if (components != null)
         {
           components.Dispose();
@@ -105,8 +105,8 @@
       this.addEditEmailAddressesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       this.logFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).BeginInit();
       this.LiveOnDemandGroup.SuspendLayout();
@@ -586,6 +586,7 @@
       this.cameraCombo.Name = "cameraCombo";
       this.cameraCombo.Size = new System.Drawing.Size(132, 21);
       this.cameraCombo.TabIndex = 37;
+      this.cameraCombo.SelectedIndexChanged += new System.EventHandler(this.cameraCombo_SelectedIndexChanged);
       this.cameraCombo.SelectionChangeCommitted += new System.EventHandler(this.OnCameraSelected);
       // 
       // toolsPanel
@@ -802,9 +803,16 @@
       // aboutToolStripMenuItem1
       // 
       this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-      this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+      this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
       this.aboutToolStripMenuItem1.Text = "About";
       this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.AboutToolStripMenuItem_Click);
+      // 
+      // logFileToolStripMenuItem
+      // 
+      this.logFileToolStripMenuItem.Name = "logFileToolStripMenuItem";
+      this.logFileToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+      this.logFileToolStripMenuItem.Text = "Log File";
+      this.logFileToolStripMenuItem.Click += new System.EventHandler(this.logFileToolStripMenuItem_Click);
       // 
       // notifyIcon
       // 
@@ -814,13 +822,6 @@
       this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
       this.notifyIcon.Text = "On Guard";
       this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
-      // 
-      // logFileToolStripMenuItem
-      // 
-      this.logFileToolStripMenuItem.Name = "logFileToolStripMenuItem";
-      this.logFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-      this.logFileToolStripMenuItem.Text = "Log File";
-      this.logFileToolStripMenuItem.Click += new System.EventHandler(this.logFileToolStripMenuItem_Click);
       // 
       // MainWindow
       // 

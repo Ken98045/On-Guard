@@ -20,6 +20,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
     <PublishUrl>C:\Users\Ken\Source\Repos\OnGuard\Setup\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -32,12 +33,11 @@
     <MapFileExtensions>true</MapFileExtensions>
     <TargetCulture>en-US</TargetCulture>
     <SuiteName>On Guard</SuiteName>
-    <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>0.1.0.2</ApplicationVersion>
+    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationVersion>0.1.0.3</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -157,6 +157,9 @@
     </Compile>
     <Compile Include="CameraContactData.cs" />
     <Compile Include="CameraData.cs" />
+    <Compile Include="SemiTransparentBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Cooldowns.cs" />
     <Compile Include="CreateAOI.cs">
       <SubType>Form</SubType>
@@ -217,6 +220,7 @@
     <Compile Include="PendingItem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resizer.cs" />
     <Compile Include="SettingsDialog.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -12,6 +12,7 @@ namespace SAAI
   public partial class EditAreasOfInterest : Form
   {
     readonly AreasOfInterestCollection _areas;
+    public Guid EditAreaID { get; set; }
     public EditAreasOfInterest(AreasOfInterestCollection areas)
     {
       _areas = areas;
@@ -66,8 +67,16 @@ namespace SAAI
           item.SubItems[4].Text = dlg.Area.AreaRect.Height.ToString();
 
           _areas.UpdateArea(dlg.Area);
-
           _areas.Save();
+        }
+        else if (result == DialogResult.Yes)
+        {
+          // An artificial response indicating we should edit an area of interest
+          EditAreaID = dlg.Area.ID;
+          _areas.UpdateArea(dlg.Area);
+          _areas.Save();
+          DialogResult = DialogResult.Yes;
+          Close();
 
         }
       }
@@ -75,6 +84,7 @@ namespace SAAI
 
     private void DoneButton_Click(object sender, EventArgs e)
     {
+      DialogResult = DialogResult.OK;
       Close();
     }
   }

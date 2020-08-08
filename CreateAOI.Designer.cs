@@ -98,6 +98,7 @@
       this.yNumeric = new System.Windows.Forms.NumericUpDown();
       this.widthNumeric = new System.Windows.Forms.NumericUpDown();
       this.heighNumeric = new System.Windows.Forms.NumericUpDown();
+      this.areaAdjustButton = new System.Windows.Forms.Button();
       this.groupBox1.SuspendLayout();
       this.movementDirectionGroup.SuspendLayout();
       this.groupBox3.SuspendLayout();
@@ -150,7 +151,7 @@
       // cancelButton
       // 
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(382, 364);
+      this.cancelButton.Location = new System.Drawing.Point(385, 364);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 1;
@@ -250,7 +251,7 @@
       // deleteAOIButton
       // 
       this.deleteAOIButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.deleteAOIButton.Location = new System.Drawing.Point(482, 364);
+      this.deleteAOIButton.Location = new System.Drawing.Point(488, 364);
       this.deleteAOIButton.Name = "deleteAOIButton";
       this.deleteAOIButton.Size = new System.Drawing.Size(75, 23);
       this.deleteAOIButton.TabIndex = 2;
@@ -370,7 +371,7 @@
       // notificationsButton
       // 
       this.notificationsButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.notificationsButton.Location = new System.Drawing.Point(600, 364);
+      this.notificationsButton.Location = new System.Drawing.Point(591, 364);
       this.notificationsButton.Name = "notificationsButton";
       this.notificationsButton.Size = new System.Drawing.Size(94, 23);
       this.notificationsButton.TabIndex = 3;
@@ -1133,6 +1134,17 @@
             0,
             0});
       // 
+      // areaAdjustButton
+      // 
+      this.areaAdjustButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.areaAdjustButton.Location = new System.Drawing.Point(713, 364);
+      this.areaAdjustButton.Name = "areaAdjustButton";
+      this.areaAdjustButton.Size = new System.Drawing.Size(94, 23);
+      this.areaAdjustButton.TabIndex = 19;
+      this.areaAdjustButton.Text = "Adjust Area";
+      this.areaAdjustButton.UseVisualStyleBackColor = true;
+      this.areaAdjustButton.Click += new System.EventHandler(this.AreaAdjustButton_Click);
+      // 
       // CreateAOI
       // 
       this.AcceptButton = this.OKButton;
@@ -1140,6 +1152,7 @@
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.CancelButton = this.cancelButton;
       this.ClientSize = new System.Drawing.Size(865, 409);
+      this.Controls.Add(this.areaAdjustButton);
       this.Controls.Add(this.heighNumeric);
       this.Controls.Add(this.widthNumeric);
       this.Controls.Add(this.yNumeric);
@@ -1277,5 +1290,6 @@
         private System.Windows.Forms.NumericUpDown yNumeric;
         private System.Windows.Forms.NumericUpDown widthNumeric;
         private System.Windows.Forms.NumericUpDown heighNumeric;
-    }
+    private System.Windows.Forms.Button areaAdjustButton;
+  }
 }

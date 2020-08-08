@@ -7,9 +7,9 @@ namespace SAAI
 {
 
 
-/// <summary>
-/// A dialog for creating and AreaOfInterest
-/// </summary>
+  /// <summary>
+  /// A dialog for creating and AreaOfInterest
+  /// </summary>
   public partial class CreateAOI : Form
   {
     public AreaOfInterest Area { get; set; }
@@ -162,13 +162,13 @@ namespace SAAI
 
     }
 
-
-    private void OKButton_Click(object sender, EventArgs e)
+    private bool SaveAreaData()
     {
-
+      bool result = true;
       if (string.IsNullOrEmpty(aoiNameText.Text))
       {
         MessageBox.Show("You must provide a name for this area!");
+        result = false;
       }
       else
       {
@@ -176,8 +176,6 @@ namespace SAAI
         {
           Area.SearchCriteria.Clear();
         }
-
-        DialogResult = DialogResult.OK;
 
         Area.AOIName = aoiNameText.Text;
         if (doorButton.Checked)
@@ -301,7 +299,7 @@ namespace SAAI
           Area.SearchCriteria.Add(c);
         }
 
-        _rectangle = new Rectangle((int) xNumeric.Value, (int) yNumeric.Value, (int) widthNumeric.Value, (int) heighNumeric.Value);
+        _rectangle = new Rectangle((int)xNumeric.Value, (int)yNumeric.Value, (int)widthNumeric.Value, (int)heighNumeric.Value);
         Rectangle beforeIntersect = _rectangle;
         _rectangle = Rectangle.Intersect(_rectangle, new Rectangle(0, 0, BitmapResolution.XResolution, BitmapResolution.YResolution));  // ensure that what the user entered was sane
         if (beforeIntersect != _rectangle)
@@ -309,7 +307,17 @@ namespace SAAI
           MessageBox.Show("The area of the Area of Interest has been adjusted to fit onto the screen.", "Area Adjusted!");
         }
         Area.AreaRect = _rectangle;
+      }
 
+      return result;
+
+    }
+
+    private void OKButton_Click(object sender, EventArgs e)
+    {
+      if (SaveAreaData())
+      {
+        DialogResult = DialogResult.OK;
         Close();
       }
     }
@@ -331,6 +339,19 @@ namespace SAAI
       using (NotificationOptionsDialog dlg = new NotificationOptionsDialog(Area))
       {
         dlg.ShowDialog(this);
+        DialogResult = DialogResult.None;
+      }
+    }
+
+    private void AreaAdjustButton_Click(object sender, EventArgs e)
+    {
+      if (SaveAreaData())
+      {
+        DialogResult = DialogResult.Yes;
+        Close();
+      }  
+      else
+      {
         DialogResult = DialogResult.None;
       }
     }
