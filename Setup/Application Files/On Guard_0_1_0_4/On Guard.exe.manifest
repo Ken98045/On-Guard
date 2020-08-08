@@ -61,7 +61,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>64p7Mkrg1WSeiNelDol/73Xm8b4GCYG7F9zs5Vfr7Hs=</dsig:DigestValue>
+        <dsig:DigestValue>csO04h7aCsE+zjOtpfE4cYmhHeOvPnsQ5OOBQguaDNE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -107,7 +107,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>+naZbFt8T0qjb7uZfQztsL07yOTL62PPCQ28lWYGtAo=</dsig:DigestValue>
+      <dsig:DigestValue>Pbkv+oFDhhB1Xl3VxGihON1LAD+oiKzo/EIWFa6s1ik=</dsig:DigestValue>
     </hash>
   </file>
   <file name="zoom-in.png" size="431">
