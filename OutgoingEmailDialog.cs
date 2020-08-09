@@ -5,10 +5,10 @@ using System.Windows.Forms;
 namespace SAAI
 {
 
-/// <summary>
-/// In order to send email we need the outgoing email server address.  
-/// This dialog gets that information.
-/// </summary>
+  /// <summary>
+  /// In order to send email we need the outgoing email server address.  
+  /// This dialog gets that information.
+  /// </summary>
   public partial class OutgoingEmailDialog : Form
   {
     public OutgoingEmailDialog()
@@ -23,9 +23,7 @@ namespace SAAI
 
     private void OkButton_Click(object sender, EventArgs e)
     {
-      if (string.IsNullOrEmpty(serverText.Text) ||
-        string.IsNullOrEmpty(userText.Text) ||
-        string.IsNullOrEmpty(passwordText.Text))
+      if (string.IsNullOrEmpty(serverText.Text))
       {
         MessageBox.Show("You must fill out the email server, the user name, and the password.");
       }

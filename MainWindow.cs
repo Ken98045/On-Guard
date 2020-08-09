@@ -705,7 +705,7 @@ namespace SAAI
         if (e.Button == MouseButtons.Right)
         {
           _modifyingArea = true;
-          _modifyingAreaID = Guid.Empty;  // signal that this is a new area not a mod
+          _modifyingAreaID = Guid.Empty;  // signal that this is a new area not a mods
 
           _modifyBox = new SemiTransparentBox();
           _modifyBox.Parent = pictureImage;
