@@ -157,6 +157,12 @@
     </Compile>
     <Compile Include="CameraContactData.cs" />
     <Compile Include="CameraData.cs" />
+    <Compile Include="MMS-Helper.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MMS-Helper.Designer.cs">
+      <DependentUpon>MMS-Helper.cs</DependentUpon>
+    </Compile>
     <Compile Include="SemiTransparentBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -260,6 +266,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="InterestingItemsDialog.resx">
       <DependentUpon>InterestingItemsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MMS-Helper.resx">
+      <DependentUpon>MMS-Helper.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NotificationOptionsDialog.resx">
       <DependentUpon>NotificationOptionsDialog.cs</DependentUpon>

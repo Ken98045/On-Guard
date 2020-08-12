@@ -4,11 +4,11 @@ using System.Windows.Forms;
 namespace SAAI
 {
 
-/// <summary>
-/// A dialog for creating an email adddress for use through out the applicaton.
-/// We also associate start time, end time, and days of week for the email address.
-/// later we may associate that start/end time with an area rather than the email address.
-/// </summary>
+  /// <summary>
+  /// A dialog for creating an email adddress for use through out the applicaton.
+  /// We also associate start time, end time, and days of week for the email address.
+  /// later we may associate that start/end time with an area rather than the email address.
+  /// </summary>
   public partial class CreateEmailAddressDialog : Form
   {
     public EmailOptions Email { get; set; }
@@ -76,6 +76,18 @@ namespace SAAI
         for (int i = 0; i < 7; i++)
         {
           daysOfWeekList.SetItemChecked(i, true);
+        }
+      }
+    }
+
+    private void mmsHelperButton_Click(object sender, EventArgs e)
+    {
+      using (MMS_Helper dlg = new MMS_Helper())
+      {
+        DialogResult result = dlg.ShowDialog();
+        if (DialogResult != DialogResult.Cancel)
+        {
+          emailText.Text = dlg.SelectedMMS;
         }
       }
     }

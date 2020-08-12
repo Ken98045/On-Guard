@@ -117,4 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label2.Text" xml:space="preserve">
+    <value>To send a message to a mobile phone On Guard can usually send an email to a special address for your carrier.
+
+Most carriers allow you to send attached pictures (alarm photos) to that mobile phone.
+
+Sometimes this is a special "MMS" email address.  Other carriers send standard text messages (SMS) and MMS messages to the same email address.  Still other carriers only allow SMS messages, and attached 
+pictures are not allowed.  Even if your carrier supports attached photos this support may be phone dependent.
+
+These are the known MMS/SMS email addresses for US mobile Carriers.  You can select one by double clicking on the carrier.  When you get back to the previous screen you will need to substitute your mobile number for the word "number" (before the @).  An example would be: 5551234567@vzwpix.com
+
+This list is likely to be incomplete and/or outdated.   If you are unsure whether or not your moible carrier supports messages with photo please try sending an email with an attached photo to your carriers email address.  Not every carrier listed here supports attached photos!
+
+
+</value>
+  </data>
 </root>

@@ -474,6 +474,7 @@ namespace SAAI
             SmtpServer.EnableSsl = Settings.Default.EmailSSL;
 
             await SmtpServer.SendMailAsync(mail).ConfigureAwait(false);
+            Dbg.Write("Email sent to: " + rec);
           }
         }
 

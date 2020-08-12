@@ -51,6 +51,7 @@
       this.check247 = new System.Windows.Forms.CheckBox();
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
+      this.mmsHelperButton = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.sizeImageToNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numberOfImages)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.coolDownNumeric)).BeginInit();
@@ -193,7 +194,7 @@
       this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label12.Location = new System.Drawing.Point(55, 14);
       this.label12.Name = "label12";
-      this.label12.Size = new System.Drawing.Size(263, 16);
+      this.label12.Size = new System.Drawing.Size(273, 16);
       this.label12.TabIndex = 34;
       this.label12.Text = "Specify When Emails Should be Sent";
       // 
@@ -269,7 +270,7 @@
       this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label10.Location = new System.Drawing.Point(205, -24);
       this.label10.Name = "label10";
-      this.label10.Size = new System.Drawing.Size(92, 16);
+      this.label10.Size = new System.Drawing.Size(95, 16);
       this.label10.TabIndex = 25;
       this.label10.Text = "Time of Day";
       // 
@@ -316,13 +317,24 @@
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
       // 
+      // mmsHelperButton
+      // 
+      this.mmsHelperButton.Location = new System.Drawing.Point(416, 28);
+      this.mmsHelperButton.Name = "mmsHelperButton";
+      this.mmsHelperButton.Size = new System.Drawing.Size(112, 23);
+      this.mmsHelperButton.TabIndex = 40;
+      this.mmsHelperButton.Text = "MMS/SMS Helper";
+      this.mmsHelperButton.UseVisualStyleBackColor = true;
+      this.mmsHelperButton.Click += new System.EventHandler(this.mmsHelperButton_Click);
+      // 
       // CreateEmailAddressDialog
       // 
       this.AcceptButton = this.okButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(530, 569);
+      this.ClientSize = new System.Drawing.Size(547, 569);
+      this.Controls.Add(this.mmsHelperButton);
       this.Controls.Add(this.cancelButton);
       this.Controls.Add(this.okButton);
       this.Controls.Add(this.panel1);
@@ -373,5 +385,6 @@
     private System.Windows.Forms.Label label12;
     private System.Windows.Forms.Button okButton;
     private System.Windows.Forms.Button cancelButton;
+    private System.Windows.Forms.Button mmsHelperButton;
   }
 }
