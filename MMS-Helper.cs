@@ -58,7 +58,7 @@ Page Plus: number@vtext.com
       new string[]{"AT&T", "number@mms.att.net" },
       new string[]{"Metro PCS", "number@mymetropcs.com" },
       new string[]{"Sprint", "number@pm.sprint.com" },
-      new string[]{"Alltel", "mms.alltelwireless.com " }
+      new string[]{"Alltel", "number@mms.alltelwireless.com " }
 
     };
 

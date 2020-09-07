@@ -57,6 +57,7 @@ namespace SAAI
       LiveContactData = new CameraContactData();
       CameraPrefix = prefix;
       Path = path;
+      Monitoring = true;
       AOI = new AreasOfInterestCollection(CameraPrefix);
     }
 

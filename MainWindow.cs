@@ -140,6 +140,7 @@ namespace SAAI
 
       KeyPreview = true;
       Focus();
+      Dbg.Write("On Guard started at: " + DateTime.Now.ToString());
 
     }
 
@@ -1837,7 +1838,14 @@ namespace SAAI
 
     private void logFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      Process.Start("OnGuard.txt");
+      string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+      if (!Directory.Exists(path))
+      {
+        Directory.CreateDirectory(path);
+      }
+
+      path = Path.Combine(path, "OnGuard.txt");
+      Process.Start(path);
     }
 
     private void cameraCombo_SelectedIndexChanged(object sender, EventArgs e)

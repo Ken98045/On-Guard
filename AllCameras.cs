@@ -152,7 +152,10 @@ namespace SAAI
               // Note that we do NOT turn the Monitoring flag off
               cam.Monitor.Dispose();
               cam.Monitor = null;
-              cam.CameraEmailAccumulator.Dispose();
+              if (cam.CameraEmailAccumulator != null)
+              {
+                cam.CameraEmailAccumulator.Dispose();
+              }
               cam.CameraEmailAccumulator = null;
             }
 
