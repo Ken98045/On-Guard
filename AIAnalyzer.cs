@@ -338,7 +338,17 @@ namespace SAAI
 
     public async Task<List<ImageObject>> ProcessVideoImageViaAI(Stream stream, string imageName)
     {
-      List<ImageObject> objectList = await DetectObjects(stream, imageName).ConfigureAwait(true);
+      List<ImageObject> objectList = null;
+
+      try
+      {
+        objectList = await DetectObjects(stream, imageName).ConfigureAwait(true);
+      }
+      catch (AiNotFoundException ex)
+      {
+        throw ex;
+      }
+
       return objectList;
 
     }

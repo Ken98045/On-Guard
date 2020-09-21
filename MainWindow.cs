@@ -412,18 +412,30 @@ namespace SAAI
         {
           _frameObjects = _analyzer.ProcessVideoImageViaAI(stream, imageName).Result;
         }
-        catch (AiNotFoundException ex)
+        catch (AggregateException ex)
         {
-          MessageBox.Show(ex.Message + Environment.NewLine + "Either start the AI or change the locaton and port of that application.", "Startup Error!");
-          using (SettingsDialog dlg = new SettingsDialog())
+          ex.Handle((x) =>
           {
-            if (dlg.ShowDialog() == DialogResult.OK)
+            if (x is AiNotFoundException) // This we know how to handle.
             {
-              _frameObjects = null;
-              MessageBox.Show("You must now restart this application!", "Exit Now!");
-              Application.Exit();
+              MessageBox.Show(ex.Message + Environment.NewLine + "Either start the DeepStack AI or change the locaton and port of that application.", "Setlup Error!");
+              using (SettingsDialog dlg = new SettingsDialog())
+              {
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                  _frameObjects = null;
+                  MessageBox.Show("You must now restart this application!", "Exit Now!");
+                  Application.Exit();
+                }
+              }
+
+              return true;
             }
-          }
+            else
+            {
+              return false;
+            }             
+          });
 
           return null;
         }
