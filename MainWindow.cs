@@ -680,10 +680,19 @@ namespace SAAI
       // BUT, only if there was already a registration point
       if (_currentCamera.RegistrationX > 0 && _currentCamera.RegistrationY > 0)
       {
-        foreach (var x in _currentCamera.AOI)
+        foreach (var area in _currentCamera.AOI)
         {
-          x.AreaRect.X -= offsetX;
-          x.AreaRect.Y -= offsetY;
+          area.AreaRect.X -= offsetX;
+          if (area.AreaRect.X < 0)
+          {
+            area.AreaRect.X = 0;
+          }  
+
+          area.AreaRect.Y -= offsetY;
+          if (area.AreaRect.Y < 0)
+          {
+            area.AreaRect.Y = 0;
+          }  
 
         }
 
