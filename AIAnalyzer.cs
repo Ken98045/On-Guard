@@ -72,6 +72,12 @@ namespace SAAI
       _AIPort = Settings.Default.AIPort;
     }
 
+    public AIAnalyzer(string aiAddress, int port)
+    {
+      _AILocation = aiAddress;
+      _AIPort = port;
+    }
+
 
     public List<string> Init(string cameraNamePrefix, string cameraFilePath)
     {
@@ -84,7 +90,7 @@ namespace SAAI
         string[] files = Directory.GetFiles(cameraFilePath, fileSearch, SearchOption.TopDirectoryOnly);
         foreach (string file in files)
         {
-          dateSortedList.Add(File.GetCreationTime(file), file);
+          dateSortedList[File.GetCreationTime(file)] = file;
         }
 
         foreach (var fileName in files.Reverse())

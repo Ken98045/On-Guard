@@ -39,12 +39,13 @@
       this.passwordText = new System.Windows.Forms.TextBox();
       this.portNumeric = new System.Windows.Forms.NumericUpDown();
       this.label4 = new System.Windows.Forms.Label();
+      this.testButton = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).BeginInit();
       this.SuspendLayout();
       // 
       // okButton
       // 
-      this.okButton.Location = new System.Drawing.Point(132, 233);
+      this.okButton.Location = new System.Drawing.Point(86, 233);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 5;
@@ -55,7 +56,7 @@
       // cancelButton
       // 
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(224, 233);
+      this.cancelButton.Location = new System.Drawing.Point(178, 233);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 6;
@@ -161,6 +162,16 @@
       this.label4.TabIndex = 12;
       this.label4.Text = "Server Port: ";
       // 
+      // testButton
+      // 
+      this.testButton.Location = new System.Drawing.Point(270, 233);
+      this.testButton.Name = "testButton";
+      this.testButton.Size = new System.Drawing.Size(75, 23);
+      this.testButton.TabIndex = 13;
+      this.testButton.Text = "Test";
+      this.testButton.UseVisualStyleBackColor = true;
+      this.testButton.Click += new System.EventHandler(this.testButton_Click);
+      // 
       // OutgoingEmailDialog
       // 
       this.AcceptButton = this.okButton;
@@ -168,6 +179,7 @@
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.CancelButton = this.cancelButton;
       this.ClientSize = new System.Drawing.Size(431, 289);
+      this.Controls.Add(this.testButton);
       this.Controls.Add(this.label4);
       this.Controls.Add(this.portNumeric);
       this.Controls.Add(this.passwordText);
@@ -200,5 +212,6 @@
         private System.Windows.Forms.TextBox passwordText;
         private System.Windows.Forms.NumericUpDown portNumeric;
         private System.Windows.Forms.Label label4;
-    }
+    private System.Windows.Forms.Button testButton;
+  }
 }

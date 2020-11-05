@@ -50,6 +50,8 @@
       this.label9 = new System.Windows.Forms.Label();
       this.maxEventNumeric = new System.Windows.Forms.NumericUpDown();
       this.label7 = new System.Windows.Forms.Label();
+      this.testButton = new System.Windows.Forms.Button();
+      this.label12 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.snapshotNumeric)).BeginInit();
       this.panel1.SuspendLayout();
@@ -60,7 +62,7 @@
       // 
       // okButton
       // 
-      this.okButton.Location = new System.Drawing.Point(260, 447);
+      this.okButton.Location = new System.Drawing.Point(260, 482);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 0;
@@ -70,7 +72,7 @@
       // 
       // cancelButton
       // 
-      this.cancelButton.Location = new System.Drawing.Point(350, 447);
+      this.cancelButton.Location = new System.Drawing.Point(350, 482);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 1;
@@ -81,9 +83,9 @@
       // label1
       // 
       this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(24, 54);
+      this.label1.Location = new System.Drawing.Point(47, 54);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(198, 13);
+      this.label1.Size = new System.Drawing.Size(238, 13);
       this.label1.TabIndex = 2;
       this.label1.Text = "IP Address or computer name  of the  AI:";
       // 
@@ -92,13 +94,13 @@
       this.label2.AutoSize = true;
       this.label2.Location = new System.Drawing.Point(432, 54);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(180, 13);
+      this.label2.Size = new System.Drawing.Size(218, 13);
       this.label2.TabIndex = 3;
       this.label2.Text = "For this computer leave it \"localhost\"";
       // 
       // ipAddresText
       // 
-      this.ipAddresText.Location = new System.Drawing.Point(291, 51);
+      this.ipAddresText.Location = new System.Drawing.Point(300, 51);
       this.ipAddresText.Name = "ipAddresText";
       this.ipAddresText.Size = new System.Drawing.Size(134, 20);
       this.ipAddresText.TabIndex = 0;
@@ -106,7 +108,7 @@
       // 
       // portNumeric
       // 
-      this.portNumeric.Location = new System.Drawing.Point(287, 91);
+      this.portNumeric.Location = new System.Drawing.Point(300, 93);
       this.portNumeric.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -129,9 +131,9 @@
       // label3
       // 
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(163, 93);
+      this.label3.Location = new System.Drawing.Point(143, 93);
       this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(118, 13);
+      this.label3.Size = new System.Drawing.Size(142, 13);
       this.label3.TabIndex = 6;
       this.label3.Text = "Port Number fo the AI:  ";
       // 
@@ -141,7 +143,7 @@
       this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label4.Location = new System.Drawing.Point(205, 10);
       this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(217, 16);
+      this.label4.Size = new System.Drawing.Size(208, 16);
       this.label4.TabIndex = 7;
       this.label4.Text = "Location of the DeepStack AI";
       // 
@@ -194,15 +196,18 @@
       // panel1
       // 
       this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.panel1.Controls.Add(this.label12);
+      this.panel1.Controls.Add(this.testButton);
       this.panel1.Controls.Add(this.portNumeric);
       this.panel1.Controls.Add(this.label4);
       this.panel1.Controls.Add(this.label3);
       this.panel1.Controls.Add(this.label2);
       this.panel1.Controls.Add(this.label1);
       this.panel1.Controls.Add(this.ipAddresText);
+      this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.panel1.Location = new System.Drawing.Point(23, 13);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(629, 134);
+      this.panel1.Size = new System.Drawing.Size(629, 173);
       this.panel1.TabIndex = 11;
       // 
       // panel2
@@ -219,7 +224,7 @@
       this.panel2.Controls.Add(this.label6);
       this.panel2.Controls.Add(this.label5);
       this.panel2.Controls.Add(this.snapshotNumeric);
-      this.panel2.Location = new System.Drawing.Point(23, 165);
+      this.panel2.Location = new System.Drawing.Point(23, 207);
       this.panel2.Name = "panel2";
       this.panel2.Size = new System.Drawing.Size(629, 258);
       this.panel2.TabIndex = 12;
@@ -317,15 +322,35 @@
       this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label7.Location = new System.Drawing.Point(198, 13);
       this.label7.Name = "label7";
-      this.label7.Size = new System.Drawing.Size(218, 16);
+      this.label7.Size = new System.Drawing.Size(211, 16);
       this.label7.TabIndex = 8;
       this.label7.Text = "Image Capture and Reporting";
+      // 
+      // testButton
+      // 
+      this.testButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+      this.testButton.Location = new System.Drawing.Point(218, 130);
+      this.testButton.Name = "testButton";
+      this.testButton.Size = new System.Drawing.Size(191, 28);
+      this.testButton.TabIndex = 8;
+      this.testButton.Text = "Test DeepStack Connection";
+      this.testButton.UseVisualStyleBackColor = false;
+      this.testButton.Click += new System.EventHandler(this.testButton_Click);
+      // 
+      // label12
+      // 
+      this.label12.AutoSize = true;
+      this.label12.Location = new System.Drawing.Point(414, 138);
+      this.label12.Name = "label12";
+      this.label12.Size = new System.Drawing.Size(91, 13);
+      this.label12.TabIndex = 9;
+      this.label12.Text = "<---- Important!";
       // 
       // SettingsDialog
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.ClientSize = new System.Drawing.Size(684, 489);
+      this.ClientSize = new System.Drawing.Size(684, 515);
       this.Controls.Add(this.panel2);
       this.Controls.Add(this.panel1);
       this.Controls.Add(this.cancelButton);
@@ -367,5 +392,7 @@
     private System.Windows.Forms.NumericUpDown maxEventNumeric;
     private System.Windows.Forms.Label label7;
     private System.Windows.Forms.Label label13;
+    private System.Windows.Forms.Button testButton;
+    private System.Windows.Forms.Label label12;
   }
 }
