@@ -21,7 +21,7 @@ namespace SAAI
       assemblyLabel.Text = String.Format("Version {0}", AssemblyVersion);
     }
 
-    public string AssemblyTitle
+    public static string AssemblyTitle
     {
       get
       {
@@ -38,7 +38,7 @@ namespace SAAI
       }
     }
 
-    public string AssemblyVersion
+    public static string AssemblyVersion
     {
       get
       {
@@ -46,7 +46,7 @@ namespace SAAI
       }
     }
 
-    public string AssemblyDescription
+    public static string AssemblyDescription
     {
       get
       {
@@ -59,7 +59,7 @@ namespace SAAI
       }
     }
 
-    public string AssemblyProduct
+    public static string AssemblyProduct
     {
       get
       {
@@ -72,7 +72,7 @@ namespace SAAI
       }
     }
 
-    public string AssemblyCopyright
+    public static string AssemblyCopyright
     {
       get
       {
@@ -85,7 +85,7 @@ namespace SAAI
       }
     }
 
-    public string AssemblyCompany
+    public static string AssemblyCompany
     {
       get
       {

@@ -65,7 +65,7 @@
       this.okButton.Location = new System.Drawing.Point(260, 482);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 0;
+      this.okButton.TabIndex = 1;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);
@@ -75,7 +75,7 @@
       this.cancelButton.Location = new System.Drawing.Point(350, 482);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 1;
+      this.cancelButton.TabIndex = 2;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -153,7 +153,7 @@
       this.label5.Location = new System.Drawing.Point(31, 54);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(96, 13);
-      this.label5.TabIndex = 8;
+      this.label5.TabIndex = 0;
       this.label5.Text = "Snapshot Interval: ";
       // 
       // snapshotNumeric
@@ -187,7 +187,7 @@
       // label6
       // 
       this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(198, 59);
+      this.label6.Location = new System.Drawing.Point(198, 56);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(379, 13);
       this.label6.TabIndex = 10;
@@ -227,7 +227,7 @@
       this.panel2.Location = new System.Drawing.Point(23, 207);
       this.panel2.Name = "panel2";
       this.panel2.Size = new System.Drawing.Size(629, 258);
-      this.panel2.TabIndex = 12;
+      this.panel2.TabIndex = 0;
       // 
       // label13
       // 
@@ -252,7 +252,7 @@
       this.label11.Location = new System.Drawing.Point(10, 185);
       this.label11.Name = "label11";
       this.label11.Size = new System.Drawing.Size(117, 13);
-      this.label11.TabIndex = 15;
+      this.label11.TabIndex = 1;
       this.label11.Text = "Time Between Events: ";
       // 
       // eventIntervalNumeric
@@ -332,10 +332,10 @@
       this.testButton.Location = new System.Drawing.Point(218, 130);
       this.testButton.Name = "testButton";
       this.testButton.Size = new System.Drawing.Size(191, 28);
-      this.testButton.TabIndex = 8;
+      this.testButton.TabIndex = 2;
       this.testButton.Text = "Test DeepStack Connection";
       this.testButton.UseVisualStyleBackColor = false;
-      this.testButton.Click += new System.EventHandler(this.testButton_Click);
+      this.testButton.Click += new System.EventHandler(this.TestButton_Click);
       // 
       // label12
       // 

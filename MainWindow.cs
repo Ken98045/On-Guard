@@ -18,34 +18,36 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
+using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms.VisualStyles;
+using System.Data.Common;
+using System.Media;
 
 namespace SAAI
 {
 
   public partial class MainWindow : Form
   {
-    readonly AIAnalyzer _analyzer;
+    AIAnalyzer _analyzer;
     List<string> _fileNames;
 
     int _current = 0;
     bool _showObjects = true;
-    bool _mouseIsDown = false;
-    bool _mouseInBounds = false;
     Bitmap _screenBitmap;
     Bitmap _areaBackgroundBitmap;
     double _xScale;
     double _yScale;
+    bool _mouseInBounds;
     bool _showingLiveView;
     int _imagesBeingProcessed;
     int _numberOfImagesProcessed;
+    string _connectionString;
 
     readonly MostRecentCollection _recentTimes = new MostRecentCollection(10);
     readonly object _fileLock = new object();
 
     AllCameras _allCameras;
-
-    Rectangle _previousRectangle = new Rectangle(0, 0, 0, 0);
 
     bool _modifyingArea = false;    // Flag that we are modifying an area
     Rectangle _originalRect = Rectangle.Empty;
@@ -60,7 +62,8 @@ namespace SAAI
     readonly Thread _monitorQueueThread;
     readonly double _timePerFrame = 1.0;
     System.Windows.Forms.Timer _liveTimer;
-
+    bool _directionUp = false;  // direction is down because we start up at the last (most recent) picture
+    long _lastMotionTime = long.MaxValue; // so we can go "down in the time for motion
 
 
     readonly ConcurrentDictionary<string, string> _filesPendingProcessing = new ConcurrentDictionary<string, string>(); // very short period of time where the file has been removed from the queue yet still hasn't been opened
@@ -89,23 +92,35 @@ namespace SAAI
 
       // Settings.Default.Reset();   // Only uncomment this when you want to clear out the stored settings
 
-      int currentCPU = (int)theCPUCounter.NextValue(); // aways returns 0 on the first go around?
-      currentCPU = (int)theCPUCounter.NextValue();
-
       InitializeComponent();
-
       _monitorQueueThread = new Thread(MonitorQueue);
+
+      Focus();
+      Dbg.Write("On Guard started at: " + DateTime.Now.ToString());
+
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+      int currentCPU = (int)theCPUCounter.NextValue();
+      currentCPU = (int)theCPUCounter.NextValue();
       _monitorQueueThread.Start();
 
       Settings.Default.SettingsKey = "OnGuard";
       Settings.Default.Reload();
       Settings.Default.SettingChanging += Default_SettingChanging;
+      string dbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+      dbLocation = Path.Combine(dbLocation, "OnGuardDatabase");
+      _connectionString = Settings.Default.DBMotionFramesConnectionString;
+      _connectionString = string.Format(_connectionString, dbLocation);
+
       if (!Settings.Default.AISetup)
       {
         InitialSetup();
       }
 
       _analyzer = new AIAnalyzer();
+
       _allCameras = AllCameras.Load();    // which also inits the camera
       _currentCamera = _allCameras.CurrentCamera;
 
@@ -139,10 +154,11 @@ namespace SAAI
 
 
       KeyPreview = true;
-      Focus();
-      Dbg.Write("On Guard started at: " + DateTime.Now.ToString());
 
+      this.Focus();
     }
+
+
 
     private void Default_SettingChanging(object sender, SettingChangingEventArgs e)
     {
@@ -250,7 +266,7 @@ namespace SAAI
         if (result != DialogResult.OK)
         {
           cancelResult = MessageBox.Show("In order to keep using this application you must continue the setup process.  Do you wisht to exit the application?", "Setup Incomplete!", MessageBoxButtons.YesNo);
-          if (result == DialogResult.Yes)
+          if (cancelResult == DialogResult.Yes)
           {
             Application.Exit();
           }
@@ -286,7 +302,6 @@ namespace SAAI
       {
         _areaBackgroundBitmap.Dispose();
         _areaBackgroundBitmap = null;
-        _previousRectangle = Rectangle.Empty;
       }
 
       if (null != _fileNames)
@@ -304,16 +319,56 @@ namespace SAAI
       fileNumberUpDown.Minimum = (int)1;
     }
 
+
     private void ButtonRight_Click(object sender, EventArgs e)
     {
+      int lastPosition = _current;
+
       using (WaitCursor _ = new WaitCursor())
       {
         lock (_fileLock)
         {
-          if (_fileNames != null && _current < _fileNames.Count - 1)
+          while (true)  // handle the case where the "next" item was deleted external to the UI (Blue Iris, etc)
           {
-            ++_current;
-            LoadImage(_fileNames[_current]);
+
+            if (motionOnlyCheckbox.Checked)
+            {
+              GetNextMotion(_directionUp); // sets _current;
+              if (lastPosition == _current)
+              {
+                SystemSounds.Beep.Play();
+              }
+
+            }
+            else
+            {
+              ++_current;
+            }
+
+            if (_fileNames != null && _current < _fileNames.Count - 1)
+            {
+              try
+              {
+                LoadImage(_fileNames[_current]);
+                break;
+              }
+              catch (FileNotFoundException)
+              {
+                _fileNames.RemoveAt(_current);
+                numberOfFilesTextBox.Text = _fileNames.Count.ToString();
+              }
+            }
+            else
+            {
+              SystemSounds.Beep.Play();
+
+              --_current;
+              if (_current < 0)
+              {
+                _current = 0;
+              }
+              break;
+            }
           }
         }
       }
@@ -323,14 +378,60 @@ namespace SAAI
 
     private void ButtonLeft_Click(object sender, EventArgs e)
     {
+      int lastPosition = _current;
       using (WaitCursor _ = new WaitCursor())
       {
         lock (_fileLock)
         {
-          if (_fileNames != null && _current > 0)
+
+
+          while (true)
           {
-            --_current;
-            LoadImage(_fileNames[_current]);
+
+            if (motionOnlyCheckbox.Checked)
+            {
+              GetNextMotion(!_directionUp); // sets _current;
+              if (lastPosition == _current)
+              {
+                SystemSounds.Beep.Play();
+              }
+            }
+            else
+            {
+              if (_current > 0)
+              {
+
+                --_current;
+              }
+              else
+              {
+                SystemSounds.Beep.Play();
+              }
+            }
+
+            if (_current >= 0)
+            {
+              try
+              {
+                if (_fileNames != null && _current >= 0)
+                {
+                  if (_fileNames.Count > 0)
+                  {
+                    LoadImage(_fileNames[_current]);
+                  }
+                  break;
+                }
+              }
+              catch (FileNotFoundException)
+              {
+                _fileNames.RemoveAt(_current);
+                numberOfFilesTextBox.Text = _fileNames.Count.ToString();
+              }
+            }
+            else
+            {
+              SystemSounds.Beep.Play();
+            }
           }
         }
       }
@@ -351,11 +452,25 @@ namespace SAAI
           using (FileStream stream = new FileStream(file, FileMode.Open))
           {
             result = ProcessImage(stream, file);
+            if (!motionOnlyCheckbox.Checked)  // If the box is checked and we are loading the image then we know it is in the DB
+            {
+              if (result != null && result.Count > 0)
+              {
+                InsertMotionIfNecessary(file);
+              }
+            }
 
             currentNumberTextBox.Text = (_fileNames.IndexOf(file) + 1).ToString();
             fileNameTextBox.Text = file;
             _showingLiveView = false;
+            FileInfo fi = new FileInfo(file);
+            _lastMotionTime = fi.CreationTime.ToFileTime();
           }
+        }
+        catch (FileNotFoundException ex)
+        {
+          continueTrying = false;
+          throw ex;
         }
         catch (IOException)
         {
@@ -418,7 +533,7 @@ namespace SAAI
           {
             if (x is AiNotFoundException) // This we know how to handle.
             {
-              MessageBox.Show(ex.Message + Environment.NewLine + "Either start the DeepStack AI or change the locaton and port of that application.", "Setlup Error!");
+              MessageBox.Show(x.Message + Environment.NewLine + "Either start the DeepStack AI or change the locaton and port of that application.", "Setup Error!");
               using (SettingsDialog dlg = new SettingsDialog())
               {
                 if (dlg.ShowDialog() == DialogResult.OK)
@@ -434,7 +549,7 @@ namespace SAAI
             else
             {
               return false;
-            }             
+            }
           });
 
           return null;
@@ -499,12 +614,13 @@ namespace SAAI
     }
 
 
-    private async void GoToFileButton_Click(object sender, EventArgs e)
+    private void GoToFileButton_Click(object sender, EventArgs e)
     {
       using (WaitCursor _ = new WaitCursor())
       {
         lock (_fileLock)
         {
+          motionOnlyCheckbox.Checked = false;
           if (_fileNames.Count > 0)
           {
             if (_fileNames.Count > (int)(fileNumberUpDown.Value))
@@ -517,10 +633,11 @@ namespace SAAI
       }
     }
 
-    private async void GoToFileNameButton_Click(object sender, EventArgs e)
+    private void GoToFileNameButton_Click(object sender, EventArgs e)
     {
       using (WaitCursor _ = new WaitCursor())
       {
+        motionOnlyCheckbox.Checked = false;
         lock (_fileLock)
         {
           if (!string.IsNullOrEmpty(goToFileTextBox.Text) && File.Exists(goToFileTextBox.Text))
@@ -532,15 +649,17 @@ namespace SAAI
     }
 
 
-    private async void OnReverseListButton(object sender, EventArgs e)
+    private void OnReverseListButton(object sender, EventArgs e)
     {
       using (WaitCursor _ = new WaitCursor())
       {
         lock (_fileLock)
         {
+          motionOnlyCheckbox.Checked = false;
           _fileNames.Reverse();
           _current = 0;
           LoadImage(_fileNames[0]);
+          _directionUp = !_directionUp;
         }
       }
     }
@@ -651,11 +770,6 @@ namespace SAAI
 
     }
 
-    private void Form1_Load(object sender, EventArgs e)
-    {
-      this.Focus();
-    }
-
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
       int mouseX = (int)Math.Round((e.Location.X * _xScale));
@@ -686,13 +800,13 @@ namespace SAAI
           if (area.AreaRect.X < 0)
           {
             area.AreaRect.X = 0;
-          }  
+          }
 
           area.AreaRect.Y -= offsetY;
           if (area.AreaRect.Y < 0)
           {
             area.AreaRect.Y = 0;
-          }  
+          }
 
         }
 
@@ -729,10 +843,12 @@ namespace SAAI
           _modifyingArea = true;
           _modifyingAreaID = Guid.Empty;  // signal that this is a new area not a mods
 
-          _modifyBox = new SemiTransparentBox();
-          _modifyBox.Parent = pictureImage;
-          _modifyBox.Location = new Point(e.X, e.Y);
-          _modifyBox.Size = new Size(100, 100);
+          _modifyBox = new SemiTransparentBox
+          {
+            Parent = pictureImage,
+            Location = new Point(e.X, e.Y),
+            Size = new Size(100, 100)
+          };
           _modifyBox.Show();
           ControlMoverOrResizer.Start(_modifyBox);
           SetupEditingEnvironment();
@@ -752,7 +868,6 @@ namespace SAAI
 
     private void OnMouseUp(object sender, MouseEventArgs e)
     {
-      _mouseIsDown = false;
 
       if (_currentCamera.RegistrationX == 0 || _currentCamera.RegistrationY == 0)
       {
@@ -845,8 +960,10 @@ namespace SAAI
     {
       _modifyingAreaID = areaID;
       _modifyingArea = true;
-      _modifyBox = new SemiTransparentBox();
-      _modifyBox.Parent = pictureImage;
+      _modifyBox = new SemiTransparentBox
+      {
+        Parent = pictureImage
+      };
       Rectangle screenRect = ScaleDataToScreen(_currentCamera.AOI[_modifyingAreaID].AreaRect);
       _modifyBox.Location = new Point(screenRect.X, screenRect.Y);
       _modifyBox.Size = screenRect.Size;
@@ -936,6 +1053,7 @@ namespace SAAI
     {
       string urlString;
 
+      motionOnlyCheckbox.Checked = false;
       CameraContactData data = _currentCamera.LiveContactData;  // for clarity
       if (data.CameraXResolution > 0 && data.CameraYResolution > 0)
       {
@@ -970,9 +1088,9 @@ namespace SAAI
 
         webResponse.Close();
       }
-      catch (Exception ex)
+      catch (HttpException ex)
       {
-        Dbg.Write("Error requestion snapshot/live image: " + ex.Message);
+        Dbg.Write("MainWindow - LiveCameraButton_Click = Error requestion snapshot/live image: " + ex.Message);
       }
 
       fileNameTextBox.Text = "Live Image";
@@ -997,6 +1115,7 @@ namespace SAAI
 
     async void CameraDirectionButton(CameraDirections direction)
     {
+      motionOnlyCheckbox.Checked = false;
       string urlString = string.Format("http://{0}:{1}/cam/{2}/pos={3}&user={4}&pw={5}", _currentCamera.LiveContactData.CameraIPAddress,
          _currentCamera.LiveContactData.Port.ToString(),
         _currentCamera.LiveContactData.ShortCameraName, (int)direction,
@@ -1019,9 +1138,9 @@ namespace SAAI
 
         webResponse.Close();
       }
-      catch (Exception ex)
+      catch (HttpException ex)
       {
-
+        Dbg.Write("MainWindow - CameraDirectionButton - HttpException: " + ex.Message);
       }
 
       await Task.Delay(1000 * 1).ConfigureAwait(true);
@@ -1170,15 +1289,15 @@ namespace SAAI
             Dbg.Write("Error notifying URL: " + urlStr + " -- Reponse Code: " + response.StatusCode.ToString());
           }
         }
-        catch (Exception ex)
+        catch (HttpException ex)
         {
-          Dbg.Write("Exception caught in NotifyUrl: " + ex.Message);
+          Dbg.Write("MainWindow - NotifyUrl - Exception caught in NotifyUrl: " + ex.Message);
 
         }
       }
     }
 
-    // Currently unused, but it may bein the future
+    // Currently unused, but it may be in the future
     static async Task NotifyViaEmail(string emailRecipients, HashSet<string> acvityDesc, string fileName)
     {
 
@@ -1226,6 +1345,7 @@ namespace SAAI
     {
       using (WaitCursor _ = new WaitCursor())
       {
+        motionOnlyCheckbox.Checked = false;
         string urlString = string.Format("http://{0}:{1}/admin?camera={2}&preset={3}&user={4}&pw={5}",
         _currentCamera.LiveContactData.CameraIPAddress,
         _currentCamera.LiveContactData.Port.ToString(),
@@ -1539,6 +1659,10 @@ namespace SAAI
                   interesting = analyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
                   frame.Interesting = interesting;
                   Dbg.Write(interesting.Count.ToString() + " interesting objects found");
+                  if (frame.Interesting.Count > 0)
+                  {
+                    var myTask = Task.Run(() => AddToMotionFramesTable(pendingItem));
+                  }
                   Notify(frame);
                 }
               }
@@ -1556,6 +1680,230 @@ namespace SAAI
       } while (continueTrying);
 
     }
+
+    #region SqlStuff
+
+    async void AddToMotionFramesTable(PendingItem pending)
+    {
+      FileInfo fi = new FileInfo(pending.PendingFile);
+
+      try
+      {
+        using (SqlConnection con = new SqlConnection(_connectionString))
+        {
+          con.Open();
+
+          try
+          {
+            using (SqlCommand cmd = new SqlCommand("INSERT into tblMotionFiles (CreationTime, FileName, Path, Camera) VALUES (@creationTime, @fileName, @path, @camera)", con))
+            {
+              cmd.Parameters.AddWithValue("@creationTime", fi.CreationTime.ToFileTime());
+              cmd.Parameters.AddWithValue("@fileName", fi.Name);
+              cmd.Parameters.AddWithValue("@path", pending.CamData.Path);
+              cmd.Parameters.AddWithValue("@camera", pending.CamData.CameraPrefix);
+              int rowsAdded = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+          }
+          catch (SqlException ex)
+          {
+            Dbg.Write("MainWindow - AddMotionFramesTable - " + ex.Message);
+          }
+        }
+      }
+      catch (SqlException ex)
+      {
+        Dbg.Write("MainWindow - SQL Exception opeinging connection for adding motion file to database: " + ex.Message);
+      }
+    }
+
+    string GetNextMotion(bool directionUp)
+    {
+      string result = string.Empty;
+      string q;
+      long fileTime = _lastMotionTime;
+      bool readSuccess = false;
+      string path;
+      string file = string.Empty;
+
+
+      if (directionUp)
+      {
+        q = "SELECT TOP 1 * FROM tblMotionFiles WHERE CreationTime > @lastTime AND Path = @path AND Camera = @camera ORDER BY CreationTime ASC";
+      }
+      else
+      {
+        q = "SELECT TOP 1  * FROM tblMotionFiles WHERE CreationTime < @lastTime AND Path = @path AND Camera = @camera";
+      }
+
+      try
+      {
+        using (SqlConnection con = new SqlConnection(_connectionString))
+        {
+          con.Open();
+
+          while (true)  // If a file has been deleted we may need to look for the next file multiple times
+          {
+            result = string.Empty;
+
+            using (SqlCommand cmd = new SqlCommand(q, con))
+            {
+
+              cmd.Parameters.AddWithValue("@lastTime", fileTime);
+              DateTime lastReadable = DateTime.FromFileTime(fileTime);  // debug only
+              cmd.Parameters.AddWithValue("@path", _currentCamera.Path);
+              cmd.Parameters.AddWithValue("@camera", _currentCamera.CameraPrefix);
+
+              try
+              {
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                  if (reader.HasRows)
+                  {
+                    reader.Read();
+                    fileTime = reader.GetInt64(1);
+                    DateTime dt = DateTime.FromFileTime(fileTime);  // debug only
+                    path = reader.GetString(3);
+                    path = path.Trim();
+                    file = reader.GetString(2);
+                    file = file.Trim();
+                    result = Path.Combine(path, file);
+                    readSuccess = true;
+                  }
+                }
+
+              }
+              catch (SqlException ex)
+              {
+                Dbg.Write("MainWindow - GetNextMotion - SQL Exception: " + ex.Message);
+              }
+
+              if (readSuccess)
+              {
+                // OK, here we have the file name, now get the "current" picture index -- it may not exist
+                int index = _fileNames.IndexOf(result);
+                if (index > -1)
+                {
+                  _current = _fileNames.IndexOf(result);
+                  break;  // done
+                }
+                else
+                {
+                  // The file does not exist in the working set
+                  DeleteMissingMotion(file);  // and we will repeat the process until we find another or none exist
+                }
+              }
+              else
+              {
+                result = string.Empty;
+                break;  // done, but with no file result
+              }
+
+            }
+          }
+        }
+      }
+      catch (SqlException ex)
+      {
+        Dbg.Write("MainWindow - GetNextMotion - Opening Connection: " + ex.Message);
+      }
+
+      return result;
+    }
+
+
+    /// <summary>
+    /// If the motion frame does not exist, add it.
+    /// This is called when browsing notices that there is interesting motion.
+    /// Since we've done the hard work if analyzing the frame we just add it if ncessary.
+    /// </summary>
+    /// <param name="directionUp"></param>
+    /// <returns></returns>
+    async void InsertMotionIfNecessary(string fileName)
+    {
+
+      string q = "IF NOT EXISTS(SELECT CreationTime FROM tblMotionFiles WHERE CreationTime = @creationTime AND FileName = @fileName)" + 
+        "INSERT INTO tblMotionFiles(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
+
+      using (SqlConnection con = new SqlConnection(_connectionString))
+      {
+        try
+        {
+          await con.OpenAsync();
+        }
+        catch (SqlException ex)
+        {
+          Dbg.Write("MainWindow -  InsertMotionIfNecessary - Sql Exception on opening database connection: " + ex.Message);
+          return;
+        }
+
+        using (SqlCommand cmd = new SqlCommand(q, con))
+        {
+          FileInfo fi = new FileInfo(fileName);
+
+          try
+          {
+            cmd.Parameters.AddWithValue("@creationTime", fi.CreationTime.ToFileTime());
+            cmd.Parameters.AddWithValue("@fileName", fi.Name);
+            cmd.Parameters.AddWithValue("@path", _currentCamera.Path);
+            cmd.Parameters.AddWithValue("@camera", _currentCamera.CameraPrefix);
+            await cmd.ExecuteScalarAsync();
+          }
+          catch (DbException ex)
+          {
+            Dbg.Write("MainWindow - InsertMotionIfNecessary - DbException: " + ex.Message);
+          }
+          catch (Exception ex)
+          {
+            Dbg.Write("MainWindow - InsertMotionIfNecessary - Exception: " + ex.Message);
+          }
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// DeleteMissingMotion - When there is a motion file entry in the DB, but the file
+    /// is no longer a valid file, remove it from the DB.
+    /// This happens frequently when BlueIris or the user deletes the picture.
+    /// </summary>
+    /// <param name="fileName"></param>
+    async void DeleteMissingMotion(string fileName)
+    {
+
+      try
+      {
+        using (SqlConnection con = new SqlConnection(_connectionString))
+        {
+          await con.OpenAsync().ConfigureAwait(false);
+
+
+          try
+          {
+            string q = "DELETE FROM tblMotionFiles WHERE Path = @path AND Camera = @camera AND FileName = @fileName";
+
+
+            using (SqlCommand cmd = new SqlCommand(q, con))
+            {
+              cmd.Parameters.AddWithValue("@path", _currentCamera.Path);
+              cmd.Parameters.AddWithValue("@camera", _currentCamera.CameraPrefix);
+              cmd.Parameters.AddWithValue("@fileName", fileName);
+              await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+          }
+          catch (DbException ex)
+          {
+            Dbg.Write("MainWindow - DeleteMissingMotion - DbException: " + ex.Message);
+          }
+        }
+      }
+      catch (SqlException ex)
+      {
+        Dbg.Write("MainWindow - DeleteMissingMotion - Sql exception opening connection: " + ex.Message);
+      }
+    }
+
+    #endregion SqlStuff
 
     /// <summary>
     /// This method is a bit complex.  The goal is to start an interval for email accumulation if necessary.
@@ -1672,7 +2020,7 @@ namespace SAAI
 
     }
 
-    private async void OnEmailsAccumulated(HashSet<string> emailAddresses, HashSet<string> files, HashSet<string> areaDescription)
+    private void OnEmailsAccumulated(HashSet<string> emailAddresses, HashSet<string> files, HashSet<string> areaDescription)
     {
 
       foreach (string emailAddress in emailAddresses)
@@ -1747,9 +2095,9 @@ namespace SAAI
 
     private void OnCameraSelected(object sender, EventArgs e)
     {
-      
       if (cameraCombo.SelectedItem != _currentCamera)
       {
+        motionOnlyCheckbox.Checked = false;
         SetCurrentCamera((CameraData)cameraCombo.SelectedItem);
       }
     }
@@ -1764,11 +2112,14 @@ namespace SAAI
     private void CleanupFiles(string path)
     {
       // possibly notify the UI via event, maybe ask permission
+      List<FileInfo> expiredFiles = null;
 
-      DirectoryInfo dir = new DirectoryInfo(path);
-      var expiredFiles = dir.EnumerateFiles("*.jpg", SearchOption.TopDirectoryOnly)
-          .Where(fi => fi.CreationTime + TimeSpan.FromHours(24) < DateTime.Now).ToList();
-
+      using (WaitCursor _ = new WaitCursor())
+      {
+        DirectoryInfo dir = new DirectoryInfo(path);
+        expiredFiles = dir.EnumerateFiles("*.jpg", SearchOption.TopDirectoryOnly)
+            .Where(fi => fi.CreationTime + TimeSpan.FromHours(24) < DateTime.Now).ToList();
+      }
 
       DialogResult result = MessageBox.Show("You are about to delete " + expiredFiles.Count.ToString() + " pictures over 24 hours old.  Proceed?", "Delete Old Pictures", MessageBoxButtons.YesNo);
       if (result == DialogResult.Yes)
@@ -1817,13 +2168,16 @@ namespace SAAI
 
     private void LiveCheck_CheckedChanged(object sender, EventArgs e)
     {
+      motionOnlyCheckbox.Checked = false;
       if (liveCheck.Checked)
       {
         showObjectRectanglesToolStripMenuItem.Checked = false;
         showAreasOfInterestCheck.Checked = false;
         _showObjects = false;
-        _liveTimer = new System.Windows.Forms.Timer();
-        _liveTimer.Interval = 100;
+        _liveTimer = new System.Windows.Forms.Timer
+        {
+          Interval = 100
+        };
         _liveTimer.Tick += OnLiveImageTimer;
         _liveTimer.Start();
       }
@@ -1835,12 +2189,8 @@ namespace SAAI
 
     }
 
-    private void showToolStripMenuItem_Click(object sender, EventArgs e)
-    {
 
-    }
-
-    private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+    private void NotifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
     {
       Show();
       this.WindowState = FormWindowState.Normal;
@@ -1857,7 +2207,7 @@ namespace SAAI
       }
     }
 
-    private void logFileToolStripMenuItem_Click(object sender, EventArgs e)
+    private void LogFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
       string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
       if (!Directory.Exists(path))
@@ -1869,10 +2219,38 @@ namespace SAAI
       Process.Start(path);
     }
 
-    private void cameraCombo_SelectedIndexChanged(object sender, EventArgs e)
-    {
 
+    private void OnMotionCheckChanged(object sender, EventArgs e)
+    {
+      if (motionOnlyCheckbox.Checked)
+      {
+        buttonRight.BackColor = Color.LightGreen;
+        buttonLeft.BackColor = Color.LightGreen;
+      }
+      else
+      {
+        buttonRight.BackColor = SystemColors.Control;
+        buttonLeft.BackColor = SystemColors.Control;
+      }
     }
+
+    private void MotionOnlyCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+      if (motionOnlyCheckbox.Checked)
+      {
+        motionOnlyCheckbox.BackColor = Color.LightGreen;
+      }
+      else
+      {
+        motionOnlyCheckbox.BackColor = SystemColors.Control;
+      }
+    }
+  }
+
+  internal struct CurrentPictures
+  {
+    public List<string> FileNames;
+    public SortedList<DateTime, string> InterestingPictures;
   }
 
 }

@@ -98,6 +98,9 @@ namespace SAAI
           fileNames.Add(fileName);
         }
       }
+
+
+
       return fileNames;
     }
 
@@ -344,7 +347,7 @@ namespace SAAI
 
     public async Task<List<ImageObject>> ProcessVideoImageViaAI(Stream stream, string imageName)
     {
-      List<ImageObject> objectList = null;
+      List<ImageObject> objectList;
 
       try
       {
@@ -504,7 +507,7 @@ namespace SAAI
       return aiResult;
     }
 
-    bool IsVehicle(ImageObject obj)
+    static bool IsVehicle(ImageObject obj)
     {
       bool isVehicle;
       switch (obj.Label)
@@ -541,7 +544,7 @@ var percentage = (rect.Width * rect.Height) * 100f/(firstRect.Width * firstRect.
 
     static int GetOverlap(ImageObject obj1, ImageObject obj2)
     {
-      int overlap = 0;
+      int overlap;
       Rectangle intersect = Rectangle.Intersect(obj1.ObjectRectangle, obj2.ObjectRectangle); ;
 
       var percentage = (((intersect.Width * intersect.Height) * 2) * 100f) / ((obj2.ObjectRectangle.Width * obj2.ObjectRectangle.Height) + (obj2.ObjectRectangle.Width * obj1.ObjectRectangle.Height));

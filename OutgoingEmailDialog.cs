@@ -49,7 +49,7 @@ namespace SAAI
       DialogResult = DialogResult.Cancel;
     }
 
-    private void testButton_Click(object sender, EventArgs e)
+    private void TestButton_Click(object sender, EventArgs e)
     {
       if (string.IsNullOrEmpty(serverText.Text))
       {
@@ -57,41 +57,58 @@ namespace SAAI
         return;
       }
 
-      if (string.IsNullOrEmpty(userText.Text))
-      {
-        MessageBox.Show("The test email will be sent to the email user name.  This name is now empty.  Even if you do not use a user name for sending email, you must have one here.", "You must enter a user name!");
-      }
+      DialogResult destinationResult;
+      string destination = string.Empty;
 
-      try
+      using (Test_Email_Address dlg = new Test_Email_Address())
       {
-        using (MailMessage mail = new MailMessage())
+        destinationResult = dlg.ShowDialog();
+        if (destinationResult == DialogResult.OK)
         {
-          using (SmtpClient SmtpServer = new SmtpClient(Settings.Default.EmailServer))
-          {
-            mail.BodyEncoding = Encoding.UTF8;
-            mail.IsBodyHtml = true;
-            mail.From = new MailAddress(Settings.Default.EmailUser);
-            string rec = userText.Text;
-            mail.To.Add(rec);
-            mail.Subject = "Security Camera Test";   // todo get via ui
-            mail.Body = "This is a test of your email server settings<br />";
-
-            SmtpServer.Port = (int) portNumeric.Value;
-            SmtpServer.Credentials = new System.Net.NetworkCredential(Settings.Default.EmailUser, Settings.Default.EmailPassword);
-            SmtpServer.EnableSsl = Settings.Default.EmailSSL;
-
-            SmtpServer.Send(mail);
-          }
+          destination = dlg.emailAddressText.Text;
         }
       }
-      catch (SmtpException ex)
+
+      if (!string.IsNullOrEmpty(destination))
       {
-        MessageBox.Show("There was an error sending a test email to your email address", "Email Error!");
-        Dbg.Write("Email exception: " + ex.ToString());
-        return;
+
+        try
+        {
+          using (MailMessage mail = new MailMessage())
+          {
+            using (SmtpClient SmtpServer = new SmtpClient(serverText.Text))
+            {
+              mail.BodyEncoding = Encoding.UTF8;
+              mail.IsBodyHtml = true;
+              mail.From = new MailAddress(userText.Text);
+              mail.To.Add(destination);
+              mail.Subject = "Security Camera Test";   // todo get via ui
+              mail.Body = "This is a test of your email server settings<br />";
+
+              SmtpServer.Port = (int)portNumeric.Value;
+              SmtpServer.Credentials = new System.Net.NetworkCredential(userText.Text, passwordText.Text);
+              SmtpServer.EnableSsl = sslCheck.Checked ;
+
+              SmtpServer.Send(mail);
+            }
+          }
+        }
+        catch (SmtpException ex)
+        {
+          MessageBox.Show("There was an error sending a test email to your email address", "Email Error!");
+          Dbg.Write("Email exception: " + ex.ToString());
+          return;
+        }
+
+
+        MessageBox.Show("Your test email was sent successfully!");
+      }
+      else
+      {
+        MessageBox.Show("You must enter a destination email address in order to run this test", "Error!");
       }
 
-      MessageBox.Show("Your test email was sent successfully!");
+
     }
   }
 }

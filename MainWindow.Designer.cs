@@ -85,6 +85,7 @@
       this.label9 = new System.Windows.Forms.Label();
       this.cameraCombo = new System.Windows.Forms.ComboBox();
       this.toolsPanel = new System.Windows.Forms.Panel();
+      this.motionOnlyCheckbox = new System.Windows.Forms.CheckBox();
       this.CleanupButton = new System.Windows.Forms.Button();
       this.mainPanel = new System.Windows.Forms.Panel();
       this.picturePanel = new System.Windows.Forms.Panel();
@@ -123,7 +124,7 @@
       this.buttonRight.BackgroundImage = global::SAAI.Properties.Resources.arrow_right;
       this.buttonRight.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
       this.buttonRight.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.buttonRight.Location = new System.Drawing.Point(635, 110);
+      this.buttonRight.Location = new System.Drawing.Point(696, 110);
       this.buttonRight.Name = "buttonRight";
       this.buttonRight.Size = new System.Drawing.Size(31, 23);
       this.buttonRight.TabIndex = 1;
@@ -137,7 +138,7 @@
       this.buttonLeft.BackgroundImage = global::SAAI.Properties.Resources.arrow_left;
       this.buttonLeft.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
       this.buttonLeft.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.buttonLeft.Location = new System.Drawing.Point(593, 110);
+      this.buttonLeft.Location = new System.Drawing.Point(654, 110);
       this.buttonLeft.Name = "buttonLeft";
       this.buttonLeft.Size = new System.Drawing.Size(31, 23);
       this.buttonLeft.TabIndex = 2;
@@ -225,7 +226,7 @@
       // fileNumberUpDown
       // 
       this.fileNumberUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.fileNumberUpDown.Location = new System.Drawing.Point(589, 84);
+      this.fileNumberUpDown.Location = new System.Drawing.Point(605, 84);
       this.fileNumberUpDown.Name = "fileNumberUpDown";
       this.fileNumberUpDown.Size = new System.Drawing.Size(57, 20);
       this.fileNumberUpDown.TabIndex = 7;
@@ -233,7 +234,7 @@
       // goToFileButton
       // 
       this.goToFileButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.goToFileButton.Location = new System.Drawing.Point(661, 81);
+      this.goToFileButton.Location = new System.Drawing.Point(677, 81);
       this.goToFileButton.Name = "goToFileButton";
       this.goToFileButton.Size = new System.Drawing.Size(58, 23);
       this.goToFileButton.TabIndex = 8;
@@ -245,7 +246,7 @@
       // 
       this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(402, 85);
+      this.label3.Location = new System.Drawing.Point(418, 87);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(47, 13);
       this.label3.TabIndex = 9;
@@ -254,7 +255,7 @@
       // currentNumberTextBox
       // 
       this.currentNumberTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.currentNumberTextBox.Location = new System.Drawing.Point(455, 82);
+      this.currentNumberTextBox.Location = new System.Drawing.Point(471, 82);
       this.currentNumberTextBox.Name = "currentNumberTextBox";
       this.currentNumberTextBox.ReadOnly = true;
       this.currentNumberTextBox.Size = new System.Drawing.Size(40, 20);
@@ -264,7 +265,7 @@
       // 
       this.label4.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label4.AutoSize = true;
-      this.label4.Location = new System.Drawing.Point(423, 27);
+      this.label4.Location = new System.Drawing.Point(439, 27);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(26, 13);
       this.label4.TabIndex = 11;
@@ -273,7 +274,7 @@
       // fileNameTextBox
       // 
       this.fileNameTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.fileNameTextBox.Location = new System.Drawing.Point(455, 24);
+      this.fileNameTextBox.Location = new System.Drawing.Point(471, 24);
       this.fileNameTextBox.Name = "fileNameTextBox";
       this.fileNameTextBox.ReadOnly = true;
       this.fileNameTextBox.Size = new System.Drawing.Size(264, 20);
@@ -283,7 +284,7 @@
       // 
       this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label5.AutoSize = true;
-      this.label5.Location = new System.Drawing.Point(409, 55);
+      this.label5.Location = new System.Drawing.Point(425, 55);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(40, 13);
       this.label5.TabIndex = 13;
@@ -292,7 +293,7 @@
       // goToFileTextBox
       // 
       this.goToFileTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.goToFileTextBox.Location = new System.Drawing.Point(455, 53);
+      this.goToFileTextBox.Location = new System.Drawing.Point(471, 53);
       this.goToFileTextBox.Name = "goToFileTextBox";
       this.goToFileTextBox.Size = new System.Drawing.Size(264, 20);
       this.goToFileTextBox.TabIndex = 14;
@@ -300,7 +301,7 @@
       // goToFileNameButton
       // 
       this.goToFileNameButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.goToFileNameButton.Location = new System.Drawing.Point(742, 50);
+      this.goToFileNameButton.Location = new System.Drawing.Point(752, 50);
       this.goToFileNameButton.Name = "goToFileNameButton";
       this.goToFileNameButton.Size = new System.Drawing.Size(58, 23);
       this.goToFileNameButton.TabIndex = 15;
@@ -355,7 +356,7 @@
       // reverseListButton
       // 
       this.reverseListButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.reverseListButton.Location = new System.Drawing.Point(742, 22);
+      this.reverseListButton.Location = new System.Drawing.Point(752, 22);
       this.reverseListButton.Name = "reverseListButton";
       this.reverseListButton.Size = new System.Drawing.Size(58, 23);
       this.reverseListButton.TabIndex = 20;
@@ -367,7 +368,7 @@
       // 
       this.showAreasOfInterestCheck.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.showAreasOfInterestCheck.AutoSize = true;
-      this.showAreasOfInterestCheck.Location = new System.Drawing.Point(452, 114);
+      this.showAreasOfInterestCheck.Location = new System.Drawing.Point(421, 111);
       this.showAreasOfInterestCheck.Name = "showAreasOfInterestCheck";
       this.showAreasOfInterestCheck.Size = new System.Drawing.Size(133, 17);
       this.showAreasOfInterestCheck.TabIndex = 22;
@@ -378,7 +379,7 @@
       // analyzeButton
       // 
       this.analyzeButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.analyzeButton.Location = new System.Drawing.Point(742, 110);
+      this.analyzeButton.Location = new System.Drawing.Point(752, 110);
       this.analyzeButton.Name = "analyzeButton";
       this.analyzeButton.Size = new System.Drawing.Size(58, 23);
       this.analyzeButton.TabIndex = 23;
@@ -388,7 +389,7 @@
       // 
       // liveCameraButton
       // 
-      this.liveCameraButton.Location = new System.Drawing.Point(6, 25);
+      this.liveCameraButton.Location = new System.Drawing.Point(13, 25);
       this.liveCameraButton.Name = "liveCameraButton";
       this.liveCameraButton.Size = new System.Drawing.Size(75, 23);
       this.liveCameraButton.TabIndex = 24;
@@ -398,7 +399,7 @@
       // 
       // presetButton
       // 
-      this.presetButton.Location = new System.Drawing.Point(6, 53);
+      this.presetButton.Location = new System.Drawing.Point(13, 53);
       this.presetButton.Name = "presetButton";
       this.presetButton.Size = new System.Drawing.Size(75, 23);
       this.presetButton.TabIndex = 31;
@@ -408,7 +409,7 @@
       // 
       // presetNumeric
       // 
-      this.presetNumeric.Location = new System.Drawing.Point(93, 56);
+      this.presetNumeric.Location = new System.Drawing.Point(100, 56);
       this.presetNumeric.Maximum = new decimal(new int[] {
             200,
             0,
@@ -442,9 +443,9 @@
       this.LiveOnDemandGroup.Controls.Add(this.liveCameraButton);
       this.LiveOnDemandGroup.Controls.Add(this.camLeftButton);
       this.LiveOnDemandGroup.Controls.Add(this.camUpButton);
-      this.LiveOnDemandGroup.Location = new System.Drawing.Point(989, 16);
+      this.LiveOnDemandGroup.Location = new System.Drawing.Point(995, 16);
       this.LiveOnDemandGroup.Name = "LiveOnDemandGroup";
-      this.LiveOnDemandGroup.Size = new System.Drawing.Size(267, 123);
+      this.LiveOnDemandGroup.Size = new System.Drawing.Size(261, 112);
       this.LiveOnDemandGroup.TabIndex = 33;
       this.LiveOnDemandGroup.TabStop = false;
       this.LiveOnDemandGroup.Text = "Live Image - On Demand";
@@ -453,7 +454,7 @@
       // 
       this.liveCheck.Appearance = System.Windows.Forms.Appearance.Button;
       this.liveCheck.AutoSize = true;
-      this.liveCheck.Location = new System.Drawing.Point(87, 25);
+      this.liveCheck.Location = new System.Drawing.Point(94, 25);
       this.liveCheck.Name = "liveCheck";
       this.liveCheck.Size = new System.Drawing.Size(70, 23);
       this.liveCheck.TabIndex = 33;
@@ -464,7 +465,7 @@
       // camZoomOut
       // 
       this.camZoomOut.Image = global::SAAI.Properties.Resources.zoom_out;
-      this.camZoomOut.Location = new System.Drawing.Point(160, 71);
+      this.camZoomOut.Location = new System.Drawing.Point(167, 71);
       this.camZoomOut.Name = "camZoomOut";
       this.camZoomOut.Size = new System.Drawing.Size(25, 25);
       this.camZoomOut.TabIndex = 30;
@@ -474,7 +475,7 @@
       // zoomInButton
       // 
       this.zoomInButton.Image = global::SAAI.Properties.Resources.zoom_in;
-      this.zoomInButton.Location = new System.Drawing.Point(222, 21);
+      this.zoomInButton.Location = new System.Drawing.Point(229, 21);
       this.zoomInButton.Name = "zoomInButton";
       this.zoomInButton.Size = new System.Drawing.Size(25, 25);
       this.zoomInButton.TabIndex = 29;
@@ -484,7 +485,7 @@
       // camDownButton
       // 
       this.camDownButton.Image = global::SAAI.Properties.Resources.arrow_down;
-      this.camDownButton.Location = new System.Drawing.Point(192, 70);
+      this.camDownButton.Location = new System.Drawing.Point(199, 70);
       this.camDownButton.Name = "camDownButton";
       this.camDownButton.Size = new System.Drawing.Size(25, 25);
       this.camDownButton.TabIndex = 26;
@@ -494,7 +495,7 @@
       // camRightButton
       // 
       this.camRightButton.Image = global::SAAI.Properties.Resources.arrow_right;
-      this.camRightButton.Location = new System.Drawing.Point(222, 46);
+      this.camRightButton.Location = new System.Drawing.Point(229, 46);
       this.camRightButton.Name = "camRightButton";
       this.camRightButton.Size = new System.Drawing.Size(25, 25);
       this.camRightButton.TabIndex = 28;
@@ -504,7 +505,7 @@
       // camLeftButton
       // 
       this.camLeftButton.Image = global::SAAI.Properties.Resources.arrow_left;
-      this.camLeftButton.Location = new System.Drawing.Point(162, 46);
+      this.camLeftButton.Location = new System.Drawing.Point(169, 46);
       this.camLeftButton.Name = "camLeftButton";
       this.camLeftButton.Size = new System.Drawing.Size(25, 25);
       this.camLeftButton.TabIndex = 27;
@@ -514,7 +515,7 @@
       // camUpButton
       // 
       this.camUpButton.Image = global::SAAI.Properties.Resources.arrow_up;
-      this.camUpButton.Location = new System.Drawing.Point(192, 24);
+      this.camUpButton.Location = new System.Drawing.Point(199, 24);
       this.camUpButton.Name = "camUpButton";
       this.camUpButton.Size = new System.Drawing.Size(25, 25);
       this.camUpButton.TabIndex = 25;
@@ -524,7 +525,7 @@
       // refreshButton
       // 
       this.refreshButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.refreshButton.Location = new System.Drawing.Point(742, 80);
+      this.refreshButton.Location = new System.Drawing.Point(752, 80);
       this.refreshButton.Name = "refreshButton";
       this.refreshButton.Size = new System.Drawing.Size(58, 23);
       this.refreshButton.TabIndex = 33;
@@ -550,7 +551,7 @@
       // cpuProgress
       // 
       this.cpuProgress.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.cpuProgress.Location = new System.Drawing.Point(893, 75);
+      this.cpuProgress.Location = new System.Drawing.Point(903, 75);
       this.cpuProgress.MarqueeAnimationSpeed = 300;
       this.cpuProgress.Name = "cpuProgress";
       this.cpuProgress.Size = new System.Drawing.Size(73, 15);
@@ -561,7 +562,7 @@
       // 
       this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label8.AutoSize = true;
-      this.label8.Location = new System.Drawing.Point(831, 77);
+      this.label8.Location = new System.Drawing.Point(841, 77);
       this.label8.Name = "label8";
       this.label8.Size = new System.Drawing.Size(56, 13);
       this.label8.TabIndex = 35;
@@ -571,7 +572,7 @@
       // 
       this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label9.AutoSize = true;
-      this.label9.Location = new System.Drawing.Point(855, 8);
+      this.label9.Location = new System.Drawing.Point(865, 8);
       this.label9.Name = "label9";
       this.label9.Size = new System.Drawing.Size(76, 13);
       this.label9.TabIndex = 36;
@@ -582,11 +583,10 @@
       this.cameraCombo.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.cameraCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.cameraCombo.FormattingEnabled = true;
-      this.cameraCombo.Location = new System.Drawing.Point(834, 28);
+      this.cameraCombo.Location = new System.Drawing.Point(844, 28);
       this.cameraCombo.Name = "cameraCombo";
       this.cameraCombo.Size = new System.Drawing.Size(132, 21);
       this.cameraCombo.TabIndex = 37;
-      this.cameraCombo.SelectedIndexChanged += new System.EventHandler(this.cameraCombo_SelectedIndexChanged);
       this.cameraCombo.SelectionChangeCommitted += new System.EventHandler(this.OnCameraSelected);
       // 
       // toolsPanel
@@ -595,6 +595,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.toolsPanel.AutoScroll = true;
       this.toolsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.toolsPanel.Controls.Add(this.motionOnlyCheckbox);
       this.toolsPanel.Controls.Add(this.CleanupButton);
       this.toolsPanel.Controls.Add(this.objectListView);
       this.toolsPanel.Controls.Add(this.LiveOnDemandGroup);
@@ -618,14 +619,28 @@
       this.toolsPanel.Controls.Add(this.buttonRight);
       this.toolsPanel.Controls.Add(this.goToFileNameButton);
       this.toolsPanel.Controls.Add(this.buttonLeft);
-      this.toolsPanel.Location = new System.Drawing.Point(0, 978);
+      this.toolsPanel.Location = new System.Drawing.Point(16, 978);
       this.toolsPanel.Name = "toolsPanel";
       this.toolsPanel.Size = new System.Drawing.Size(1285, 155);
       this.toolsPanel.TabIndex = 38;
       // 
+      // motionOnlyCheckbox
+      // 
+      this.motionOnlyCheckbox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+      this.motionOnlyCheckbox.Appearance = System.Windows.Forms.Appearance.Button;
+      this.motionOnlyCheckbox.AutoSize = true;
+      this.motionOnlyCheckbox.Location = new System.Drawing.Point(570, 110);
+      this.motionOnlyCheckbox.Name = "motionOnlyCheckbox";
+      this.motionOnlyCheckbox.Size = new System.Drawing.Size(76, 23);
+      this.motionOnlyCheckbox.TabIndex = 39;
+      this.motionOnlyCheckbox.Text = "Motion Only!";
+      this.motionOnlyCheckbox.UseVisualStyleBackColor = true;
+      this.motionOnlyCheckbox.CheckedChanged += new System.EventHandler(this.MotionOnlyCheckbox_CheckedChanged);
+      this.motionOnlyCheckbox.CheckStateChanged += new System.EventHandler(this.OnMotionCheckChanged);
+      // 
       // CleanupButton
       // 
-      this.CleanupButton.Location = new System.Drawing.Point(834, 106);
+      this.CleanupButton.Location = new System.Drawing.Point(844, 106);
       this.CleanupButton.Name = "CleanupButton";
       this.CleanupButton.Size = new System.Drawing.Size(122, 23);
       this.CleanupButton.TabIndex = 38;
@@ -812,7 +827,7 @@
       this.logFileToolStripMenuItem.Name = "logFileToolStripMenuItem";
       this.logFileToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
       this.logFileToolStripMenuItem.Text = "Log File";
-      this.logFileToolStripMenuItem.Click += new System.EventHandler(this.logFileToolStripMenuItem_Click);
+      this.logFileToolStripMenuItem.Click += new System.EventHandler(this.LogFileToolStripMenuItem_Click);
       // 
       // notifyIcon
       // 
@@ -821,7 +836,7 @@
       this.notifyIcon.BalloonTipTitle = "On Guard";
       this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
       this.notifyIcon.Text = "On Guard";
-      this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
+      this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon_MouseDoubleClick);
       // 
       // MainWindow
       // 
@@ -932,6 +947,7 @@
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.NotifyIcon notifyIcon;
     private System.Windows.Forms.ToolStripMenuItem logFileToolStripMenuItem;
+    private System.Windows.Forms.CheckBox motionOnlyCheckbox;
   }
 }
 

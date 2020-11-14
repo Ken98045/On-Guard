@@ -325,7 +325,7 @@
       this.mmsHelperButton.TabIndex = 40;
       this.mmsHelperButton.Text = "MMS/SMS Helper";
       this.mmsHelperButton.UseVisualStyleBackColor = true;
-      this.mmsHelperButton.Click += new System.EventHandler(this.mmsHelperButton_Click);
+      this.mmsHelperButton.Click += new System.EventHandler(this.MMSHelperButton_Click);
       // 
       // CreateEmailAddressDialog
       // 

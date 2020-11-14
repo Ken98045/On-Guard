@@ -80,7 +80,7 @@ namespace SAAI
       }
     }
 
-    private void mmsHelperButton_Click(object sender, EventArgs e)
+    private void MMSHelperButton_Click(object sender, EventArgs e)
     {
       using (MMS_Helper dlg = new MMS_Helper())
       {

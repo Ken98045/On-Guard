@@ -170,7 +170,7 @@
       this.testButton.TabIndex = 13;
       this.testButton.Text = "Test";
       this.testButton.UseVisualStyleBackColor = true;
-      this.testButton.Click += new System.EventHandler(this.testButton_Click);
+      this.testButton.Click += new System.EventHandler(this.TestButton_Click);
       // 
       // OutgoingEmailDialog
       // 

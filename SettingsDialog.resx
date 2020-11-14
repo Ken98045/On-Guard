@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label13.Text" xml:space="preserve">
-    <value>Minutes -  When motion is detected capture pictures this long.  Used for email.  It will be this long before a new motion event is created.  For Entry Door type events this value will be disregarded if the previous event was of lower priority.
+    <value>Minutes -  After motion is detected it will be this long before a new email motion event is created.  For Entry Door type events this value will be disregarded if the previous event was of lower priority.
 </value>
   </data>
   <data name="label8.Text" xml:space="preserve">

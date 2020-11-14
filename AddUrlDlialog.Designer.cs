@@ -102,7 +102,6 @@
             0,
             0,
             0});
-      this.urlCoolDownNumeric.ValueChanged += new System.EventHandler(this.urlCoolDownNumeric_ValueChanged);
       // 
       // label2
       // 
@@ -112,7 +111,6 @@
       this.label2.Size = new System.Drawing.Size(236, 13);
       this.label2.TabIndex = 28;
       this.label2.Text = "Minimum Time Between Notifications in Seconds";
-      this.label2.Click += new System.EventHandler(this.label2_Click);
       // 
       // label3
       // 
@@ -122,7 +120,6 @@
       this.label3.Size = new System.Drawing.Size(86, 13);
       this.label3.TabIndex = 29;
       this.label3.Text = "Cooldown Time: ";
-      this.label3.Click += new System.EventHandler(this.label3_Click);
       // 
       // label4
       // 

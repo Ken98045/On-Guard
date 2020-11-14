@@ -71,7 +71,7 @@
       // 
       // OKButton
       // 
-      this.OKButton.Location = new System.Drawing.Point(452, 245);
+      this.OKButton.Location = new System.Drawing.Point(281, 245);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
       this.OKButton.TabIndex = 3;
@@ -102,7 +102,7 @@
       this.label4.AutoSize = true;
       this.label4.Location = new System.Drawing.Point(232, 48);
       this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(213, 13);
+      this.label4.Size = new System.Drawing.Size(127, 13);
       this.label4.TabIndex = 6;
       this.label4.Text = "Product Name: On Guard";
       // 

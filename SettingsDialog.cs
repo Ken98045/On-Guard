@@ -64,7 +64,7 @@ namespace SAAI
 
     }
 
-    private async void testButton_Click(object sender, EventArgs e)
+    private async void TestButton_Click(object sender, EventArgs e)
     {
       // Create source.
       object O = Resources.ResourceManager.GetObject("OnGuard"); //Return an object from the image chan1.png in the project

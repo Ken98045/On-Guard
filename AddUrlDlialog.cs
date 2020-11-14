@@ -4,10 +4,10 @@ using System.Windows.Forms;
 namespace SAAI
 {
 
-/// <summary>
-/// A simple dialog to an an URL with a Cooldown.
-/// We could make the URLs global like the email addresses, but not for now
-/// </summary>
+  /// <summary>
+  /// A simple dialog to an an URL with a Cooldown.
+  /// We could make the URLs global like the email addresses, but not for now
+  /// </summary>
   public partial class AddUrlDialog : Form
   {
     public string Url { get; set; }
@@ -30,25 +30,10 @@ namespace SAAI
       DialogResult = DialogResult.Cancel;
     }
 
-        private void AutoFillButton_Click(object sender, EventArgs e)
-        {
+    private void AutoFillButton_Click(object sender, EventArgs e)
+    {
       urlText.Text = "{Auto Fill}";
-        }
-
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void urlCoolDownNumeric_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
     }
+
+  }
 }
