@@ -1223,9 +1223,18 @@ namespace SAAI
 
       HashSet<string> urlsToNotify = new HashSet<string>();
       //HashSet<string> activityType = new HashSet<string>();
+      string objectsFound = string.Empty;
 
+      bool first = true;
       foreach (var ooi in frame.Interesting)
       {
+        if (!first)
+        {
+          objectsFound += ", ";
+          first = false;
+        }
+        objectsFound += ooi.Area.AOIName;
+
         foreach (var notifyUrl in ooi.Area.Notifications.Urls)
         {
           if (notifyUrl.Active)
@@ -1243,23 +1252,26 @@ namespace SAAI
         }
       }
 
-
       foreach (var url in urlsToNotify)
       {
         string urlStr;
         if (url == "{Auto Fill}")
         {
-          urlStr = string.Format("http://{0}:{1}/admin?trigger&camera={2}&user={3}&pw={4}",
+          urlStr = string.Format("http://{0}:{1}/admin?trigger&camera={2}&user={3}&pw={4}&jpeg={5}&memo={6}",
             frame.Item.CamData.LiveContactData.CameraIPAddress,
             frame.Item.CamData.LiveContactData.Port,
             HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.ShortCameraName),
             HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.CameraUserName),
-            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.CameraPassword));
+            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.CameraPassword),
+            HttpUtility.UrlEncode(fileName),
+            objectsFound);
+
         }
         else
         {
           urlStr = url;
         }
+
         await NotifyUrl(urlStr).ConfigureAwait(false);
       }
 
@@ -1334,7 +1346,7 @@ namespace SAAI
       }
       catch (SmtpException ex)
       {
-        Dbg.Write("Email exception: " + ex.ToString());
+        Dbg.Write("MainWindow - NotifyViaEmail - Email exception: " + ex.ToString());
       }
     }
 
@@ -1822,7 +1834,7 @@ namespace SAAI
     async void InsertMotionIfNecessary(string fileName)
     {
 
-      string q = "IF NOT EXISTS(SELECT CreationTime FROM tblMotionFiles WHERE CreationTime = @creationTime AND FileName = @fileName)" + 
+      string q = "IF NOT EXISTS(SELECT CreationTime FROM tblMotionFiles WHERE CreationTime = @creationTime AND FileName = @fileName)" +
         "INSERT INTO tblMotionFiles(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
 
       using (SqlConnection con = new SqlConnection(_connectionString))
@@ -2069,7 +2081,7 @@ namespace SAAI
       }
       catch (SmtpException ex)
       {
-        Dbg.Write("Email exception: " + ex.ToString());
+        Dbg.Write("MainWindow - SendEmail - Email exception: " + ex.ToString());
       }
 
     }

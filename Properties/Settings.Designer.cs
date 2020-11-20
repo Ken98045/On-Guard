@@ -217,7 +217,7 @@ namespace SAAI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename={0}\\DBMotionFrames.mdf;Integr" +
-            "ated Security=True")]
+            "ated Security=True;Asynchronous Processing=True")]
         public string DBMotionFramesConnectionString {
             get {
                 return ((string)(this["DBMotionFramesConnectionString"]));

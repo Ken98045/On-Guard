@@ -51,7 +51,7 @@
       <Value Profile="(Default)">3</Value>
     </Setting>
     <Setting Name="DBMotionFramesConnectionString" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={0}\DBMotionFrames.mdf;Integrated Security=True</Value>
+      <Value Profile="(Default)">Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={0}\DBMotionFrames.mdf;Integrated Security=True;Asynchronous Processing=True</Value>
     </Setting>
   </Settings>
 </SettingsFile>
