@@ -118,6 +118,8 @@ namespace SAAI
           {
             area.Dispose();
           }
+
+          AOI.Dispose();
         }
 
         disposedValue = true;

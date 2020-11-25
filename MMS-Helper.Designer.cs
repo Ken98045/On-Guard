@@ -30,9 +30,9 @@
     {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MMS_Helper));
       this.mmsListView = new System.Windows.Forms.ListView();
-      this.CancelButton = new System.Windows.Forms.Button();
       this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.HelperCancelButton = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
       this.label2 = new System.Windows.Forms.Label();
       this.SuspendLayout();
@@ -56,17 +56,6 @@
       this.mmsListView.View = System.Windows.Forms.View.Details;
       this.mmsListView.ItemActivate += new System.EventHandler(this.OnActiveate);
       // 
-      // CancelButton
-      // 
-      this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.CancelButton.Location = new System.Drawing.Point(207, 792);
-      this.CancelButton.Name = "CancelButton";
-      this.CancelButton.Size = new System.Drawing.Size(75, 23);
-      this.CancelButton.TabIndex = 1;
-      this.CancelButton.Text = "Cancel";
-      this.CancelButton.UseVisualStyleBackColor = true;
-      this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
-      // 
       // columnHeader1
       // 
       this.columnHeader1.Text = "Cellular Provider";
@@ -76,6 +65,17 @@
       // 
       this.columnHeader2.Text = "Number Format";
       this.columnHeader2.Width = 240;
+      // 
+      // HelperCancelButton
+      // 
+      this.HelperCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.HelperCancelButton.Location = new System.Drawing.Point(207, 792);
+      this.HelperCancelButton.Name = "HelperCancelButton";
+      this.HelperCancelButton.Size = new System.Drawing.Size(75, 23);
+      this.HelperCancelButton.TabIndex = 1;
+      this.HelperCancelButton.Text = "Cancel";
+      this.HelperCancelButton.UseVisualStyleBackColor = true;
+      this.HelperCancelButton.Click += new System.EventHandler(this.CancelButton_Click);
       // 
       // label1
       // 
@@ -99,11 +99,10 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.CancelButton = this.CancelButton;
       this.ClientSize = new System.Drawing.Size(488, 827);
       this.Controls.Add(this.label2);
       this.Controls.Add(this.label1);
-      this.Controls.Add(this.CancelButton);
+      this.Controls.Add(this.HelperCancelButton);
       this.Controls.Add(this.mmsListView);
       this.Name = "MMS_Helper";
       this.Text = "MMS_Helper";
@@ -114,7 +113,7 @@
     #endregion
 
     private System.Windows.Forms.ListView mmsListView;
-    private System.Windows.Forms.Button CancelButton;
+    private System.Windows.Forms.Button HelperCancelButton;
     private System.Windows.Forms.ColumnHeader columnHeader1;
     private System.Windows.Forms.ColumnHeader columnHeader2;
     private System.Windows.Forms.Label label1;

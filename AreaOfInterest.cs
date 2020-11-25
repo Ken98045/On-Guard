@@ -51,6 +51,7 @@ namespace SAAI
     public MovementType MovementType { get; set; }  // Not yet implemented.  In the future you can optionally notify for objects moving to or away from the area
     public List<ObjectCharacteristics> SearchCriteria { get; set; }  // Defines the characteristic for each object type - confidence, overlap, minimum size, ...
     public Rectangle AreaRect;      // The area for the AOI, in original bitmap pixels, not screen pixels
+    public Point ZoneFocus { get; set; }  // The point in the area used to determine motion to/from the MovementType - Always relative to the area
     public AreaNotificationOption Notifications { get; set; } // URL and Email notifications, maybe others in the future
 
     public Guid ID { get; }   // a unique id for the area

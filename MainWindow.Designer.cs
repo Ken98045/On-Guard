@@ -25,6 +25,7 @@
         {
           components.Dispose();
         }
+        _allCameras.Dispose();
       }
       base.Dispose(disposing);
     }
@@ -629,7 +630,7 @@
       this.motionOnlyCheckbox.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.motionOnlyCheckbox.Appearance = System.Windows.Forms.Appearance.Button;
       this.motionOnlyCheckbox.AutoSize = true;
-      this.motionOnlyCheckbox.Location = new System.Drawing.Point(570, 110);
+      this.motionOnlyCheckbox.Location = new System.Drawing.Point(572, 110);
       this.motionOnlyCheckbox.Name = "motionOnlyCheckbox";
       this.motionOnlyCheckbox.Size = new System.Drawing.Size(76, 23);
       this.motionOnlyCheckbox.TabIndex = 39;

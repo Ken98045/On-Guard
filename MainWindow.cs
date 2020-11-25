@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -20,7 +18,6 @@ using System.Web;
 using System.Windows.Forms;
 using System.Data;
 using System.Data.SqlClient;
-using System.Windows.Forms.VisualStyles;
 using System.Data.Common;
 using System.Media;
 
@@ -38,7 +35,6 @@ namespace SAAI
     Bitmap _areaBackgroundBitmap;
     double _xScale;
     double _yScale;
-    bool _mouseInBounds;
     bool _showingLiveView;
     int _imagesBeingProcessed;
     int _numberOfImagesProcessed;
@@ -51,7 +47,7 @@ namespace SAAI
 
     bool _modifyingArea = false;    // Flag that we are modifying an area
     Rectangle _originalRect = Rectangle.Empty;
-    SemiTransparentBox _modifyBox;
+    ZoneBox _modifyBox;
     Guid _modifyingAreaID = Guid.Empty;
 
     List<ImageObject> _frameObjects = new List<ImageObject>();
@@ -319,7 +315,11 @@ namespace SAAI
       fileNumberUpDown.Minimum = (int)1;
     }
 
-
+    /// <summary>
+    /// Move to the next picture in sequence or next motion
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void ButtonRight_Click(object sender, EventArgs e)
     {
       int lastPosition = _current;
@@ -376,6 +376,11 @@ namespace SAAI
 
     }
 
+    /// <summary>
+    /// Move to the previous picture in sequence or in motion.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void ButtonLeft_Click(object sender, EventArgs e)
     {
       int lastPosition = _current;
@@ -633,6 +638,12 @@ namespace SAAI
       }
     }
 
+
+    /// <summary>
+    /// Got to a specific file named in the text box
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void GoToFileNameButton_Click(object sender, EventArgs e)
     {
       using (WaitCursor _ = new WaitCursor())
@@ -705,15 +716,21 @@ namespace SAAI
           break;
 
         case Keys.Escape:
-          _modifyingArea = false;
-          ControlMoverOrResizer.Stop(_modifyBox);
-          _modifyBox.Dispose();
-          _modifyBox = null;
-          StopEditingEnvironment();
+          if (null != _modifyBox)
+          {
+            _modifyingArea = false;
+            ControlMoverOrResizer.Stop(_modifyBox);
+            _modifyBox.Dispose();
+            _modifyBox = null;
+            StopEditingEnvironment();
+          }
           break;
 
         case Keys.F1:
-          AcceptAreaOfInterest();
+          if (null != _modifyBox)
+          {
+            AcceptAreaOfInterest();
+          }
           break;
       }
     }
@@ -721,7 +738,9 @@ namespace SAAI
     void AcceptAreaOfInterest()
     {
       Rectangle rect = new Rectangle(_modifyBox.Location.X, _modifyBox.Location.Y, _modifyBox.Width, _modifyBox.Height);
+      Point zoneFocus = _modifyBox.ZoneFocus;
       Rectangle scaledRect = ScaleScreenToData(rect);
+
       Rectangle areaRect = Rectangle.Intersect(scaledRect, new Rectangle(0, 0, BitmapResolution.XResolution, BitmapResolution.YResolution));
       _modifyingArea = false;
       ControlMoverOrResizer.Stop(_modifyBox);
@@ -732,7 +751,7 @@ namespace SAAI
       if (_modifyingAreaID == Guid.Empty)
       {
 
-        using (CreateAOI dlg = new CreateAOI(areaRect))
+        using (CreateAOI dlg = new CreateAOI(areaRect, zoneFocus))
         {
           DialogResult result = dlg.ShowDialog(pictureImage);
 
@@ -754,6 +773,7 @@ namespace SAAI
 
             case DialogResult.Yes:
               // An artificial response saying "edit this area"
+              dlg.Area.ZoneFocus = _modifyBox.ZoneFocus;
               _currentCamera.AOI.AddArea(dlg.Area); // Even if we are modifying an area bounds we still save it
               StartEditingArea(dlg.Area.ID);
               break;
@@ -764,6 +784,7 @@ namespace SAAI
       {
         // If we are already modifying an area all we do is update the rectangle
         _currentCamera.AOI[_modifyingAreaID].AreaRect = areaRect;
+        _currentCamera.AOI[_modifyingAreaID].ZoneFocus = zoneFocus;
         _currentCamera.AOI.Save();
         MessageBox.Show(pictureImage, "The boundaries of the current Area of Interest have been modified", "Area of Interest Changed!");
       }
@@ -843,7 +864,7 @@ namespace SAAI
           _modifyingArea = true;
           _modifyingAreaID = Guid.Empty;  // signal that this is a new area not a mods
 
-          _modifyBox = new SemiTransparentBox
+          _modifyBox = new ZoneBox()
           {
             Parent = pictureImage,
             Location = new Point(e.X, e.Y),
@@ -882,16 +903,11 @@ namespace SAAI
 
     private void OnMouseLeave(object sender, EventArgs e)
     {
-      _mouseInBounds = false;
-
     }
 
     private void OnMouseEnter(object sender, EventArgs e)
     {
-      _mouseInBounds = true;
     }
-
-
 
     private void ShowAreasOfInterestCheckChanged(object sender, EventArgs e)
     {
@@ -960,12 +976,14 @@ namespace SAAI
     {
       _modifyingAreaID = areaID;
       _modifyingArea = true;
-      _modifyBox = new SemiTransparentBox
+      _modifyBox = new ZoneBox()
       {
         Parent = pictureImage
       };
       Rectangle screenRect = ScaleDataToScreen(_currentCamera.AOI[_modifyingAreaID].AreaRect);
+      Point zoneFocus = _currentCamera.AOI[_modifyingAreaID].ZoneFocus;
       _modifyBox.Location = new Point(screenRect.X, screenRect.Y);
+      _modifyBox.ZoneFocus = zoneFocus;
       _modifyBox.Size = screenRect.Size;
       SetupEditingEnvironment();
       _modifyBox.Show();
@@ -1022,9 +1040,21 @@ namespace SAAI
       return result;
     }
 
+    public Point ScaleScreenToData(Point point)
+    {
+      Point result = new Point((int)Math.Round(point.X * _xScale), (int)Math.Round(point.Y * _yScale));
+      return result;
+    }
+
     public Rectangle ScaleDataToScreen(Rectangle rect)
     {
       Rectangle result = new Rectangle((int)Math.Round(rect.X / _xScale), (int)Math.Round(rect.Y / _yScale), (int)Math.Round(rect.Width / _xScale), (int)Math.Round(rect.Height / _yScale));
+      return result;
+    }
+
+    public Point ScaleDataToScreen(Point point)
+    {
+      Point result = new Point((int)Math.Round(point.X / _xScale), (int)Math.Round(point.Y / _yScale));
       return result;
     }
 
@@ -1841,7 +1871,7 @@ namespace SAAI
       {
         try
         {
-          await con.OpenAsync();
+          await con.OpenAsync().ConfigureAwait(false);
         }
         catch (SqlException ex)
         {
@@ -1859,7 +1889,7 @@ namespace SAAI
             cmd.Parameters.AddWithValue("@fileName", fi.Name);
             cmd.Parameters.AddWithValue("@path", _currentCamera.Path);
             cmd.Parameters.AddWithValue("@camera", _currentCamera.CameraPrefix);
-            await cmd.ExecuteScalarAsync();
+            await cmd.ExecuteScalarAsync().ConfigureAwait(false);
           }
           catch (DbException ex)
           {
@@ -2032,14 +2062,6 @@ namespace SAAI
 
     }
 
-    private void OnEmailsAccumulated(HashSet<string> emailAddresses, HashSet<string> files, HashSet<string> areaDescription)
-    {
-
-      foreach (string emailAddress in emailAddresses)
-      {
-        Task.Run(() => SendEmail(emailAddress, files, areaDescription));
-      }
-    }
 
     private static async Task SendEmail(string emailRecipients, HashSet<string> fileNames, HashSet<string> activityDesc)
     {

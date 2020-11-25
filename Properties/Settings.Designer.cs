@@ -73,17 +73,6 @@ namespace SAAI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public bool EmailSetup {
-            get {
-                return ((bool)(this["EmailSetup"]));
-            }
-            set {
-                this["EmailSetup"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string EmailServer {
             get {
@@ -224,6 +213,18 @@ namespace SAAI.Properties {
             }
             set {
                 this["DBMotionFramesConnectionString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EmailSetup {
+            get {
+                return ((bool)(this["EmailSetup"]));
+            }
+            set {
+                this["EmailSetup"] = value;
             }
         }
     }

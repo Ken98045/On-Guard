@@ -75,7 +75,7 @@ namespace SAAI
           bm.Save(mem, ImageFormat.Jpeg);
           mem.Position = 0;
           AIAnalyzer ai = new AIAnalyzer(ipAddresText.Text, (int) portNumeric.Value);
-          List<ImageObject> imageObjects = await ai.ProcessVideoImageViaAI(mem, "Test Image");
+          List<ImageObject> imageObjects = await ai.ProcessVideoImageViaAI(mem, "Test Image").ConfigureAwait(false);
           if (imageObjects != null && imageObjects.Count > 0)
           {
             MessageBox.Show(this, "Successfully processed a picture via DeepStack", "Success!");

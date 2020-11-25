@@ -18,10 +18,11 @@ namespace SAAI
     public bool DeleteItem { get; set; }
 
 
-    public CreateAOI(Rectangle imageRect) // The area on the actual image, not the display image
+    public CreateAOI(Rectangle imageRect, Point zoneFocus) // The area on the actual image, not the display image
     {
       InitializeComponent();
       Area = new AreaOfInterest();
+      Area.ZoneFocus = zoneFocus;
       _rectangle = imageRect;
       doorButton.Checked = true;
       anyActivityButton.Checked = true;
@@ -31,7 +32,8 @@ namespace SAAI
       widthNumeric.Value = imageRect.Width;
       heighNumeric.Value = imageRect.Height;
 
-      if (!Settings.Default.EmailSetup)
+
+      if (!Settings.Default.EmailSetup )
       {
         MessageBox.Show("In order to set Areas of Interest you must first set your email contact information.  This is a one time only requirement.");
         using (OutgoingEmailDialog dlg = new OutgoingEmailDialog())
@@ -47,6 +49,7 @@ namespace SAAI
       InitializeComponent();
       Area = area;
       _rectangle = area.AreaRect;
+      Area.ZoneFocus = area.ZoneFocus;
       Rectangle rect = area.AreaRect;
       doorButton.Checked = true;
       anyActivityButton.Checked = true;

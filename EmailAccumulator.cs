@@ -16,98 +16,13 @@ namespace SAAI
   /// A class to accumulate pictures over time in order to be able to send multiple pictures
   /// with one email and to allow multiple Area of Interest descriptions in on email.
   /// </summary>
-  public class EmailAccumulator : IDisposable
+  public class EmailAccumulator : FrameAccumulator
   {
-
-    public delegate void EmailAccumulated(SortedList<DateTime, Frame> frames);
-
-    SortedList<DateTime, Frame> Frames { get; }
-
-    readonly object _lock = new object();
-    public int TimeToAccumulate { get; set; }
-    System.Threading.Timer _timer;
-
 
     public EmailAccumulator(int timeToAccumulate)
     {
-      TimeToAccumulate = timeToAccumulate;
-      Frames = new SortedList<DateTime, Frame>();
-
+      Init(timeToAccumulate);
     }
-
-    public void Add(Frame frame)
-    {
-      lock (_lock)
-      {
-        Frames.Add(frame.Item.TimeEnqueued, frame);
-        if (null == _timer)
-        {
-          _timer = new System.Threading.Timer(DoneAccumulating, null, TimeToAccumulate * 1000, 0);
-        }
-      }
-
-    }
-
-    // This triggers when the timer expires or when we have the number of frames we were expecting
-    void DoneAccumulating(object obj)
-    {
-      lock (_lock)
-      {
-        _timer = null;
-
-        if (Frames.Values.Count > 0)
-        {
-          lock (Frames.Values[0].Item.CamData.AccumulateLock)
-          {
-            Frames.Values[0].Item.CamData.Accumulating = false;  // no longer accumulating
-            Frames.Values[0].Item.CamData.TimeLastAccumulatorCompleted = DateTime.Now;
-          }
-        }
-
-        List<Frame> aCopy = new List<Frame>();
-
-        foreach (Frame frame in Frames.Values)
-        {
-          Frame cpy = new Frame(frame);
-          aCopy.Add(cpy);
-        }
-
-        ProcessAccumulatedEmails(aCopy);
-        Frames.Clear();
-
-        /*if (null != OnEmailAccumulated)
-        {
-          OnEmailAccumulated(Frames);
-        }*/
-      }
-    }
-
-
-    private bool disposedValue = false; // To detect redundant calls
-
-    protected virtual void Dispose(bool disposing)
-    {
-      if (!disposedValue)
-      {
-        if (disposing)
-        {
-          lock (_lock)
-          {
-            if (_timer != null) _timer.Dispose();
-          }
-        }
-
-        disposedValue = true;
-      }
-    }
-
-
-    public void Dispose()
-    {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
 
 
     // Here we have a list of frames (sorted in picture date/time).
@@ -120,7 +35,7 @@ namespace SAAI
     // are included before others (in the limited email space).  From there we prefer interesting
     // pictures.  If we have room we include the others..
     // Note type frames list is in sorted order since it was copied from a SortedList
-    async static void ProcessAccumulatedEmails(List<Frame> frames)
+    public override void ProcessAccumulatedFrames(List<Frame> frames)
     {
 
       // The priority and interesting list contain indexes into the frames list
@@ -496,9 +411,5 @@ namespace SAAI
       }
 
     }
-
-
-
   }
-
 }
