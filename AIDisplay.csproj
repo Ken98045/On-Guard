@@ -33,8 +33,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <TargetCulture>en-US</TargetCulture>
     <SuiteName>On Guard</SuiteName>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.1.3.0</ApplicationVersion>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>1.1.3.2</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
