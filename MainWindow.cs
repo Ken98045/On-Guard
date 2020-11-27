@@ -461,7 +461,13 @@ namespace SAAI
             {
               if (result != null && result.Count > 0)
               {
-                InsertMotionIfNecessary(file);
+
+                FrameAnalyzer analyzer = new FrameAnalyzer(_currentCamera.AOI, result);
+                AnalysisResult analysisResult = analyzer.AnalyzeFrame();
+                if (analysisResult.InterestingObjects.Count > 0)
+                {
+                  InsertMotionIfNecessary(file);
+                }
               }
             }
 
@@ -1700,7 +1706,7 @@ namespace SAAI
                   FrameAnalyzer analyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound);
                   interesting = analyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
                   frame.Interesting = interesting;
-                  Dbg.Write(interesting.Count.ToString() + " interesting objects found");
+                  Dbg.Write(interesting.Count.ToString() + " interesting objects found in file: " + pendingItem.PendingFile);
                   if (frame.Interesting.Count > 0)
                   {
                     var myTask = Task.Run(() => AddToMotionFramesTable(pendingItem));
@@ -1812,8 +1818,11 @@ namespace SAAI
                     result = Path.Combine(path, file);
                     readSuccess = true;
                   }
+                  else
+                  {
+                    break;
+                  }
                 }
-
               }
               catch (SqlException ex)
               {
@@ -1863,7 +1872,7 @@ namespace SAAI
     /// <returns></returns>
     async void InsertMotionIfNecessary(string fileName)
     {
-
+      Dbg.Write("MainWindow - InsertMotionIfNecessary - File: " + fileName);
       string q = "IF NOT EXISTS(SELECT CreationTime FROM tblMotionFiles WHERE CreationTime = @creationTime AND FileName = @fileName)" +
         "INSERT INTO tblMotionFiles(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
 
