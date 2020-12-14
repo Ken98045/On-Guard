@@ -17,12 +17,12 @@ namespace SAAI
 
     // The registration marks allow for slight adjustment of the Areas of Interest if the camera moves.  It also 
     // Allows you to put the camera back at the correct position if you move the camera (accidently or on purpose)
-    public int RegistrationX { get; set; }  
+    public int RegistrationX { get; set; }
     public int RegistrationY { get; set; }
 
     public bool Monitoring { get; set; }  // Monitor the camera path for new images created by motion.
 
-    public CameraContactData LiveContactData { get; set; } 
+    public CameraContactData LiveContactData { get; set; }
 
 
     [NonSerialized]
@@ -50,10 +50,14 @@ namespace SAAI
     [field: NonSerializedAttribute()]
     public object AccumulateLock { get; set; } = new object();
 
+    [field: NonSerializedAttribute()]
+    public History FrameHistory { get; set; }
+
 
     public CameraData(string prefix, string path)
     {
       ID = Guid.NewGuid();
+      FrameHistory =  new History(600);
       LiveContactData = new CameraContactData();
       CameraPrefix = prefix;
       Path = path;
@@ -64,6 +68,7 @@ namespace SAAI
     public CameraData(CameraData src)
     {
       ID = Guid.NewGuid();
+      FrameHistory = new History(600);
       CameraPrefix = src.CameraPrefix;
       Path = src.Path;
       RegistrationX = src.RegistrationX;
@@ -82,6 +87,11 @@ namespace SAAI
     public void Init()
     {
       AccumulateLock = new object();
+      if (null == FrameHistory)
+      {
+        FrameHistory = new History(600);
+      }
+
       AOI = new AreasOfInterestCollection(CameraPrefix);
       CameraEmailAccumulator = new EmailAccumulator(Settings.Default.MaxEventTime);
       if (Monitoring)
@@ -120,6 +130,7 @@ namespace SAAI
           }
 
           AOI.Dispose();
+          FrameHistory.Dispose();
         }
 
         disposedValue = true;

@@ -105,6 +105,7 @@
       this.cameraSettingsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.outgoingEmailServerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.addEditEmailAddressesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.mQTTSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.logFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -774,7 +775,8 @@
             this.applicationSettingsToolStripMenuItem,
             this.cameraSettingsToolStripMenuItem1,
             this.outgoingEmailServerToolStripMenuItem1,
-            this.addEditEmailAddressesToolStripMenuItem1});
+            this.addEditEmailAddressesToolStripMenuItem1,
+            this.mQTTSettingsToolStripMenuItem});
       this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
       this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(46, 20);
       this.toolsToolStripMenuItem1.Text = "&Tools";
@@ -806,6 +808,13 @@
       this.addEditEmailAddressesToolStripMenuItem1.Size = new System.Drawing.Size(209, 22);
       this.addEditEmailAddressesToolStripMenuItem1.Text = "Add/Edit Email Addresses";
       this.addEditEmailAddressesToolStripMenuItem1.Click += new System.EventHandler(this.AddEditEmailAddressesToolStripMenuItem_Click);
+      // 
+      // mQTTSettingsToolStripMenuItem
+      // 
+      this.mQTTSettingsToolStripMenuItem.Name = "mQTTSettingsToolStripMenuItem";
+      this.mQTTSettingsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.mQTTSettingsToolStripMenuItem.Text = "MQTT Settings";
+      this.mQTTSettingsToolStripMenuItem.Click += new System.EventHandler(this.MQTTSettingsToolStripMenuItem_Click);
       // 
       // helpToolStripMenuItem1
       // 
@@ -949,6 +958,7 @@
         private System.Windows.Forms.NotifyIcon notifyIcon;
     private System.Windows.Forms.ToolStripMenuItem logFileToolStripMenuItem;
     private System.Windows.Forms.CheckBox motionOnlyCheckbox;
+    private System.Windows.Forms.ToolStripMenuItem mQTTSettingsToolStripMenuItem;
   }
 }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SAAI.Properties;
 
 namespace SAAI
 {
@@ -75,11 +76,17 @@ namespace SAAI
   {
     public List<UrlOptions> Urls { get; }
     public List<string> Email { get; }
+    public bool UseMQTT { get; set; }
+
+    [field: NonSerializedAttribute()]
+    public MQTTCoolDown mqttCooldown {get; set;}
 
     public AreaNotificationOption()
     {
       Urls = new List<UrlOptions>();
       Email = new List<string>();
+      UseMQTT = false;
+      mqttCooldown = new MQTTCoolDown(Settings.Default.MQTTCoolDown);
     }
   }
 }

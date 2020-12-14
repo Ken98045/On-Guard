@@ -21,8 +21,11 @@ namespace SAAI
     public CreateAOI(Rectangle imageRect, Point zoneFocus) // The area on the actual image, not the display image
     {
       InitializeComponent();
-      Area = new AreaOfInterest();
-      Area.ZoneFocus = zoneFocus;
+      Area = new AreaOfInterest
+      {
+        ZoneFocus = zoneFocus
+      };
+
       _rectangle = imageRect;
       doorButton.Checked = true;
       anyActivityButton.Checked = true;

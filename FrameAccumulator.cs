@@ -16,8 +16,10 @@ namespace SAAI
 
     protected readonly object _lock = new object();
     public int TimeToAccumulate { get; set; }
+    protected bool DisposedValue { get => disposedValue; set => disposedValue = value; }
+
     protected System.Threading.Timer _timer;
-    protected bool disposedValue = false; // To detect redundant calls
+    private bool disposedValue = false; // To detect redundant calls
 
 
     public void Init(int timeToAccumulate)
@@ -73,7 +75,7 @@ namespace SAAI
 
     protected virtual void Dispose(bool disposing)
     {
-      if (!disposedValue)
+      if (!DisposedValue)
       {
         if (disposing)
         {
@@ -83,7 +85,7 @@ namespace SAAI
           }
         }
 
-        disposedValue = true;
+        DisposedValue = true;
       }
     }
 

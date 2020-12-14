@@ -45,6 +45,7 @@
       this.panel1 = new System.Windows.Forms.Panel();
       this.panel2 = new System.Windows.Forms.Panel();
       this.bs = new System.Windows.Forms.BindingSource(this.components);
+      this.UseMQTTBox = new System.Windows.Forms.CheckBox();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.bs)).BeginInit();
@@ -122,7 +123,7 @@
       // 
       // okButton
       // 
-      this.okButton.Location = new System.Drawing.Point(332, 309);
+      this.okButton.Location = new System.Drawing.Point(328, 345);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 0;
@@ -133,7 +134,7 @@
       // cancelButton
       // 
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(418, 309);
+      this.cancelButton.Location = new System.Drawing.Point(414, 345);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 1;
@@ -153,7 +154,7 @@
       // 
       // addEmailButton
       // 
-      this.addEmailButton.Location = new System.Drawing.Point(42, 208);
+      this.addEmailButton.Location = new System.Drawing.Point(80, 208);
       this.addEmailButton.Name = "addEmailButton";
       this.addEmailButton.Size = new System.Drawing.Size(75, 23);
       this.addEmailButton.TabIndex = 0;
@@ -173,7 +174,7 @@
       // 
       // removeEmailButton
       // 
-      this.removeEmailButton.Location = new System.Drawing.Point(123, 210);
+      this.removeEmailButton.Location = new System.Drawing.Point(161, 210);
       this.removeEmailButton.Name = "removeEmailButton";
       this.removeEmailButton.Size = new System.Drawing.Size(75, 23);
       this.removeEmailButton.TabIndex = 1;
@@ -198,7 +199,7 @@
       this.panel2.Controls.Add(this.emailsList);
       this.panel2.Controls.Add(this.addEmailButton);
       this.panel2.Controls.Add(this.removeEmailButton);
-      this.panel2.Location = new System.Drawing.Point(485, 37);
+      this.panel2.Location = new System.Drawing.Point(483, 37);
       this.panel2.Name = "panel2";
       this.panel2.Size = new System.Drawing.Size(319, 250);
       this.panel2.TabIndex = 30;
@@ -207,13 +208,29 @@
       // 
       this.bs.CurrentChanged += new System.EventHandler(this.bs_CurrentChanged);
       // 
+      // UseMQTTBox
+      // 
+      this.UseMQTTBox.Appearance = System.Windows.Forms.Appearance.Button;
+      this.UseMQTTBox.AutoSize = true;
+      this.UseMQTTBox.BackColor = System.Drawing.SystemColors.Control;
+      this.UseMQTTBox.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+      this.UseMQTTBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.UseMQTTBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.UseMQTTBox.Location = new System.Drawing.Point(334, 303);
+      this.UseMQTTBox.Name = "UseMQTTBox";
+      this.UseMQTTBox.Size = new System.Drawing.Size(132, 26);
+      this.UseMQTTBox.TabIndex = 0;
+      this.UseMQTTBox.Text = "Notify Using MQTT";
+      this.UseMQTTBox.UseVisualStyleBackColor = false;
+      // 
       // NotificationOptionsDialog
       // 
       this.AcceptButton = this.okButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(825, 341);
+      this.ClientSize = new System.Drawing.Size(816, 376);
+      this.Controls.Add(this.UseMQTTBox);
       this.Controls.Add(this.panel2);
       this.Controls.Add(this.panel1);
       this.Controls.Add(this.cancelButton);
@@ -221,7 +238,7 @@
       this.Controls.Add(this.label3);
       this.Controls.Add(this.label2);
       this.Name = "NotificationOptionsDialog";
-      this.Text = "Define Notification Options for Activity";
+      this.Text = "6";
       this.panel1.ResumeLayout(false);
       this.panel2.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.bs)).EndInit();
@@ -247,5 +264,6 @@
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.ColumnHeader columnHeader1;
-    }
+    private System.Windows.Forms.CheckBox UseMQTTBox;
+  }
 }

@@ -53,6 +53,7 @@ namespace SAAI
         }
       }
 
+      UseMQTTBox.Checked = area.Notifications.UseMQTT;
     }
 
 
@@ -80,6 +81,8 @@ namespace SAAI
           _area.Notifications.Email.Add(email.Text);
         }
       }
+
+      _area.Notifications.UseMQTT = UseMQTTBox.Checked;
 
       DialogResult = DialogResult.OK;
     }

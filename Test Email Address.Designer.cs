@@ -1,6 +1,6 @@
 ﻿namespace SAAI
 {
-  partial class Test_Email_Address
+  partial class TestEmailAddress
   {
     /// <summary>
     /// Required designer variable.

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using SAAI.Properties;
 
 namespace SAAI
 {
@@ -92,6 +93,12 @@ namespace SAAI
       else
       {
         _areas = new SortedDictionary<Guid, AreaOfInterest>();
+      }
+
+      // There is only one cooldown for the MQTT per area - kept in Notifications for now
+      foreach (var area in _areas.Values)
+      {
+        area.Notifications.mqttCooldown = new MQTTCoolDown(Settings.Default.MQTTCoolDown);
       }
     }
 

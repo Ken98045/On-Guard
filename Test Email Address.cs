@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace SAAI
 {
-  public partial class Test_Email_Address : Form
+  public partial class TestEmailAddress : Form
   {
-    public Test_Email_Address()
+    public TestEmailAddress()
     {
       InitializeComponent();
     }

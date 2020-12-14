@@ -65,6 +65,37 @@ namespace SAAI
 
 
   /// <summary>
+  /// There is only one MQTT cooldown timer per camera, per area of interest.  We do keep a dictionary of them
+  /// because it is cheap to do so, and easier.
+  /// </summary>
+  /// 
+
+  [Serializable]
+  public class MQTTCoolDown : CooldownTracker
+  {
+
+    public MQTTCoolDown(int cooldown)
+    {
+      CooldownTime = cooldown;
+      LastSent = DateTime.Now - TimeSpan.FromHours(2);
+    }
+
+    public MQTTCoolDown(UrlCooldown src)
+    {
+      CooldownTime = src.CooldownTime;
+      LastSent = src.LastSent;  // TODO: remove
+    }
+
+    public int TimeSinceSend()
+    {
+      TimeSpan rem = DateTime.Now - LastSent;
+      return (int)rem.TotalSeconds;
+    }
+  }
+
+
+
+  /// <summary>
   /// The Email and Url cooldown classes are separate because the functionality may change
   /// </summary>
   /// 

@@ -20,6 +20,14 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.Common;
 using System.Media;
+using MQTTnet.Client;
+using MQTTnet.Client.Connecting;
+using MQTTnet.Client.Disconnecting;
+using MQTTnet.Client.Publishing;
+using MQTTnet.Client.Options;
+using MQTTnet.Client.Receiving;
+using MQTTnet.Client.Subscribing;
+using MQTTnet.Client.Unsubscribing;
 
 namespace SAAI
 {
@@ -42,6 +50,8 @@ namespace SAAI
 
     readonly MostRecentCollection _recentTimes = new MostRecentCollection(10);
     readonly object _fileLock = new object();
+
+    static Frame _test;
 
     AllCameras _allCameras;
 
@@ -284,7 +294,7 @@ namespace SAAI
 
       _current = 0;
 
-      pictureImage.Image = null;
+      // pictureImage.Image = null;
       _showObjects = true;
       showAreasOfInterestCheck.Checked = false;
 
@@ -520,7 +530,7 @@ namespace SAAI
       }
 
       objectListView.Items.Clear();
-      pictureImage.Image = null;
+      // pictureImage.Image = null;
 
       Bitmap tmp = new Bitmap(stream);  // We don't know the width & height so we can't use a method that defines pixel format
       _screenBitmap = new Bitmap(tmp);  // The bitmap from the disk is 24bpp,the copy is 32bpp (and, yes, it matters)
@@ -1271,6 +1281,15 @@ namespace SAAI
         }
         objectsFound += ooi.Area.AOIName;
 
+        if (ooi.Area.Notifications.UseMQTT)
+        {
+          /*if (ooi.Area.Notifications.mqttCooldown.CooldownExpired())
+          {*/
+            await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame).ConfigureAwait(false);
+            ooi.Area.Notifications.mqttCooldown.Reset();
+          /*}*/
+        }
+
         foreach (var notifyUrl in ooi.Area.Notifications.Urls)
         {
           if (notifyUrl.Active)
@@ -1307,6 +1326,8 @@ namespace SAAI
         {
           urlStr = url;
         }
+
+        _test = frame;
 
         await NotifyUrl(urlStr).ConfigureAwait(false);
       }
@@ -1707,6 +1728,7 @@ namespace SAAI
                   interesting = analyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
                   frame.Interesting = interesting;
                   Dbg.Write(interesting.Count.ToString() + " interesting objects found in file: " + pendingItem.PendingFile);
+                  frame.Item.CamData.FrameHistory.Add(frame);
                   if (frame.Interesting.Count > 0)
                   {
                     var myTask = Task.Run(() => AddToMotionFramesTable(pendingItem));
@@ -1872,7 +1894,6 @@ namespace SAAI
     /// <returns></returns>
     async void InsertMotionIfNecessary(string fileName)
     {
-      Dbg.Write("MainWindow - InsertMotionIfNecessary - File: " + fileName);
       string q = "IF NOT EXISTS(SELECT CreationTime FROM tblMotionFiles WHERE CreationTime = @creationTime AND FileName = @fileName)" +
         "INSERT INTO tblMotionFiles(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
 
@@ -2287,6 +2308,27 @@ namespace SAAI
       {
         motionOnlyCheckbox.BackColor = SystemColors.Control;
       }
+    }
+
+    private void MQTTSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
+      using (MQTTSettings mqttSettings = new MQTTSettings())
+      {
+        DialogResult result = mqttSettings.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          Dbg.Write("MQTT Settings Saved");
+        }
+      }  
+    }
+
+
+    private void Button1_Click(object sender, EventArgs e)
+    {
+      _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Before);
+      _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.After);
+      _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Both);
     }
   }
 

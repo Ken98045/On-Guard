@@ -146,7 +146,7 @@ namespace SAAI
       {
 
         // Cars/Trucks are unique since they are often parked.  We don't want to pick them up as object if not moving
-        List<ImageObject> people = GetPeople(images);
+        // List<ImageObject> people = GetPeople(images);
         List<ImageObject> vehicles = GetUniqueVehicles(images);
 
         if (CompareToLastVehicleList(vehicles))

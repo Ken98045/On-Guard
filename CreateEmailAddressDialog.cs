@@ -82,7 +82,7 @@ namespace SAAI
 
     private void MMSHelperButton_Click(object sender, EventArgs e)
     {
-      using (MMS_Helper dlg = new MMS_Helper())
+      using (MMSHelper dlg = new MMSHelper())
       {
         DialogResult result = dlg.ShowDialog();
         if (DialogResult != DialogResult.Cancel)

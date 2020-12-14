@@ -33,8 +33,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <TargetCulture>en-US</TargetCulture>
     <SuiteName>On Guard</SuiteName>
-    <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>1.1.3.2</ApplicationVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.1.6.1</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -103,6 +103,9 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MQTTnet">
+      <HintPath>.\MQTTnet.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -159,11 +162,20 @@
     <Compile Include="CameraContactData.cs" />
     <Compile Include="CameraData.cs" />
     <Compile Include="FrameAccumulator.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="HIstory.cs" />
     <Compile Include="MMS-Helper.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MMS-Helper.Designer.cs">
       <DependentUpon>MMS-Helper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MQTTPublish.cs" />
+    <Compile Include="MQTTSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MQTTSettings.Designer.cs">
+      <DependentUpon>MQTTSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="ZoneBox.cs">
       <SubType>Component</SubType>
@@ -277,6 +289,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MMS-Helper.resx">
       <DependentUpon>MMS-Helper.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MQTTSettings.resx">
+      <DependentUpon>MQTTSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NotificationOptionsDialog.resx">
       <DependentUpon>NotificationOptionsDialog.cs</DependentUpon>

@@ -60,7 +60,7 @@ namespace SAAI
       DialogResult destinationResult;
       string destination = string.Empty;
 
-      using (Test_Email_Address dlg = new Test_Email_Address())
+      using (TestEmailAddress dlg = new TestEmailAddress())
       {
         destinationResult = dlg.ShowDialog();
         if (destinationResult == DialogResult.OK)

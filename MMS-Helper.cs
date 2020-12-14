@@ -29,10 +29,10 @@ C-Spire: number@cspire1.com
 Page Plus: number@vtext.com
 */
 
-  public partial class MMS_Helper : Form
+  public partial class MMSHelper : Form
   {
     public string SelectedMMS = string.Empty;
-    public MMS_Helper()
+    public MMSHelper()
     {
       InitializeComponent();
 

@@ -227,5 +227,65 @@ namespace SAAI.Properties {
                 this["EmailSetup"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MQTTServerAddress {
+            get {
+                return ((string)(this["MQTTServerAddress"]));
+            }
+            set {
+                this["MQTTServerAddress"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1883")]
+        public int MQTTPort {
+            get {
+                return ((int)(this["MQTTPort"]));
+            }
+            set {
+                this["MQTTPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MQTTUser {
+            get {
+                return ((string)(this["MQTTUser"]));
+            }
+            set {
+                this["MQTTUser"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MQTTPassword {
+            get {
+                return ((string)(this["MQTTPassword"]));
+            }
+            set {
+                this["MQTTPassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int MQTTCoolDown {
+            get {
+                return ((int)(this["MQTTCoolDown"]));
+            }
+            set {
+                this["MQTTCoolDown"] = value;
+            }
+        }
     }
 }
