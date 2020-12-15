@@ -23,6 +23,7 @@ namespace SAAI
       UserText.Text = Settings.Default.MQTTUser;
       PasswordText.Text = Settings.Default.MQTTPassword;
       CoolDownNumeric.Value = Settings.Default.MQTTCoolDown;
+      UseSecureLinkCheck.Checked = Settings.Default.MQTTUseSecureLink;
 
       if (PortNumeric.Value == 0)
       {
@@ -43,6 +44,7 @@ namespace SAAI
       Settings.Default.MQTTUser = UserText.Text;
       Settings.Default.MQTTPassword = PasswordText.Text;
       Settings.Default.MQTTCoolDown = (int) CoolDownNumeric.Value;
+      Settings.Default.MQTTUseSecureLink = UseSecureLinkCheck.Checked;
 
       Settings.Default.Save();
 

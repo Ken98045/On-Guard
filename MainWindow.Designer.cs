@@ -25,7 +25,11 @@
         {
           components.Dispose();
         }
-        _allCameras.Dispose();
+
+        if (null != _allCameras)
+        {
+          _allCameras.Dispose();
+        }
       }
       base.Dispose(disposing);
     }

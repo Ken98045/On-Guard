@@ -23,6 +23,7 @@ namespace SAAI
     static Dbg()
     {
       string path = Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData);
+      path = Path.Combine(path, "OnGuard");
       if (!Directory.Exists(path))
       {
         Directory.CreateDirectory(path);

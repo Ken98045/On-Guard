@@ -83,13 +83,8 @@ namespace SAAI
       string mqttUser = Settings.Default.MQTTUser;
       string mqttPassword = Settings.Default.MQTTPassword;
       int mqttPort = Settings.Default.MQTTPort;
-
-      bool mqttSecure = false;
-      if (!string.IsNullOrEmpty(Settings.Default.MQTTPassword) && !string.IsNullOrEmpty(Settings.Default.MQTTUser))
-      {
-        mqttSecure = true;
-      }
-
+      bool mqttSecure = Settings.Default.MQTTUseSecureLink;
+    
 
       var messageBuilder = new MqttClientOptionsBuilder()
         .WithClientId(clientId)

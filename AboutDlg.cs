@@ -18,7 +18,7 @@ namespace SAAI
     public AboutDlg()
     {
       InitializeComponent();
-      assemblyLabel.Text = String.Format("Version {0}", AssemblyVersion);
+      //assemblyLabel.Text = String.Format("Version {0}", AssemblyVersion);
     }
 
     public static string AssemblyTitle

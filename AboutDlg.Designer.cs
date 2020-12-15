@@ -33,9 +33,9 @@
       this.label1 = new System.Windows.Forms.Label();
       this.label2 = new System.Windows.Forms.Label();
       this.OKButton = new System.Windows.Forms.Button();
-      this.assemblyLabel = new System.Windows.Forms.Label();
       this.label3 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
+      this.label5 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
       this.SuspendLayout();
       // 
@@ -79,15 +79,6 @@
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
       // 
-      // assemblyLabel
-      // 
-      this.assemblyLabel.AutoSize = true;
-      this.assemblyLabel.Location = new System.Drawing.Point(283, 73);
-      this.assemblyLabel.Name = "assemblyLabel";
-      this.assemblyLabel.Size = new System.Drawing.Size(35, 13);
-      this.assemblyLabel.TabIndex = 4;
-      this.assemblyLabel.Text = "label3";
-      // 
       // label3
       // 
       this.label3.AutoSize = true;
@@ -106,15 +97,24 @@
       this.label4.TabIndex = 6;
       this.label4.Text = "Product Name: On Guard";
       // 
+      // label5
+      // 
+      this.label5.AutoSize = true;
+      this.label5.Location = new System.Drawing.Point(278, 73);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(31, 13);
+      this.label5.TabIndex = 7;
+      this.label5.Text = "1.2.1";
+      // 
       // AboutDlg
       // 
       this.AcceptButton = this.OKButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(637, 277);
+      this.Controls.Add(this.label5);
       this.Controls.Add(this.label4);
       this.Controls.Add(this.label3);
-      this.Controls.Add(this.assemblyLabel);
       this.Controls.Add(this.OKButton);
       this.Controls.Add(this.label2);
       this.Controls.Add(this.label1);
@@ -133,8 +133,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button OKButton;
-        private System.Windows.Forms.Label assemblyLabel;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-    }
+    private System.Windows.Forms.Label label5;
+  }
 }

@@ -1724,16 +1724,22 @@ namespace SAAI
 
                 if (null != pendingItem.CamData)
                 {
-                  FrameAnalyzer analyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound);
-                  interesting = analyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
-                  frame.Interesting = interesting;
-                  Dbg.Write(interesting.Count.ToString() + " interesting objects found in file: " + pendingItem.PendingFile);
-                  frame.Item.CamData.FrameHistory.Add(frame);
-                  if (frame.Interesting.Count > 0)
+                  _analyzer.RemoveInvalidObjects(result.ObjectsFound);  // This may remove items from the list, and may zero it out
+                  if (result.ObjectsFound.Count > 0)
                   {
-                    var myTask = Task.Run(() => AddToMotionFramesTable(pendingItem));
+                    FrameAnalyzer frameAnalyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound);
+                    interesting = frameAnalyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
+
+
+                    frame.Interesting = interesting;
+                    Dbg.Write(interesting.Count.ToString() + " interesting objects found in file: " + pendingItem.PendingFile);
+                    frame.Item.CamData.FrameHistory.Add(frame);
+                    if (frame.Interesting.Count > 0)
+                    {
+                      var myTask = Task.Run(() => AddToMotionFramesTable(pendingItem));
+                    }
+                    Notify(frame);
                   }
-                  Notify(frame);
                 }
               }
 
@@ -2274,6 +2280,7 @@ namespace SAAI
     private void LogFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
       string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+      path = Path.Combine(path, "OnGuard");
       if (!Directory.Exists(path))
       {
         Directory.CreateDirectory(path);

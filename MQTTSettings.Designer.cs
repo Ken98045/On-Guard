@@ -44,6 +44,8 @@ namespace SAAI
       this.CoolDownNumeric = new System.Windows.Forms.NumericUpDown();
       this.label6 = new System.Windows.Forms.Label();
       this.label7 = new System.Windows.Forms.Label();
+      this.label8 = new System.Windows.Forms.Label();
+      this.UseSecureLinkCheck = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.PortNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.CoolDownNumeric)).BeginInit();
       this.SuspendLayout();
@@ -61,7 +63,7 @@ namespace SAAI
       // 
       this.label2.AutoSize = true;
       this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label2.Location = new System.Drawing.Point(33, 152);
+      this.label2.Location = new System.Drawing.Point(34, 152);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(200, 20);
       this.label2.TabIndex = 1;
@@ -79,7 +81,7 @@ namespace SAAI
       // 
       this.label3.AutoSize = true;
       this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label3.Location = new System.Drawing.Point(181, 202);
+      this.label3.Location = new System.Drawing.Point(182, 202);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(52, 20);
       this.label3.TabIndex = 3;
@@ -106,7 +108,7 @@ namespace SAAI
       // 
       this.label4.AutoSize = true;
       this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label4.Location = new System.Drawing.Point(125, 248);
+      this.label4.Location = new System.Drawing.Point(126, 248);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(108, 20);
       this.label4.TabIndex = 5;
@@ -131,7 +133,7 @@ namespace SAAI
       // 
       this.label5.AutoSize = true;
       this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label5.Location = new System.Drawing.Point(125, 296);
+      this.label5.Location = new System.Drawing.Point(138, 296);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(96, 20);
       this.label5.TabIndex = 7;
@@ -139,7 +141,7 @@ namespace SAAI
       // 
       // OKButton
       // 
-      this.OKButton.Location = new System.Drawing.Point(204, 394);
+      this.OKButton.Location = new System.Drawing.Point(204, 434);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
       this.OKButton.TabIndex = 4;
@@ -150,7 +152,7 @@ namespace SAAI
       // cancelButton
       // 
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(301, 394);
+      this.cancelButton.Location = new System.Drawing.Point(301, 434);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 5;
@@ -160,7 +162,7 @@ namespace SAAI
       // 
       // CoolDownNumeric
       // 
-      this.CoolDownNumeric.Location = new System.Drawing.Point(245, 338);
+      this.CoolDownNumeric.Location = new System.Drawing.Point(245, 378);
       this.CoolDownNumeric.Maximum = new decimal(new int[] {
             3600,
             0,
@@ -184,7 +186,7 @@ namespace SAAI
       // 
       this.label6.AutoSize = true;
       this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label6.Location = new System.Drawing.Point(28, 335);
+      this.label6.Location = new System.Drawing.Point(41, 378);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(193, 20);
       this.label6.TabIndex = 9;
@@ -192,13 +194,32 @@ namespace SAAI
       // 
       // label7
       // 
-      this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label7.Location = new System.Drawing.Point(14, 330);
+      this.label7.AutoSize = true;
+      this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label7.Location = new System.Drawing.Point(348, 378);
       this.label7.Name = "label7";
-      this.label7.Size = new System.Drawing.Size(557, 47);
+      this.label7.Size = new System.Drawing.Size(120, 16);
       this.label7.TabIndex = 10;
-      this.label7.Text = "If both the User Name and Password entries are NOT blank then On Guard will use a" +
-    " secure connection to the MQTT server.\r\n";
+      this.label7.Text = "Not Currently Used";
+      // 
+      // label8
+      // 
+      this.label8.AutoSize = true;
+      this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label8.Location = new System.Drawing.Point(88, 336);
+      this.label8.Name = "label8";
+      this.label8.Size = new System.Drawing.Size(146, 20);
+      this.label8.TabIndex = 11;
+      this.label8.Text = "Use Secure Link:";
+      // 
+      // UseSecureLinkCheck
+      // 
+      this.UseSecureLinkCheck.AutoSize = true;
+      this.UseSecureLinkCheck.Location = new System.Drawing.Point(245, 338);
+      this.UseSecureLinkCheck.Name = "UseSecureLinkCheck";
+      this.UseSecureLinkCheck.Size = new System.Drawing.Size(15, 14);
+      this.UseSecureLinkCheck.TabIndex = 12;
+      this.UseSecureLinkCheck.UseVisualStyleBackColor = true;
       // 
       // MQTTSettings
       // 
@@ -206,7 +227,9 @@ namespace SAAI
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(581, 426);
+      this.ClientSize = new System.Drawing.Size(581, 469);
+      this.Controls.Add(this.UseSecureLinkCheck);
+      this.Controls.Add(this.label8);
       this.Controls.Add(this.label7);
       this.Controls.Add(this.CoolDownNumeric);
       this.Controls.Add(this.label6);
@@ -246,5 +269,7 @@ namespace SAAI
     private System.Windows.Forms.NumericUpDown CoolDownNumeric;
     private System.Windows.Forms.Label label6;
     private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.Label label8;
+    private System.Windows.Forms.CheckBox UseSecureLinkCheck;
   }
 }

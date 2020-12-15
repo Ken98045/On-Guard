@@ -287,5 +287,17 @@ namespace SAAI.Properties {
                 this["MQTTCoolDown"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MQTTUseSecureLink {
+            get {
+                return ((bool)(this["MQTTUseSecureLink"]));
+            }
+            set {
+                this["MQTTUseSecureLink"] = value;
+            }
+        }
     }
 }

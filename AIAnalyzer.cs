@@ -16,8 +16,8 @@ namespace SAAI
   {
 
     public bool Success { get; set; }
-    public ImageObject[] Predictions { get; set;   }
-         
+    public ImageObject[] Predictions { get; set; }
+
   }
 
   public class ImageObject
@@ -58,11 +58,11 @@ namespace SAAI
   /// /// </summary>
   class AIAnalyzer
   {
-    readonly List<ImageObject> _previousVehicles = new List<ImageObject>();  // The often don't move (parked)
+    List<ImageObject> _previousVehicles = new List<ImageObject>();  // The often don't move (parked)
     readonly List<ImageObject> _previousPeople = new List<ImageObject>();  // The usually do move, but
     readonly private object _fileLock = new object();
 
-    readonly string _AILocation; 
+    readonly string _AILocation;
     readonly int _AIPort;
 
 
@@ -136,8 +136,8 @@ namespace SAAI
     }*/
 
 
-    // For possible future use
-    public List<ImageObject> AnalyzeImage(List<ImageObject> images)
+
+    public void RemoveInvalidObjects(List<ImageObject> images)
     {
 
       List<ImageObject> intestingImages = new List<ImageObject>();
@@ -145,82 +145,181 @@ namespace SAAI
       if (images != null)
       {
 
-        // Cars/Trucks are unique since they are often parked.  We don't want to pick them up as object if not moving
-        // List<ImageObject> people = GetPeople(images);
-        List<ImageObject> vehicles = GetUniqueVehicles(images);
-
-        if (CompareToLastVehicleList(vehicles))
-        {
-          // motion = true;
-        }
-
+        //First, weed out any vehicles that are overlapps within this picture
+        // This often happens when the same vehicles is identified as both a car and a truck (SUV, pickup, cars/trucks at an angle)
+        RemoveDuplicateVehiclesInImage(images);
+        RemoveUnmovedVehicles(images);  // Now, remove vehicles that haven't moved
       }
 
-
-      return intestingImages;
     }
 
-    // AND update the _previousVehicles list
-    bool CompareToLastVehicleList(List<ImageObject> cars)
+
+
+    // This returns a list of vehicles that are unique to this frame.  
+    // However, it has an intended side effect: If 2 separate vehicles share the same space but are classified differently (car/truck/etc.)
+    // then we ARTIFICIALLY boost the confidence level of the one we select. 
+    // For instance the same object (almost the same outline) may be .50 confident of being a car and 65% confident of being a truck.
+    // The AI isn't sure which it is but it is pretty damn sure it IS a vehicle of some sort.  
+    // I really dislike doing this, but with the way the AI is now it is better to cheat an be accurate than not cheat and give a misleading result;
+    public void RemoveDuplicateVehiclesInImage(List<ImageObject> objectList)
     {
-      bool movement = false;
-      int i;
-      bool found;
-      int overlap;
+      List<ImageObject> vehicles = new List<ImageObject>();
 
-      foreach (var car in cars)
+      if (objectList != null && objectList.Count > 0)
       {
-        found = false;
 
-        for (i = 0; i < _previousVehicles.Count; i++)
+        foreach (ImageObject obj in objectList)
         {
-          overlap = GetOverlap(car, _previousVehicles[i]);
-          if (overlap > 90)
+          if (IsVehicle(obj))
           {
-            // If there is a large overlap there might have just been a shadow change, etc that the AI picked up
-            // Therefore we will assume it hasn't moved
-            found = true;
+            if (obj.Confidence > 0.45)
+            {
+              vehicles.Add(obj);
+            }
           }
         }
 
-        if (!found)
-        {
-          _previousVehicles.Add(car);
-          movement = true;
-        }
-      }
 
-      i = 0;
-      found = false;
-      while (i < _previousVehicles.Count)
-      {
-        foreach (var car in cars)
+        if (vehicles.Count == 1)
         {
-          overlap = GetOverlap(car, _previousVehicles[i]);
-          if (overlap > 90)
-          {
-            // If there is a large overlap there might have just been a shadow change, etc that the AI picked up
-            // Therefore we will assume it hasn't moved
-            found = true;
-            break;
-          }
-        }
-
-        if (!found)
-        {
-          _previousVehicles.RemoveAt(i);
-          movement = true;
+          // nothing to do, just a little clearer
         }
         else
         {
-          found = false;
-          i++;
+          int i = 0;
+
+
+          // Almost always you won't see more than 2 definitions for one real object, but it can happen
+          while (i < vehicles.Count - 1)
+          {
+
+            bool removedOne = false;
+
+
+            for (int j = i + 1; j < vehicles.Count; j++)
+            {
+
+              if (vehicles[i].Label != vehicles[j].Label)    // If A == car && B == car we never weed them
+              {
+                int overlap = GetOverlap(vehicles[i], vehicles[j]);
+
+                if (overlap > 90)
+                {
+                  // OK, here we assume that they are the same object.
+                  // We add which ever has the highest confidence level to the result;
+
+                  if (vehicles[i].Confidence > vehicles[j].Confidence)
+                  {
+                    vehicles[i].Confidence = vehicles[i].Confidence + (vehicles[i].Confidence - vehicles[j].Confidence) / 2.0;
+                    if (vehicles[i].Confidence >= 1.0)
+                    {
+                      vehicles[i].Confidence = 0.9999999;
+                    }
+                    objectList.RemoveAll(obj => obj.ID == vehicles[j].ID);  // and remove it from the passed list
+                    vehicles.RemoveAt(j);
+                    removedOne = true;
+                    break;
+                  }
+                  else
+                  {
+                    vehicles[j].Confidence = vehicles[j].Confidence + (vehicles[j].Confidence - vehicles[i].Confidence) / 2.0;
+                    if (vehicles[j].Confidence >= 1.0)
+                    {
+                      vehicles[j].Confidence = 0.9999999;
+                    }
+
+                    objectList.RemoveAll(obj => obj.ID == vehicles[i].ID);  // and remove it from the passed list
+                    vehicles.RemoveAt(i);
+                    removedOne = true;
+                    break;
+                  }
+                }
+              }
+            }
+
+            if (removedOne)
+            {
+              i = 0; // Since we removed on we need to start over
+            }
+            else
+            {
+              i++;  // and on to the next
+            }
+          }
         }
+      }
+    }
+
+
+    void RemoveUnmovedVehicles(List<ImageObject> objectList)
+    {
+      List<ImageObject> vehicles = new List<ImageObject>();
+
+      // Yes, once again we get a list of vehicles
+      if (objectList != null && objectList.Count > 0)
+      {
+
+        foreach (ImageObject obj in objectList)
+        {
+          if (IsVehicle(obj))
+          {
+            if (obj.Confidence > 0.45)
+            {
+              vehicles.Add(obj);
+            }
+          }
+        }
+
+        List<ImageObject> allFoundVehicles = new List<ImageObject>(vehicles);
+
+
+        int i = 0;
+
+        while (i < vehicles.Count)
+        {
+
+          bool removedOne = false;
+
+          for (int j = 0; j < _previousVehicles.Count; j++)
+          {
+
+            if (vehicles[i].Label == vehicles[j].Label)    // In this case we only remove  objects that are the same - A = car, B = car (not 100%, but what can we do?)
+            {
+              int overlap = GetOverlap(vehicles[i], _previousVehicles[j]);
+
+              if (overlap > 90)
+              {
+                // OK, here we assume that they are the same object.
+                // We add which ever has the highest confidence level to the result;
+
+                objectList.RemoveAll(obj => obj.ID == vehicles[i].ID);  // and remove it from the passed list
+                vehicles.RemoveAt(i);   // we are done with this vehicle
+                removedOne = true;
+                break;
+              }
+            }
+          }
+
+          if (removedOne)
+          {
+            i = 0; // Since we removed on we need to start over
+          }
+          else
+          {
+            i++;  // and on to the next
+          }
+        }
+
+        // if we have any remaining vehicles add them to the list of previously seen ones
+        _previousVehicles.Clear();
+        _previousVehicles = new List<ImageObject>(allFoundVehicles);  // because all vehicles we found are now "previous"
+
       }
 
 
-      return movement;
     }
+
+
 
     // I am assuming that if there are people then there is motion.
     // We could further refine this by comparing movement by tracking people in the last image set
@@ -255,82 +354,6 @@ namespace SAAI
     }
 
 
-    public List<ImageObject> GetUniqueVehicles(List<ImageObject> objectList)
-    {
-      List<ImageObject> vehicles = new List<ImageObject>();
-
-      if (objectList != null && objectList.Count > 0)
-      {
-
-        foreach (ImageObject obj in objectList)
-        {
-          if (IsVehicle(obj))
-          {
-            if (obj.Confidence > 0.40)
-            {
-              vehicles.Add(obj);
-            }
-          }
-        }
-
-
-        // Also, often the AI cannot tell the difference between cars/trucks/busses
-        // However, they are all vehicles, and that is mostly what we care about.
-        // So, first we go through the list and see if each vehicle is the same or not so it may list them more than once
-        // We (very roughly) deterimine if they are the same vehicle.  The outline of a vehicle may vary depending
-        // on what type of vehicle the AI considers it to be.
-        // Note that the problem is worse because the AI may give it an artifically low confidence level on multiple
-        // images because it can't tell specifically what kind of vehicle it may be (2 .45 confidence levels, but overall
-        // the confidence is is some kind of vehicle may be MUCH higher.
-
-        bool removedOne = false;
-
-        int index = 0;
-
-        if (vehicles.Count == 1)
-        {
-        }
-        else
-        {
-          while (index < vehicles.Count - 1)
-          {
-
-            do
-            {
-
-              ImageObject target = vehicles[index];
-
-              for (int i = index + 1; i < vehicles.Count; i++)
-              {
-
-                int overlap = GetOverlap(target, vehicles[i]);
-                if (overlap > 90)
-                {
-                  vehicles.RemoveAt(i); // remove the duplicate
-                  removedOne = true;
-                  break;
-                }
-              }
-
-              if (removedOne)
-              {
-                removedOne = false;
-                break;
-              }
-              else
-              {
-                ++index;
-              }
-
-            } while (vehicles.Count > 1 && removedOne);
-
-          }
-        }
-
-      }
-      return vehicles;
-
-    }
 
     /*
      * 
@@ -341,7 +364,7 @@ namespace SAAI
         var image_data = File.OpenRead(image_path);
         request.Add(new StreamContent(image_data), "image", Path.GetFileName(image_path));
         var output = 
- 
+
      * 
      */
 
@@ -540,7 +563,7 @@ namespace SAAI
 
     /*
      * rect.Intersect(secondRectangle);
-var percentage = (rect.Width * rect.Height) * 100f/(firstRect.Width * firstRect.Height);*/
+  var percentage = (rect.Width * rect.Height) * 100f/(firstRect.Width * firstRect.Height);*/
 
     static int GetOverlap(ImageObject obj1, ImageObject obj2)
     {
