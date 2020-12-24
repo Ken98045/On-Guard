@@ -35,13 +35,16 @@ namespace SAAI
 
     public CameraContactData(CameraContactData src)
     {
-      CameraIPAddress = src.CameraIPAddress;
-      Port = src.Port;
-      ShortCameraName = src.ShortCameraName;
-      CameraUserName = src.CameraUserName;
-      CameraPassword = src.CameraPassword;
-      CameraXResolution = src.CameraXResolution;
-      CameraYResolution = src.CameraYResolution;
+      if (null != src)
+      {
+        CameraIPAddress = src.CameraIPAddress;
+        Port = src.Port;
+        ShortCameraName = src.ShortCameraName;
+        CameraUserName = src.CameraUserName;
+        CameraPassword = src.CameraPassword;
+        CameraXResolution = src.CameraXResolution;
+        CameraYResolution = src.CameraYResolution;
+      }
     }
 
   }

@@ -80,6 +80,8 @@ namespace SAAI
 
     [field: NonSerializedAttribute()]
     public MQTTCoolDown mqttCooldown {get; set;}
+    public string NoMotionUrlNotify { get; set; }
+    public bool NoMotionMQTTNotify { get; set; }
 
     public AreaNotificationOption()
     {

@@ -16,6 +16,7 @@
       if (disposing && (components != null))
       {
         components.Dispose();
+        AllCameraData.Dispose();
       }
       base.Dispose(disposing);
     }
@@ -72,6 +73,11 @@
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
+      this.motionPage = new System.Windows.Forms.TabPage();
+      this.label20 = new System.Windows.Forms.Label();
+      this.label23 = new System.Windows.Forms.Label();
+      this.MotionTimeoutNumeric = new System.Windows.Forms.NumericUpDown();
+      this.label24 = new System.Windows.Forms.Label();
       this.configurationTabControl.SuspendLayout();
       this.imagesTab.SuspendLayout();
       this.liveCameraTab.SuspendLayout();
@@ -79,6 +85,8 @@
       ((System.ComponentModel.ISupportInitialize)(this.cameraXResolutionNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).BeginInit();
       this.monitorTab.SuspendLayout();
+      this.motionPage.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.MotionTimeoutNumeric)).BeginInit();
       this.SuspendLayout();
       // 
       // configurationTabControl
@@ -86,6 +94,7 @@
       this.configurationTabControl.Controls.Add(this.imagesTab);
       this.configurationTabControl.Controls.Add(this.liveCameraTab);
       this.configurationTabControl.Controls.Add(this.monitorTab);
+      this.configurationTabControl.Controls.Add(this.motionPage);
       this.configurationTabControl.Location = new System.Drawing.Point(15, 14);
       this.configurationTabControl.Name = "configurationTabControl";
       this.configurationTabControl.SelectedIndex = 0;
@@ -541,6 +550,73 @@
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
       // 
+      // motionPage
+      // 
+      this.motionPage.Controls.Add(this.label24);
+      this.motionPage.Controls.Add(this.MotionTimeoutNumeric);
+      this.motionPage.Controls.Add(this.label23);
+      this.motionPage.Controls.Add(this.label20);
+      this.motionPage.Location = new System.Drawing.Point(4, 22);
+      this.motionPage.Name = "motionPage";
+      this.motionPage.Padding = new System.Windows.Forms.Padding(3);
+      this.motionPage.Size = new System.Drawing.Size(726, 428);
+      this.motionPage.TabIndex = 4;
+      this.motionPage.Text = "Motion Timeout";
+      this.motionPage.UseVisualStyleBackColor = true;
+      // 
+      // label20
+      // 
+      this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label20.Location = new System.Drawing.Point(16, 28);
+      this.label20.Name = "label20";
+      this.label20.Size = new System.Drawing.Size(704, 79);
+      this.label20.TabIndex = 0;
+      this.label20.Text = "This Page Controls How to Determine If There is No Motion After Motion Has Been D" +
+    "etected.\r\n\r\nThis Settings is Camera Specific.\r\n";
+      // 
+      // label23
+      // 
+      this.label23.AutoSize = true;
+      this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label23.Location = new System.Drawing.Point(18, 144);
+      this.label23.Name = "label23";
+      this.label23.Size = new System.Drawing.Size(145, 15);
+      this.label23.TabIndex = 1;
+      this.label23.Text = "Timeout Period: (sec)";
+      // 
+      // MotionTimeoutNumeric
+      // 
+      this.MotionTimeoutNumeric.Location = new System.Drawing.Point(168, 144);
+      this.MotionTimeoutNumeric.Maximum = new decimal(new int[] {
+            600,
+            0,
+            0,
+            0});
+      this.MotionTimeoutNumeric.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+      this.MotionTimeoutNumeric.Name = "MotionTimeoutNumeric";
+      this.MotionTimeoutNumeric.Size = new System.Drawing.Size(77, 20);
+      this.MotionTimeoutNumeric.TabIndex = 2;
+      this.MotionTimeoutNumeric.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+      this.MotionTimeoutNumeric.ValueChanged += new System.EventHandler(this.OnMotionTimeoutChanged);
+      // 
+      // label24
+      // 
+      this.label24.AutoSize = true;
+      this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label24.Location = new System.Drawing.Point(265, 144);
+      this.label24.Name = "label24";
+      this.label24.Size = new System.Drawing.Size(431, 15);
+      this.label24.TabIndex = 3;
+      this.label24.Text = "Keep Waiting This Long Before Timeout (There is no more activity)";
+      // 
       // CameraConfigurationDialog
       // 
       this.AcceptButton = this.okButton;
@@ -563,6 +639,9 @@
       ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).EndInit();
       this.monitorTab.ResumeLayout(false);
       this.monitorTab.PerformLayout();
+      this.motionPage.ResumeLayout(false);
+      this.motionPage.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.MotionTimeoutNumeric)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -612,5 +691,10 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.Label currentCameraLabel;
-    }
+    private System.Windows.Forms.TabPage motionPage;
+    private System.Windows.Forms.Label label24;
+    private System.Windows.Forms.NumericUpDown MotionTimeoutNumeric;
+    private System.Windows.Forms.Label label23;
+    private System.Windows.Forms.Label label20;
+  }
 }

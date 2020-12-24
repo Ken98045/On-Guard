@@ -14,3 +14,6 @@ dotnet_diagnostic.CA1303.severity = none
 
 # CS0168: Variable is declared but never used
 dotnet_diagnostic.CS0168.severity = none
+
+# Default severity for analyzer diagnostics with category 'Globalization'
+dotnet_analyzer_diagnostic.category-Globalization.severity = none

@@ -14,6 +14,7 @@ namespace SAAI
 /// 1.  Allows you to create a camera (and delete one).  The camera contains a prefix (for the images) and a path to the images
 /// 2.  Define the contact information for a camera "Live" (really on demand) view
 /// 3.  Turn on and off monitoring of the camera.  When a camera is created monitoring is on
+/// 4.  Determine the time period before a motion timeout event
 /// 
 /// TODO: maybe use databinding
 /// </summary>
@@ -24,12 +25,12 @@ namespace SAAI
   public partial class CameraConfigurationDialog : Form
   {
     public CameraData CurrentCam { get; set; }
-    public AllCameras AllCameraData { get; set; }
+    public CameraCollection AllCameraData { get; set; }
 
-    public CameraConfigurationDialog(AllCameras allCameras)
+    public CameraConfigurationDialog(CameraCollection allCameras)
     {
       InitializeComponent();
-      AllCameraData = new AllCameras(allCameras); // we need a deep copy so we can avoid makinge changes to the current camera data in case the dialog is canceled
+      AllCameraData = new CameraCollection(allCameras); // we need a deep copy so we can avoid makinge changes to the current camera data in case the dialog is canceled
 
 
       foreach (var page in configurationTabControl.TabPages.Cast<TabPage>())
@@ -87,34 +88,40 @@ namespace SAAI
       CurrentCam.LiveContactData.CameraPassword = cameraPasswordText.Text;
       CurrentCam.LiveContactData.CameraXResolution = (int)cameraXResolutionNumeric.Value;
       CurrentCam.LiveContactData.CameraYResolution = (int)cameraYResolutionNumeric.Value;
+      CurrentCam.NoMotionTimeout = (int) MotionTimeoutNumeric.Value;
     }
 
     void UpdateControlsFromCamera()
     {
       if (null != CurrentCam)
-      { }
-      cameraIPAddressText.Text = CurrentCam.LiveContactData.CameraIPAddress;
-      portNumeric.Value = CurrentCam.LiveContactData.Port;
-      cameraNameText.Text = CurrentCam.LiveContactData.ShortCameraName;
-      cameraUserText.Text = CurrentCam.LiveContactData.CameraUserName;
-      cameraPasswordText.Text = CurrentCam.LiveContactData.CameraPassword;
-      cameraXResolutionNumeric.Value = CurrentCam.LiveContactData.CameraXResolution;
-      cameraYResolutionNumeric.Value = CurrentCam.LiveContactData.CameraYResolution;
-      currentCameraLabel.Text = "Current Camera: " + CurrentCam.CameraPrefix + " at: " + CurrentCam.Path;
-
-      monitorListView.Items.Clear();
-      foreach (ListViewItem camItem in availableCamerasList.Items)
       {
-        CameraData data = (CameraData)camItem.Tag;
-        ListViewItem monitorItem = new ListViewItem(new string[] { data.CameraPrefix, data.Path })
+        cameraIPAddressText.Text = CurrentCam.LiveContactData.CameraIPAddress;
+        portNumeric.Value = CurrentCam.LiveContactData.Port;
+        cameraNameText.Text = CurrentCam.LiveContactData.ShortCameraName;
+        cameraUserText.Text = CurrentCam.LiveContactData.CameraUserName;
+        cameraPasswordText.Text = CurrentCam.LiveContactData.CameraPassword;
+        cameraXResolutionNumeric.Value = CurrentCam.LiveContactData.CameraXResolution;
+        cameraYResolutionNumeric.Value = CurrentCam.LiveContactData.CameraYResolution;
+        currentCameraLabel.Text = "Current Camera: " + CurrentCam.CameraPrefix + " at: " + CurrentCam.Path;
+        if (CurrentCam.NoMotionTimeout > 0)
         {
-          Tag = data
-        };
-        monitorListView.Items.Add(monitorItem);
+          MotionTimeoutNumeric.Value = CurrentCam.NoMotionTimeout;
+        }
 
-        if (data.Monitoring)
+        monitorListView.Items.Clear();
+        foreach (ListViewItem camItem in availableCamerasList.Items)
         {
-          monitorItem.Checked = true;
+          CameraData data = (CameraData)camItem.Tag;
+          ListViewItem monitorItem = new ListViewItem(new string[] { data.CameraPrefix, data.Path })
+          {
+            Tag = data
+          };
+          monitorListView.Items.Add(monitorItem);
+
+          if (data.Monitoring)
+          {
+            monitorItem.Checked = true;
+          }
         }
       }
     }
@@ -154,6 +161,10 @@ namespace SAAI
         cameraXResolutionNumeric.Value = CurrentCam.LiveContactData.CameraXResolution;
         cameraYResolutionNumeric.Value = CurrentCam.LiveContactData.CameraYResolution;
         cameraNameText.Text = CurrentCam.LiveContactData.ShortCameraName;
+        if (CurrentCam.NoMotionTimeout > 0)
+        {
+          MotionTimeoutNumeric.Value = CurrentCam.NoMotionTimeout;
+        }
 
       }
 
@@ -305,6 +316,11 @@ namespace SAAI
       {
         availableCamerasList.Select();
       }
+    }
+
+    private void OnMotionTimeoutChanged(object sender, EventArgs e)
+    {
+      if (null != CurrentCam) CurrentCam.NoMotionTimeout = (int) MotionTimeoutNumeric.Value;
     }
   }
 }

@@ -22,14 +22,7 @@ namespace SAAI
     // DebugWriter.Write
     static Dbg()
     {
-      string path = Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData);
-      path = Path.Combine(path, "OnGuard");
-      if (!Directory.Exists(path))
-      {
-        Directory.CreateDirectory(path);
-      }
-
-      path = Path.Combine(path, "OnGuard.txt");
+      string path = Storage.GetFilePath("OnGuard.txt");
       s_LogWriter = new StreamWriter(path, true);
       processThread.Start();
     }

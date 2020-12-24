@@ -23,6 +23,7 @@ namespace SAAI
     public bool Monitoring { get; set; }  // Monitor the camera path for new images created by motion.
 
     public CameraContactData LiveContactData { get; set; }
+    public int NoMotionTimeout { get; set; }
 
 
     [NonSerialized]
@@ -36,6 +37,9 @@ namespace SAAI
 
     [field: NonSerializedAttribute()]
     public EmailAccumulator CameraEmailAccumulator { get; set; }  // the accumulator that is doing it.
+
+    [field: NonSerializedAttribute()]
+    public System.Threading.Timer MotionStoppedTimer { get; set; }
 
     [field: NonSerializedAttribute()]
     public DateTime TimeLastAccumulatorCompleted { get; set; }  // when did the last accumulator complete - implement interval between events
@@ -57,16 +61,23 @@ namespace SAAI
     public CameraData(string prefix, string path)
     {
       ID = Guid.NewGuid();
-      FrameHistory =  new History(600);
+      FrameHistory = new History(600);
       LiveContactData = new CameraContactData();
       CameraPrefix = prefix;
       Path = path;
       Monitoring = true;
       AOI = new AreasOfInterestCollection(CameraPrefix);
+      NoMotionTimeout = 10;
     }
 
     public CameraData(CameraData src)
     {
+      if (null == src)
+      {
+        ArgumentNullException argumentNullException = new ArgumentNullException("src in CameraData copy constructor");
+        throw argumentNullException;
+      }
+
       ID = Guid.NewGuid();
       FrameHistory = new History(600);
       CameraPrefix = src.CameraPrefix;
@@ -77,6 +88,7 @@ namespace SAAI
       LiveContactData = new CameraContactData(src.LiveContactData);
       AOI = new AreasOfInterestCollection(src.AOI);
       Monitor = null;
+      NoMotionTimeout = src.NoMotionTimeout;
     }
 
     public override string ToString()
@@ -100,6 +112,26 @@ namespace SAAI
       }
     }
 
+    public void StopMonitoring()
+    {
+      if (Monitoring)
+      {
+        Monitor.Dispose();
+        Monitor = null;
+      }
+    }
+
+    public void StartMonitoring()
+    {
+      if (Monitoring)
+      {
+        Monitor = new DirectoryMonitor(this);
+      }
+    }
+
+
+
+
     // PathAndPrefix allows us to monitor the directory for motion images.  It also identifies the camera 
     public static string PathAndPrefix(CameraData camera)
     {
@@ -121,8 +153,12 @@ namespace SAAI
       {
         if (disposing)
         {
-         if (null != Monitor) Monitor.Dispose();
-          if (null != CameraEmailAccumulator) CameraEmailAccumulator.Dispose();
+          disposing = true;
+          MotionStoppedTimer?.Dispose();
+          Monitor?.Dispose();
+          FrameHistory?.Dispose();
+
+          CameraEmailAccumulator?.Dispose();
 
           foreach (AreaOfInterest area in AOI)
           {
@@ -130,7 +166,7 @@ namespace SAAI
           }
 
           AOI.Dispose();
-          FrameHistory.Dispose();
+
         }
 
         disposedValue = true;

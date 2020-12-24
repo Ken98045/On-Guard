@@ -299,5 +299,53 @@ namespace SAAI.Properties {
                 this["MQTTUseSecureLink"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("OnGuard/{Camera}/{Area}/{Object}")]
+        public string MQTTMotionTopic {
+            get {
+                return ((string)(this["MQTTMotionTopic"]));
+            }
+            set {
+                this["MQTTMotionTopic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{Picture}")]
+        public string MQTTMotionPayload {
+            get {
+                return ((string)(this["MQTTMotionPayload"]));
+            }
+            set {
+                this["MQTTMotionPayload"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("OnGuard/{Camera}/Stopped")]
+        public string MQTTStoppedTopic {
+            get {
+                return ((string)(this["MQTTStoppedTopic"]));
+            }
+            set {
+                this["MQTTStoppedTopic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{Motion}")]
+        public string MQTTStoppedPayload {
+            get {
+                return ((string)(this["MQTTStoppedPayload"]));
+            }
+            set {
+                this["MQTTStoppedPayload"] = value;
+            }
+        }
     }
 }

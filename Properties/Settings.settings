@@ -71,5 +71,17 @@
     <Setting Name="MQTTUseSecureLink" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="MQTTMotionTopic" Type="System.String" Scope="User">
+      <Value Profile="(Default)">OnGuard/{Camera}/{Area}/{Object}</Value>
+    </Setting>
+    <Setting Name="MQTTMotionPayload" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{Picture}</Value>
+    </Setting>
+    <Setting Name="MQTTStoppedTopic" Type="System.String" Scope="User">
+      <Value Profile="(Default)">OnGuard/{Camera}/Stopped</Value>
+    </Setting>
+    <Setting Name="MQTTStoppedPayload" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{Motion}</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

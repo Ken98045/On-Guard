@@ -161,7 +161,7 @@ namespace SAAI
     // For instance the same object (almost the same outline) may be .50 confident of being a car and 65% confident of being a truck.
     // The AI isn't sure which it is but it is pretty damn sure it IS a vehicle of some sort.  
     // I really dislike doing this, but with the way the AI is now it is better to cheat an be accurate than not cheat and give a misleading result;
-    public void RemoveDuplicateVehiclesInImage(List<ImageObject> objectList)
+    public static void RemoveDuplicateVehiclesInImage(List<ImageObject> objectList)
     {
       List<ImageObject> vehicles = new List<ImageObject>();
 
@@ -452,7 +452,6 @@ namespace SAAI
     public async Task<AIResult> DetectObjectsAsync(Stream stream, PendingItem pending)
     {
       List<ImageObject> objects = null;
-      ImageObject foundObject;
       AIResult aiResult = new AIResult
       {
         ObjectsFound = objects,

@@ -36,6 +36,7 @@ namespace SAAI
         {
           _stopEvent.Set();
           _thread.Join(2000);
+          _stopEvent.Dispose();
         }
 
         disposedValue = true;

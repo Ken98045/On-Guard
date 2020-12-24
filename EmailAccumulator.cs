@@ -55,7 +55,7 @@ namespace SAAI
         {
           foreach (var io in frame.Interesting)
           {
-            descriptions.Add(io.Area.AOIName);
+            descriptions.Add(io.Area.AOIName + ": " + io.FoundObject.Label);
             if (io.Area.AOIType == AOIType.Door)
             {
               priority.Add(i);
@@ -65,7 +65,7 @@ namespace SAAI
             {
               if (!priority.Contains(i))  // a frame may have interesting and priority objects, but only add it to one list
               {
-                descriptions.Add(io.Area.AOIName);
+                descriptions.Add(io.Area.AOIName + ": " + io.FoundObject.Label);
                 interesting.Add(i);
               }
             }

@@ -73,7 +73,7 @@ namespace SAAI
     {
 
       BinaryFormatter serializer = new BinaryFormatter();
-      using (Stream stream = new FileStream(_cameraPrefix + "-AreasOfInterest.bin", FileMode.Create))
+      using (Stream stream = new FileStream(Storage.GetFilePath(_cameraPrefix + "-AreasOfInterest.bin"), FileMode.Create))
       {
         serializer.Serialize(stream, _areas);
       }
@@ -81,11 +81,19 @@ namespace SAAI
 
     private void Load()
     {
+      string fileName = _cameraPrefix + "-AreasOfInterest.bin";
+      string path = Storage.GetFilePath(fileName);
+      bool exists = false;
 
-      if (File.Exists(_cameraPrefix + "-AreasOfInterest.bin"))
+      if (File.Exists(path))
       {
+        exists = true;
+      }
+
+      if (exists)
+      { 
         BinaryFormatter serializer = new BinaryFormatter();
-        using (Stream reader = new FileStream(_cameraPrefix + "-AreasOfInterest.bin", FileMode.Open))
+        using (Stream reader = new FileStream(path, FileMode.Open))
         {
           _areas = (SortedDictionary<Guid, AreaOfInterest>)serializer.Deserialize(reader);
         }

@@ -19,6 +19,8 @@
         _stopEvent.Set(); // shut down the MonitorQueue thread (and any other waits)
         _wakeFileQueue.Dispose();
         theCPUCounter.Dispose();
+        _modifyBox?.Dispose();
+        _liveTimer?.Dispose();
         if (null != _screenBitmap) _screenBitmap.Dispose();
         if (null != _areaBackgroundBitmap) _areaBackgroundBitmap.Dispose();
         if (components != null)
@@ -460,12 +462,15 @@
       // 
       this.liveCheck.Appearance = System.Windows.Forms.Appearance.Button;
       this.liveCheck.AutoSize = true;
+      this.liveCheck.BackColor = System.Drawing.SystemColors.Control;
+      this.liveCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+      this.liveCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.liveCheck.Location = new System.Drawing.Point(94, 25);
       this.liveCheck.Name = "liveCheck";
       this.liveCheck.Size = new System.Drawing.Size(70, 23);
       this.liveCheck.TabIndex = 33;
       this.liveCheck.Text = "Continuous";
-      this.liveCheck.UseVisualStyleBackColor = true;
+      this.liveCheck.UseVisualStyleBackColor = false;
       this.liveCheck.CheckedChanged += new System.EventHandler(this.LiveCheck_CheckedChanged);
       // 
       // camZoomOut

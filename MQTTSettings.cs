@@ -24,6 +24,10 @@ namespace SAAI
       PasswordText.Text = Settings.Default.MQTTPassword;
       CoolDownNumeric.Value = Settings.Default.MQTTCoolDown;
       UseSecureLinkCheck.Checked = Settings.Default.MQTTUseSecureLink;
+      MotionActivityText.Text = Settings.Default.MQTTMotionTopic;
+      MotionActivityPayloadText.Text = Settings.Default.MQTTMotionPayload;
+      StoppedActivityTopicText.Text = Settings.Default.MQTTStoppedTopic;
+      StoppedPayloadText.Text = Settings.Default.MQTTStoppedPayload;
 
       if (PortNumeric.Value == 0)
       {
@@ -45,6 +49,12 @@ namespace SAAI
       Settings.Default.MQTTPassword = PasswordText.Text;
       Settings.Default.MQTTCoolDown = (int) CoolDownNumeric.Value;
       Settings.Default.MQTTUseSecureLink = UseSecureLinkCheck.Checked;
+
+      Settings.Default.MQTTMotionTopic = MotionActivityText.Text;
+      Settings.Default.MQTTMotionPayload = MotionActivityPayloadText.Text;
+      Settings.Default.MQTTStoppedTopic = StoppedActivityTopicText.Text;
+      Settings.Default.MQTTStoppedPayload = StoppedPayloadText.Text;
+
 
       Settings.Default.Save();
 

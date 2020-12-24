@@ -15,13 +15,13 @@ using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Unsubscribing;
 using MQTTnet;
 using System.Threading;
+using System.IO;
 
 namespace SAAI
 {
   public class MQTTPublish : IDisposable
   {
     static MqttClient s_client;
-    static ManualResetEvent s_Connected = new ManualResetEvent(false);
     static ManualResetEvent s_ready = new ManualResetEvent(false);
     private bool disposedValue;
     static private int _retryDelay = 0;
@@ -44,36 +44,54 @@ namespace SAAI
 
     public static async Task Publish(string camera, AreaOfInterest area, Frame frame)
     {
+      string baseTopic = Settings.Default.MQTTMotionTopic;
+      baseTopic = baseTopic.Replace("{Camera}", camera);
+      baseTopic = baseTopic.Replace("{Area}", area.AOIName);
+      baseTopic = baseTopic.Replace("{Motion}", "on");
+
+      foreach (InterestingObject io in frame.Interesting)
+      {
+        string topic = baseTopic;
+        topic = topic.Replace("{Object}", io.FoundObject.Label);
+        string payload = Settings.Default.MQTTMotionPayload;
+        payload = payload.Replace("{File}", frame.Item.PendingFile);
+        payload = payload.Replace("{Confidence",  ((int) (io.FoundObject.Confidence * 100.0)).ToString());
+        payload = payload.Replace("{Image}", LoadImage(frame.Item.PendingFile));
+
+        await Publish(topic, payload).ConfigureAwait(false);
+      }
+    }
+
+    public static async Task Publish(string topic, string payload)
+    {
       s_ready.WaitOne(10000);  // wait for the first connection attempt to complete (one way or the other) since the connection process is async
+      int connectTryCount = 0;
+
+      while (connectTryCount < 2 && !s_client.IsConnected)
+      {
+        Dbg.Write("MQTTPublish - Client NotConnected");
+        await Connect().ConfigureAwait(false);
+        connectTryCount++;
+        Task.Delay(1000 * 2);
+      }
+
       if (s_client.IsConnected == false)
       {
         Dbg.Write("MQTTPublish - Client NotConnected");
       }
       else
       {
+        var message = new MqttApplicationMessageBuilder()
+                .WithTopic(topic)
+                .WithPayload(payload)
+                .WithExactlyOnceQoS()
+                .WithRetainFlag()
+                .Build();
 
-        string baseTopic = "OnGuard/";
-        baseTopic += camera + "/";
-        baseTopic += area.AOIName + "/";
+        await s_client.PublishAsync(message).ConfigureAwait(false);
 
-        foreach (InterestingObject io in frame.Interesting)
-        {
-          string topic = baseTopic + io.FoundObject.Label;
-
-          var message = new MqttApplicationMessageBuilder()
-                  .WithTopic(topic)
-                  .WithPayload(frame.Item.PendingFile)
-                  .WithExactlyOnceQoS()
-                  .WithRetainFlag()
-                  .Build();
-
-          await s_client.PublishAsync(message).ConfigureAwait(false);
-
-        }
       }
     }
-
-
 
     public static async Task Connect()
     {
@@ -84,7 +102,7 @@ namespace SAAI
       string mqttPassword = Settings.Default.MQTTPassword;
       int mqttPort = Settings.Default.MQTTPort;
       bool mqttSecure = Settings.Default.MQTTUseSecureLink;
-    
+
 
       var messageBuilder = new MqttClientOptionsBuilder()
         .WithClientId(clientId)
@@ -183,6 +201,19 @@ namespace SAAI
           break;
       }
 
+    }
+
+    static string LoadImage(string path)
+    {
+      string result = string.Empty;
+
+      if (File.Exists(path))
+      {
+        byte[] image = File.ReadAllBytes(path);
+        result = Convert.ToBase64String(image);
+      }
+
+      return result;
     }
 
     protected virtual void Dispose(bool disposing)

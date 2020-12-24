@@ -53,10 +53,9 @@ namespace SAAI
 
     static Frame _test;
 
-    AllCameras _allCameras;
+    CameraCollection _allCameras;
 
     bool _modifyingArea = false;    // Flag that we are modifying an area
-    Rectangle _originalRect = Rectangle.Empty;
     ZoneBox _modifyBox;
     Guid _modifyingAreaID = Guid.Empty;
 
@@ -98,12 +97,29 @@ namespace SAAI
 
       // Settings.Default.Reset();   // Only uncomment this when you want to clear out the stored settings
 
+      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
       InitializeComponent();
       _monitorQueueThread = new Thread(MonitorQueue);
 
       Focus();
       Dbg.Write("On Guard started at: " + DateTime.Now.ToString());
 
+    }
+
+    static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    {
+      // Log the exception, display it, etc
+      Dbg.Write(e.Exception.Message);
+      MessageBox.Show("There was an unexpected error.  Please report it: " + e.Exception.Message, "Unexpected Error (1)");
+    }
+
+    static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+      // Log the exception, display it, etc
+      Dbg.Write((e.ExceptionObject as Exception).Message);
+      MessageBox.Show("There was an unexpected error.  Please report it: " + (e.ExceptionObject as Exception).Message, "Unexpected Error (2)");
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -127,7 +143,7 @@ namespace SAAI
 
       _analyzer = new AIAnalyzer();
 
-      _allCameras = AllCameras.Load();    // which also inits the camera
+      _allCameras = CameraCollection.Load();    // which also inits the camera
       _currentCamera = _allCameras.CurrentCamera;
 
       if (_currentCamera != null)
@@ -215,7 +231,7 @@ namespace SAAI
           if (result == DialogResult.OK)
           {
             _allCameras = cameraDialog.AllCameraData;    // the list has been copied and returned
-            AllCameras.Save(_allCameras);
+            CameraCollection.Save(_allCameras);
 
             if (null == cameraDialog.CurrentCam)
             {
@@ -847,7 +863,7 @@ namespace SAAI
 
         }
 
-        AllCameras.Save(_allCameras);
+        CameraCollection.Save(_allCameras);
       }
 
       _currentCamera.RegistrationX = newX;
@@ -856,7 +872,7 @@ namespace SAAI
       _currentCamera.RegistrationY = _currentCamera.RegistrationY;
       _allCameras.CameraDictionary[CameraData.PathAndPrefix(_currentCamera)].RegistrationX = _currentCamera.RegistrationX;
       _allCameras.CameraDictionary[CameraData.PathAndPrefix(_currentCamera)].RegistrationY = _currentCamera.RegistrationY;
-      AllCameras.Save(_allCameras);
+      CameraCollection.Save(_allCameras);
 
       if (_showingLiveView)
       {
@@ -1136,7 +1152,19 @@ namespace SAAI
       }
       catch (HttpException ex)
       {
-        Dbg.Write("MainWindow - LiveCameraButton_Click = Error requestion snapshot/live image: " + ex.Message);
+        Dbg.Write("MainWindow - LiveCameraButton_Click = Error  snapshot/live image: " + ex.Message);
+        MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot - Application Exit");
+        Application.Exit();
+      }
+      catch (WebException ex)
+      {
+        Dbg.Write("MainWindow - LiveCameraButton_Click = WebException snapshot/live image: " + ex.Message);
+        if (sender is System.Windows.Forms.Timer)
+        {
+          Application.Exit();
+        }
+        MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot - Application Exit");
+        Application.Exit();
       }
 
       fileNameTextBox.Text = "Live Image";
@@ -1285,8 +1313,8 @@ namespace SAAI
         {
           /*if (ooi.Area.Notifications.mqttCooldown.CooldownExpired())
           {*/
-            await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame).ConfigureAwait(false);
-            ooi.Area.Notifications.mqttCooldown.Reset();
+          await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame).ConfigureAwait(false);
+          ooi.Area.Notifications.mqttCooldown.Reset();
           /*}*/
         }
 
@@ -1457,64 +1485,53 @@ namespace SAAI
 
     private void CameraSettingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      CameraData oldCamera = _currentCamera;  // which may be null - we need to track if the camera changed
-      using (CameraConfigurationDialog dlg = new CameraConfigurationDialog(_allCameras))
+
+      using (CameraCollection tmp = new CameraCollection(_allCameras))
       {
+        tmp.StopMonitoring();
 
-        // First, we must stop monitoring al cameras at least temporarily.
-        // We can't have the camera disappear on us
-        foreach (var cam in _allCameras.CameraDictionary.Values)
-        {
-          if (cam.Monitoring && null != cam.Monitor)
-          {
-            // Note that we do NOT turn the Monitoring flag off
-            cam.Monitor.OnNewImage -= OnCameraImage; // unhook for new images       
-          }
-        }
-
-        _allCameras.Dispose();  // get rid of this list since we made a copy of it in the dialog contructor (TODO: maybe before)
+        _currentCamera = null;
+        _allCameras.Dispose();  // This cleans up the directory monitoring, and a lot of other stuff
         _allCameras = null;
+        cameraCombo.Items.Clear();
 
-        DialogResult result = dlg.ShowDialog();
-        _allCameras = dlg.AllCameraData;  // regardless of the OK/Cancel in the dialog we just copy the reference
-
-        if (result == DialogResult.OK)
+        using (CameraConfigurationDialog dlg = new CameraConfigurationDialog(tmp))  // This makes a deep copy of the cameras collection
         {
-          cameraCombo.Items.Clear();
-          _allCameras = dlg.AllCameraData;    // the list has been copied and returned
+          DialogResult result = dlg.ShowDialog();
 
-          if (null == dlg.CurrentCam)
+          if (result == DialogResult.OK)
           {
+            _allCameras = dlg.AllCameraData;  // a reference, not a copy (since the dialog does a deep copy, and we want the altered one)
 
-            Settings.Default.CurrentCameraPath = string.Empty;
-            Settings.Default.CurrentCameraPrefix = string.Empty;
+            if (null == dlg.CurrentCam)
+            {
+              Settings.Default.CurrentCameraPath = string.Empty;    // we don't need to do this if we canceled the dlg
+              Settings.Default.CurrentCameraPrefix = string.Empty;
+            }
+            else
+            {
+              SetCurrentCamera(dlg.CurrentCam);   // The one set by the dialog
+            }
           }
           else
           {
-            SetCurrentCamera(dlg.CurrentCam);
+            _allCameras = new CameraCollection(tmp);
+            _currentCamera = _allCameras.CurrentCamera;
           }
-
-          foreach (var cam in _allCameras.CameraDictionary.Values)
-          {
-            cameraCombo.Items.Add(cam);
-          }
-
-          if (null != _currentCamera && !string.IsNullOrEmpty(_currentCamera.CameraPrefix))
-          {
-            cameraCombo.SelectedItem = _currentCamera;
-          }
-
         }
 
-        // This happens regardless of whether we OK'd the dialog because we turned off monitoring above
+        // Restore the camera selection dropdown
         foreach (var cam in _allCameras.CameraDictionary.Values)
         {
-          if (cam.Monitoring)
-          {
-            cam.Monitor = new DirectoryMonitor(cam);
-            cam.Monitor.OnNewImage += OnCameraImage;
-          }
+          cameraCombo.Items.Add(cam);
         }
+
+        if (null != _currentCamera && !string.IsNullOrEmpty(_currentCamera.CameraPrefix)) 
+        {
+          cameraCombo.SelectedItem = _currentCamera;
+        }
+
+        _allCameras.StartMonitoring();
       }
 
     }
@@ -1527,8 +1544,8 @@ namespace SAAI
       Settings.Default.CurrentCameraPrefix = cam.CameraPrefix;
       Settings.Default.AISetup = true;
       Settings.Default.Save();
-      _allCameras.CameraDictionary[CameraData.PathAndPrefix(cam)] = cam;
-      AllCameras.Save(_allCameras);
+      // _allCameras.CameraDictionary[CameraData.PathAndPrefix(cam)] = cam;
+      CameraCollection.Save(_allCameras);
       InitAnalyzer(cam.CameraPrefix, cam.Path);
 
     }
@@ -1659,7 +1676,11 @@ namespace SAAI
               DateTime beginStart = DateTime.Now;
               pendingItem.TimeDispatched = beginStart;
               Interlocked.Increment(ref _imagesBeingProcessed);
-              var myTask = Task.Run(() => StartAIAnalysis(pendingItem));
+
+              if (null != _allCameras)  // If we are going into camera setup we do not process more files
+              {
+                var myTask = Task.Run(() => StartAIAnalysis(pendingItem));
+              }
             }
           }
           else
@@ -1708,6 +1729,13 @@ namespace SAAI
               _filesPendingProcessing.TryRemove(pendingItem.PendingFile, out string f);
 
               AIResult result = await _analyzer.DetectObjectsAsync(stream, pendingItem).ConfigureAwait(false); //really do it async
+
+              if (null == _allCameras)
+              {
+                // we went into camera setup, we can't process any further
+                return;
+              }
+
               Interlocked.Increment(ref _numberOfImagesProcessed);
               UpdateNumberProcessed(_numberOfImagesProcessed);
               _recentTimes.AddValue(result.Item.TotalProcessingTime().TotalMilliseconds);
@@ -1730,9 +1758,11 @@ namespace SAAI
                     FrameAnalyzer frameAnalyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound);
                     interesting = frameAnalyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
 
-
                     frame.Interesting = interesting;
                     Dbg.Write(interesting.Count.ToString() + " interesting objects found in file: " + pendingItem.PendingFile);
+
+                    if (interesting.Count > 0) StartMotionTimeout(pendingItem);
+
                     frame.Item.CamData.FrameHistory.Add(frame);
                     if (frame.Interesting.Count > 0)
                     {
@@ -1756,6 +1786,57 @@ namespace SAAI
       } while (continueTrying);
 
     }
+
+    void StartMotionTimeout(PendingItem pending)
+    {
+      lock (pending.CamData)
+      {
+        if (null == pending.CamData.MotionStoppedTimer)
+        {
+          pending.CamData.MotionStoppedTimer = new System.Threading.Timer(MotionStoppedNotify, pending.CamData, pending.CamData.NoMotionTimeout * 1000, -1);
+        }
+        else
+        {
+          pending.CamData.MotionStoppedTimer.Change(pending.CamData.NoMotionTimeout * 1000, -1);  // restart the timer
+        }
+      }
+    }
+
+    async void MotionStoppedNotify(object camObj)
+    {
+      CameraData camera = (CameraData)camObj;
+
+      lock (camera)
+      {
+        camera.MotionStoppedTimer.Dispose();
+        camera.Monitor = null;
+      }
+
+      foreach (var area in camera.AOI)
+      {
+        if (area.Notifications.NoMotionMQTTNotify)
+        {
+
+
+          string topic = Settings.Default.MQTTStoppedTopic;
+          string payload = Settings.Default.MQTTStoppedPayload;
+
+          topic = topic.Replace("{Camera}", camera.CameraPrefix);
+          topic = topic.Replace("{Motion}", camera.CameraPrefix);
+          payload = payload.Replace("{Motion}", "off");
+
+
+          await MQTTPublish.Publish(topic, payload).ConfigureAwait(false);
+        }
+
+        if (!string.IsNullOrEmpty(area.Notifications.NoMotionUrlNotify))
+        {
+          await NotifyUrl(area.Notifications.NoMotionUrlNotify).ConfigureAwait(false);
+        }
+
+      }
+    }
+
 
     #region SqlStuff
 
@@ -1990,7 +2071,7 @@ namespace SAAI
     /// <param name="cam"></param>
     /// <param name="interesting"></param>
     /// <param name="pendingItem"></param>
-    private static void ProcessAccumulation(Frame frame)
+    static void ProcessAccumulation(Frame frame)
     {
       bool accumulate = false;
       bool doorOverride = false;
@@ -2179,45 +2260,14 @@ namespace SAAI
 
     }
 
-    private void CleanupFiles(string path)
-    {
-      // possibly notify the UI via event, maybe ask permission
-      List<FileInfo> expiredFiles = null;
-
-      using (WaitCursor _ = new WaitCursor())
-      {
-        DirectoryInfo dir = new DirectoryInfo(path);
-        expiredFiles = dir.EnumerateFiles("*.jpg", SearchOption.TopDirectoryOnly)
-            .Where(fi => fi.CreationTime + TimeSpan.FromHours(24) < DateTime.Now).ToList();
-      }
-
-      DialogResult result = MessageBox.Show("You are about to delete " + expiredFiles.Count.ToString() + " pictures over 24 hours old.  Proceed?", "Delete Old Pictures", MessageBoxButtons.YesNo);
-      if (result == DialogResult.Yes)
-      {
-        using (WaitCursor _ = new WaitCursor())
-        {
-          foreach (var info in expiredFiles)
-          {
-            try
-            {
-              File.Delete(info.FullName);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-              MessageBox.Show("Unable to delete file: " + info.FullName + Environment.NewLine + "This is probably due to your anti-virus software." +
-                Environment.NewLine + "Exiting Cleanup!");
-              break;
-            }
-          }
-        }
-      }
-
-    }
 
     private void CleanupButton_Click(object sender, EventArgs e)
     {
-      CleanupFiles(_currentCamera.Path);
-      Refresh_Click(sender, e);
+      using (CleanupDialog dlg = new CleanupDialog(_currentCamera.Path, _currentCamera.CameraPrefix))
+      {
+        dlg.ShowDialog();
+        Refresh_Click(sender, e);
+      }
     }
 
     private void AreasOfInterestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2327,7 +2377,7 @@ namespace SAAI
         {
           Dbg.Write("MQTT Settings Saved");
         }
-      }  
+      }
     }
 
 
@@ -2341,7 +2391,6 @@ namespace SAAI
 
   internal struct CurrentPictures
   {
-    public List<string> FileNames;
     public SortedList<DateTime, string> InterestingPictures;
   }
 

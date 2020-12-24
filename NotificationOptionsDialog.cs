@@ -34,6 +34,9 @@ namespace SAAI
           urlsList.Select();
         }
 
+        NoMotionUrlNotify.Text = area.Notifications.NoMotionUrlNotify;
+        NoMotionMQTTCheck.Checked = area.Notifications.NoMotionMQTTNotify;
+
       }
 
       count = 0;
@@ -81,6 +84,9 @@ namespace SAAI
           _area.Notifications.Email.Add(email.Text);
         }
       }
+
+      _area.Notifications.NoMotionMQTTNotify = NoMotionMQTTCheck.Checked;
+      _area.Notifications.NoMotionUrlNotify = NoMotionUrlNotify.Text;
 
       _area.Notifications.UseMQTT = UseMQTTBox.Checked;
 

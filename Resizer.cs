@@ -19,7 +19,7 @@ namespace SAAI
     internal static bool MouseIsInTopEdge { get; set; }
     internal static bool MouseIsInBottomEdge { get; set; }
 
-    internal static readonly int EdgeMargin = 6;
+    internal const int EdgeMargin = 6;
 
     internal enum MoveOrResize
     {

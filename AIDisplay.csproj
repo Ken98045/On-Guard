@@ -148,7 +148,7 @@
     <Compile Include="AddUrlDlialog.Designer.cs">
       <DependentUpon>AddUrlDlialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="AllCameras.cs" />
+    <Compile Include="CameraCollection.cs" />
     <Compile Include="AreaNotificationOption.cs" />
     <Compile Include="AreaOfInterest.cs" />
     <Compile Include="AreasOfInterestCollection.cs" />
@@ -161,6 +161,12 @@
     </Compile>
     <Compile Include="CameraContactData.cs" />
     <Compile Include="CameraData.cs" />
+    <Compile Include="CleanupDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CleanupDialog.Designer.cs">
+      <DependentUpon>CleanupDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrameAccumulator.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HIstory.cs" />
@@ -177,6 +183,7 @@
     <Compile Include="MQTTSettings.Designer.cs">
       <DependentUpon>MQTTSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Storage.cs" />
     <Compile Include="ZoneBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -269,6 +276,9 @@
     <EmbeddedResource Include="CameraConfigurationDialog.resx">
       <DependentUpon>CameraConfigurationDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CleanupDialog.resx">
+      <DependentUpon>CleanupDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CreateAOI.resx">
       <DependentUpon>CreateAOI.cs</DependentUpon>
     </EmbeddedResource>
@@ -319,6 +329,7 @@
       <DependentUpon>ZoneBox.cs</DependentUpon>
     </EmbeddedResource>
     <None Include=".editorconfig" />
+    <None Include="App1.config" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
