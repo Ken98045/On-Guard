@@ -476,7 +476,10 @@ namespace SAAI
             try
             {
               DateTime startPost = DateTime.Now;
+              pending.TimeDispatched = startPost;
+
               output = await client.PostAsync(new Uri(url), request).ConfigureAwait(false);
+              pending.TimeProcessingByAI();
               TimeSpan postTime = DateTime.Now - startPost;
             }
             catch (AggregateException ex)
@@ -493,9 +496,9 @@ namespace SAAI
               throw new AiNotFoundException(url);
             }
 
-            DateTime beforeRead = DateTime.Now;
             var jsonString = await output.Content.ReadAsStringAsync().ConfigureAwait(false);
-            TimeSpan readTime = DateTime.Now - beforeRead;
+            TimeSpan processTime = pending.TimeProcessingByAI();
+            Console.WriteLine("Process Time: " + processTime.TotalMilliseconds.ToString());
             Response response = JsonConvert.DeserializeObject<Response>(jsonString);
 
             if (response.Predictions != null && response.Predictions.Length > 0)

@@ -14,16 +14,20 @@ namespace SAAI
   {
     public AreaOfInterest Area { get; set; }
     Rectangle _rectangle;
+    public int OriginalXResolution { get; set; }
+    public int OriginalYResolution { get; set; }
 
     public bool DeleteItem { get; set; }
 
 
-    public CreateAOI(Rectangle imageRect, Point zoneFocus) // The area on the actual image, not the display image
+    public CreateAOI(Rectangle imageRect, Point zoneFocus, int xResolution, int yResolution) // The area on the actual image, not the display image
     {
       InitializeComponent();
       Area = new AreaOfInterest
       {
-        ZoneFocus = zoneFocus
+        ZoneFocus = zoneFocus,
+        OriginalXResolution = xResolution,
+        OriginalYResolution = yResolution,
       };
 
       _rectangle = imageRect;
@@ -34,9 +38,11 @@ namespace SAAI
       yNumeric.Value = imageRect.Y;
       widthNumeric.Value = imageRect.Width;
       heighNumeric.Value = imageRect.Height;
+      OriginalXResolution = xResolution;
+      OriginalYResolution = yResolution;
 
 
-      if (!Settings.Default.EmailSetup )
+      if (!Settings.Default.EmailSetup)
       {
         MessageBox.Show("In order to set Areas of Interest you must first set your email contact information.  This is a one time only requirement.");
         using (OutgoingEmailDialog dlg = new OutgoingEmailDialog())
@@ -56,6 +62,8 @@ namespace SAAI
       Rectangle rect = area.AreaRect;
       doorButton.Checked = true;
       anyActivityButton.Checked = true;
+      OriginalXResolution = area.OriginalXResolution;
+      OriginalYResolution = area.OriginalYResolution;
 
       xNumeric.Value = rect.X;
       yNumeric.Value = rect.Y;
@@ -193,6 +201,7 @@ namespace SAAI
         }
 
         Area.AOIName = aoiNameText.Text;
+
         if (doorButton.Checked)
         {
           Area.AOIType = AOIType.Door;
@@ -336,6 +345,8 @@ namespace SAAI
           MessageBox.Show("The area of the Area of Interest has been adjusted to fit onto the screen.", "Area Adjusted!");
         }
         Area.AreaRect = _rectangle;
+        Area.OriginalXResolution = BitmapResolution.XResolution;
+        Area.OriginalYResolution = BitmapResolution.YResolution;
       }
 
       return result;
@@ -374,11 +385,18 @@ namespace SAAI
 
     private void AreaAdjustButton_Click(object sender, EventArgs e)
     {
-      if (SaveAreaData())
+      if (MessageBox.Show(this, "Adjusting an area size/shape automatically saves any changes.  Proceed?", "Adjusting Area Size/Shape", MessageBoxButtons.YesNo) == DialogResult.Yes)
       {
-        DialogResult = DialogResult.Yes;
-        Close();
-      }  
+        if (SaveAreaData())
+        {
+          DialogResult = DialogResult.Yes;
+          Close();
+        }
+        else
+        {
+          DialogResult = DialogResult.None;
+        }
+      }
       else
       {
         DialogResult = DialogResult.None;

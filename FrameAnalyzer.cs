@@ -290,8 +290,8 @@ namespace SAAI
     {
       int overlap;
       int objectArea = imageObject.ObjectRectangle.Width * imageObject.ObjectRectangle.Height;
-      _ = area.AreaRect.Width * area.AreaRect.Height;
-      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, area.AreaRect);
+      _ = area.GetRect().Width * area.GetRect().Height;
+      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, area.GetRect());
       int intersectArea = intersect.Width * intersect.Height;
 
       double percentage = (100.0 * intersectArea) / objectArea;

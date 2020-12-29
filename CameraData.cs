@@ -1,5 +1,6 @@
 ﻿using SAAI.Properties;
 using System;
+using System.Drawing;
 
 namespace SAAI
 {
@@ -17,8 +18,63 @@ namespace SAAI
 
     // The registration marks allow for slight adjustment of the Areas of Interest if the camera moves.  It also 
     // Allows you to put the camera back at the correct position if you move the camera (accidently or on purpose)
-    public int RegistrationX { get; set; }
-    public int RegistrationY { get; set; }
+    private int RegistrationXResolution;      // You can keep the same camera but you might change the resolution on pictures
+    private int RegistrationYResolution;      // "" and both of these never change until you change the registration mark
+    private int registrationX;
+    private int registrationY;
+
+    public int RegistrationX
+    {
+      get
+      {
+        int adjX = registrationX;
+        if (registrationX > 0)
+        {
+          if (BitmapResolution.XResolution != RegistrationXResolution)
+          {
+            adjX = (int)((double)adjX * ((double)(BitmapResolution.XResolution) / (double)(RegistrationXResolution)));
+          }
+        }
+
+        return adjX;
+      }
+      set 
+      {
+        if (BitmapResolution.XResolution != RegistrationXResolution)
+        {
+          RegistrationXResolution = BitmapResolution.XResolution;
+        }
+
+        registrationX = value;
+      }
+    }
+    public int RegistrationY
+    {
+      get
+      {
+        int adjY = registrationY;
+        if (adjY > 0)
+        {
+          if (BitmapResolution.YResolution != RegistrationYResolution)
+          {
+
+            adjY = (int)((double)adjY * ((double)(BitmapResolution.YResolution) / (double)(RegistrationYResolution)));
+          }
+        }
+
+        return adjY;
+      }
+      set
+      {
+        if (BitmapResolution.YResolution != RegistrationYResolution)
+        {
+          RegistrationYResolution = BitmapResolution.YResolution;
+        }
+
+        registrationY = value;
+      }
+    }
+
 
     public bool Monitoring { get; set; }  // Monitor the camera path for new images created by motion.
 
@@ -67,7 +123,7 @@ namespace SAAI
       Path = path;
       Monitoring = true;
       AOI = new AreasOfInterestCollection(CameraPrefix);
-      NoMotionTimeout = 10;
+      NoMotionTimeout = 90;
     }
 
     public CameraData(CameraData src)

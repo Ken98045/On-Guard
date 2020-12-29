@@ -783,7 +783,7 @@ namespace SAAI
       if (_modifyingAreaID == Guid.Empty)
       {
 
-        using (CreateAOI dlg = new CreateAOI(areaRect, zoneFocus))
+        using (CreateAOI dlg = new CreateAOI(areaRect, zoneFocus, BitmapResolution.XResolution, BitmapResolution.YResolution))
         {
           DialogResult result = dlg.ShowDialog(pictureImage);
 
@@ -796,7 +796,7 @@ namespace SAAI
               }
               else
               {
-                _currentCamera.AOI[_modifyingAreaID].AreaRect = areaRect; // just update the area
+                _currentCamera.AOI[_modifyingAreaID].AreaRect = areaRect; // just update the area (does not need to be adjusted)
                 _currentCamera.AOI.Save();
                 MessageBox.Show(pictureImage, "The Area of Interest was saved with new boundaries!", "Area Saved");
                 _modifyingAreaID = Guid.Empty;
@@ -815,7 +815,7 @@ namespace SAAI
       else
       {
         // If we are already modifying an area all we do is update the rectangle
-        _currentCamera.AOI[_modifyingAreaID].AreaRect = areaRect;
+        _currentCamera.AOI[_modifyingAreaID].AreaRect = areaRect; // does not need to be adjusted
         _currentCamera.AOI[_modifyingAreaID].ZoneFocus = zoneFocus;
         _currentCamera.AOI.Save();
         MessageBox.Show(pictureImage, "The boundaries of the current Area of Interest have been modified", "Area of Interest Changed!");
@@ -849,13 +849,12 @@ namespace SAAI
       {
         foreach (var area in _currentCamera.AOI)
         {
-          area.AreaRect.X -= offsetX;
+          area.AdjustRect(-offsetX, -offsetY);
           if (area.AreaRect.X < 0)
           {
             area.AreaRect.X = 0;
           }
 
-          area.AreaRect.Y -= offsetY;
           if (area.AreaRect.Y < 0)
           {
             area.AreaRect.Y = 0;
@@ -971,7 +970,7 @@ namespace SAAI
             foreach (AreaOfInterest area in _currentCamera.AOI)
             {
 
-              Rectangle rect = area.AreaRect;
+              Rectangle rect = area.GetRect();
               graphics.FillRectangle(brush, rect);
             }
           }
@@ -1012,7 +1011,7 @@ namespace SAAI
       {
         Parent = pictureImage
       };
-      Rectangle screenRect = ScaleDataToScreen(_currentCamera.AOI[_modifyingAreaID].AreaRect);
+      Rectangle screenRect = ScaleDataToScreen(_currentCamera.AOI[_modifyingAreaID].GetRect());
       Point zoneFocus = _currentCamera.AOI[_modifyingAreaID].ZoneFocus;
       _modifyBox.Location = new Point(screenRect.X, screenRect.Y);
       _modifyBox.ZoneFocus = zoneFocus;
@@ -1045,8 +1044,8 @@ namespace SAAI
     int EqualPriorityOverlap(ImageObject imageObject, AreaOfInterest area)
     {
       int overlap;
-      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, area.AreaRect);
-      var percentage = (((intersect.Width * intersect.Height) * 2) * 100f) / ((imageObject.ObjectRectangle.Width * imageObject.ObjectRectangle.Height) + (area.AreaRect.Width * area.AreaRect.Height));
+      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, area.GetRect());
+      var percentage = (((intersect.Width * intersect.Height) * 2) * 100f) / ((imageObject.ObjectRectangle.Width * imageObject.ObjectRectangle.Height) + (area.GetRect().Width * area.GetRect().Height));
       overlap = (int)percentage;
 
       return overlap;
@@ -1056,8 +1055,8 @@ namespace SAAI
     int ObjectToAreaOverlap(ImageObject imageObject, AreaOfInterest area)
     {
       int objectArea = imageObject.ObjectRectangle.Width * imageObject.ObjectRectangle.Height;
-      int areaArea = area.AreaRect.Width * area.AreaRect.Height;
-      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, area.AreaRect);
+      int areaArea = area.GetRect().Width * area.GetRect().Height;
+      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, area.GetRect());
       int intersectArea = intersect.Width * intersect.Height;
 
       double percentage = (100.0 * intersectArea) / objectArea;

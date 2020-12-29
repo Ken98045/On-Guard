@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace SAAI
 {
@@ -47,7 +48,9 @@ namespace SAAI
 
     public TimeSpan TotalProcessingTime()
     {
-      return TimeCompleted - TimeEnqueued;
+      TimeSpan result = TimeCompleted - TimeEnqueued;
+      return result;
+
     }
   }
 
