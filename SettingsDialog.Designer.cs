@@ -41,6 +41,8 @@
       this.snapshotNumeric = new System.Windows.Forms.NumericUpDown();
       this.label6 = new System.Windows.Forms.Label();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.label12 = new System.Windows.Forms.Label();
+      this.testButton = new System.Windows.Forms.Button();
       this.panel2 = new System.Windows.Forms.Panel();
       this.label13 = new System.Windows.Forms.Label();
       this.label10 = new System.Windows.Forms.Label();
@@ -50,8 +52,6 @@
       this.label9 = new System.Windows.Forms.Label();
       this.maxEventNumeric = new System.Windows.Forms.NumericUpDown();
       this.label7 = new System.Windows.Forms.Label();
-      this.testButton = new System.Windows.Forms.Button();
-      this.label12 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.snapshotNumeric)).BeginInit();
       this.panel1.SuspendLayout();
@@ -62,7 +62,7 @@
       // 
       // okButton
       // 
-      this.okButton.Location = new System.Drawing.Point(260, 482);
+      this.okButton.Location = new System.Drawing.Point(260, 519);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 1;
@@ -72,7 +72,7 @@
       // 
       // cancelButton
       // 
-      this.cancelButton.Location = new System.Drawing.Point(350, 482);
+      this.cancelButton.Location = new System.Drawing.Point(350, 519);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 2;
@@ -83,7 +83,7 @@
       // label1
       // 
       this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(47, 54);
+      this.label1.Location = new System.Drawing.Point(11, 54);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(238, 13);
       this.label1.TabIndex = 2;
@@ -91,16 +91,17 @@
       // 
       // label2
       // 
-      this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(432, 54);
+      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label2.Location = new System.Drawing.Point(398, 35);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(218, 13);
+      this.label2.Size = new System.Drawing.Size(235, 86);
       this.label2.TabIndex = 3;
-      this.label2.Text = "For this computer leave it \"localhost\"";
+      this.label2.Text = "For this computer leave it \"localhost\"\r\nRarely this may not work.  Try \"127.0.0.1" +
+    "\"\r\nRarely that may not work.  Then try the IPV4 address of this computer.";
       // 
       // ipAddresText
       // 
-      this.ipAddresText.Location = new System.Drawing.Point(300, 51);
+      this.ipAddresText.Location = new System.Drawing.Point(256, 51);
       this.ipAddresText.Name = "ipAddresText";
       this.ipAddresText.Size = new System.Drawing.Size(134, 20);
       this.ipAddresText.TabIndex = 0;
@@ -108,7 +109,7 @@
       // 
       // portNumeric
       // 
-      this.portNumeric.Location = new System.Drawing.Point(300, 93);
+      this.portNumeric.Location = new System.Drawing.Point(264, 108);
       this.portNumeric.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -131,7 +132,7 @@
       // label3
       // 
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(143, 93);
+      this.label3.Location = new System.Drawing.Point(116, 108);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(142, 13);
       this.label3.TabIndex = 6;
@@ -158,7 +159,7 @@
       // 
       // snapshotNumeric
       // 
-      this.snapshotNumeric.DecimalPlaces = 1;
+      this.snapshotNumeric.DecimalPlaces = 2;
       this.snapshotNumeric.Increment = new decimal(new int[] {
             1,
             0,
@@ -174,7 +175,7 @@
             1,
             0,
             0,
-            65536});
+            131072});
       this.snapshotNumeric.Name = "snapshotNumeric";
       this.snapshotNumeric.Size = new System.Drawing.Size(55, 20);
       this.snapshotNumeric.TabIndex = 0;
@@ -205,10 +206,31 @@
       this.panel1.Controls.Add(this.label1);
       this.panel1.Controls.Add(this.ipAddresText);
       this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.panel1.Location = new System.Drawing.Point(23, 13);
+      this.panel1.Location = new System.Drawing.Point(12, 13);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(629, 173);
+      this.panel1.Size = new System.Drawing.Size(660, 205);
       this.panel1.TabIndex = 11;
+      // 
+      // label12
+      // 
+      this.label12.AutoSize = true;
+      this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label12.Location = new System.Drawing.Point(389, 155);
+      this.label12.Name = "label12";
+      this.label12.Size = new System.Drawing.Size(108, 16);
+      this.label12.TabIndex = 9;
+      this.label12.Text = "<---- Important!";
+      // 
+      // testButton
+      // 
+      this.testButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+      this.testButton.Location = new System.Drawing.Point(192, 149);
+      this.testButton.Name = "testButton";
+      this.testButton.Size = new System.Drawing.Size(191, 28);
+      this.testButton.TabIndex = 2;
+      this.testButton.Text = "Test DeepStack Connection";
+      this.testButton.UseVisualStyleBackColor = false;
+      this.testButton.Click += new System.EventHandler(this.TestButton_Click);
       // 
       // panel2
       // 
@@ -224,9 +246,9 @@
       this.panel2.Controls.Add(this.label6);
       this.panel2.Controls.Add(this.label5);
       this.panel2.Controls.Add(this.snapshotNumeric);
-      this.panel2.Location = new System.Drawing.Point(23, 207);
+      this.panel2.Location = new System.Drawing.Point(12, 238);
       this.panel2.Name = "panel2";
-      this.panel2.Size = new System.Drawing.Size(629, 258);
+      this.panel2.Size = new System.Drawing.Size(660, 258);
       this.panel2.TabIndex = 0;
       // 
       // label13
@@ -326,31 +348,11 @@
       this.label7.TabIndex = 8;
       this.label7.Text = "Image Capture and Reporting";
       // 
-      // testButton
-      // 
-      this.testButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-      this.testButton.Location = new System.Drawing.Point(218, 130);
-      this.testButton.Name = "testButton";
-      this.testButton.Size = new System.Drawing.Size(191, 28);
-      this.testButton.TabIndex = 2;
-      this.testButton.Text = "Test DeepStack Connection";
-      this.testButton.UseVisualStyleBackColor = false;
-      this.testButton.Click += new System.EventHandler(this.TestButton_Click);
-      // 
-      // label12
-      // 
-      this.label12.AutoSize = true;
-      this.label12.Location = new System.Drawing.Point(414, 138);
-      this.label12.Name = "label12";
-      this.label12.Size = new System.Drawing.Size(91, 13);
-      this.label12.TabIndex = 9;
-      this.label12.Text = "<---- Important!";
-      // 
       // SettingsDialog
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.ClientSize = new System.Drawing.Size(684, 515);
+      this.ClientSize = new System.Drawing.Size(684, 554);
       this.Controls.Add(this.panel2);
       this.Controls.Add(this.panel1);
       this.Controls.Add(this.cancelButton);

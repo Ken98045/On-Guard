@@ -74,15 +74,22 @@ namespace SAAI
         {
           bm.Save(mem, ImageFormat.Jpeg);
           mem.Position = 0;
-          AIAnalyzer ai = new AIAnalyzer(ipAddresText.Text, (int) portNumeric.Value);
-          List<ImageObject> imageObjects = await ai.ProcessVideoImageViaAI(mem, "Test Image").ConfigureAwait(false);
-          if (imageObjects != null && imageObjects.Count > 0)
+          try
           {
-            MessageBox.Show(this, "Successfully processed a picture via DeepStack", "Success!");
+            AIAnalyzer ai = new AIAnalyzer(ipAddresText.Text, (int)portNumeric.Value);
+            List<ImageObject> imageObjects = await ai.ProcessVideoImageViaAI(mem, "Test Image").ConfigureAwait(false);
+            if (imageObjects != null && imageObjects.Count > 0)
+            {
+              MessageBox.Show(this, "Successfully processed a picture via DeepStack", "Success!");
+            }
+            else
+            {
+              MessageBox.Show(this, "The AI Test FAILED!. DeepStack was found, but the image was not processed successfully.  Check your DeepStack startup to make sure --VISION-DETECTION True is set!", "Test Failure!");
+            }
           }
-          else
+          catch (AiNotFoundException ex)
           {
-            MessageBox.Show(this, "AI Processing FAILED!. Check the IP Address and port.  Make sure DeepStack is running.", "Processing Failure!");
+            MessageBox.Show(this, "The AI Test FAILED!. Check the IP Address and port.  Make sure DeepStack is running.", "Test Failed!");
           }
         }
       }
