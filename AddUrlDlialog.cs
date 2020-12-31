@@ -12,9 +12,19 @@ namespace SAAI
   {
     public string Url { get; set; }
     public int CoolDown { get; set; }
-    public AddUrlDialog()
+
+    public AddUrlDialog(string url, int cooldown)
     {
       InitializeComponent();
+      Url = url;
+      CoolDown = cooldown;
+      urlText.Text = Url;
+
+      if (cooldown > 0)
+      {
+        urlCoolDownNumeric.Value = cooldown;
+      }
+
     }
 
     private void OkButton_Click(object sender, EventArgs e)

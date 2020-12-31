@@ -453,7 +453,7 @@
       // 
       this.bearsFramesNumeric.Location = new System.Drawing.Point(543, 239);
       this.bearsFramesNumeric.Maximum = new decimal(new int[] {
-            20,
+            300,
             0,
             0,
             0});
@@ -547,12 +547,12 @@
       // label2
       // 
       this.label2.AutoSize = true;
-      this.label2.ForeColor = System.Drawing.SystemColors.Highlight;
+      this.label2.ForeColor = System.Drawing.Color.Blue;
       this.label2.Location = new System.Drawing.Point(248, 302);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(362, 13);
+      this.label2.Size = new System.Drawing.Size(370, 13);
       this.label2.TabIndex = 36;
-      this.label2.Text = "Number of Frames for Analysis of Movement Direction (not yet implemented)";
+      this.label2.Text = "Number of Seconds for Analysis of Movement Direction (not yet implemented)";
       // 
       // animalsMinYNumeric
       // 
@@ -720,7 +720,7 @@
       // 
       this.animalsFramesNumeric.Location = new System.Drawing.Point(543, 209);
       this.animalsFramesNumeric.Maximum = new decimal(new int[] {
-            20,
+            300,
             0,
             0,
             0});
@@ -741,17 +741,17 @@
       // label13
       // 
       this.label13.AutoSize = true;
-      this.label13.Location = new System.Drawing.Point(531, 24);
+      this.label13.Location = new System.Drawing.Point(526, 24);
       this.label13.Name = "label13";
-      this.label13.Size = new System.Drawing.Size(97, 13);
+      this.label13.Size = new System.Drawing.Size(105, 13);
       this.label13.TabIndex = 5;
-      this.label13.Text = "Number of Frames*";
+      this.label13.Text = "Number of Seconds*";
       // 
       // bikesFramesNumeric
       // 
       this.bikesFramesNumeric.Location = new System.Drawing.Point(543, 175);
       this.bikesFramesNumeric.Maximum = new decimal(new int[] {
-            20,
+            300,
             0,
             0,
             0});
@@ -773,7 +773,7 @@
       // 
       this.motorcyclesFramesNumeric.Location = new System.Drawing.Point(543, 143);
       this.motorcyclesFramesNumeric.Maximum = new decimal(new int[] {
-            20,
+            300,
             0,
             0,
             0});
@@ -795,7 +795,7 @@
       // 
       this.trucksFramesNumeric.Location = new System.Drawing.Point(543, 111);
       this.trucksFramesNumeric.Maximum = new decimal(new int[] {
-            20,
+            300,
             0,
             0,
             0});
@@ -817,7 +817,7 @@
       // 
       this.carsFramesNumeric.Location = new System.Drawing.Point(543, 78);
       this.carsFramesNumeric.Maximum = new decimal(new int[] {
-            20,
+            300,
             0,
             0,
             0});
@@ -946,7 +946,7 @@
       // 
       this.peopleFramesNumeric.Location = new System.Drawing.Point(543, 48);
       this.peopleFramesNumeric.Maximum = new decimal(new int[] {
-            20,
+            300,
             0,
             0,
             0});
@@ -1273,7 +1273,7 @@
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(865, 486);
+      this.ClientSize = new System.Drawing.Size(865, 498);
       this.Controls.Add(this.label9);
       this.Controls.Add(this.areaAdjustButton);
       this.Controls.Add(this.heighNumeric);

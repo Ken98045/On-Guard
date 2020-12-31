@@ -20,13 +20,20 @@ namespace SAAI
       TimeSpan elapsed = DateTime.Now - LastSent;
       if (elapsed.TotalSeconds >= CooldownTime)
       {
+        // Dbg.Write("CooldownTracker CountdownExpired: " + elapsed.TotalSeconds.ToString());
         notify = true;
+        Reset();
+      }
+      else
+      {
+        // Dbg.Write("CooldownTracker CooldownExpired - NOT Expired: " + elapsed.TotalSeconds.ToString());
       }
       return notify;
     }
 
     public virtual void Reset()
     {
+      // Dbg.Write("Cooldown reset");
       LastSent = DateTime.Now;
     }
 
@@ -47,13 +54,13 @@ namespace SAAI
     public UrlCooldown(int cooldown)
     {
       CooldownTime = cooldown;
-      LastSent = DateTime.Now - TimeSpan.FromHours(1);
+      LastSent = DateTime.Now - TimeSpan.FromHours(1);  // make it far in the past to ensure the first trigger
     }
 
     public UrlCooldown(UrlCooldown src)
     {
       CooldownTime = src.CooldownTime;
-      LastSent = src.LastSent;  // TODO: remove
+      LastSent = src.LastSent;  // make it far in the past to ensure the first trigger
     }
 
     public int TimeSinceSend()
@@ -77,13 +84,13 @@ namespace SAAI
     public MQTTCoolDown(int cooldown)
     {
       CooldownTime = cooldown;
-      LastSent = DateTime.Now - TimeSpan.FromHours(2);
+      LastSent = DateTime.Now - TimeSpan.FromHours(2);  // make it far in the past to ensure the first trigger
     }
 
     public MQTTCoolDown(UrlCooldown src)
     {
       CooldownTime = src.CooldownTime;
-      LastSent = src.LastSent;  // TODO: remove
+      LastSent = src.LastSent - TimeSpan.FromHours(2);  // make it far in the past to ensure the first trigger
     }
 
     public int TimeSinceSend()
@@ -107,13 +114,13 @@ namespace SAAI
     public EmailCooldown(int cooldown)
     {
       CooldownTime = cooldown;
-      LastSent = DateTime.Now - TimeSpan.FromHours(1);
+      LastSent = DateTime.Now - TimeSpan.FromHours(2);
     }
 
     public EmailCooldown(EmailCooldown src)
     {
       CooldownTime = src.CooldownTime;
-      LastSent = src.LastSent;
+      LastSent = src.LastSent - TimeSpan.FromHours(2);  // make it far in the past to ensure the first trigger
     }
 
 
@@ -131,6 +138,10 @@ namespace SAAI
       if (elapsed.TotalMinutes >= CooldownTime)
       {
         notify = true;
+        Reset();
+      }
+      else
+      {
       }
       return notify;
     }

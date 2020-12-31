@@ -117,7 +117,7 @@ namespace SAAI
     public CameraData(string prefix, string path)
     {
       ID = Guid.NewGuid();
-      FrameHistory = new History(600);
+      FrameHistory = new History(300);
       LiveContactData = new CameraContactData();
       CameraPrefix = prefix;
       Path = path;
@@ -135,7 +135,7 @@ namespace SAAI
       }
 
       ID = Guid.NewGuid();
-      FrameHistory = new History(600);
+      FrameHistory = new History(300);
       CameraPrefix = src.CameraPrefix;
       Path = src.Path;
       RegistrationX = src.RegistrationX;
@@ -157,7 +157,7 @@ namespace SAAI
       AccumulateLock = new object();
       if (null == FrameHistory)
       {
-        FrameHistory = new History(600);
+        FrameHistory = new History(300);
       }
 
       AOI = new AreasOfInterestCollection(CameraPrefix);

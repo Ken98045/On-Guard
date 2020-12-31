@@ -100,31 +100,57 @@ namespace SAAI
 
     private void AddUrlButton_Click(object sender, EventArgs e)
     {
-      using (AddUrlDialog dlg = new AddUrlDialog())
+      AddEditURL(string.Empty, 0);
+    }
+
+    private void OnActivateURL(object sender, EventArgs e)
+    {
+      ListViewItem item = urlsList.Items[urlsList.SelectedIndices[0]];
+      AddEditURL(item.SubItems[0].Text, int.Parse(item.SubItems[1].Text));
+    }
+
+    private void AddEditURL(string url, int cooldown)
+    {
+      using (AddUrlDialog dlg = new AddUrlDialog(url, cooldown))
       {
         if (dlg.ShowDialog() == DialogResult.OK)
         {
-          UrlOptions opt = new UrlOptions(dlg.Url, dlg.CoolDown)
+          ListViewItem item;
+          int index = 0;
+          if (string.IsNullOrEmpty(url))
           {
-            Active = true
-          };
+            item = new ListViewItem(new string[] { dlg.Url, dlg.CoolDown.ToString() })
+            {
+              Checked = true
+            };
 
-          ListViewItem item = new ListViewItem(new string[] { dlg.Url, dlg.CoolDown.ToString() })
+            urlsList.Items.Add(item);
+            index = item.Index;
+          }
+          else
           {
-            Checked = true
-          };
+            item = urlsList.Items[urlsList.SelectedIndices[0]];
+            index = item.Index;
+            item.SubItems[0].Text = dlg.Url;  // update the stuff
+            item.SubItems[1].Text = dlg.CoolDown.ToString();
+          }
 
-          item.Tag = opt;   // we don't really track changes here because there is nothing to track, but....
-          urlsList.Items.Add(item);
-          int index = item.Index;
-          urlsList.Items[index].Tag = new UrlOptions(opt.Url, opt.CoolDown.CooldownTime);
+          // item.Tag = opt;
+
+          if (string.IsNullOrEmpty(url))
+          {
+          }
+
+          urlsList.Items[index].Tag = new UrlOptions(item.SubItems[0].Text, int.Parse(item.SubItems[1].Text));
 
           urlsList.Items[index].Focused = true;
           urlsList.Items[index].Selected = true;
 
         }
       }
+
     }
+
 
     private void RemoveUrlButton_Click(object sender, EventArgs e)
     {

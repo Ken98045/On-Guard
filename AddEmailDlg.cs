@@ -36,5 +36,10 @@ namespace SAAI
     {
       DialogResult = DialogResult.Cancel;
     }
+
+    private void emailAddressList_MouseDoubleClick(object sender, MouseEventArgs e)
+    {
+      OkButton_Click(sender, e);
+    }
   }
 }

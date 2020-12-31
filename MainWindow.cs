@@ -1313,7 +1313,6 @@ namespace SAAI
           /*if (ooi.Area.Notifications.mqttCooldown.CooldownExpired())
           {*/
           await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame).ConfigureAwait(false);
-          ooi.Area.Notifications.mqttCooldown.Reset();
           /*}*/
         }
 
@@ -1324,7 +1323,6 @@ namespace SAAI
 
             if (notifyUrl.CoolDown.CooldownExpired())
             {
-              notifyUrl.CoolDown.Reset();
               urlsToNotify.Add(notifyUrl.Url);
             }
             else
@@ -1760,13 +1758,18 @@ namespace SAAI
                     frame.Interesting = interesting;
                     Dbg.Write(interesting.Count.ToString() + " interesting objects found in file: " + pendingItem.PendingFile);
 
-                    if (interesting.Count > 0) StartMotionTimeout(pendingItem);
+
+                    if (interesting.Count > 0)
+                    {
+                      StartMotionTimeout(pendingItem);
+                    }
 
                     frame.Item.CamData.FrameHistory.Add(frame);
                     if (frame.Interesting.Count > 0)
                     {
                       var myTask = Task.Run(() => AddToMotionFramesTable(pendingItem));
                     }
+
                     Notify(frame);
                   }
                 }
@@ -1792,11 +1795,20 @@ namespace SAAI
       {
         if (null == pending.CamData.MotionStoppedTimer)
         {
-          pending.CamData.MotionStoppedTimer = new System.Threading.Timer(MotionStoppedNotify, pending.CamData, pending.CamData.NoMotionTimeout * 1000, -1);
+          try
+          {
+            pending.CamData.MotionStoppedTimer = new System.Threading.Timer(MotionStoppedNotify, pending.CamData, pending.CamData.NoMotionTimeout * 1000, -1);
+          }
+          catch { }
         }
         else
         {
-          pending.CamData.MotionStoppedTimer.Change(pending.CamData.NoMotionTimeout * 1000, -1);  // restart the timer
+          try
+          {
+            pending.CamData.MotionStoppedTimer.Dispose();
+            pending.CamData.MotionStoppedTimer = new System.Threading.Timer(MotionStoppedNotify, pending.CamData, pending.CamData.NoMotionTimeout * 1000, -1);
+          }
+          catch { }
         }
       }
     }
@@ -1809,6 +1821,7 @@ namespace SAAI
       {
         camera.MotionStoppedTimer.Dispose();
         camera.Monitor = null;
+        camera.MotionStoppedTimer = null;
       }
 
       foreach (var area in camera.AOI)
@@ -1862,7 +1875,7 @@ namespace SAAI
           }
           catch (SqlException ex)
           {
-            Dbg.Write("MainWindow - AddMotionFramesTable - " + ex.Message);
+            Dbg.Write("MainWindow - AddMotionFramesTable SQL Exception - " + ex.Message);
           }
         }
       }

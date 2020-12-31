@@ -498,7 +498,7 @@ namespace SAAI
 
             var jsonString = await output.Content.ReadAsStringAsync().ConfigureAwait(false);
             TimeSpan processTime = pending.TimeProcessingByAI();
-            Console.WriteLine("Process Time: " + processTime.TotalMilliseconds.ToString());
+            // Console.WriteLine("Process Time: " + processTime.TotalMilliseconds.ToString());
             Response response = JsonConvert.DeserializeObject<Response>(jsonString);
 
             if (response.Predictions != null && response.Predictions.Length > 0)

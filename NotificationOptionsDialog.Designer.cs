@@ -47,11 +47,11 @@
       this.UseMQTTBox = new System.Windows.Forms.CheckBox();
       this.bs = new System.Windows.Forms.BindingSource(this.components);
       this.panel3 = new System.Windows.Forms.Panel();
+      this.label5 = new System.Windows.Forms.Label();
+      this.label4 = new System.Windows.Forms.Label();
+      this.NoMotionUrlNotify = new System.Windows.Forms.TextBox();
       this.NoMotionMQTTCheck = new System.Windows.Forms.CheckBox();
       this.label1 = new System.Windows.Forms.Label();
-      this.NoMotionUrlNotify = new System.Windows.Forms.TextBox();
-      this.label4 = new System.Windows.Forms.Label();
-      this.label5 = new System.Windows.Forms.Label();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.bs)).BeginInit();
@@ -64,6 +64,7 @@
       this.urlsList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
             this.columnHeader1});
+      this.urlsList.FullRowSelect = true;
       this.urlsList.GridLines = true;
       this.urlsList.HideSelection = false;
       this.urlsList.LabelEdit = true;
@@ -74,6 +75,7 @@
       this.urlsList.TabIndex = 2;
       this.urlsList.UseCompatibleStateImageBehavior = false;
       this.urlsList.View = System.Windows.Forms.View.Details;
+      this.urlsList.ItemActivate += new System.EventHandler(this.OnActivateURL);
       // 
       // columnHeader3
       // 
@@ -219,7 +221,7 @@
       this.UseMQTTBox.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
       this.UseMQTTBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.UseMQTTBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.UseMQTTBox.Location = new System.Drawing.Point(310, 436);
+      this.UseMQTTBox.Location = new System.Drawing.Point(310, 433);
       this.UseMQTTBox.Name = "UseMQTTBox";
       this.UseMQTTBox.Size = new System.Drawing.Size(197, 26);
       this.UseMQTTBox.TabIndex = 0;
@@ -242,6 +244,34 @@
       this.panel3.Name = "panel3";
       this.panel3.Size = new System.Drawing.Size(787, 100);
       this.panel3.TabIndex = 31;
+      // 
+      // label5
+      // 
+      this.label5.AutoSize = true;
+      this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label5.Location = new System.Drawing.Point(120, 20);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(547, 15);
+      this.label5.TabIndex = 34;
+      this.label5.Text = "Action on Motion Stopped (Timeout is per camera and is set via the camera setting" +
+    "s)";
+      // 
+      // label4
+      // 
+      this.label4.AutoSize = true;
+      this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label4.Location = new System.Drawing.Point(6, 58);
+      this.label4.Name = "label4";
+      this.label4.Size = new System.Drawing.Size(91, 15);
+      this.label4.TabIndex = 33;
+      this.label4.Text = "URL to Notify";
+      // 
+      // NoMotionUrlNotify
+      // 
+      this.NoMotionUrlNotify.Location = new System.Drawing.Point(111, 57);
+      this.NoMotionUrlNotify.Name = "NoMotionUrlNotify";
+      this.NoMotionUrlNotify.Size = new System.Drawing.Size(404, 20);
+      this.NoMotionUrlNotify.TabIndex = 2;
       // 
       // NoMotionMQTTCheck
       // 
@@ -268,41 +298,13 @@
       this.label1.TabIndex = 32;
       this.label1.Text = "Motion Stopped Notifications";
       // 
-      // NoMotionUrlNotify
-      // 
-      this.NoMotionUrlNotify.Location = new System.Drawing.Point(111, 57);
-      this.NoMotionUrlNotify.Name = "NoMotionUrlNotify";
-      this.NoMotionUrlNotify.Size = new System.Drawing.Size(404, 20);
-      this.NoMotionUrlNotify.TabIndex = 2;
-      // 
-      // label4
-      // 
-      this.label4.AutoSize = true;
-      this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label4.Location = new System.Drawing.Point(6, 58);
-      this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(91, 15);
-      this.label4.TabIndex = 33;
-      this.label4.Text = "URL to Notify";
-      // 
-      // label5
-      // 
-      this.label5.AutoSize = true;
-      this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label5.Location = new System.Drawing.Point(120, 20);
-      this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(547, 15);
-      this.label5.TabIndex = 34;
-      this.label5.Text = "Action on Motion Stopped (Timeout is per camera and is set via the camera setting" +
-    "s)";
-      // 
       // NotificationOptionsDialog
       // 
       this.AcceptButton = this.okButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(816, 535);
+      this.ClientSize = new System.Drawing.Size(816, 517);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.panel3);
       this.Controls.Add(this.UseMQTTBox);

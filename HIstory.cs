@@ -55,7 +55,7 @@ namespace SAAI
       lock (_lock)
       {
         DateTime createTime = File.GetCreationTime(frame.Item.PendingFile);
-        _historyList[createTime] = frame;
+        _historyList[createTime] = new Frame(frame);
       }
     }
 
@@ -104,20 +104,21 @@ namespace SAAI
         }
 
         // remove old frames as determined by the history length.
-        lock (_lock)
+        while (_historyList.Count > 0)
         {
-          while (_historyList.Count > 0)
+          TimeSpan span = DateTime.Now - _historyList.Keys[0];
+          if (span.TotalSeconds >= _historyLength)
           {
-            TimeSpan span = DateTime.Now - _historyList.Keys[0];
-            if (span.TotalSeconds >= _historyLength)
+            Frame frameToDelete = _historyList.Values[0];
+            lock (_historyList)
             {
               _historyList.RemoveAt(0);
-              Thread.Sleep(0);  // don't be hog, not really a problem, but....
             }
-            else
-            {
-              break;
-            }  
+            Thread.Sleep(0);  // don't be hog, not really a problem, but....
+          }
+          else
+          {
+            break;
           }
         }
       }
