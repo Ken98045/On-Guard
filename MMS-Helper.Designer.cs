@@ -95,16 +95,17 @@
       this.label2.TabIndex = 3;
       this.label2.Text = resources.GetString("label2.Text");
       // 
-      // MMS_Helper
+      // MMSHelper
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+      this.AutoScroll = true;
       this.ClientSize = new System.Drawing.Size(488, 827);
       this.Controls.Add(this.label2);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.HelperCancelButton);
       this.Controls.Add(this.mmsListView);
-      this.Name = "MMS_Helper";
+      this.Name = "MMSHelper";
       this.Text = "MMS_Helper";
       this.ResumeLayout(false);
 

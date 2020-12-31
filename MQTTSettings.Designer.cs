@@ -327,10 +327,11 @@ namespace SAAI
       // MQTTSettings
       // 
       this.AcceptButton = this.OKButton;
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+      this.AutoScroll = true;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(581, 802);
+      this.ClientSize = new System.Drawing.Size(596, 802);
       this.Controls.Add(this.label14);
       this.Controls.Add(this.StoppedPayloadText);
       this.Controls.Add(this.label13);
