@@ -28,6 +28,10 @@ using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Unsubscribing;
+using System.Drawing.Imaging;
+using System.Resources;
+using System.Collections;
+using System.Globalization;
 
 namespace SAAI
 {
@@ -1525,7 +1529,7 @@ namespace SAAI
           cameraCombo.Items.Add(cam);
         }
 
-        if (null != _currentCamera && !string.IsNullOrEmpty(_currentCamera.CameraPrefix)) 
+        if (null != _currentCamera && !string.IsNullOrEmpty(_currentCamera.CameraPrefix))
         {
           cameraCombo.SelectedItem = _currentCamera;
         }
@@ -2400,6 +2404,54 @@ namespace SAAI
       _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Before);
       _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.After);
       _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Both);
+    }
+
+    private async void testImagesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (MessageBox.Show(this, "You are about to send test images to all cameras.  There is no guarantee that this images will match your Areas of Interest.  After the test pictures are saved your workspace will refresh.  Proceed?", "Send Test Images", MessageBoxButtons.YesNo) == DialogResult.Yes)
+      {
+        foreach (var cam in _allCameras.CameraDictionary)
+        {
+          string path = cam.Value.Path;
+          string[] pics = new string[7];
+          pics[0] = "Street1";
+          pics[1] = "Street2";
+          pics[2] = "Street3";
+          pics[3] = "Street4";
+          pics[4] = "Street5";
+          pics[5] = "Street6";
+          pics[6] = "Street7";
+
+
+          ResourceManager MyResourceClass = new ResourceManager(typeof(Resources));
+
+          ResourceSet resourceSet = MyResourceClass.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+          foreach (DictionaryEntry entry in resourceSet)
+          {
+            string resourceKey = entry.Key.ToString();
+            object resource = entry.Value;
+          }
+
+          foreach (string pic in pics)
+          {
+            object O = Resources.ResourceManager.GetObject(pic); //Return an object from the image chan1.png in the project
+            using (Bitmap bm = (Bitmap)O)
+            {
+              using (MemoryStream mem = new MemoryStream())
+              {
+                string fullPath = Path.Combine(path, cam.Value.CameraPrefix);
+                fullPath += pic;
+                fullPath += DateTime.Now.Ticks.ToString() + ".jpg";
+                bm.Save(fullPath, ImageFormat.Jpeg);
+                // bm.Save(mem, ImageFormat.Jpeg);
+              }
+            }
+          }
+        }
+      }
+
+      await Task.Delay(1000 * 3);
+      Refresh_Click(null, null);
     }
   }
 

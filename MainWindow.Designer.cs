@@ -116,6 +116,7 @@
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.logFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+      this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).BeginInit();
       this.LiveOnDemandGroup.SuspendLayout();
@@ -785,7 +786,8 @@
             this.cameraSettingsToolStripMenuItem1,
             this.outgoingEmailServerToolStripMenuItem1,
             this.addEditEmailAddressesToolStripMenuItem1,
-            this.mQTTSettingsToolStripMenuItem});
+            this.mQTTSettingsToolStripMenuItem,
+            this.testImagesToolStripMenuItem});
       this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
       this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(46, 20);
       this.toolsToolStripMenuItem1.Text = "&Tools";
@@ -856,6 +858,13 @@
       this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
       this.notifyIcon.Text = "On Guard";
       this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon_MouseDoubleClick);
+      // 
+      // testImagesToolStripMenuItem
+      // 
+      this.testImagesToolStripMenuItem.Name = "testImagesToolStripMenuItem";
+      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.testImagesToolStripMenuItem.Text = "Test Images";
+      this.testImagesToolStripMenuItem.Click += new System.EventHandler(this.testImagesToolStripMenuItem_Click);
       // 
       // MainWindow
       // 
@@ -968,6 +977,7 @@
     private System.Windows.Forms.ToolStripMenuItem logFileToolStripMenuItem;
     private System.Windows.Forms.CheckBox motionOnlyCheckbox;
     private System.Windows.Forms.ToolStripMenuItem mQTTSettingsToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem testImagesToolStripMenuItem;
   }
 }
 

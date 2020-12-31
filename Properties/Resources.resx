@@ -139,4 +139,25 @@
   <data name="OnGuard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\OnGuard.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Street1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\street1.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Street2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Street2.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Street3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Street3.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Street4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Street4.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Street5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Street5.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Street6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Street6.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Street7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Street7.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
