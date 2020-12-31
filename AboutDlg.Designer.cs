@@ -104,7 +104,7 @@
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(31, 13);
       this.label5.TabIndex = 7;
-      this.label5.Text = "1.4.3";
+      this.label5.Text = "1.4.4";
       // 
       // AboutDlg
       // 
