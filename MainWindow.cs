@@ -1304,8 +1304,10 @@ namespace SAAI
         if (!first)
         {
           objectsFound += ", ";
-          first = false;
         }
+
+        first = false;
+
         objectsFound += ooi.Area.AOIName;
 
         if (ooi.Area.Notifications.UseMQTT)

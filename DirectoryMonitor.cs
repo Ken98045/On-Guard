@@ -19,11 +19,38 @@ namespace SAAI
     readonly CameraData cameraData;
     public DirectoryMonitor(CameraData location)
     {
-      Watcher = new FileSystemWatcher(location.Path, location.CameraPrefix + "*.jpg");
-      cameraData = location;
-      Watcher.Changed += FileChanged;
-      Watcher.NotifyFilter = NotifyFilters.LastWrite;
-      Watcher.EnableRaisingEvents = true;
+      if (location == null || string.IsNullOrEmpty(location.Path))
+      {
+        string msg = "DirectoryMonitor constructor: The camera is null or the path is null/empty";
+
+        Dbg.Write(msg);
+        ArgumentException ex = new ArgumentException(msg);
+        throw ex;
+      }
+
+      if (!Directory.Exists(location.Path))
+      {
+        string msg = "DirectoryMonitor constructor: The directory being monitored does not exist: " + location.Path + "  Check your camera settings!";
+        Dbg.Write(msg);
+        ArgumentException ex = new ArgumentException(msg);
+        throw ex;
+
+      }
+
+      try
+      {
+        Watcher = new FileSystemWatcher(location.Path, location.CameraPrefix + "*.jpg");
+        cameraData = location;
+        Watcher.Changed += FileChanged;
+        Watcher.NotifyFilter = NotifyFilters.LastWrite;
+        Watcher.EnableRaisingEvents = true;
+      }
+#pragma warning disable CA1031 // Do not catch general exception types
+      catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
+      {
+        Dbg.Write("DirectoryMonitor constructor exception: " + ex.Message);
+      }
     }
 
     // You can get at least 2 notifications for each new image file.  One when it is 
