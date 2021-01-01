@@ -123,7 +123,7 @@
       this.Controls.Add(this.EditButton);
       this.Controls.Add(this.AddButton);
       this.Name = "EmailAddressesDialog";
-      this.Text = "Add/Edit/Delete Emal Addresses";
+      this.Text = "Add/Edit/Delete Email Addresses";
       this.ResumeLayout(false);
 
     }

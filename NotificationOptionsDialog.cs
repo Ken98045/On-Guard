@@ -36,6 +36,7 @@ namespace SAAI
 
         NoMotionUrlNotify.Text = area.Notifications.NoMotionUrlNotify;
         NoMotionMQTTCheck.Checked = area.Notifications.NoMotionMQTTNotify;
+        UseMQTTBox.Checked = area.Notifications.UseMQTT;
 
       }
 

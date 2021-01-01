@@ -88,7 +88,17 @@ namespace SAAI
       Urls = new List<UrlOptions>();
       Email = new List<string>();
       UseMQTT = false;
+      NoMotionMQTTNotify = false;
       mqttCooldown = new MQTTCoolDown(Settings.Default.MQTTCoolDown);
+    }
+
+    public AreaNotificationOption(AreaNotificationOption src)
+    {
+      Urls = new List<UrlOptions>(src.Urls);
+      Email = new List<string>(src.Email);
+      UseMQTT = src.UseMQTT;
+      NoMotionMQTTNotify = src.NoMotionMQTTNotify;
+      mqttCooldown = new MQTTCoolDown(src.mqttCooldown.CooldownTime);
     }
   }
 }

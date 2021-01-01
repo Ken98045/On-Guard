@@ -23,5 +23,26 @@ namespace SAAI
     public int MinimumYSize { get; set; }   //In part this regulates how close the object is to the camera.  I don't see a reason for maximum size
 
     public ImageObjectType ObjectType { get => objectType; set => objectType = value; } // people, animals, cars, etc.
+
+    public ObjectCharacteristics()
+    {
+      objectType = ImageObjectType.People;
+      Confidence = 90;
+      MinPercentOverlap = 50;
+      NumberOfFrames = 1;
+      MinimumXSize = 0;
+      MinimumYSize = 0;
+
+    }
+
+    public ObjectCharacteristics(ObjectCharacteristics src)
+    {
+      objectType = src.objectType;
+      Confidence = src.Confidence;
+      MinPercentOverlap = src.MinPercentOverlap;
+      NumberOfFrames = src.NumberOfFrames;
+      MinimumXSize = src.MinimumXSize;
+      MinimumYSize = src.MinimumYSize;
+    }
   }
 }

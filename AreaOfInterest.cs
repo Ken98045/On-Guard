@@ -77,37 +77,10 @@ namespace SAAI
       OriginalYResolution = src.OriginalYResolution;
       MovementType = src.MovementType;
       ID = src.ID;
-      Notifications = new AreaNotificationOption();
+      Notifications = new AreaNotificationOption(src.Notifications);
       
-      foreach (var email in src.Notifications.Email)
-      {
-        Notifications.Email.Add(email);
-      }
 
-      foreach (var url in src.Notifications.Urls)
-      {
-        UrlOptions opt = new UrlOptions(url.Url, url.CoolDown.CooldownTime)
-        {
-          Active = url.Active,
-          CoolDown = new UrlCooldown(url.CoolDown)
-        };
-        Notifications.Urls.Add(opt);
-      }
-
-      SearchCriteria = new List<ObjectCharacteristics>();
-      foreach (var criteria in src.SearchCriteria)
-      {
-        ObjectCharacteristics oc = new ObjectCharacteristics
-        {
-          Confidence = criteria.Confidence,
-          MinimumXSize = criteria.MinimumXSize,
-          MinimumYSize = criteria.MinimumYSize,
-          MinPercentOverlap = criteria.MinPercentOverlap,
-          NumberOfFrames = criteria.NumberOfFrames,
-          ObjectType = criteria.ObjectType
-        };
-        SearchCriteria.Add(oc);
-      }
+      SearchCriteria = new List<ObjectCharacteristics>(src.SearchCriteria);
     }
 
     // Get a rectangle that is adjusted according to the resolution when the area was created.

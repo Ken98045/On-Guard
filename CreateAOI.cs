@@ -238,7 +238,7 @@ namespace SAAI
 
         if (peopleCheck.Checked)
         {
-          ObjectCharacteristics c = new ObjectCharacteristics
+          ObjectCharacteristics c = new ObjectCharacteristics()
           {
             ObjectType = ImageObjectType.People,
             Confidence = (int)peopleConfidenceNumeric.Value,
