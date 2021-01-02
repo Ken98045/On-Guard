@@ -363,7 +363,6 @@
       <DependentUpon>DBMotionFrames.mdf</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="street1.jpg" />
     <None Include="Street2.jpg" />
     <None Include="Street3.jpg" />
     <None Include="Street4.jpg" />

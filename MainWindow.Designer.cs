@@ -112,11 +112,11 @@
       this.outgoingEmailServerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.addEditEmailAddressesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.mQTTSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.logFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-      this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).BeginInit();
       this.LiveOnDemandGroup.SuspendLayout();
@@ -631,7 +631,7 @@
       this.toolsPanel.Controls.Add(this.buttonRight);
       this.toolsPanel.Controls.Add(this.goToFileNameButton);
       this.toolsPanel.Controls.Add(this.buttonLeft);
-      this.toolsPanel.Location = new System.Drawing.Point(16, 978);
+      this.toolsPanel.Location = new System.Drawing.Point(16, 937);
       this.toolsPanel.Name = "toolsPanel";
       this.toolsPanel.Size = new System.Drawing.Size(1285, 155);
       this.toolsPanel.TabIndex = 38;
@@ -672,7 +672,7 @@
       this.mainPanel.Controls.Add(this.toolsPanel);
       this.mainPanel.Location = new System.Drawing.Point(0, 28);
       this.mainPanel.Name = "mainPanel";
-      this.mainPanel.Size = new System.Drawing.Size(1299, 1143);
+      this.mainPanel.Size = new System.Drawing.Size(1299, 1102);
       this.mainPanel.TabIndex = 39;
       // 
       // picturePanel
@@ -685,7 +685,7 @@
       this.picturePanel.Controls.Add(this.pictureImage);
       this.picturePanel.Location = new System.Drawing.Point(1, 1);
       this.picturePanel.Name = "picturePanel";
-      this.picturePanel.Size = new System.Drawing.Size(1286, 963);
+      this.picturePanel.Size = new System.Drawing.Size(1286, 922);
       this.picturePanel.TabIndex = 39;
       // 
       // xTestToolStripMenuItem
@@ -716,6 +716,7 @@
       // 
       // menuStrip2
       // 
+      this.menuStrip2.ImageScalingSize = new System.Drawing.Size(20, 20);
       this.menuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem1,
             this.showToolStripMenuItem1,
@@ -827,6 +828,13 @@
       this.mQTTSettingsToolStripMenuItem.Text = "MQTT Settings";
       this.mQTTSettingsToolStripMenuItem.Click += new System.EventHandler(this.MQTTSettingsToolStripMenuItem_Click);
       // 
+      // testImagesToolStripMenuItem
+      // 
+      this.testImagesToolStripMenuItem.Name = "testImagesToolStripMenuItem";
+      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.testImagesToolStripMenuItem.Text = "Test Images";
+      this.testImagesToolStripMenuItem.Click += new System.EventHandler(this.testImagesToolStripMenuItem_Click);
+      // 
       // helpToolStripMenuItem1
       // 
       this.helpToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -859,18 +867,11 @@
       this.notifyIcon.Text = "On Guard";
       this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon_MouseDoubleClick);
       // 
-      // testImagesToolStripMenuItem
-      // 
-      this.testImagesToolStripMenuItem.Name = "testImagesToolStripMenuItem";
-      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-      this.testImagesToolStripMenuItem.Text = "Test Images";
-      this.testImagesToolStripMenuItem.Click += new System.EventHandler(this.testImagesToolStripMenuItem_Click);
-      // 
       // MainWindow
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.ClientSize = new System.Drawing.Size(1313, 1174);
+      this.ClientSize = new System.Drawing.Size(1313, 1133);
       this.Controls.Add(this.numberOfImagesLabel);
       this.Controls.Add(this.label10);
       this.Controls.Add(this.numberOfFilesTextBox);

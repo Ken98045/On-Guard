@@ -1494,7 +1494,10 @@ namespace SAAI
       {
         if (cam.Monitoring)
         {
-          cam.Monitor.OnNewImage -= OnCameraImage;
+          if (null != cam.Monitor)
+          {
+            cam.Monitor.OnNewImage -= OnCameraImage;
+          }
         }
       }
 
@@ -1851,24 +1854,21 @@ namespace SAAI
       {
         if (area.Notifications.NoMotionMQTTNotify)
         {
-
-
+          Dbg.Write("Motion Stopped MQTT - " + camera.CameraPrefix + " - " + area.AOIName);
           string topic = Settings.Default.MQTTStoppedTopic;
-          string payload = Settings.Default.MQTTStoppedPayload;
-
           topic = topic.Replace("{Camera}", camera.CameraPrefix);
           topic = topic.Replace("{Motion}", camera.CameraPrefix);
+
+          string payload = Settings.Default.MQTTStoppedPayload;
           payload = payload.Replace("{Motion}", "off");
-
-
           await MQTTPublish.Publish(topic, payload).ConfigureAwait(false);
         }
 
         if (!string.IsNullOrEmpty(area.Notifications.NoMotionUrlNotify))
         {
+          Dbg.Write("Motion Stopped HTTP - " + camera.CameraPrefix + " - " + area.AOIName);
           await NotifyUrl(area.Notifications.NoMotionUrlNotify).ConfigureAwait(false);
         }
-
       }
     }
 

@@ -338,12 +338,6 @@ namespace SAAI
         }
 
         _rectangle = new Rectangle((int)xNumeric.Value, (int)yNumeric.Value, (int)widthNumeric.Value, (int)heighNumeric.Value);
-        Rectangle beforeIntersect = _rectangle;
-        _rectangle = Rectangle.Intersect(_rectangle, new Rectangle(0, 0, BitmapResolution.XResolution, BitmapResolution.YResolution));  // ensure that what the user entered was sane
-        if (beforeIntersect != _rectangle)
-        {
-          MessageBox.Show("The area of the Area of Interest has been adjusted to fit onto the screen.", "Area Adjusted!");
-        }
         Area.AreaRect = _rectangle;
         Area.OriginalXResolution = BitmapResolution.XResolution;
         Area.OriginalYResolution = BitmapResolution.YResolution;

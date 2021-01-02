@@ -1221,11 +1221,6 @@
             0,
             0,
             0});
-      this.widthNumeric.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
       this.widthNumeric.Name = "widthNumeric";
       this.widthNumeric.Size = new System.Drawing.Size(57, 20);
       this.widthNumeric.TabIndex = 17;
@@ -1240,11 +1235,6 @@
       this.heighNumeric.Location = new System.Drawing.Point(585, 410);
       this.heighNumeric.Maximum = new decimal(new int[] {
             10000,
-            0,
-            0,
-            0});
-      this.heighNumeric.Minimum = new decimal(new int[] {
-            1,
             0,
             0,
             0});

@@ -56,6 +56,7 @@ namespace SAAI
       this.label13 = new System.Windows.Forms.Label();
       this.StoppedPayloadText = new System.Windows.Forms.TextBox();
       this.label14 = new System.Windows.Forms.Label();
+      this.label15 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.PortNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.CoolDownNumeric)).BeginInit();
       this.SuspendLayout();
@@ -310,7 +311,7 @@ namespace SAAI
       // 
       this.StoppedPayloadText.Location = new System.Drawing.Point(162, 728);
       this.StoppedPayloadText.Name = "StoppedPayloadText";
-      this.StoppedPayloadText.Size = new System.Drawing.Size(404, 20);
+      this.StoppedPayloadText.Size = new System.Drawing.Size(190, 20);
       this.StoppedPayloadText.TabIndex = 22;
       this.StoppedPayloadText.Text = "{Motion}";
       // 
@@ -324,6 +325,15 @@ namespace SAAI
       this.label14.TabIndex = 23;
       this.label14.Text = "Motion Payload:";
       // 
+      // label15
+      // 
+      this.label15.AutoSize = true;
+      this.label15.Location = new System.Drawing.Point(358, 731);
+      this.label15.Name = "label15";
+      this.label15.Size = new System.Drawing.Size(138, 13);
+      this.label15.TabIndex = 24;
+      this.label15.Text = "Only {Motion} or Literal Text";
+      // 
       // MQTTSettings
       // 
       this.AcceptButton = this.OKButton;
@@ -332,6 +342,7 @@ namespace SAAI
       this.AutoScroll = true;
       this.CancelButton = this.cancelButton;
       this.ClientSize = new System.Drawing.Size(596, 802);
+      this.Controls.Add(this.label15);
       this.Controls.Add(this.label14);
       this.Controls.Add(this.StoppedPayloadText);
       this.Controls.Add(this.label13);
@@ -395,5 +406,6 @@ namespace SAAI
     private System.Windows.Forms.Label label13;
     private System.Windows.Forms.TextBox StoppedPayloadText;
     private System.Windows.Forms.Label label14;
+    private System.Windows.Forms.Label label15;
   }
 }
