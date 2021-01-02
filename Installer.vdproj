@@ -15,13 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_1D471CE4FD5E5157D13078CB042C411F"
+        "MsmKey" = "8:_3F3C6C4B2D7B56431DE929DB4EAEC533"
         "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_3F3C6C4B2D7B56431DE929DB4EAEC533"
+        "MsmKey" = "8:_4F60E9FEF33C3D86051C5581D91C2B34"
         "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -45,7 +45,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_AD678CE85821B09746A21941AD49C022"
+        "MsmKey" = "8:_F3793990BA6CB58F506FEF8CC4A32AE4"
+        "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_F3793990BA6CB58F506FEF8CC4A32AE4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -58,19 +70,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1D471CE4FD5E5157D13078CB042C411F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_AD678CE85821B09746A21941AD49C022"
+        "OwnerKey" = "8:_4F60E9FEF33C3D86051C5581D91C2B34"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -105,10 +105,30 @@
                     "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
                     "ProductCode" = "8:.NETFramework,Version=v4.7.2"
                     }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.SqlServer.SQLSysClrTypes.12.0.x64"
+                    {
+                    "Name" = "8:Microsoft® System CLR Types for SQL Server® 2014 (x64)"
+                    "ProductCode" = "8:Microsoft.SqlServer.SQLSysClrTypes.12.0.x64"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.SqlServer.SQLSysClrTypes.12.0.x86"
+                    {
+                    "Name" = "8:Microsoft® System CLR Types for SQL Server® 2014 (x86)"
+                    "ProductCode" = "8:Microsoft.SqlServer.SQLSysClrTypes.12.0.x86"
+                    }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.SqlServer.SqlLocalDB.15.0"
                     {
                     "Name" = "8:SQL Server 2019 Express LocalDB"
                     "ProductCode" = "8:Microsoft.SqlServer.SqlLocalDB.15.0"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Visual.C++.14.0.arm64"
+                    {
+                    "Name" = "8:Visual C++ \"14\" Runtime Libraries (ARM64)"
+                    "ProductCode" = "8:Microsoft.Visual.C++.14.0.arm64"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Visual.C++.14.0.x64"
+                    {
+                    "Name" = "8:Visual C++ \"14\" Runtime Libraries (x64)"
+                    "ProductCode" = "8:Microsoft.Visual.C++.14.0.x64"
                     }
                 }
             }
@@ -178,20 +198,20 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1D471CE4FD5E5157D13078CB042C411F"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3F3C6C4B2D7B56431DE929DB4EAEC533"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_1D471CE4FD5E5157D13078CB042C411F"
+                    "_3F3C6C4B2D7B56431DE929DB4EAEC533"
                     {
-                    "Name" = "8:Newtonsoft.Json.dll"
+                    "Name" = "8:System.Net.Http.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Newtonsoft.Json.dll"
+            "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CB628D0D56A842DF94CD2CA065E7A47D"
@@ -209,20 +229,20 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3F3C6C4B2D7B56431DE929DB4EAEC533"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_4F60E9FEF33C3D86051C5581D91C2B34"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_3F3C6C4B2D7B56431DE929DB4EAEC533"
+                    "_4F60E9FEF33C3D86051C5581D91C2B34"
                     {
-                    "Name" = "8:System.Net.Http.dll"
+                    "Name" = "8:Newtonsoft.Json.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:System.Net.Http.dll"
+            "SourcePath" = "8:Newtonsoft.Json.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CB628D0D56A842DF94CD2CA065E7A47D"
@@ -280,14 +300,14 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AD678CE85821B09746A21941AD49C022"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F3793990BA6CB58F506FEF8CC4A32AE4"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:MQTTnet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_AD678CE85821B09746A21941AD49C022"
+                    "_F3793990BA6CB58F506FEF8CC4A32AE4"
                     {
                     "Name" = "8:MQTTnet.dll"
                     "Attributes" = "3:512"
@@ -412,15 +432,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:On Guard"
-        "ProductCode" = "8:{09D8815D-F9D7-4A14-B938-8F4446BE1C54}"
-        "PackageCode" = "8:{D658AF85-0595-4957-9CC4-18D6CDFE0269}"
+        "ProductCode" = "8:{5D1B5840-051C-4BD6-81B6-C4E306CD847E}"
+        "PackageCode" = "8:{1CD09FFC-6843-43C2-9DB3-F136D976A692}"
         "UpgradeCode" = "8:{DCA433DA-BECE-4E39-AED0-767091896BEF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.2.1"
+        "ProductVersion" = "8:1.4.6"
         "Manufacturer" = "8:On Guard"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

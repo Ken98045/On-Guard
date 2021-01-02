@@ -28,6 +28,12 @@ namespace SAAI
       if (string.IsNullOrEmpty(serverText.Text))
       {
         MessageBox.Show("You must fill out the email server, the user name, and the password.");
+        DialogResult = DialogResult.None;
+      }
+      else if (!userText.Text.Contains("@"))
+      {
+        MessageBox.Show(this, "You must include '@' plus the domain in your email user name. For example: 'Jonn.Smith@foo.bar'", "Email Sender Format Error");
+        DialogResult = DialogResult.None;
       }
       else
       {
@@ -53,7 +59,13 @@ namespace SAAI
     {
       if (string.IsNullOrEmpty(serverText.Text))
       {
-        MessageBox.Show("You must enter a a server address before testing!", "Server Empty!");
+        MessageBox.Show(this, "You must enter a a server address before testing!", "Server Empty!");
+        return;
+      }
+
+      if (!userText.Text.Contains("@"))
+      {
+        MessageBox.Show(this, "You must include '@' plus the domain in your email user name. For example: 'Jonn.Smith@foo.bar'" , "Email Sender Format Error");
         return;
       }
 

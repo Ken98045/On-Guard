@@ -1489,6 +1489,15 @@ namespace SAAI
     private void CameraSettingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
 
+      // Disconnect the monitoring from all monitoring cameras.
+      foreach (var cam in _allCameras.CameraDictionary.Values)
+      {
+        if (cam.Monitoring)
+        {
+          cam.Monitor.OnNewImage -= OnCameraImage;
+        }
+      }
+
       using (CameraCollection tmp = new CameraCollection(_allCameras))
       {
         tmp.StopMonitoring();
@@ -1535,8 +1544,16 @@ namespace SAAI
         }
 
         _allCameras.StartMonitoring();
-      }
 
+        // And reconnnect all cameras to this form for new images
+        foreach (var cam in _allCameras.CameraDictionary.Values)
+        {
+          if (cam.Monitoring)
+          { 
+            cam.Monitor.OnNewImage += OnCameraImage;
+          }
+        }
+      }
     }
 
     private void SetCurrentCamera(CameraData cam)

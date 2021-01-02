@@ -1177,6 +1177,11 @@
             0,
             0,
             0});
+      this.xNumeric.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
       this.xNumeric.Name = "xNumeric";
       this.xNumeric.Size = new System.Drawing.Size(57, 20);
       this.xNumeric.TabIndex = 15;
@@ -1194,6 +1199,11 @@
             0,
             0,
             0});
+      this.yNumeric.Minimum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            -2147483648});
       this.yNumeric.Name = "yNumeric";
       this.yNumeric.Size = new System.Drawing.Size(57, 20);
       this.yNumeric.TabIndex = 16;
@@ -1212,7 +1222,7 @@
             0,
             0});
       this.widthNumeric.Minimum = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
             0});
@@ -1234,7 +1244,7 @@
             0,
             0});
       this.heighNumeric.Minimum = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
             0});
