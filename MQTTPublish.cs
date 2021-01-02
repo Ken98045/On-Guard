@@ -56,7 +56,7 @@ namespace SAAI
 
         string payload = Settings.Default.MQTTMotionPayload;
         payload = payload.Replace("{File}", frame.Item.PendingFile);
-        payload = payload.Replace("{Confidence",  ((int) (io.FoundObject.Confidence * 100.0)).ToString());
+        payload = payload.Replace("{Confidence}",  ((int) (io.FoundObject.Confidence * 100.0)).ToString());
         payload = payload.Replace("{Image}", LoadImage(frame.Item.PendingFile));
         payload = payload.Replace("{Object}", io.FoundObject.Label);
         payload = payload.Replace("{Motion}", "on");
