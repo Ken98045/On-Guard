@@ -34,6 +34,16 @@ namespace SAAI
       doorButton.Checked = true;
       anyActivityButton.Checked = true;
 
+      if (imageRect.X < -5000)
+      {
+        imageRect.X = -5000;
+      }
+
+      if (imageRect.Y < -5000)
+      {
+        imageRect.Y = -5000;
+      }
+
       xNumeric.Value = imageRect.X;
       yNumeric.Value = imageRect.Y;
       widthNumeric.Value = imageRect.Width;
@@ -64,6 +74,17 @@ namespace SAAI
       anyActivityButton.Checked = true;
       OriginalXResolution = area.OriginalXResolution;
       OriginalYResolution = area.OriginalYResolution;
+
+      if (rect.X < -5000)
+      {
+        rect.X = -5000;
+      }
+
+      if (rect.Y < -5000)
+      {
+        rect.Y = -5000;
+      }
+
 
       xNumeric.Value = rect.X;
       yNumeric.Value = rect.Y;

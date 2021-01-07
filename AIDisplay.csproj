@@ -369,6 +369,7 @@
     <None Include="Street5.jpg" />
     <None Include="Street6.jpg" />
     <None Include="Street7.jpg" />
+    <None Include="OnGuardNoPIctures.jpg" />
     <Content Include="zoom-in.png" />
     <Content Include="zoom-out.png" />
   </ItemGroup>

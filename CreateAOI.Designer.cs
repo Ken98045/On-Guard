@@ -152,9 +152,10 @@
       // 
       // OKButton
       // 
-      this.OKButton.Location = new System.Drawing.Point(173, 457);
+      this.OKButton.Location = new System.Drawing.Point(216, 571);
+      this.OKButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.OKButton.Name = "OKButton";
-      this.OKButton.Size = new System.Drawing.Size(75, 23);
+      this.OKButton.Size = new System.Drawing.Size(94, 29);
       this.OKButton.TabIndex = 0;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
@@ -163,9 +164,10 @@
       // cancelButton
       // 
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(276, 457);
+      this.cancelButton.Location = new System.Drawing.Point(345, 571);
+      this.cancelButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.cancelButton.Name = "cancelButton";
-      this.cancelButton.Size = new System.Drawing.Size(75, 23);
+      this.cancelButton.Size = new System.Drawing.Size(94, 29);
       this.cancelButton.TabIndex = 1;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
@@ -180,9 +182,11 @@
       this.groupBox1.Controls.Add(this.drivewayButton);
       this.groupBox1.Controls.Add(this.garageButton);
       this.groupBox1.Controls.Add(this.doorButton);
-      this.groupBox1.Location = new System.Drawing.Point(12, 26);
+      this.groupBox1.Location = new System.Drawing.Point(15, 32);
+      this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.groupBox1.Name = "groupBox1";
-      this.groupBox1.Size = new System.Drawing.Size(183, 170);
+      this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+      this.groupBox1.Size = new System.Drawing.Size(229, 212);
       this.groupBox1.TabIndex = 2;
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Select Area Type";
@@ -190,18 +194,20 @@
       // label1
       // 
       this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(10, 145);
+      this.label1.Location = new System.Drawing.Point(12, 181);
+      this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(70, 13);
+      this.label1.Size = new System.Drawing.Size(94, 17);
       this.label1.TabIndex = 5;
       this.label1.Text = "* High Priority";
       // 
       // ignoreButton
       // 
       this.ignoreButton.AutoSize = true;
-      this.ignoreButton.Location = new System.Drawing.Point(7, 116);
+      this.ignoreButton.Location = new System.Drawing.Point(9, 145);
+      this.ignoreButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.ignoreButton.Name = "ignoreButton";
-      this.ignoreButton.Size = new System.Drawing.Size(149, 17);
+      this.ignoreButton.Size = new System.Drawing.Size(196, 21);
       this.ignoreButton.TabIndex = 4;
       this.ignoreButton.TabStop = true;
       this.ignoreButton.Text = "Ignore Objects in this Area";
@@ -210,9 +216,10 @@
       // peopleWalkingButton
       // 
       this.peopleWalkingButton.AutoSize = true;
-      this.peopleWalkingButton.Location = new System.Drawing.Point(7, 93);
+      this.peopleWalkingButton.Location = new System.Drawing.Point(9, 116);
+      this.peopleWalkingButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.peopleWalkingButton.Name = "peopleWalkingButton";
-      this.peopleWalkingButton.Size = new System.Drawing.Size(100, 17);
+      this.peopleWalkingButton.Size = new System.Drawing.Size(127, 21);
       this.peopleWalkingButton.TabIndex = 3;
       this.peopleWalkingButton.TabStop = true;
       this.peopleWalkingButton.Text = "People Walking";
@@ -221,9 +228,10 @@
       // drivewayButton
       // 
       this.drivewayButton.AutoSize = true;
-      this.drivewayButton.Location = new System.Drawing.Point(7, 70);
+      this.drivewayButton.Location = new System.Drawing.Point(9, 88);
+      this.drivewayButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.drivewayButton.Name = "drivewayButton";
-      this.drivewayButton.Size = new System.Drawing.Size(94, 17);
+      this.drivewayButton.Size = new System.Drawing.Size(120, 21);
       this.drivewayButton.TabIndex = 2;
       this.drivewayButton.TabStop = true;
       this.drivewayButton.Text = "Driveway Area";
@@ -232,9 +240,10 @@
       // garageButton
       // 
       this.garageButton.AutoSize = true;
-      this.garageButton.Location = new System.Drawing.Point(7, 47);
+      this.garageButton.Location = new System.Drawing.Point(9, 59);
+      this.garageButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.garageButton.Name = "garageButton";
-      this.garageButton.Size = new System.Drawing.Size(86, 17);
+      this.garageButton.Size = new System.Drawing.Size(112, 21);
       this.garageButton.TabIndex = 1;
       this.garageButton.TabStop = true;
       this.garageButton.Text = "Garage Door";
@@ -243,9 +252,10 @@
       // doorButton
       // 
       this.doorButton.AutoSize = true;
-      this.doorButton.Location = new System.Drawing.Point(7, 24);
+      this.doorButton.Location = new System.Drawing.Point(9, 30);
+      this.doorButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.doorButton.Name = "doorButton";
-      this.doorButton.Size = new System.Drawing.Size(79, 17);
+      this.doorButton.Size = new System.Drawing.Size(102, 21);
       this.doorButton.TabIndex = 0;
       this.doorButton.TabStop = true;
       this.doorButton.Text = "Entry Door*";
@@ -254,18 +264,20 @@
       // label5
       // 
       this.label5.AutoSize = true;
-      this.label5.Location = new System.Drawing.Point(6, 90);
+      this.label5.Location = new System.Drawing.Point(8, 112);
+      this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(143, 13);
+      this.label5.Size = new System.Drawing.Size(192, 17);
       this.label5.TabIndex = 9;
       this.label5.Text = "*Requires 2 Frames Minimum";
       // 
       // deleteAOIButton
       // 
       this.deleteAOIButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.deleteAOIButton.Location = new System.Drawing.Point(379, 457);
+      this.deleteAOIButton.Location = new System.Drawing.Point(474, 571);
+      this.deleteAOIButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.deleteAOIButton.Name = "deleteAOIButton";
-      this.deleteAOIButton.Size = new System.Drawing.Size(75, 23);
+      this.deleteAOIButton.Size = new System.Drawing.Size(94, 29);
       this.deleteAOIButton.TabIndex = 2;
       this.deleteAOIButton.Text = "Delete AOI";
       this.deleteAOIButton.UseVisualStyleBackColor = true;
@@ -274,17 +286,19 @@
       // areaNameLabel
       // 
       this.areaNameLabel.AutoSize = true;
-      this.areaNameLabel.Location = new System.Drawing.Point(166, 382);
+      this.areaNameLabel.Location = new System.Drawing.Point(208, 478);
+      this.areaNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.areaNameLabel.Name = "areaNameLabel";
-      this.areaNameLabel.Size = new System.Drawing.Size(72, 13);
+      this.areaNameLabel.Size = new System.Drawing.Size(95, 17);
       this.areaNameLabel.TabIndex = 9;
       this.areaNameLabel.Text = "Name of Area";
       // 
       // aoiNameText
       // 
-      this.aoiNameText.Location = new System.Drawing.Point(244, 379);
+      this.aoiNameText.Location = new System.Drawing.Point(305, 474);
+      this.aoiNameText.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.aoiNameText.Name = "aoiNameText";
-      this.aoiNameText.Size = new System.Drawing.Size(225, 20);
+      this.aoiNameText.Size = new System.Drawing.Size(280, 22);
       this.aoiNameText.TabIndex = 3;
       // 
       // movementDirectionGroup
@@ -295,9 +309,11 @@
       this.movementDirectionGroup.Controls.Add(this.label5);
       this.movementDirectionGroup.Controls.Add(this.arrivingButton);
       this.movementDirectionGroup.Controls.Add(this.anyActivityButton);
-      this.movementDirectionGroup.Location = new System.Drawing.Point(12, 215);
+      this.movementDirectionGroup.Location = new System.Drawing.Point(15, 269);
+      this.movementDirectionGroup.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.movementDirectionGroup.Name = "movementDirectionGroup";
-      this.movementDirectionGroup.Size = new System.Drawing.Size(186, 141);
+      this.movementDirectionGroup.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+      this.movementDirectionGroup.Size = new System.Drawing.Size(232, 176);
       this.movementDirectionGroup.TabIndex = 10;
       this.movementDirectionGroup.TabStop = false;
       this.movementDirectionGroup.Text = "Movement Direction";
@@ -305,18 +321,20 @@
       // label3
       // 
       this.label3.ForeColor = System.Drawing.SystemColors.Highlight;
-      this.label3.Location = new System.Drawing.Point(25, 108);
+      this.label3.Location = new System.Drawing.Point(31, 135);
+      this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(148, 27);
+      this.label3.Size = new System.Drawing.Size(185, 34);
       this.label3.TabIndex = 37;
       this.label3.Text = "Movement Direction not  implemented";
       // 
       // departingButton
       // 
       this.departingButton.AutoSize = true;
-      this.departingButton.Location = new System.Drawing.Point(10, 66);
+      this.departingButton.Location = new System.Drawing.Point(12, 82);
+      this.departingButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.departingButton.Name = "departingButton";
-      this.departingButton.Size = new System.Drawing.Size(78, 17);
+      this.departingButton.Size = new System.Drawing.Size(100, 21);
       this.departingButton.TabIndex = 2;
       this.departingButton.TabStop = true;
       this.departingButton.Text = "Departing *";
@@ -325,9 +343,10 @@
       // arrivingButton
       // 
       this.arrivingButton.AutoSize = true;
-      this.arrivingButton.Location = new System.Drawing.Point(10, 43);
+      this.arrivingButton.Location = new System.Drawing.Point(12, 54);
+      this.arrivingButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.arrivingButton.Name = "arrivingButton";
-      this.arrivingButton.Size = new System.Drawing.Size(67, 17);
+      this.arrivingButton.Size = new System.Drawing.Size(86, 21);
       this.arrivingButton.TabIndex = 1;
       this.arrivingButton.TabStop = true;
       this.arrivingButton.Text = "Arriving *";
@@ -336,9 +355,10 @@
       // anyActivityButton
       // 
       this.anyActivityButton.AutoSize = true;
-      this.anyActivityButton.Location = new System.Drawing.Point(10, 20);
+      this.anyActivityButton.Location = new System.Drawing.Point(12, 25);
+      this.anyActivityButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.anyActivityButton.Name = "anyActivityButton";
-      this.anyActivityButton.Size = new System.Drawing.Size(80, 17);
+      this.anyActivityButton.Size = new System.Drawing.Size(101, 21);
       this.anyActivityButton.TabIndex = 0;
       this.anyActivityButton.TabStop = true;
       this.anyActivityButton.Text = "Any Activity";
@@ -347,45 +367,50 @@
       // label4
       // 
       this.label4.AutoSize = true;
-      this.label4.Location = new System.Drawing.Point(218, 412);
+      this.label4.Location = new System.Drawing.Point(272, 515);
+      this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(20, 13);
+      this.label4.Size = new System.Drawing.Size(25, 17);
       this.label4.TabIndex = 11;
       this.label4.Text = "X: ";
       // 
       // label6
       // 
       this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(328, 412);
+      this.label6.Location = new System.Drawing.Point(410, 515);
+      this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label6.Name = "label6";
-      this.label6.Size = new System.Drawing.Size(20, 13);
+      this.label6.Size = new System.Drawing.Size(25, 17);
       this.label6.TabIndex = 12;
       this.label6.Text = "Y: ";
       // 
       // label7
       // 
       this.label7.AutoSize = true;
-      this.label7.Location = new System.Drawing.Point(430, 412);
+      this.label7.Location = new System.Drawing.Point(538, 515);
+      this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label7.Name = "label7";
-      this.label7.Size = new System.Drawing.Size(41, 13);
+      this.label7.Size = new System.Drawing.Size(52, 17);
       this.label7.TabIndex = 13;
       this.label7.Text = "Width: ";
       // 
       // label8
       // 
       this.label8.AutoSize = true;
-      this.label8.Location = new System.Drawing.Point(540, 412);
+      this.label8.Location = new System.Drawing.Point(675, 515);
+      this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label8.Name = "label8";
-      this.label8.Size = new System.Drawing.Size(44, 13);
+      this.label8.Size = new System.Drawing.Size(57, 17);
       this.label8.TabIndex = 14;
       this.label8.Text = "Height: ";
       // 
       // notificationsButton
       // 
       this.notificationsButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.notificationsButton.Location = new System.Drawing.Point(482, 457);
+      this.notificationsButton.Location = new System.Drawing.Point(602, 571);
+      this.notificationsButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.notificationsButton.Name = "notificationsButton";
-      this.notificationsButton.Size = new System.Drawing.Size(94, 23);
+      this.notificationsButton.Size = new System.Drawing.Size(118, 29);
       this.notificationsButton.TabIndex = 3;
       this.notificationsButton.Text = "Set Notifications";
       this.notificationsButton.UseVisualStyleBackColor = true;
@@ -442,16 +467,19 @@
       this.groupBox3.Controls.Add(this.truckCheck);
       this.groupBox3.Controls.Add(this.carsCheck);
       this.groupBox3.Controls.Add(this.peopleCheck);
-      this.groupBox3.Location = new System.Drawing.Point(215, 26);
+      this.groupBox3.Location = new System.Drawing.Point(269, 32);
+      this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.groupBox3.Name = "groupBox3";
-      this.groupBox3.Size = new System.Drawing.Size(634, 330);
+      this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+      this.groupBox3.Size = new System.Drawing.Size(792, 412);
       this.groupBox3.TabIndex = 0;
       this.groupBox3.TabStop = false;
       this.groupBox3.Text = "Objects of Interest";
       // 
       // bearsFramesNumeric
       // 
-      this.bearsFramesNumeric.Location = new System.Drawing.Point(543, 239);
+      this.bearsFramesNumeric.Location = new System.Drawing.Point(679, 299);
+      this.bearsFramesNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bearsFramesNumeric.Maximum = new decimal(new int[] {
             300,
             0,
@@ -463,7 +491,7 @@
             0,
             0});
       this.bearsFramesNumeric.Name = "bearsFramesNumeric";
-      this.bearsFramesNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bearsFramesNumeric.Size = new System.Drawing.Size(81, 22);
       this.bearsFramesNumeric.TabIndex = 42;
       this.bearsFramesNumeric.Value = new decimal(new int[] {
             1,
@@ -473,38 +501,41 @@
       // 
       // bearsMinYNumeric
       // 
-      this.bearsMinYNumeric.Location = new System.Drawing.Point(441, 239);
+      this.bearsMinYNumeric.Location = new System.Drawing.Point(551, 299);
+      this.bearsMinYNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bearsMinYNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.bearsMinYNumeric.Name = "bearsMinYNumeric";
-      this.bearsMinYNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bearsMinYNumeric.Size = new System.Drawing.Size(81, 22);
       this.bearsMinYNumeric.TabIndex = 41;
       // 
       // bearsMinXNumeric
       // 
-      this.bearsMinXNumeric.Location = new System.Drawing.Point(341, 239);
+      this.bearsMinXNumeric.Location = new System.Drawing.Point(426, 299);
+      this.bearsMinXNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bearsMinXNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.bearsMinXNumeric.Name = "bearsMinXNumeric";
-      this.bearsMinXNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bearsMinXNumeric.Size = new System.Drawing.Size(81, 22);
       this.bearsMinXNumeric.TabIndex = 40;
       // 
       // bearsOverlapNumeric
       // 
-      this.bearsOverlapNumeric.Location = new System.Drawing.Point(241, 239);
+      this.bearsOverlapNumeric.Location = new System.Drawing.Point(301, 299);
+      this.bearsOverlapNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bearsOverlapNumeric.Minimum = new decimal(new int[] {
             5,
             0,
             0,
             0});
       this.bearsOverlapNumeric.Name = "bearsOverlapNumeric";
-      this.bearsOverlapNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bearsOverlapNumeric.Size = new System.Drawing.Size(81, 22);
       this.bearsOverlapNumeric.TabIndex = 39;
       this.bearsOverlapNumeric.Value = new decimal(new int[] {
             80,
@@ -514,7 +545,8 @@
       // 
       // bearsConfidenceNumeric
       // 
-      this.bearsConfidenceNumeric.Location = new System.Drawing.Point(141, 239);
+      this.bearsConfidenceNumeric.Location = new System.Drawing.Point(176, 299);
+      this.bearsConfidenceNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bearsConfidenceNumeric.Maximum = new decimal(new int[] {
             99,
             0,
@@ -526,7 +558,7 @@
             0,
             0});
       this.bearsConfidenceNumeric.Name = "bearsConfidenceNumeric";
-      this.bearsConfidenceNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bearsConfidenceNumeric.Size = new System.Drawing.Size(81, 22);
       this.bearsConfidenceNumeric.TabIndex = 38;
       this.bearsConfidenceNumeric.Value = new decimal(new int[] {
             80,
@@ -537,9 +569,10 @@
       // bearsCheck
       // 
       this.bearsCheck.AutoSize = true;
-      this.bearsCheck.Location = new System.Drawing.Point(30, 240);
+      this.bearsCheck.Location = new System.Drawing.Point(38, 300);
+      this.bearsCheck.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bearsCheck.Name = "bearsCheck";
-      this.bearsCheck.Size = new System.Drawing.Size(53, 17);
+      this.bearsCheck.Size = new System.Drawing.Size(67, 21);
       this.bearsCheck.TabIndex = 37;
       this.bearsCheck.Text = "Bears";
       this.bearsCheck.UseVisualStyleBackColor = true;
@@ -548,177 +581,193 @@
       // 
       this.label2.AutoSize = true;
       this.label2.ForeColor = System.Drawing.Color.Blue;
-      this.label2.Location = new System.Drawing.Point(248, 302);
+      this.label2.Location = new System.Drawing.Point(310, 378);
+      this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(370, 13);
+      this.label2.Size = new System.Drawing.Size(496, 17);
       this.label2.TabIndex = 36;
       this.label2.Text = "Number of Seconds for Analysis of Movement Direction (not yet implemented)";
       // 
       // animalsMinYNumeric
       // 
-      this.animalsMinYNumeric.Location = new System.Drawing.Point(441, 209);
+      this.animalsMinYNumeric.Location = new System.Drawing.Point(551, 261);
+      this.animalsMinYNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.animalsMinYNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.animalsMinYNumeric.Name = "animalsMinYNumeric";
-      this.animalsMinYNumeric.Size = new System.Drawing.Size(65, 20);
+      this.animalsMinYNumeric.Size = new System.Drawing.Size(81, 22);
       this.animalsMinYNumeric.TabIndex = 34;
       // 
       // animalsMinXNumeric
       // 
-      this.animalsMinXNumeric.Location = new System.Drawing.Point(341, 209);
+      this.animalsMinXNumeric.Location = new System.Drawing.Point(426, 261);
+      this.animalsMinXNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.animalsMinXNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.animalsMinXNumeric.Name = "animalsMinXNumeric";
-      this.animalsMinXNumeric.Size = new System.Drawing.Size(65, 20);
+      this.animalsMinXNumeric.Size = new System.Drawing.Size(81, 22);
       this.animalsMinXNumeric.TabIndex = 33;
       // 
       // bikesMinYNumeric
       // 
-      this.bikesMinYNumeric.Location = new System.Drawing.Point(441, 175);
+      this.bikesMinYNumeric.Location = new System.Drawing.Point(551, 219);
+      this.bikesMinYNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bikesMinYNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.bikesMinYNumeric.Name = "bikesMinYNumeric";
-      this.bikesMinYNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bikesMinYNumeric.Size = new System.Drawing.Size(81, 22);
       this.bikesMinYNumeric.TabIndex = 28;
       // 
       // bikesMinXNumeric
       // 
-      this.bikesMinXNumeric.Location = new System.Drawing.Point(341, 175);
+      this.bikesMinXNumeric.Location = new System.Drawing.Point(426, 219);
+      this.bikesMinXNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bikesMinXNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.bikesMinXNumeric.Name = "bikesMinXNumeric";
-      this.bikesMinXNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bikesMinXNumeric.Size = new System.Drawing.Size(81, 22);
       this.bikesMinXNumeric.TabIndex = 27;
       // 
       // motorcyclesMinYNumeric
       // 
-      this.motorcyclesMinYNumeric.Location = new System.Drawing.Point(441, 140);
+      this.motorcyclesMinYNumeric.Location = new System.Drawing.Point(551, 175);
+      this.motorcyclesMinYNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.motorcyclesMinYNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.motorcyclesMinYNumeric.Name = "motorcyclesMinYNumeric";
-      this.motorcyclesMinYNumeric.Size = new System.Drawing.Size(65, 20);
+      this.motorcyclesMinYNumeric.Size = new System.Drawing.Size(81, 22);
       this.motorcyclesMinYNumeric.TabIndex = 22;
       // 
       // motorcyclesMinXNumeric
       // 
-      this.motorcyclesMinXNumeric.Location = new System.Drawing.Point(341, 140);
+      this.motorcyclesMinXNumeric.Location = new System.Drawing.Point(426, 175);
+      this.motorcyclesMinXNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.motorcyclesMinXNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.motorcyclesMinXNumeric.Name = "motorcyclesMinXNumeric";
-      this.motorcyclesMinXNumeric.Size = new System.Drawing.Size(65, 20);
+      this.motorcyclesMinXNumeric.Size = new System.Drawing.Size(81, 22);
       this.motorcyclesMinXNumeric.TabIndex = 21;
       // 
       // trucksMinYNumeric
       // 
-      this.trucksMinYNumeric.Location = new System.Drawing.Point(441, 111);
+      this.trucksMinYNumeric.Location = new System.Drawing.Point(551, 139);
+      this.trucksMinYNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.trucksMinYNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.trucksMinYNumeric.Name = "trucksMinYNumeric";
-      this.trucksMinYNumeric.Size = new System.Drawing.Size(65, 20);
+      this.trucksMinYNumeric.Size = new System.Drawing.Size(81, 22);
       this.trucksMinYNumeric.TabIndex = 16;
       // 
       // trucksMinXNumeric
       // 
-      this.trucksMinXNumeric.Location = new System.Drawing.Point(341, 111);
+      this.trucksMinXNumeric.Location = new System.Drawing.Point(426, 139);
+      this.trucksMinXNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.trucksMinXNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.trucksMinXNumeric.Name = "trucksMinXNumeric";
-      this.trucksMinXNumeric.Size = new System.Drawing.Size(65, 20);
+      this.trucksMinXNumeric.Size = new System.Drawing.Size(81, 22);
       this.trucksMinXNumeric.TabIndex = 15;
       // 
       // carsMinYNumeric
       // 
-      this.carsMinYNumeric.Location = new System.Drawing.Point(441, 78);
+      this.carsMinYNumeric.Location = new System.Drawing.Point(551, 98);
+      this.carsMinYNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.carsMinYNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.carsMinYNumeric.Name = "carsMinYNumeric";
-      this.carsMinYNumeric.Size = new System.Drawing.Size(65, 20);
+      this.carsMinYNumeric.Size = new System.Drawing.Size(81, 22);
       this.carsMinYNumeric.TabIndex = 10;
       // 
       // carsMinXNumeric
       // 
-      this.carsMinXNumeric.Location = new System.Drawing.Point(341, 78);
+      this.carsMinXNumeric.Location = new System.Drawing.Point(426, 98);
+      this.carsMinXNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.carsMinXNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.carsMinXNumeric.Name = "carsMinXNumeric";
-      this.carsMinXNumeric.Size = new System.Drawing.Size(65, 20);
+      this.carsMinXNumeric.Size = new System.Drawing.Size(81, 22);
       this.carsMinXNumeric.TabIndex = 9;
       // 
       // peopleMinYNumeric
       // 
-      this.peopleMinYNumeric.Location = new System.Drawing.Point(441, 47);
+      this.peopleMinYNumeric.Location = new System.Drawing.Point(551, 59);
+      this.peopleMinYNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.peopleMinYNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.peopleMinYNumeric.Name = "peopleMinYNumeric";
-      this.peopleMinYNumeric.Size = new System.Drawing.Size(65, 20);
+      this.peopleMinYNumeric.Size = new System.Drawing.Size(81, 22);
       this.peopleMinYNumeric.TabIndex = 4;
       // 
       // peopleMinXNumeric
       // 
-      this.peopleMinXNumeric.Location = new System.Drawing.Point(341, 47);
+      this.peopleMinXNumeric.Location = new System.Drawing.Point(426, 59);
+      this.peopleMinXNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.peopleMinXNumeric.Maximum = new decimal(new int[] {
             4096,
             0,
             0,
             0});
       this.peopleMinXNumeric.Name = "peopleMinXNumeric";
-      this.peopleMinXNumeric.Size = new System.Drawing.Size(65, 20);
+      this.peopleMinXNumeric.Size = new System.Drawing.Size(81, 22);
       this.peopleMinXNumeric.TabIndex = 3;
       // 
       // label11
       // 
       this.label11.AutoSize = true;
-      this.label11.Location = new System.Drawing.Point(433, 23);
+      this.label11.Location = new System.Drawing.Point(541, 29);
+      this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label11.Name = "label11";
-      this.label11.Size = new System.Drawing.Size(82, 13);
+      this.label11.Size = new System.Drawing.Size(108, 17);
       this.label11.TabIndex = 25;
       this.label11.Text = "Minimum Height";
       // 
       // label12
       // 
       this.label12.AutoSize = true;
-      this.label12.Location = new System.Drawing.Point(338, 23);
+      this.label12.Location = new System.Drawing.Point(422, 29);
+      this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label12.Name = "label12";
-      this.label12.Size = new System.Drawing.Size(79, 13);
+      this.label12.Size = new System.Drawing.Size(103, 17);
       this.label12.TabIndex = 24;
       this.label12.Text = "Minimum Width";
       // 
       // animalsFramesNumeric
       // 
-      this.animalsFramesNumeric.Location = new System.Drawing.Point(543, 209);
+      this.animalsFramesNumeric.Location = new System.Drawing.Point(679, 261);
+      this.animalsFramesNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.animalsFramesNumeric.Maximum = new decimal(new int[] {
             300,
             0,
@@ -730,7 +779,7 @@
             0,
             0});
       this.animalsFramesNumeric.Name = "animalsFramesNumeric";
-      this.animalsFramesNumeric.Size = new System.Drawing.Size(65, 20);
+      this.animalsFramesNumeric.Size = new System.Drawing.Size(81, 22);
       this.animalsFramesNumeric.TabIndex = 35;
       this.animalsFramesNumeric.Value = new decimal(new int[] {
             1,
@@ -741,15 +790,17 @@
       // label13
       // 
       this.label13.AutoSize = true;
-      this.label13.Location = new System.Drawing.Point(526, 24);
+      this.label13.Location = new System.Drawing.Point(658, 30);
+      this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label13.Name = "label13";
-      this.label13.Size = new System.Drawing.Size(105, 13);
+      this.label13.Size = new System.Drawing.Size(138, 17);
       this.label13.TabIndex = 5;
       this.label13.Text = "Number of Seconds*";
       // 
       // bikesFramesNumeric
       // 
-      this.bikesFramesNumeric.Location = new System.Drawing.Point(543, 175);
+      this.bikesFramesNumeric.Location = new System.Drawing.Point(679, 219);
+      this.bikesFramesNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bikesFramesNumeric.Maximum = new decimal(new int[] {
             300,
             0,
@@ -761,7 +812,7 @@
             0,
             0});
       this.bikesFramesNumeric.Name = "bikesFramesNumeric";
-      this.bikesFramesNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bikesFramesNumeric.Size = new System.Drawing.Size(81, 22);
       this.bikesFramesNumeric.TabIndex = 29;
       this.bikesFramesNumeric.Value = new decimal(new int[] {
             1,
@@ -771,7 +822,8 @@
       // 
       // motorcyclesFramesNumeric
       // 
-      this.motorcyclesFramesNumeric.Location = new System.Drawing.Point(543, 143);
+      this.motorcyclesFramesNumeric.Location = new System.Drawing.Point(679, 179);
+      this.motorcyclesFramesNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.motorcyclesFramesNumeric.Maximum = new decimal(new int[] {
             300,
             0,
@@ -783,7 +835,7 @@
             0,
             0});
       this.motorcyclesFramesNumeric.Name = "motorcyclesFramesNumeric";
-      this.motorcyclesFramesNumeric.Size = new System.Drawing.Size(65, 20);
+      this.motorcyclesFramesNumeric.Size = new System.Drawing.Size(81, 22);
       this.motorcyclesFramesNumeric.TabIndex = 23;
       this.motorcyclesFramesNumeric.Value = new decimal(new int[] {
             1,
@@ -793,7 +845,8 @@
       // 
       // trucksFramesNumeric
       // 
-      this.trucksFramesNumeric.Location = new System.Drawing.Point(543, 111);
+      this.trucksFramesNumeric.Location = new System.Drawing.Point(679, 139);
+      this.trucksFramesNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.trucksFramesNumeric.Maximum = new decimal(new int[] {
             300,
             0,
@@ -805,7 +858,7 @@
             0,
             0});
       this.trucksFramesNumeric.Name = "trucksFramesNumeric";
-      this.trucksFramesNumeric.Size = new System.Drawing.Size(65, 20);
+      this.trucksFramesNumeric.Size = new System.Drawing.Size(81, 22);
       this.trucksFramesNumeric.TabIndex = 17;
       this.trucksFramesNumeric.Value = new decimal(new int[] {
             1,
@@ -815,7 +868,8 @@
       // 
       // carsFramesNumeric
       // 
-      this.carsFramesNumeric.Location = new System.Drawing.Point(543, 78);
+      this.carsFramesNumeric.Location = new System.Drawing.Point(679, 98);
+      this.carsFramesNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.carsFramesNumeric.Maximum = new decimal(new int[] {
             300,
             0,
@@ -827,7 +881,7 @@
             0,
             0});
       this.carsFramesNumeric.Name = "carsFramesNumeric";
-      this.carsFramesNumeric.Size = new System.Drawing.Size(65, 20);
+      this.carsFramesNumeric.Size = new System.Drawing.Size(81, 22);
       this.carsFramesNumeric.TabIndex = 11;
       this.carsFramesNumeric.Value = new decimal(new int[] {
             1,
@@ -837,14 +891,15 @@
       // 
       // animalsOverlapNumeric
       // 
-      this.animalsOverlapNumeric.Location = new System.Drawing.Point(241, 209);
+      this.animalsOverlapNumeric.Location = new System.Drawing.Point(301, 261);
+      this.animalsOverlapNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.animalsOverlapNumeric.Minimum = new decimal(new int[] {
             5,
             0,
             0,
             0});
       this.animalsOverlapNumeric.Name = "animalsOverlapNumeric";
-      this.animalsOverlapNumeric.Size = new System.Drawing.Size(65, 20);
+      this.animalsOverlapNumeric.Size = new System.Drawing.Size(81, 22);
       this.animalsOverlapNumeric.TabIndex = 32;
       this.animalsOverlapNumeric.Value = new decimal(new int[] {
             80,
@@ -854,14 +909,15 @@
       // 
       // bikesOverlapNumeric
       // 
-      this.bikesOverlapNumeric.Location = new System.Drawing.Point(241, 175);
+      this.bikesOverlapNumeric.Location = new System.Drawing.Point(301, 219);
+      this.bikesOverlapNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bikesOverlapNumeric.Minimum = new decimal(new int[] {
             5,
             0,
             0,
             0});
       this.bikesOverlapNumeric.Name = "bikesOverlapNumeric";
-      this.bikesOverlapNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bikesOverlapNumeric.Size = new System.Drawing.Size(81, 22);
       this.bikesOverlapNumeric.TabIndex = 26;
       this.bikesOverlapNumeric.Value = new decimal(new int[] {
             85,
@@ -871,14 +927,15 @@
       // 
       // motorcyclesOverlapNumeric
       // 
-      this.motorcyclesOverlapNumeric.Location = new System.Drawing.Point(241, 140);
+      this.motorcyclesOverlapNumeric.Location = new System.Drawing.Point(301, 175);
+      this.motorcyclesOverlapNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.motorcyclesOverlapNumeric.Minimum = new decimal(new int[] {
             5,
             0,
             0,
             0});
       this.motorcyclesOverlapNumeric.Name = "motorcyclesOverlapNumeric";
-      this.motorcyclesOverlapNumeric.Size = new System.Drawing.Size(65, 20);
+      this.motorcyclesOverlapNumeric.Size = new System.Drawing.Size(81, 22);
       this.motorcyclesOverlapNumeric.TabIndex = 20;
       this.motorcyclesOverlapNumeric.Value = new decimal(new int[] {
             75,
@@ -888,14 +945,15 @@
       // 
       // trucksOverlapNumeric
       // 
-      this.trucksOverlapNumeric.Location = new System.Drawing.Point(241, 108);
+      this.trucksOverlapNumeric.Location = new System.Drawing.Point(301, 135);
+      this.trucksOverlapNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.trucksOverlapNumeric.Minimum = new decimal(new int[] {
             5,
             0,
             0,
             0});
       this.trucksOverlapNumeric.Name = "trucksOverlapNumeric";
-      this.trucksOverlapNumeric.Size = new System.Drawing.Size(65, 20);
+      this.trucksOverlapNumeric.Size = new System.Drawing.Size(81, 22);
       this.trucksOverlapNumeric.TabIndex = 14;
       this.trucksOverlapNumeric.Value = new decimal(new int[] {
             66,
@@ -905,14 +963,15 @@
       // 
       // carsOverlapNumeric
       // 
-      this.carsOverlapNumeric.Location = new System.Drawing.Point(241, 78);
+      this.carsOverlapNumeric.Location = new System.Drawing.Point(301, 98);
+      this.carsOverlapNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.carsOverlapNumeric.Minimum = new decimal(new int[] {
             5,
             0,
             0,
             0});
       this.carsOverlapNumeric.Name = "carsOverlapNumeric";
-      this.carsOverlapNumeric.Size = new System.Drawing.Size(65, 20);
+      this.carsOverlapNumeric.Size = new System.Drawing.Size(81, 22);
       this.carsOverlapNumeric.TabIndex = 8;
       this.carsOverlapNumeric.Value = new decimal(new int[] {
             75,
@@ -922,7 +981,8 @@
       // 
       // animalsConfidenceNumeric
       // 
-      this.animalsConfidenceNumeric.Location = new System.Drawing.Point(141, 207);
+      this.animalsConfidenceNumeric.Location = new System.Drawing.Point(176, 259);
+      this.animalsConfidenceNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.animalsConfidenceNumeric.Maximum = new decimal(new int[] {
             99,
             0,
@@ -934,7 +994,7 @@
             0,
             0});
       this.animalsConfidenceNumeric.Name = "animalsConfidenceNumeric";
-      this.animalsConfidenceNumeric.Size = new System.Drawing.Size(65, 20);
+      this.animalsConfidenceNumeric.Size = new System.Drawing.Size(81, 22);
       this.animalsConfidenceNumeric.TabIndex = 31;
       this.animalsConfidenceNumeric.Value = new decimal(new int[] {
             80,
@@ -944,7 +1004,8 @@
       // 
       // peopleFramesNumeric
       // 
-      this.peopleFramesNumeric.Location = new System.Drawing.Point(543, 48);
+      this.peopleFramesNumeric.Location = new System.Drawing.Point(679, 60);
+      this.peopleFramesNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.peopleFramesNumeric.Maximum = new decimal(new int[] {
             300,
             0,
@@ -956,7 +1017,7 @@
             0,
             0});
       this.peopleFramesNumeric.Name = "peopleFramesNumeric";
-      this.peopleFramesNumeric.Size = new System.Drawing.Size(65, 20);
+      this.peopleFramesNumeric.Size = new System.Drawing.Size(81, 22);
       this.peopleFramesNumeric.TabIndex = 5;
       this.peopleFramesNumeric.Value = new decimal(new int[] {
             1,
@@ -966,7 +1027,8 @@
       // 
       // motorcyclesConfidenceNumeric
       // 
-      this.motorcyclesConfidenceNumeric.Location = new System.Drawing.Point(141, 143);
+      this.motorcyclesConfidenceNumeric.Location = new System.Drawing.Point(176, 179);
+      this.motorcyclesConfidenceNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.motorcyclesConfidenceNumeric.Maximum = new decimal(new int[] {
             99,
             0,
@@ -978,7 +1040,7 @@
             0,
             0});
       this.motorcyclesConfidenceNumeric.Name = "motorcyclesConfidenceNumeric";
-      this.motorcyclesConfidenceNumeric.Size = new System.Drawing.Size(65, 20);
+      this.motorcyclesConfidenceNumeric.Size = new System.Drawing.Size(81, 22);
       this.motorcyclesConfidenceNumeric.TabIndex = 19;
       this.motorcyclesConfidenceNumeric.Value = new decimal(new int[] {
             50,
@@ -989,23 +1051,25 @@
       // bikeCheck
       // 
       this.bikeCheck.AutoSize = true;
-      this.bikeCheck.Location = new System.Drawing.Point(31, 176);
+      this.bikeCheck.Location = new System.Drawing.Point(39, 220);
+      this.bikeCheck.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bikeCheck.Name = "bikeCheck";
-      this.bikeCheck.Size = new System.Drawing.Size(52, 17);
+      this.bikeCheck.Size = new System.Drawing.Size(64, 21);
       this.bikeCheck.TabIndex = 24;
       this.bikeCheck.Text = "Bikes";
       this.bikeCheck.UseVisualStyleBackColor = true;
       // 
       // peopleMinimumOverlap
       // 
-      this.peopleMinimumOverlap.Location = new System.Drawing.Point(241, 47);
+      this.peopleMinimumOverlap.Location = new System.Drawing.Point(301, 59);
+      this.peopleMinimumOverlap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.peopleMinimumOverlap.Minimum = new decimal(new int[] {
             5,
             0,
             0,
             0});
       this.peopleMinimumOverlap.Name = "peopleMinimumOverlap";
-      this.peopleMinimumOverlap.Size = new System.Drawing.Size(65, 20);
+      this.peopleMinimumOverlap.Size = new System.Drawing.Size(81, 22);
       this.peopleMinimumOverlap.TabIndex = 2;
       this.peopleMinimumOverlap.Value = new decimal(new int[] {
             75,
@@ -1016,9 +1080,10 @@
       // motorcycleCheck
       // 
       this.motorcycleCheck.AutoSize = true;
-      this.motorcycleCheck.Location = new System.Drawing.Point(30, 143);
+      this.motorcycleCheck.Location = new System.Drawing.Point(38, 179);
+      this.motorcycleCheck.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.motorcycleCheck.Name = "motorcycleCheck";
-      this.motorcycleCheck.Size = new System.Drawing.Size(83, 17);
+      this.motorcycleCheck.Size = new System.Drawing.Size(105, 21);
       this.motorcycleCheck.TabIndex = 18;
       this.motorcycleCheck.Text = "Motorcycles";
       this.motorcycleCheck.UseVisualStyleBackColor = true;
@@ -1026,15 +1091,17 @@
       // label14
       // 
       this.label14.AutoSize = true;
-      this.label14.Location = new System.Drawing.Point(224, 24);
+      this.label14.Location = new System.Drawing.Point(280, 30);
+      this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label14.Name = "label14";
-      this.label14.Size = new System.Drawing.Size(99, 13);
+      this.label14.Size = new System.Drawing.Size(133, 17);
       this.label14.TabIndex = 3;
       this.label14.Text = "Minimum % Overlap";
       // 
       // bikesConfidenceNumeric
       // 
-      this.bikesConfidenceNumeric.Location = new System.Drawing.Point(141, 175);
+      this.bikesConfidenceNumeric.Location = new System.Drawing.Point(176, 219);
+      this.bikesConfidenceNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.bikesConfidenceNumeric.Maximum = new decimal(new int[] {
             99,
             0,
@@ -1046,7 +1113,7 @@
             0,
             0});
       this.bikesConfidenceNumeric.Name = "bikesConfidenceNumeric";
-      this.bikesConfidenceNumeric.Size = new System.Drawing.Size(65, 20);
+      this.bikesConfidenceNumeric.Size = new System.Drawing.Size(81, 22);
       this.bikesConfidenceNumeric.TabIndex = 25;
       this.bikesConfidenceNumeric.Value = new decimal(new int[] {
             50,
@@ -1056,7 +1123,8 @@
       // 
       // trucksConfidenceNumeric
       // 
-      this.trucksConfidenceNumeric.Location = new System.Drawing.Point(141, 111);
+      this.trucksConfidenceNumeric.Location = new System.Drawing.Point(176, 139);
+      this.trucksConfidenceNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.trucksConfidenceNumeric.Maximum = new decimal(new int[] {
             99,
             0,
@@ -1068,7 +1136,7 @@
             0,
             0});
       this.trucksConfidenceNumeric.Name = "trucksConfidenceNumeric";
-      this.trucksConfidenceNumeric.Size = new System.Drawing.Size(65, 20);
+      this.trucksConfidenceNumeric.Size = new System.Drawing.Size(81, 22);
       this.trucksConfidenceNumeric.TabIndex = 13;
       this.trucksConfidenceNumeric.Value = new decimal(new int[] {
             50,
@@ -1078,7 +1146,8 @@
       // 
       // carsConfidenceNumeric
       // 
-      this.carsConfidenceNumeric.Location = new System.Drawing.Point(141, 79);
+      this.carsConfidenceNumeric.Location = new System.Drawing.Point(176, 99);
+      this.carsConfidenceNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.carsConfidenceNumeric.Maximum = new decimal(new int[] {
             99,
             0,
@@ -1090,7 +1159,7 @@
             0,
             0});
       this.carsConfidenceNumeric.Name = "carsConfidenceNumeric";
-      this.carsConfidenceNumeric.Size = new System.Drawing.Size(65, 20);
+      this.carsConfidenceNumeric.Size = new System.Drawing.Size(81, 22);
       this.carsConfidenceNumeric.TabIndex = 7;
       this.carsConfidenceNumeric.Value = new decimal(new int[] {
             50,
@@ -1100,7 +1169,8 @@
       // 
       // peopleConfidenceNumeric
       // 
-      this.peopleConfidenceNumeric.Location = new System.Drawing.Point(141, 47);
+      this.peopleConfidenceNumeric.Location = new System.Drawing.Point(176, 59);
+      this.peopleConfidenceNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.peopleConfidenceNumeric.Maximum = new decimal(new int[] {
             99,
             0,
@@ -1112,7 +1182,7 @@
             0,
             0});
       this.peopleConfidenceNumeric.Name = "peopleConfidenceNumeric";
-      this.peopleConfidenceNumeric.Size = new System.Drawing.Size(65, 20);
+      this.peopleConfidenceNumeric.Size = new System.Drawing.Size(81, 22);
       this.peopleConfidenceNumeric.TabIndex = 1;
       this.peopleConfidenceNumeric.Value = new decimal(new int[] {
             85,
@@ -1123,18 +1193,20 @@
       // label15
       // 
       this.label15.AutoSize = true;
-      this.label15.Location = new System.Drawing.Point(138, 23);
+      this.label15.Location = new System.Drawing.Point(172, 29);
+      this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label15.Name = "label15";
-      this.label15.Size = new System.Drawing.Size(78, 13);
+      this.label15.Size = new System.Drawing.Size(105, 17);
       this.label15.TabIndex = 6;
       this.label15.Text = "Confidence (%)";
       // 
       // animalsCheck
       // 
       this.animalsCheck.AutoSize = true;
-      this.animalsCheck.Location = new System.Drawing.Point(30, 210);
+      this.animalsCheck.Location = new System.Drawing.Point(38, 262);
+      this.animalsCheck.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.animalsCheck.Name = "animalsCheck";
-      this.animalsCheck.Size = new System.Drawing.Size(62, 17);
+      this.animalsCheck.Size = new System.Drawing.Size(79, 21);
       this.animalsCheck.TabIndex = 30;
       this.animalsCheck.Text = "Animals";
       this.animalsCheck.UseVisualStyleBackColor = true;
@@ -1142,9 +1214,10 @@
       // truckCheck
       // 
       this.truckCheck.AutoSize = true;
-      this.truckCheck.Location = new System.Drawing.Point(30, 112);
+      this.truckCheck.Location = new System.Drawing.Point(38, 140);
+      this.truckCheck.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.truckCheck.Name = "truckCheck";
-      this.truckCheck.Size = new System.Drawing.Size(59, 17);
+      this.truckCheck.Size = new System.Drawing.Size(73, 21);
       this.truckCheck.TabIndex = 12;
       this.truckCheck.Text = "Trucks";
       this.truckCheck.UseVisualStyleBackColor = true;
@@ -1152,9 +1225,10 @@
       // carsCheck
       // 
       this.carsCheck.AutoSize = true;
-      this.carsCheck.Location = new System.Drawing.Point(30, 80);
+      this.carsCheck.Location = new System.Drawing.Point(38, 100);
+      this.carsCheck.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.carsCheck.Name = "carsCheck";
-      this.carsCheck.Size = new System.Drawing.Size(47, 17);
+      this.carsCheck.Size = new System.Drawing.Size(59, 21);
       this.carsCheck.TabIndex = 6;
       this.carsCheck.Text = "Cars";
       this.carsCheck.UseVisualStyleBackColor = true;
@@ -1162,16 +1236,18 @@
       // peopleCheck
       // 
       this.peopleCheck.AutoSize = true;
-      this.peopleCheck.Location = new System.Drawing.Point(31, 48);
+      this.peopleCheck.Location = new System.Drawing.Point(39, 60);
+      this.peopleCheck.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.peopleCheck.Name = "peopleCheck";
-      this.peopleCheck.Size = new System.Drawing.Size(59, 17);
+      this.peopleCheck.Size = new System.Drawing.Size(74, 21);
       this.peopleCheck.TabIndex = 0;
       this.peopleCheck.Text = "People";
       this.peopleCheck.UseVisualStyleBackColor = true;
       // 
       // xNumeric
       // 
-      this.xNumeric.Location = new System.Drawing.Point(243, 410);
+      this.xNumeric.Location = new System.Drawing.Point(304, 512);
+      this.xNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.xNumeric.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -1183,7 +1259,7 @@
             0,
             -2147483648});
       this.xNumeric.Name = "xNumeric";
-      this.xNumeric.Size = new System.Drawing.Size(57, 20);
+      this.xNumeric.Size = new System.Drawing.Size(71, 22);
       this.xNumeric.TabIndex = 15;
       this.xNumeric.Value = new decimal(new int[] {
             100,
@@ -1193,7 +1269,8 @@
       // 
       // yNumeric
       // 
-      this.yNumeric.Location = new System.Drawing.Point(350, 410);
+      this.yNumeric.Location = new System.Drawing.Point(438, 512);
+      this.yNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.yNumeric.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -1205,7 +1282,7 @@
             0,
             -2147483648});
       this.yNumeric.Name = "yNumeric";
-      this.yNumeric.Size = new System.Drawing.Size(57, 20);
+      this.yNumeric.Size = new System.Drawing.Size(71, 22);
       this.yNumeric.TabIndex = 16;
       this.yNumeric.Value = new decimal(new int[] {
             100,
@@ -1215,14 +1292,15 @@
       // 
       // widthNumeric
       // 
-      this.widthNumeric.Location = new System.Drawing.Point(469, 410);
+      this.widthNumeric.Location = new System.Drawing.Point(586, 512);
+      this.widthNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.widthNumeric.Maximum = new decimal(new int[] {
-            10000,
+            100000,
             0,
             0,
             0});
       this.widthNumeric.Name = "widthNumeric";
-      this.widthNumeric.Size = new System.Drawing.Size(57, 20);
+      this.widthNumeric.Size = new System.Drawing.Size(71, 22);
       this.widthNumeric.TabIndex = 17;
       this.widthNumeric.Value = new decimal(new int[] {
             100,
@@ -1232,14 +1310,15 @@
       // 
       // heighNumeric
       // 
-      this.heighNumeric.Location = new System.Drawing.Point(585, 410);
+      this.heighNumeric.Location = new System.Drawing.Point(731, 512);
+      this.heighNumeric.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.heighNumeric.Maximum = new decimal(new int[] {
-            10000,
+            100000,
             0,
             0,
             0});
       this.heighNumeric.Name = "heighNumeric";
-      this.heighNumeric.Size = new System.Drawing.Size(57, 20);
+      this.heighNumeric.Size = new System.Drawing.Size(71, 22);
       this.heighNumeric.TabIndex = 18;
       this.heighNumeric.Value = new decimal(new int[] {
             100,
@@ -1250,9 +1329,10 @@
       // areaAdjustButton
       // 
       this.areaAdjustButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.areaAdjustButton.Location = new System.Drawing.Point(604, 457);
+      this.areaAdjustButton.Location = new System.Drawing.Point(755, 571);
+      this.areaAdjustButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.areaAdjustButton.Name = "areaAdjustButton";
-      this.areaAdjustButton.Size = new System.Drawing.Size(94, 23);
+      this.areaAdjustButton.Size = new System.Drawing.Size(118, 29);
       this.areaAdjustButton.TabIndex = 19;
       this.areaAdjustButton.Text = "Adjust Area";
       this.areaAdjustButton.UseVisualStyleBackColor = true;
@@ -1261,19 +1341,20 @@
       // label9
       // 
       this.label9.AutoSize = true;
-      this.label9.Location = new System.Drawing.Point(80, 412);
+      this.label9.Location = new System.Drawing.Point(100, 515);
+      this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label9.Name = "label9";
-      this.label9.Size = new System.Drawing.Size(132, 13);
+      this.label9.Size = new System.Drawing.Size(173, 17);
       this.label9.TabIndex = 20;
       this.label9.Text = "Area Location/Dimensions";
       // 
       // CreateAOI
       // 
       this.AcceptButton = this.OKButton;
-      this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+      this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(865, 498);
+      this.ClientSize = new System.Drawing.Size(1081, 622);
       this.Controls.Add(this.label9);
       this.Controls.Add(this.areaAdjustButton);
       this.Controls.Add(this.heighNumeric);
@@ -1294,6 +1375,7 @@
       this.Controls.Add(this.cancelButton);
       this.Controls.Add(this.OKButton);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+      this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
       this.Name = "CreateAOI";
       this.Text = "Create Area of Interest";
       this.groupBox1.ResumeLayout(false);

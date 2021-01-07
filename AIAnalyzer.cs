@@ -48,6 +48,20 @@ namespace SAAI
     public bool InMotion { get; set; }
     public Guid ID { get; set; }
 
+    public ImageObject(ImageObject src)
+    {
+      Label = src.Label;
+      Success = src.Success;
+      Confidence = src.Confidence;
+      Y_max = src.Y_max;
+      Y_min = src.Y_min;
+      X_max = src.X_max;
+      X_min = src.Y_min;
+      ObjectRectangle = src.ObjectRectangle;
+      InMotion = src.InMotion;
+      ID = src.ID;
+    }
+
 
   }
 
@@ -64,6 +78,9 @@ namespace SAAI
 
     readonly string _AILocation;
     readonly int _AIPort;
+    const int MultiDefinitionOverlap = 92;
+    const int ParkedOverlap = 95;
+    const double minVehicleConfidence = 0.40;
 
 
     public AIAnalyzer()
@@ -140,8 +157,6 @@ namespace SAAI
     public void RemoveInvalidObjects(List<ImageObject> images)
     {
 
-      List<ImageObject> intestingImages = new List<ImageObject>();
-
       if (images != null)
       {
 
@@ -163,7 +178,10 @@ namespace SAAI
     // I really dislike doing this, but with the way the AI is now it is better to cheat an be accurate than not cheat and give a misleading result;
     public static void RemoveDuplicateVehiclesInImage(List<ImageObject> objectList)
     {
+      Dbg.Trace("Objects before removing duplicate vehicles: " + objectList.Count.ToString());
+
       List<ImageObject> vehicles = new List<ImageObject>();
+      int nonVehicleObjects = 0;
 
       if (objectList != null && objectList.Count > 0)
       {
@@ -172,13 +190,18 @@ namespace SAAI
         {
           if (IsVehicle(obj))
           {
-            if (obj.Confidence > 0.45)
+            if (obj.Confidence > minVehicleConfidence)
             {
               vehicles.Add(obj);
             }
           }
+          else
+          {
+            ++nonVehicleObjects;
+          }
         }
 
+        Dbg.Trace("Non-vehicle Objects before duplicate check: " + nonVehicleObjects.ToString());
 
         if (vehicles.Count == 1)
         {
@@ -195,7 +218,6 @@ namespace SAAI
 
             bool removedOne = false;
 
-
             for (int j = i + 1; j < vehicles.Count; j++)
             {
 
@@ -203,33 +225,45 @@ namespace SAAI
               {
                 int overlap = GetOverlap(vehicles[i], vehicles[j]);
 
-                if (overlap > 90)
+                if (overlap > MultiDefinitionOverlap)
                 {
                   // OK, here we assume that they are the same object.
                   // We add which ever has the highest confidence level to the result;
 
                   if (vehicles[i].Confidence > vehicles[j].Confidence)
                   {
-                    vehicles[i].Confidence = vehicles[i].Confidence + (vehicles[i].Confidence - vehicles[j].Confidence) / 2.0;
+                    // This case is for the earlier > later
+                    double beforeConfidence = vehicles[i].Confidence;
+                    vehicles[i].Confidence = vehicles[i].Confidence + ((vehicles[i].Confidence - vehicles[j].Confidence) * 4.0);
                     if (vehicles[i].Confidence >= 1.0)
                     {
-                      vehicles[i].Confidence = 0.9999999;
+                      vehicles[i].Confidence = 0.9999;  // this number is below 1 and is magic in the sense that it can be recognized by the user
                     }
+
+                    Dbg.Trace("Boosting vehicle confidence from: " + beforeConfidence.ToString() + " After: " + vehicles[i].Confidence.ToString());
+
+                    Dbg.Trace("Removing duplicate vehicle (1) " + vehicles[j].Label);
+                    // Since there was an overlap, remove the lower confidence vehicle
                     objectList.RemoveAll(obj => obj.ID == vehicles[j].ID);  // and remove it from the passed list
-                    vehicles.RemoveAt(j);
+                    vehicles.RemoveAt(j); 
                     removedOne = true;
                     break;
                   }
                   else
                   {
-                    vehicles[j].Confidence = vehicles[j].Confidence + (vehicles[j].Confidence - vehicles[i].Confidence) / 2.0;
+                    // This case is for the later > earlier
+                    double beforeConfidence = vehicles[j].Confidence;
+                    vehicles[j].Confidence = vehicles[j].Confidence + ((vehicles[j].Confidence - vehicles[i].Confidence) * 4.0);
                     if (vehicles[j].Confidence >= 1.0)
                     {
-                      vehicles[j].Confidence = 0.9999999;
+                      vehicles[j].Confidence = 0.9999;  // this number is below 1 and is magic in the sense that it can be recognized by the user
                     }
 
+                    Dbg.Trace("Boosting vehicle confidence from: " + beforeConfidence.ToString() + " After: " + vehicles[j].Confidence.ToString());
+
+                    Dbg.Trace("Removing duplicate vehicle (2): " + vehicles[i].Label);
                     objectList.RemoveAll(obj => obj.ID == vehicles[i].ID);  // and remove it from the passed list
-                    vehicles.RemoveAt(i);
+                    vehicles.RemoveAt(i);   // We only do the vehicle once.
                     removedOne = true;
                     break;
                   }
@@ -248,12 +282,17 @@ namespace SAAI
           }
         }
       }
+
+      Dbg.Trace("Objects after duplicate vehicle check: " + objectList.Count.ToString());
     }
 
 
     void RemoveUnmovedVehicles(List<ImageObject> objectList)
     {
+      Dbg.Trace("Object count before removing parked: " + objectList.Count.ToString());
+
       List<ImageObject> vehicles = new List<ImageObject>();
+      int nonVehicleObjects = 0;
 
       // Yes, once again we get a list of vehicles
       if (objectList != null && objectList.Count > 0)
@@ -263,15 +302,20 @@ namespace SAAI
         {
           if (IsVehicle(obj))
           {
-            if (obj.Confidence > 0.45)
+            if (obj.Confidence > minVehicleConfidence)
             {
-              vehicles.Add(obj);
+              vehicles.Add(new ImageObject(obj));
             }
+          }
+          else
+          {
+            ++nonVehicleObjects;
           }
         }
 
-        List<ImageObject> allFoundVehicles = new List<ImageObject>(vehicles);
+        Dbg.Trace("non-vehicle objects before parking check: " + nonVehicleObjects.ToString());
 
+        List<ImageObject> allFoundVehicles = new List<ImageObject>(vehicles);
 
         int i = 0;
 
@@ -280,45 +324,104 @@ namespace SAAI
 
           bool removedOne = false;
 
-          for (int j = 0; j < _previousVehicles.Count; j++)
+          lock (_previousVehicles)
           {
 
-            if (vehicles[i].Label == vehicles[j].Label)    // In this case we only remove  objects that are the same - A = car, B = car (not 100%, but what can we do?)
+            for (int j = 0; j < _previousVehicles.Count; j++)
             {
-              int overlap = GetOverlap(vehicles[i], _previousVehicles[j]);
 
-              if (overlap > 90)
+              if (vehicles[i].Label == vehicles[j].Label)    // In this case we only remove  objects that are the same - A = car, B = car (not 100%, but what can we do?)
               {
-                // OK, here we assume that they are the same object.
-                // We add which ever has the highest confidence level to the result;
+                int targetOverlap = ParkedOverlap;
+                if (AnimalOverlapsVehicleEdge(vehicles[i], objectList) || AnimalOverlapsVehicleEdge(_previousVehicles[j], objectList))
+                {
+                  targetOverlap = 85; // this throws off the object outline
+                }
 
-                objectList.RemoveAll(obj => obj.ID == vehicles[i].ID);  // and remove it from the passed list
-                vehicles.RemoveAt(i);   // we are done with this vehicle
-                removedOne = true;
-                break;
+                bool foundParked = false;
+                int overlap = GetOverlap(vehicles[i], _previousVehicles[j]);
+                if (overlap >= targetOverlap)   // Shadows, etc. do cause event parked vehicles to shift in outline
+                {
+                  Dbg.Trace("Vehicle found parked using area overlap");
+                  foundParked = true;
+                }
+                else
+                {
+                  // Now we consider 2 points on both the parked and the subject vehicle.  If they match we consider it parked.
+                  // This is because people walking in front of a car may change the outlines.  (well, cars, etc could too, but...)
+                  // This is far from perfect, but it is worth trying.
+                  Point pPreviousUL = new Point(_previousVehicles[j].ObjectRectangle.Left, _previousVehicles[j].ObjectRectangle.Top);
+                  Point pPreviousLR = new Point(_previousVehicles[j].ObjectRectangle.Right, _previousVehicles[j].ObjectRectangle.Bottom);
+                  Point pVehicleUL = new Point(vehicles[i].ObjectRectangle.Left, vehicles[i].ObjectRectangle.Top);
+                  Point pVehicleLR = new Point(vehicles[i].ObjectRectangle.Right, vehicles[i].ObjectRectangle.Bottom);
+
+                  double ulDistance = GetPointDistance(pPreviousUL, pVehicleUL);
+                  double lrDistance = GetPointDistance(pPreviousLR, pVehicleLR);
+                  double parkedSize = pVehicleUL.X - pVehicleLR.X;  // the width in pixels of the parked vehicle, to get a rough idea of its size
+                  double targetSize = .05 * parkedSize;
+
+                  if (ulDistance < targetSize || lrDistance > targetSize)
+                  {
+                    Dbg.Trace("Vehicle found parked using corners");
+                    foundParked = true;
+                  }
+                }
+
+                if (foundParked)
+                { 
+                  // OK, here we assume that they are the same object.
+                  // TODO: In high frame rate situations this could be a problem.
+                  // We add which ever has the highest confidence level to the result;
+
+                  objectList.RemoveAll(obj => obj.ID == vehicles[i].ID);  // and remove it from the passed list
+                  Dbg.Trace("Removing parked vehicle: " + vehicles[i].Label);
+                  vehicles.RemoveAt(i);   // we are done with this vehicle
+                  removedOne = true;
+                  break;
+                }
               }
+            }
+
+            if (removedOne)
+            {
+              i = 0; // Since we removed on we need to start over
+            }
+            else
+            {
+              i++;  // and on to the next
             }
           }
 
-          if (removedOne)
-          {
-            i = 0; // Since we removed on we need to start over
-          }
-          else
-          {
-            i++;  // and on to the next
-          }
+          // if we have any remaining vehicles add them to the list of previously seen ones
+          _previousVehicles.Clear();
+          _previousVehicles = new List<ImageObject>(allFoundVehicles);  // because ALL vehicles we found are now "previous"
         }
-
-        // if we have any remaining vehicles add them to the list of previously seen ones
-        _previousVehicles.Clear();
-        _previousVehicles = new List<ImageObject>(allFoundVehicles);  // because all vehicles we found are now "previous"
-
       }
 
-
+      Dbg.Trace("Total objects after parked vehicle check: " + objectList.Count.ToString() + " Vehicles remaining: " + vehicles.Count.ToString());
     }
 
+    double GetPointDistance(Point p1, Point p2)
+    {
+    double result = 0.0;
+    double dw = Math.Pow((p1.X - p2.X), 2);
+    double dh = Math.Pow((p1.Y - p2.Y), 2);
+    result = Math.Sqrt(dw + dh);
+      return result;
+  }
+
+    // As people (or other animals) walk in front of a car it can change the outline of the car
+    // However, if the car is close enough to be recognized as a car, it would be somewhat rare for one person/animal
+    // to change both the left and right edges of the car.  This can easily happen with multiple people,
+    // and rarely may happen with one person.  While the outline of the car can be changed enough that
+    // it is no longer recognized as a car, not much we can do about that.  
+    // So, here we do the best we can
+    bool AnimalOverlapsVehicleEdge(ImageObject vehicle, List<ImageObject> foundObjects)
+    {
+      bool result = false;
+      // For now we just return false since thi feature is still bing worked on!
+      return result;
+    }
 
 
     // I am assuming that if there are people then there is motion.
@@ -343,12 +446,10 @@ namespace SAAI
     }
 
 
+    // TODO:
     bool IsThereMotion()
     {
       bool isMotion = false;
-
-
-
       return isMotion;
 
     }
@@ -385,6 +486,8 @@ namespace SAAI
 
     }
 
+    // This function is used by the UI to detect objects.  It is not currently
+    // used async, but may be in the future
     public async Task<List<ImageObject>> DetectObjects(Stream stream, string imageName)
     {
       List<ImageObject> objects = null;
@@ -449,6 +552,7 @@ namespace SAAI
       return objects;
     }
 
+    // This function is used by the (semi) live data, not the UI
     public async Task<AIResult> DetectObjectsAsync(Stream stream, PendingItem pending)
     {
       List<ImageObject> objects = null;
@@ -520,7 +624,7 @@ namespace SAAI
                 objects.Add(result);
 
                 string o = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", result.Label, result.Confidence, result.X_min, result.Y_min, result.X_max, result.Y_max);
-                // Dbg.Write(o);
+                Dbg.Trace(o);
               }
             }
             // DebugWriter.Write(jsonString);

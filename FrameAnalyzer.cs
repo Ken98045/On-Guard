@@ -47,6 +47,7 @@ namespace SAAI
       AnalysisResult result = new AnalysisResult();
       InterestingObjects.Clear();
       HashSet<string> failureReasons = new HashSet<string>();
+      string reason = string.Empty;
 
       if (null != _areas && _areas.Count() > 0)
       {
@@ -63,7 +64,6 @@ namespace SAAI
 
             foreach (AreaOfInterest area in _areas)
             {
-
               // The search critera defines whether we are looking for people, vehicles, animals, etc.
               if (null != area.SearchCriteria)
               {
@@ -87,7 +87,8 @@ namespace SAAI
                       {
                         if (area.AOIType == AOIType.IgnoreObjects)
                         {
-                          failureReasons.Add(area.AOIName + ": Object in ignored area - " + imageObject.Label);
+                          reason = area.AOIName + ": Object in ignored area - " + imageObject.Label;
+                          failureReasons.Add(reason);
                           // yes, it met all of our critera, but the critera was to ignore it.
                           // It still may also be in an area we do care about, but we worry about that
                           // in the next loop
@@ -104,31 +105,50 @@ namespace SAAI
                               {
                                 InterestingObject interesting = new InterestingObject(area, imageObject, percentOverlap);
                                 InterestingObjects.Add(interesting);
+                                Dbg.Trace("Adding interesting object before 2nd chance ignore: " + interesting.FoundObject.Label);
 
                               }
-                              else { failureReasons.Add(area.AOIName + ": Minimum height - too low - " + imageObject.Label); }
+                              else
+                              {
+                                reason = area.AOIName + ": Minimum height - too low - " + imageObject.Label;
+                                failureReasons.Add(reason);
+                              }
                             }
-                            else { failureReasons.Add(area.AOIName + ": Minimum width too low - " + imageObject.Label); }
+                            else
+                            {
+                              reason = area.AOIName + ": Minimum width too low - " + imageObject.Label;
+                              failureReasons.Add(reason);
+                            }
                           }
-                          else { failureReasons.Add(area.AOIName + ": Confidence level too low: " + (imageObject.Confidence * 100).ToString() + " - " + imageObject.Label); }
+                          else
+                          {
+                            reason = area.AOIName + ": Confidence level too low: " + (imageObject.Confidence * 100).ToString() + " - " + imageObject.Label;
+                            failureReasons.Add(reason);
+                          }
                         }
                       }
-                      else { failureReasons.Add(area.AOIName + ": Less than minimum overlap: " + percentOverlap.ToString() + " - " + imageObject.Label); }
+                      else
+                      {
+                        reason = area.AOIName + ": Less than minimum overlap: " + percentOverlap.ToString() + " - " + imageObject.Label;
+                        failureReasons.Add(reason);
+                      }
                     }
                     else
                     {
                       if (objectType != ImageObjectType.Irrelevant)
                       {
-                        failureReasons.Add(area.AOIName + ": Object mismatch: " + criteria.ObjectType.ToString() + " - " + objectType.ToString() + " - " + imageObject.Label);
+                        reason = area.AOIName + ": Object mismatch: " + criteria.ObjectType.ToString() + " - " + objectType.ToString() + " - " + imageObject.Label;
+                        failureReasons.Add(reason);
                       }
                     }
                   }
                   else { /*failureReasons.Add(area.AOIName + ": Object Irrelevant -  " + imageObject.Label); */}
                 }
               }
-              else 
+              else
               {
-                failureReasons.Add("No search critera"); 
+                reason = "No search critera";
+                failureReasons.Add(reason);
               }
             }
 
@@ -160,7 +180,9 @@ namespace SAAI
                             if (io.FoundObject != null)
                             {
                               foundOne = true;
-                              failureReasons.Add(ignore.AOIName + ": Ignore area second pass validation - Object: " + io.FoundObject.Label);
+                              reason = ignore.AOIName + ": Ignore area second pass validation - Object: " + io.FoundObject.Label;
+                              failureReasons.Add(reason);
+                              Dbg.Trace("Removing object on second pass ignore area validation: " + io.FoundObject.Label);
                               InterestingObjects.Remove(io);
 
                             }
@@ -187,13 +209,20 @@ namespace SAAI
 
         // InterestingObjects = RemoveDuplicateAreas(InterestingObjects);
       }
-      else { failureReasons.Add("No areas define"); }
+      else { failureReasons.Add("No areas defined"); }
 
       result.InterestingObjects = InterestingObjects;
       result.FailureReasons = failureReasons;
+
+      foreach (var failure in failureReasons)
+      {
+        Dbg.Trace(failure);
+      }
+
       return result;
     }
 
+    // TODO Not currently used.
     static List<InterestingObject> RemoveDuplicateAreas(List<InterestingObject> objects)
     {
       if (objects.Count > 1)
@@ -240,7 +269,7 @@ namespace SAAI
     }
 
 
-    static ImageObjectType ObjectTypeFromLabel(string label)
+    public static ImageObjectType ObjectTypeFromLabel(string label)
     {
       ImageObjectType result;
 
@@ -282,6 +311,7 @@ namespace SAAI
           result = ImageObjectType.Irrelevant;
           break;
       }
+
 
       return result;
     }

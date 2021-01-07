@@ -115,15 +115,17 @@ namespace SAAI
     static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
       // Log the exception, display it, etc
-      Dbg.Write(e.Exception.Message);
-      MessageBox.Show("There was an unexpected error.  Please report it: " + e.Exception.Message, "Unexpected Error (1)");
+      Exception ex = (Exception)e.Exception;
+      Dbg.Write(ex.Message);
+      MessageBox.Show("There was an unexpected error.  Please report it: " + ex.Message + Environment.NewLine + Environment.NewLine + ex.StackTrace, "Unexpected Error (1)");
     }
 
     static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
       // Log the exception, display it, etc
-      Dbg.Write((e.ExceptionObject as Exception).Message);
-      MessageBox.Show("There was an unexpected error.  Please report it: " + (e.ExceptionObject as Exception).Message, "Unexpected Error (2)");
+      Exception ex = (Exception)e.ExceptionObject;
+      Dbg.Write(ex.Message);
+      MessageBox.Show("There was an unexpected error.  Please report it: " + ex.Message + Environment.NewLine + Environment.NewLine + ex.StackTrace, "Unexpected Error (2)");
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -340,6 +342,10 @@ namespace SAAI
       {
         LoadImage(_fileNames[_current]);
       }
+      else
+      {
+        pictureImage.Image = pictureImage.ErrorImage;
+      }
 
       fileNumberUpDown.Maximum = _fileNames.Count;
       fileNumberUpDown.Minimum = (int)1;
@@ -484,28 +490,37 @@ namespace SAAI
         try
         {
           continueTrying = false;
-          using (FileStream stream = new FileStream(file, FileMode.Open))
+          if (File.Exists(file))
           {
-            result = ProcessImage(stream, file);
-            if (!motionOnlyCheckbox.Checked)  // If the box is checked and we are loading the image then we know it is in the DB
+            using (FileStream stream = new FileStream(file, FileMode.Open))
             {
-              if (result != null && result.Count > 0)
+              result = ProcessImage(stream, file);
+              if (!motionOnlyCheckbox.Checked)  // If the box is checked and we are loading the image then we know it is in the DB
               {
-
-                FrameAnalyzer analyzer = new FrameAnalyzer(_currentCamera.AOI, result);
-                AnalysisResult analysisResult = analyzer.AnalyzeFrame();
-                if (analysisResult.InterestingObjects.Count > 0)
+                if (result != null && result.Count > 0)
                 {
-                  InsertMotionIfNecessary(file);
+
+                  FrameAnalyzer analyzer = new FrameAnalyzer(_currentCamera.AOI, result);
+                  AnalysisResult analysisResult = analyzer.AnalyzeFrame();
+                  if (analysisResult.InterestingObjects.Count > 0)
+                  {
+                    InsertMotionIfNecessary(file);
+                  }
                 }
               }
-            }
 
-            currentNumberTextBox.Text = (_fileNames.IndexOf(file) + 1).ToString();
-            fileNameTextBox.Text = file;
-            _showingLiveView = false;
-            FileInfo fi = new FileInfo(file);
-            _lastMotionTime = fi.CreationTime.ToFileTime();
+              currentNumberTextBox.Text = (_fileNames.IndexOf(file) + 1).ToString();
+              fileNameTextBox.Text = file;
+              _showingLiveView = false;
+              FileInfo fi = new FileInfo(file);
+              _lastMotionTime = fi.CreationTime.ToFileTime();
+            }
+          }
+          else
+          {
+            pictureImage.Image = pictureImage.ErrorImage;
+            currentNumberTextBox.Text = string.Empty;
+            fileNameTextBox.Text = string.Empty;
           }
         }
         catch (FileNotFoundException ex)
@@ -557,11 +572,18 @@ namespace SAAI
       tmp.Dispose();
       BitmapResolution.XResolution = _screenBitmap.Width;
       BitmapResolution.YResolution = _screenBitmap.Height;
-      _xScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
-      _yScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
+      if (null == pictureImage)
+      {
+        _xScale = 1.0;
+        _yScale = 1.0;
+      }
+      else
+      {
+        _xScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
+        _yScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
+      }
+
       stream.Position = 0;
-
-
       if (_showObjects)
       {
         try
@@ -650,6 +672,8 @@ namespace SAAI
       }
 
       pictureImage.Image = _screenBitmap;
+      XResLabel.Text = BitmapResolution.XResolution.ToString();
+      YResLabel.Text = BitmapResolution.YResolution.ToString();
 
       return _frameObjects;
     }
@@ -777,7 +801,6 @@ namespace SAAI
       Point zoneFocus = _modifyBox.ZoneFocus;
       Rectangle scaledRect = ScaleScreenToData(rect);
 
-      Rectangle areaRect = Rectangle.Intersect(scaledRect, new Rectangle(0, 0, BitmapResolution.XResolution, BitmapResolution.YResolution));
       _modifyingArea = false;
       ControlMoverOrResizer.Stop(_modifyBox);
       StopEditingEnvironment();
@@ -787,7 +810,7 @@ namespace SAAI
       if (_modifyingAreaID == Guid.Empty)
       {
 
-        using (CreateAOI dlg = new CreateAOI(areaRect, zoneFocus, BitmapResolution.XResolution, BitmapResolution.YResolution))
+        using (CreateAOI dlg = new CreateAOI(scaledRect, zoneFocus, BitmapResolution.XResolution, BitmapResolution.YResolution))
         {
           DialogResult result = dlg.ShowDialog(pictureImage);
 
@@ -800,7 +823,7 @@ namespace SAAI
               }
               else
               {
-                _currentCamera.AOI[_modifyingAreaID].AreaRect = areaRect; // just update the area (does not need to be adjusted)
+                _currentCamera.AOI[_modifyingAreaID].AreaRect = scaledRect; // just update the area (does not need to be adjusted)
                 _currentCamera.AOI.Save();
                 MessageBox.Show(pictureImage, "The Area of Interest was saved with new boundaries!", "Area Saved");
                 _modifyingAreaID = Guid.Empty;
@@ -808,8 +831,9 @@ namespace SAAI
               break;
 
             case DialogResult.Yes:
-              // An artificial response saying "edit this area"
-              dlg.Area.ZoneFocus = _modifyBox.ZoneFocus;
+              // An artificial response saying "edit this area".  This only happen when the area
+              // there is a request to modify an area that has come from the initial area creation
+              // It does not happen here when the area is modified via the EditAreasOfInterest box
               _currentCamera.AOI.AddArea(dlg.Area); // Even if we are modifying an area bounds we still save it
               StartEditingArea(dlg.Area.ID);
               break;
@@ -819,7 +843,7 @@ namespace SAAI
       else
       {
         // If we are already modifying an area all we do is update the rectangle
-        _currentCamera.AOI[_modifyingAreaID].AreaRect = areaRect; // does not need to be adjusted
+        _currentCamera.AOI[_modifyingAreaID].AreaRect = scaledRect; // does not need to be adjusted
         _currentCamera.AOI[_modifyingAreaID].ZoneFocus = zoneFocus;
         _currentCamera.AOI.Save();
         MessageBox.Show(pictureImage, "The boundaries of the current Area of Interest have been modified", "Area of Interest Changed!");
@@ -1104,6 +1128,7 @@ namespace SAAI
       if (null != _frameObjects)
       {
         List<ImageObject> frameObjects = LoadImage(_fileNames[_current]);
+        AIAnalyzer.RemoveDuplicateVehiclesInImage(frameObjects);
         FrameAnalyzer analyzer = new FrameAnalyzer(_currentCamera.AOI, frameObjects);
         AnalysisResult result = analyzer.AnalyzeFrame();
         using (InterestingItemsDialog dlg = new InterestingItemsDialog(result))
@@ -1552,7 +1577,7 @@ namespace SAAI
         foreach (var cam in _allCameras.CameraDictionary.Values)
         {
           if (cam.Monitoring)
-          { 
+          {
             cam.Monitor.OnNewImage += OnCameraImage;
           }
         }
@@ -1735,6 +1760,7 @@ namespace SAAI
 
     async Task StartAIAnalysis(PendingItem pendingItem)
     {
+      Dbg.Trace("Starting AI analysis of file: " + pendingItem.PendingFile);
       FileStream stream;
 
       bool continueTrying;
@@ -1776,8 +1802,10 @@ namespace SAAI
                 if (null != pendingItem.CamData)
                 {
                   _analyzer.RemoveInvalidObjects(result.ObjectsFound);  // This may remove items from the list, and may zero it out
+
                   if (result.ObjectsFound.Count > 0)
                   {
+                    Dbg.Trace("Starting FRAME analysis of file: " + pendingItem.PendingFile + " with: " + result.ObjectsFound.Count.ToString() + " objects");
                     FrameAnalyzer frameAnalyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound);
                     interesting = frameAnalyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
 
@@ -2296,13 +2324,42 @@ namespace SAAI
     }
 
 
-    private void CleanupButton_Click(object sender, EventArgs e)
+    private async void CleanupButton_Click(object sender, EventArgs e)
     {
       using (CleanupDialog dlg = new CleanupDialog(_currentCamera.Path, _currentCamera.CameraPrefix))
       {
         dlg.ShowDialog();
+        MessageBox.Show("You may continue working, but the working set will be refreshed upon completion!", "File Deletion About to Start!");
+        await Task.Run(() => CleanupAsync(dlg.ExpiredFiles));
         Refresh_Click(sender, e);
+        MessageBox.Show("The working set was refreshed!", "Updated!");
       }
+    }
+
+    private async Task CleanupAsync(List<FileInfo> expiredFiles)
+    {
+      //using (WaitCursor _ = new WaitCursor())
+      //{
+      foreach (var info in expiredFiles)
+      {
+        try
+        {
+          File.Delete(info.FullName);
+          Task.Delay(1);  // avoid choking the UI
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+          MessageBox.Show("Unable to delete file: " + info.FullName + Environment.NewLine + "This is probably due to your anti-virus software." +
+            Environment.NewLine + "Exiting Cleanup!");
+          break;
+        }
+        catch (IOException)
+        {
+          Dbg.Write("Unable to find file: " + info.FullName + " when attempting deletion.");
+        }
+      }
+      // }
+
     }
 
     private void AreasOfInterestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2364,15 +2421,15 @@ namespace SAAI
 
     private void LogFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-      path = Path.Combine(path, "OnGuard");
-      if (!Directory.Exists(path))
+      string path = Storage.GetFilePath("OnGuard.txt");
+      if (File.Exists(path))
       {
-        Directory.CreateDirectory(path);
+        Process.Start(path);
       }
-
-      path = Path.Combine(path, "OnGuard.txt");
-      Process.Start(path);
+      else
+      {
+        MessageBox.Show("The log file does not exist.  Did you delete it?", "No Log File!");
+      }
     }
 
 
@@ -2469,6 +2526,34 @@ namespace SAAI
 
       await Task.Delay(1000 * 3);
       Refresh_Click(null, null);
+    }
+
+    private void logDetailedInformationToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
+      if (menuItem.Checked)
+      {
+        Dbg.LogLevel = 1;
+      }
+      else
+      {
+        Dbg.LogLevel = 0;
+      }
+    }
+
+    private void deleteLogFileToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (File.Exists(Storage.GetFilePath("OnGuard.txt")))
+      {
+        if (!Dbg.DeleteLogFile())
+        {
+          MessageBox.Show("Unable to delete the log file - It is probably busy. Try again later", "Unable to Delete the log file!");
+        }
+      }
+      else
+      {
+        MessageBox.Show("Unable to delete the log file - It does not currently exist.", "No Log File!");
+      }
     }
   }
 

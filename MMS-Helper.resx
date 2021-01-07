@@ -132,4 +132,8 @@ This list is likely to be incomplete and/or outdated.   If you are unsure whethe
 
 </value>
   </data>
+  <data name="label3.Text" xml:space="preserve">
+    <value>Note: If you try to send too many pictures or you don't  resize your picture small enough your carrier may refuse to accept the message, or it may scale pictures down.  Your carrier may or may not return any error messages to On Guard.
+</value>
+  </data>
 </root>

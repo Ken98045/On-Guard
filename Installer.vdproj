@@ -457,15 +457,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:On Guard"
-        "ProductCode" = "8:{5D1B5840-051C-4BD6-81B6-C4E306CD847E}"
-        "PackageCode" = "8:{417AA267-D380-4A3C-94B3-F3602597705C}"
+        "ProductCode" = "8:{90101BA6-7EA3-447F-B1F2-51D143E9CDDB}"
+        "PackageCode" = "8:{BE2AE6EE-5A85-46A5-AE60-3BD271185FA8}"
         "UpgradeCode" = "8:{DCA433DA-BECE-4E39-AED0-767091896BEF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.4.6"
+        "ProductVersion" = "8:1.4.7"
         "Manufacturer" = "8:On Guard"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -993,7 +993,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5CB4A6F49A464B2B9E79E076B7AEB041"
             {
-            "SourcePath" = "8:obj\\Debug\\On Guard.exe"
+            "SourcePath" = "8:obj\\Release\\On Guard.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CB628D0D56A842DF94CD2CA065E7A47D"
