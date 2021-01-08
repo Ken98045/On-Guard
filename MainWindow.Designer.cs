@@ -115,13 +115,13 @@
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.logFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.logDetailedInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.deleteLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       this.label11 = new System.Windows.Forms.Label();
       this.label12 = new System.Windows.Forms.Label();
       this.XResLabel = new System.Windows.Forms.Label();
       this.YResLabel = new System.Windows.Forms.Label();
-      this.logDetailedInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.deleteLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).BeginInit();
       this.LiveOnDemandGroup.SuspendLayout();
@@ -553,6 +553,7 @@
       // 
       // pictureImage
       // 
+      this.pictureImage.ErrorImage = global::SAAI.Properties.Resources.OnGuardNoPIctures;
       this.pictureImage.Location = new System.Drawing.Point(1, 1);
       this.pictureImage.Name = "pictureImage";
       this.pictureImage.Size = new System.Drawing.Size(1280, 960);
@@ -857,6 +858,21 @@
       this.logFileToolStripMenuItem.Text = "Log File";
       this.logFileToolStripMenuItem.Click += new System.EventHandler(this.LogFileToolStripMenuItem_Click);
       // 
+      // logDetailedInformationToolStripMenuItem
+      // 
+      this.logDetailedInformationToolStripMenuItem.CheckOnClick = true;
+      this.logDetailedInformationToolStripMenuItem.Name = "logDetailedInformationToolStripMenuItem";
+      this.logDetailedInformationToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+      this.logDetailedInformationToolStripMenuItem.Text = "Log Detailed Information";
+      this.logDetailedInformationToolStripMenuItem.Click += new System.EventHandler(this.logDetailedInformationToolStripMenuItem_Click);
+      // 
+      // deleteLogFileToolStripMenuItem
+      // 
+      this.deleteLogFileToolStripMenuItem.Name = "deleteLogFileToolStripMenuItem";
+      this.deleteLogFileToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+      this.deleteLogFileToolStripMenuItem.Text = "Delete Log File";
+      this.deleteLogFileToolStripMenuItem.Click += new System.EventHandler(this.deleteLogFileToolStripMenuItem_Click);
+      // 
       // notifyIcon
       // 
       this.notifyIcon.BalloonTipText = "On Guard minimized - double Click the icon in the system tray (near clock) to  re" +
@@ -909,21 +925,6 @@
       this.YResLabel.Size = new System.Drawing.Size(39, 15);
       this.YResLabel.TabIndex = 6;
       this.YResLabel.Text = "1920";
-      // 
-      // logDetailedInformationToolStripMenuItem
-      // 
-      this.logDetailedInformationToolStripMenuItem.CheckOnClick = true;
-      this.logDetailedInformationToolStripMenuItem.Name = "logDetailedInformationToolStripMenuItem";
-      this.logDetailedInformationToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-      this.logDetailedInformationToolStripMenuItem.Text = "Log Detailed Information";
-      this.logDetailedInformationToolStripMenuItem.Click += new System.EventHandler(this.logDetailedInformationToolStripMenuItem_Click);
-      // 
-      // deleteLogFileToolStripMenuItem
-      // 
-      this.deleteLogFileToolStripMenuItem.Name = "deleteLogFileToolStripMenuItem";
-      this.deleteLogFileToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-      this.deleteLogFileToolStripMenuItem.Text = "Delete Log File";
-      this.deleteLogFileToolStripMenuItem.Click += new System.EventHandler(this.deleteLogFileToolStripMenuItem_Click);
       // 
       // MainWindow
       // 
