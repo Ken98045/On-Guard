@@ -1165,18 +1165,20 @@ namespace SAAI
         webRequest.AllowWriteStreamBuffering = true;
         webRequest.Timeout = 30000;
 
-        WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true);
-
-        var stream = webResponse.GetResponseStream();
-        using (MemoryStream memStream = new MemoryStream())
+        using (WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true))
         {
-          stream.CopyTo(memStream);
-          //bitmap = new Bitmap(stream);
+          using (var stream = webResponse.GetResponseStream())
+          {
+            using (MemoryStream memStream = new MemoryStream())
+            {
+              stream.CopyTo(memStream);
+              //bitmap = new Bitmap(stream);
 
-          ProcessImage(memStream, "Live Image");
+              ProcessImage(memStream, "Live Image");
+            }
+          }
         }
 
-        webResponse.Close();
       }
       catch (HttpException ex)
       {
@@ -1413,6 +1415,8 @@ namespace SAAI
           {
             Dbg.Write("Error notifying URL: " + urlStr + " -- Reponse Code: " + response.StatusCode.ToString());
           }
+
+          response.Dispose();
         }
         catch (HttpException ex)
         {
@@ -1485,16 +1489,15 @@ namespace SAAI
           webRequest.AllowWriteStreamBuffering = true;
           webRequest.Timeout = 30000;
 
-          System.Net.WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true);
-
-          var stream = webResponse.GetResponseStream();
-          using (MemoryStream memStream = new MemoryStream())
+          using (System.Net.WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true))
           {
-            stream.CopyTo(memStream);
-            //bitmap = new Bitmap(stream);
+            var stream = webResponse.GetResponseStream();
+            using (MemoryStream memStream = new MemoryStream())
+            {
+              stream.CopyTo(memStream);
+              //bitmap = new Bitmap(stream);
+            }
           }
-
-          webResponse.Close();
         }
         catch (Exception ex)
         {
@@ -2328,11 +2331,14 @@ namespace SAAI
     {
       using (CleanupDialog dlg = new CleanupDialog(_currentCamera.Path, _currentCamera.CameraPrefix))
       {
-        dlg.ShowDialog();
-        MessageBox.Show("You may continue working, but the working set will be refreshed upon completion!", "File Deletion About to Start!");
-        await Task.Run(() => CleanupAsync(dlg.ExpiredFiles));
-        Refresh_Click(sender, e);
-        MessageBox.Show("The working set was refreshed!", "Updated!");
+        DialogResult result = dlg.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          MessageBox.Show("You may continue working, but the working set will be refreshed upon completion!", "File Deletion About to Start!");
+          await Task.Run(() => CleanupAsync(dlg.ExpiredFiles));
+          Refresh_Click(sender, e);
+          MessageBox.Show("The working set was refreshed!", "Updated!");
+        }
       }
     }
 

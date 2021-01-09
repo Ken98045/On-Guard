@@ -50,7 +50,7 @@ namespace SAAI
     private void OKButton_Click(object sender, EventArgs e)
     {
       CleanupFiles();
-      DialogResult = DialogResult.Cancel;
+      DialogResult = DialogResult.OK;
       this.Close();
     }
 

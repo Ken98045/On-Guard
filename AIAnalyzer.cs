@@ -245,7 +245,7 @@ namespace SAAI
                     Dbg.Trace("Removing duplicate vehicle (1) " + vehicles[j].Label);
                     // Since there was an overlap, remove the lower confidence vehicle
                     objectList.RemoveAll(obj => obj.ID == vehicles[j].ID);  // and remove it from the passed list
-                    vehicles.RemoveAt(j); 
+                    vehicles.RemoveAt(j);
                     removedOne = true;
                     break;
                   }
@@ -368,7 +368,7 @@ namespace SAAI
                 }
 
                 if (foundParked)
-                { 
+                {
                   // OK, here we assume that they are the same object.
                   // TODO: In high frame rate situations this could be a problem.
                   // We add which ever has the highest confidence level to the result;
@@ -403,12 +403,12 @@ namespace SAAI
 
     double GetPointDistance(Point p1, Point p2)
     {
-    double result = 0.0;
-    double dw = Math.Pow((p1.X - p2.X), 2);
-    double dh = Math.Pow((p1.Y - p2.Y), 2);
-    result = Math.Sqrt(dw + dh);
+      double result = 0.0;
+      double dw = Math.Pow((p1.X - p2.X), 2);
+      double dh = Math.Pow((p1.Y - p2.Y), 2);
+      result = Math.Sqrt(dw + dh);
       return result;
-  }
+    }
 
     // As people (or other animals) walk in front of a car it can change the outline of the car
     // However, if the car is close enough to be recognized as a car, it would be somewhat rare for one person/animal
@@ -453,21 +453,6 @@ namespace SAAI
       return isMotion;
 
     }
-
-
-
-    /*
-     * 
-     *      using (HttpClient client = new HttpClient())
-      {
-
-        var request = new MultipartFormDataContent();
-        var image_data = File.OpenRead(image_path);
-        request.Add(new StreamContent(image_data), "image", Path.GetFileName(image_path));
-        var output = 
-
-     * 
-     */
 
     public async Task<List<ImageObject>> ProcessVideoImageViaAI(Stream stream, string imageName)
     {
@@ -524,6 +509,7 @@ namespace SAAI
             }
 
             var jsonString = /*await*/ output.Content.ReadAsStringAsync().Result;
+            output.Dispose();
             Response response = JsonConvert.DeserializeObject<Response>(jsonString);
 
             if (response.Predictions != null && response.Predictions.Length > 0)
@@ -601,6 +587,8 @@ namespace SAAI
             }
 
             var jsonString = await output.Content.ReadAsStringAsync().ConfigureAwait(false);
+            output.Dispose();
+
             TimeSpan processTime = pending.TimeProcessingByAI();
             // Console.WriteLine("Process Time: " + processTime.TotalMilliseconds.ToString());
             Response response = JsonConvert.DeserializeObject<Response>(jsonString);

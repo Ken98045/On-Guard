@@ -122,6 +122,7 @@
       this.label12 = new System.Windows.Forms.Label();
       this.XResLabel = new System.Windows.Forms.Label();
       this.YResLabel = new System.Windows.Forms.Label();
+      this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).BeginInit();
       this.LiveOnDemandGroup.SuspendLayout();
@@ -234,7 +235,7 @@
       this.label2.AutoSize = true;
       this.label2.Location = new System.Drawing.Point(511, 78);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(72, 13);
+      this.label2.Size = new System.Drawing.Size(87, 16);
       this.label2.TabIndex = 6;
       this.label2.Text = "Go To File: # ";
       // 
@@ -243,7 +244,7 @@
       this.fileNumberUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.fileNumberUpDown.Location = new System.Drawing.Point(605, 76);
       this.fileNumberUpDown.Name = "fileNumberUpDown";
-      this.fileNumberUpDown.Size = new System.Drawing.Size(57, 20);
+      this.fileNumberUpDown.Size = new System.Drawing.Size(57, 22);
       this.fileNumberUpDown.TabIndex = 7;
       // 
       // goToFileButton
@@ -263,7 +264,7 @@
       this.label3.AutoSize = true;
       this.label3.Location = new System.Drawing.Point(418, 79);
       this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(47, 13);
+      this.label3.Size = new System.Drawing.Size(59, 16);
       this.label3.TabIndex = 9;
       this.label3.Text = "Number:";
       // 
@@ -273,7 +274,7 @@
       this.currentNumberTextBox.Location = new System.Drawing.Point(471, 74);
       this.currentNumberTextBox.Name = "currentNumberTextBox";
       this.currentNumberTextBox.ReadOnly = true;
-      this.currentNumberTextBox.Size = new System.Drawing.Size(40, 20);
+      this.currentNumberTextBox.Size = new System.Drawing.Size(40, 22);
       this.currentNumberTextBox.TabIndex = 10;
       // 
       // label4
@@ -282,7 +283,7 @@
       this.label4.AutoSize = true;
       this.label4.Location = new System.Drawing.Point(439, 19);
       this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(26, 13);
+      this.label4.Size = new System.Drawing.Size(33, 16);
       this.label4.TabIndex = 11;
       this.label4.Text = "File:";
       // 
@@ -292,7 +293,7 @@
       this.fileNameTextBox.Location = new System.Drawing.Point(471, 16);
       this.fileNameTextBox.Name = "fileNameTextBox";
       this.fileNameTextBox.ReadOnly = true;
-      this.fileNameTextBox.Size = new System.Drawing.Size(264, 20);
+      this.fileNameTextBox.Size = new System.Drawing.Size(264, 22);
       this.fileNameTextBox.TabIndex = 12;
       // 
       // label5
@@ -301,7 +302,7 @@
       this.label5.AutoSize = true;
       this.label5.Location = new System.Drawing.Point(425, 47);
       this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(40, 13);
+      this.label5.Size = new System.Drawing.Size(49, 16);
       this.label5.TabIndex = 13;
       this.label5.Text = "Go To:";
       // 
@@ -310,7 +311,7 @@
       this.goToFileTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.goToFileTextBox.Location = new System.Drawing.Point(471, 45);
       this.goToFileTextBox.Name = "goToFileTextBox";
-      this.goToFileTextBox.Size = new System.Drawing.Size(264, 20);
+      this.goToFileTextBox.Size = new System.Drawing.Size(264, 22);
       this.goToFileTextBox.TabIndex = 14;
       // 
       // goToFileNameButton
@@ -385,7 +386,7 @@
       this.showAreasOfInterestCheck.AutoSize = true;
       this.showAreasOfInterestCheck.Location = new System.Drawing.Point(421, 103);
       this.showAreasOfInterestCheck.Name = "showAreasOfInterestCheck";
-      this.showAreasOfInterestCheck.Size = new System.Drawing.Size(133, 17);
+      this.showAreasOfInterestCheck.Size = new System.Drawing.Size(159, 20);
       this.showAreasOfInterestCheck.TabIndex = 22;
       this.showAreasOfInterestCheck.Text = "Show Areas of Interest";
       this.showAreasOfInterestCheck.UseVisualStyleBackColor = true;
@@ -436,7 +437,7 @@
             0,
             0});
       this.presetNumeric.Name = "presetNumeric";
-      this.presetNumeric.Size = new System.Drawing.Size(46, 20);
+      this.presetNumeric.Size = new System.Drawing.Size(46, 22);
       this.presetNumeric.TabIndex = 32;
       this.presetNumeric.Value = new decimal(new int[] {
             1,
@@ -474,7 +475,7 @@
       this.liveCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.liveCheck.Location = new System.Drawing.Point(94, 25);
       this.liveCheck.Name = "liveCheck";
-      this.liveCheck.Size = new System.Drawing.Size(70, 23);
+      this.liveCheck.Size = new System.Drawing.Size(84, 26);
       this.liveCheck.TabIndex = 33;
       this.liveCheck.Text = "Continuous";
       this.liveCheck.UseVisualStyleBackColor = false;
@@ -583,7 +584,7 @@
       this.label8.AutoSize = true;
       this.label8.Location = new System.Drawing.Point(841, 69);
       this.label8.Name = "label8";
-      this.label8.Size = new System.Drawing.Size(56, 13);
+      this.label8.Size = new System.Drawing.Size(70, 16);
       this.label8.TabIndex = 35;
       this.label8.Text = "CPU Load";
       // 
@@ -593,7 +594,7 @@
       this.label9.AutoSize = true;
       this.label9.Location = new System.Drawing.Point(865, 0);
       this.label9.Name = "label9";
-      this.label9.Size = new System.Drawing.Size(76, 13);
+      this.label9.Size = new System.Drawing.Size(97, 16);
       this.label9.TabIndex = 36;
       this.label9.Text = "Select Camera";
       // 
@@ -650,7 +651,7 @@
       this.motionOnlyCheckbox.AutoSize = true;
       this.motionOnlyCheckbox.Location = new System.Drawing.Point(572, 102);
       this.motionOnlyCheckbox.Name = "motionOnlyCheckbox";
-      this.motionOnlyCheckbox.Size = new System.Drawing.Size(76, 23);
+      this.motionOnlyCheckbox.Size = new System.Drawing.Size(91, 26);
       this.motionOnlyCheckbox.TabIndex = 39;
       this.motionOnlyCheckbox.Text = "Motion Only!";
       this.motionOnlyCheckbox.UseVisualStyleBackColor = true;
@@ -659,7 +660,7 @@
       // 
       // CleanupButton
       // 
-      this.CleanupButton.Location = new System.Drawing.Point(844, 106);
+      this.CleanupButton.Location = new System.Drawing.Point(844, 102);
       this.CleanupButton.Name = "CleanupButton";
       this.CleanupButton.Size = new System.Drawing.Size(122, 23);
       this.CleanupButton.TabIndex = 38;
@@ -793,7 +794,8 @@
             this.cameraSettingsToolStripMenuItem1,
             this.outgoingEmailServerToolStripMenuItem1,
             this.addEditEmailAddressesToolStripMenuItem1,
-            this.mQTTSettingsToolStripMenuItem});
+            this.mQTTSettingsToolStripMenuItem,
+            this.testImagesToolStripMenuItem});
       this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
       this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(46, 20);
       this.toolsToolStripMenuItem1.Text = "&Tools";
@@ -926,6 +928,13 @@
       this.YResLabel.TabIndex = 6;
       this.YResLabel.Text = "1920";
       // 
+      // testImagesToolStripMenuItem
+      // 
+      this.testImagesToolStripMenuItem.Name = "testImagesToolStripMenuItem";
+      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.testImagesToolStripMenuItem.Text = "Test Images";
+      this.testImagesToolStripMenuItem.Click += new System.EventHandler(this.testImagesToolStripMenuItem_Click);
+      // 
       // MainWindow
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -1047,6 +1056,7 @@
     private System.Windows.Forms.Label YResLabel;
     private System.Windows.Forms.ToolStripMenuItem logDetailedInformationToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem deleteLogFileToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem testImagesToolStripMenuItem;
   }
 }
 
