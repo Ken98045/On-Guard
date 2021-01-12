@@ -191,6 +191,15 @@ namespace SAAI
               bearsMinYNumeric.Value = obj.MinimumXSize;
               break;
 
+            case ImageObjectType.Birds:
+                birdsCheck.Checked = true;
+                birdsConfidenceNumeric.Value = obj.Confidence;
+                birdsOverlapNumeric.Value = obj.MinPercentOverlap;
+                birdsFramesNumeric.Value = obj.NumberOfFrames;
+                birdsMinXNumeric.Value = obj.MinimumXSize;
+                birdsMinYNumeric.Value = obj.MinimumXSize;
+                break;
+
             case ImageObjectType.Animals:
               animalsCheck.Checked = true;
               animalsConfidenceNumeric.Value = obj.Confidence;
@@ -342,6 +351,20 @@ namespace SAAI
             MinimumYSize = (int)bearsMinYNumeric.Value,
           };
           Area.SearchCriteria.Add(c);
+        }
+
+        if (birdsCheck.Checked)
+        {
+            ObjectCharacteristics c = new ObjectCharacteristics
+            {
+                ObjectType = ImageObjectType.Birds,
+                Confidence = (int)birdsConfidenceNumeric.Value,
+                MinPercentOverlap = (int)birdsOverlapNumeric.Value,
+                NumberOfFrames = (int)birdsFramesNumeric.Value,
+                MinimumXSize = (int)birdsMinXNumeric.Value,
+                MinimumYSize = (int)birdsMinYNumeric.Value,
+            };
+            Area.SearchCriteria.Add(c);
         }
 
         if (animalsCheck.Checked)

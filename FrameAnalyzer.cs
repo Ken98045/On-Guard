@@ -299,12 +299,16 @@ namespace SAAI
           result = ImageObjectType.Bears;
           break;
 
+        case "bird:":
+            result = ImageObjectType.Birds;
+            break;
+
         case "dog":
         case "cat":
         case "horse":
         case "sheep":
         case "cow:":
-          result = ImageObjectType.Animals;
+            result = ImageObjectType.Animals;
           break;
 
         default:
