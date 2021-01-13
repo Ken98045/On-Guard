@@ -1,6 +1,6 @@
 ﻿namespace SAAI
 {
-  partial class AboutDlg
+  partial class AboutDialog
   {
     /// <summary>
     /// Required designer variable.
@@ -28,7 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutDlg));
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutDialog));
       this.pictureBox1 = new System.Windows.Forms.PictureBox();
       this.label1 = new System.Windows.Forms.Label();
       this.label2 = new System.Windows.Forms.Label();
@@ -106,7 +106,7 @@
       this.label5.TabIndex = 7;
       this.label5.Text = "1.5.1";
       // 
-      // AboutDlg
+      // AboutDialog
       // 
       this.AcceptButton = this.OKButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -119,7 +119,7 @@
       this.Controls.Add(this.label2);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.pictureBox1);
-      this.Name = "AboutDlg";
+      this.Name = "AboutDialog";
       this.Text = "About On Guard";
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
       this.ResumeLayout(false);

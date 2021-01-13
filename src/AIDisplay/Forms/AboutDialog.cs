@@ -13,9 +13,9 @@ using System.Reflection;
 
 namespace SAAI
 {
-  public partial class AboutDlg : Form
+  public partial class AboutDialog : Form
   {
-    public AboutDlg()
+    public AboutDialog()
     {
       InitializeComponent();
       //assemblyLabel.Text = String.Format("Version {0}", AssemblyVersion);

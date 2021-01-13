@@ -1,6 +1,6 @@
 ﻿namespace SAAI
 {
-  partial class AddEmailDlg
+  partial class AddEmailDialog
   {
     /// <summary>
     /// Required designer variable.
@@ -83,7 +83,7 @@
       this.emailAddressList.TabIndex = 33;
       this.emailAddressList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.emailAddressList_MouseDoubleClick);
       // 
-      // AddEmailDlg
+      // AddEmailDialog
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
@@ -93,7 +93,7 @@
       this.Controls.Add(this.zdsf);
       this.Controls.Add(this.cancelButton);
       this.Controls.Add(this.okButton);
-      this.Name = "AddEmailDlg";
+      this.Name = "AddEmailDialog";
       this.Text = "Add Email Address to Notify";
       this.ResumeLayout(false);
       this.PerformLayout();

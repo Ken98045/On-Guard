@@ -8,6 +8,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SAAI;
 
 namespace DeepStackDisplay
 {
@@ -128,7 +129,7 @@ namespace DeepStackDisplay
 
     private void AddEmailButton_Click(object sender, EventArgs e)
     {
-      using (AddEmailDlg dlg = new AddEmailDlg())
+      using (AddEmailDialog dlg = new AddEmailDialog())
       {
         if (dlg.ShowDialog() == DialogResult.OK)
         {

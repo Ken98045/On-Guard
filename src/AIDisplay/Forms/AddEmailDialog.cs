@@ -7,10 +7,10 @@ namespace SAAI
 /// <summary>
 /// A simple dialog to add email addresses to the AOI notifications dialog
 /// </summary>
-  public partial class AddEmailDlg : Form
+  public partial class AddEmailDialog : Form
   {
     public string EmailAddress { get; set; }
-    public AddEmailDlg()
+    public AddEmailDialog()
     {
       InitializeComponent();
       foreach (var options in EmailAddresses.EmailAddressList)

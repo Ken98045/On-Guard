@@ -104,10 +104,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MQTTnet">
-      <HintPath>.\MQTTnet.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>.\redist\MQTTnet.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -124,212 +121,222 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutDlg.cs">
+    <Compile Include="Controls\ZoneBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <EmbeddedResource Include="Controls\ZoneBox.resx">
+      <DependentUpon>ZoneBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Forms\AboutDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AboutDlg.Designer.cs">
-      <DependentUpon>AboutDlg.cs</DependentUpon>
+    <Compile Include="Forms\AboutDialog.Designer.cs">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddCameraDialog.cs">
+    <Compile Include="Forms\AddCameraDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddCameraDialog.Designer.cs">
+    <Compile Include="Forms\AddCameraDialog.Designer.cs">
       <DependentUpon>AddCameraDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddEmailDlg.cs">
+    <Compile Include="Forms\AddEmailDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddEmailDlg.Designer.cs">
-      <DependentUpon>AddEmailDlg.cs</DependentUpon>
+    <Compile Include="Forms\AddEmailDialog.Designer.cs">
+      <DependentUpon>AddEmailDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddUrlDlialog.cs">
+    <Compile Include="Forms\AddUrlDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddUrlDlialog.Designer.cs">
-      <DependentUpon>AddUrlDlialog.cs</DependentUpon>
+    <Compile Include="Forms\AddUrlDialog.Designer.cs">
+      <DependentUpon>AddUrlDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="CameraCollection.cs" />
     <Compile Include="AreaNotificationOption.cs" />
     <Compile Include="AreaOfInterest.cs" />
     <Compile Include="AreasOfInterestCollection.cs" />
     <Compile Include="BitmapResolution.cs" />
-    <Compile Include="CameraConfigurationDialog.cs">
+    <Compile Include="Forms\CameraConfigurationDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CameraConfigurationDialog.Designer.cs">
+    <Compile Include="Forms\CameraConfigurationDialog.Designer.cs">
       <DependentUpon>CameraConfigurationDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="CameraContactData.cs" />
     <Compile Include="CameraData.cs" />
-    <Compile Include="CleanupDialog.cs">
+    <Compile Include="Forms\CameraContactDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CleanupDialog.Designer.cs">
+    <Compile Include="Forms\CameraContactDialog.Designer.cs">
+      <DependentUpon>CameraContactDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CleanupDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CleanupDialog.Designer.cs">
       <DependentUpon>CleanupDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="FrameAccumulator.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HIstory.cs" />
-    <Compile Include="MMS-Helper.cs">
+    <Compile Include="Forms\MMS-Helper.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MMS-Helper.Designer.cs">
+    <Compile Include="Forms\MMS-Helper.Designer.cs">
       <DependentUpon>MMS-Helper.cs</DependentUpon>
     </Compile>
     <Compile Include="MQTTPublish.cs" />
-    <Compile Include="MQTTSettings.cs">
+    <Compile Include="Forms\MQTTSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MQTTSettings.Designer.cs">
+    <Compile Include="Forms\MQTTSettings.Designer.cs">
       <DependentUpon>MQTTSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Storage.cs" />
-    <Compile Include="ZoneBox.cs">
-      <SubType>Component</SubType>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Storage.cs" />
     <Compile Include="Cooldowns.cs" />
-    <Compile Include="CreateAOI.cs">
+    <Compile Include="Forms\CreateAOI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CreateAOI.Designer.cs">
+    <Compile Include="Forms\CreateAOI.Designer.cs">
       <DependentUpon>CreateAOI.cs</DependentUpon>
     </Compile>
-    <Compile Include="CreateEmailAddressDialog.cs">
+    <Compile Include="Forms\CreateEmailAddressDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CreateEmailAddressDialog.Designer.cs">
+    <Compile Include="Forms\CreateEmailAddressDialog.Designer.cs">
       <DependentUpon>CreateEmailAddressDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Dbg.cs" />
     <Compile Include="AIAnalyzer.cs" />
     <Compile Include="DirectoryMonitor.cs" />
-    <Compile Include="EditAreasOfInterest.cs">
+    <Compile Include="Forms\EditAreasOfInterest.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditAreasOfInterest.Designer.cs">
+    <Compile Include="Forms\EditAreasOfInterest.Designer.cs">
       <DependentUpon>EditAreasOfInterest.cs</DependentUpon>
     </Compile>
     <Compile Include="EmailAccumulator.cs" />
     <Compile Include="EmailAddresses.cs" />
-    <Compile Include="EmailAddressesDialog.cs">
+    <Compile Include="Forms\EmailAddressesDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EmailAddressesDialog.Designer.cs">
+    <Compile Include="Forms\EmailAddressesDialog.Designer.cs">
       <DependentUpon>EmailAddressesDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow.cs">
+    <Compile Include="Forms\MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainWindow.Designer.cs">
+    <Compile Include="Forms\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="FrameAnalyzer.cs" />
-    <Compile Include="InterestingItemsDialog.cs">
+    <Compile Include="Forms\InterestingItemsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InterestingItemsDialog.Designer.cs">
+    <Compile Include="Forms\InterestingItemsDialog.Designer.cs">
       <DependentUpon>InterestingItemsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="MostRecentCollection.cs" />
-    <Compile Include="NotificationOptionsDialog.cs">
+    <Compile Include="Forms\NotificationOptionsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NotificationOptionsDialog.Designer.cs">
+    <Compile Include="Forms\NotificationOptionsDialog.Designer.cs">
       <DependentUpon>NotificationOptionsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectCharacteristics.cs" />
-    <Compile Include="OutgoingEmailDialog.cs">
+    <Compile Include="Forms\OutgoingEmailDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OutgoingEmailDialog.Designer.cs">
+    <Compile Include="Forms\OutgoingEmailDialog.Designer.cs">
       <DependentUpon>OutgoingEmailDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="PendingItem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resizer.cs" />
-    <Compile Include="SettingsDialog.cs">
+    <Compile Include="Controls\Resizer.cs" />
+    <Compile Include="Forms\SettingsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SettingsDialog.Designer.cs">
+    <Compile Include="Forms\SettingsDialog.Designer.cs">
       <DependentUpon>SettingsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Test Email Address.cs">
+    <Compile Include="Forms\Test Email Address.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Test Email Address.Designer.cs">
+    <Compile Include="Forms\Test Email Address.Designer.cs">
       <DependentUpon>Test Email Address.cs</DependentUpon>
     </Compile>
     <Compile Include="WaitCursor.cs" />
-    <EmbeddedResource Include="AboutDlg.resx">
-      <DependentUpon>AboutDlg.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\AboutDialog.resx">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AddCameraDialog.resx">
+    <EmbeddedResource Include="Forms\AddCameraDialog.resx">
       <DependentUpon>AddCameraDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AddEmailDlg.resx">
-      <DependentUpon>AddEmailDlg.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\AddEmailDialog.resx">
+      <DependentUpon>AddEmailDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AddUrlDlialog.resx">
-      <DependentUpon>AddUrlDlialog.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\AddUrlDialog.resx">
+      <DependentUpon>AddUrlDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CameraConfigurationDialog.resx">
+    <EmbeddedResource Include="Forms\CameraConfigurationDialog.resx">
       <DependentUpon>CameraConfigurationDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CleanupDialog.resx">
+    <EmbeddedResource Include="Forms\CameraContactDialog.resx">
+      <DependentUpon>CameraContactDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CleanupDialog.resx">
       <DependentUpon>CleanupDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CreateAOI.resx">
+    <EmbeddedResource Include="Forms\CreateAOI.resx">
       <DependentUpon>CreateAOI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CreateEmailAddressDialog.resx">
+    <EmbeddedResource Include="Forms\CreateEmailAddressDialog.resx">
       <DependentUpon>CreateEmailAddressDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditAreasOfInterest.resx">
+    <EmbeddedResource Include="Forms\EditAreasOfInterest.resx">
       <DependentUpon>EditAreasOfInterest.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EmailAddressesDialog.resx">
+    <EmbeddedResource Include="Forms\EmailAddressesDialog.resx">
       <DependentUpon>EmailAddressesDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainWindow.resx">
+    <EmbeddedResource Include="Forms\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InterestingItemsDialog.resx">
+    <EmbeddedResource Include="Forms\InterestingItemsDialog.resx">
       <DependentUpon>InterestingItemsDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MMS-Helper.resx">
+    <EmbeddedResource Include="Forms\MMS-Helper.resx">
       <DependentUpon>MMS-Helper.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MQTTSettings.resx">
+    <EmbeddedResource Include="Forms\MQTTSettings.resx">
       <DependentUpon>MQTTSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NotificationOptionsDialog.resx">
+    <EmbeddedResource Include="Forms\NotificationOptionsDialog.resx">
       <DependentUpon>NotificationOptionsDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OutgoingEmailDialog.resx">
+    <EmbeddedResource Include="Forms\OutgoingEmailDialog.resx">
       <DependentUpon>OutgoingEmailDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="SettingsDialog.resx">
+    <EmbeddedResource Include="Forms\SettingsDialog.resx">
       <DependentUpon>SettingsDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Test Email Address.resx">
+    <EmbeddedResource Include="Forms\Test Email Address.resx">
       <DependentUpon>Test Email Address.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ZoneBox.resx">
-      <DependentUpon>ZoneBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include=".editorconfig" />
-    <None Include="App1.config" />
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
@@ -346,16 +353,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="arrow-down.png" />
-    <Content Include="arrow-left.png" />
-    <Content Include="arrow-right.png" />
-    <Content Include="arrow-up.png" />
-    <None Include="ButtonImages\Selected\zoom-out.png" />
-    <None Include="ButtonImages\Selected\zoom-in.png" />
-    <None Include="ButtonImages\Selected\arrow-right.png" />
-    <None Include="ButtonImages\Selected\arrow-left.png" />
-    <None Include="ButtonImages\Selected\arrow-down.png" />
-    <None Include="ButtonImages\Selected\arrow-up.png" />
+    <Content Include="Resources\Icons\arrow-down.png" />
+    <Content Include="Resources\Icons\arrow-left.png" />
+    <Content Include="Resources\Icons\arrow-right.png" />
+    <Content Include="Resources\Icons\arrow-up.png" />
+    <None Include="Resources\Images\OnGuard.jpg" />
+    <None Include="Resources\Icons\Selected\zoom-out.png" />
+    <None Include="Resources\Icons\Selected\zoom-in.png" />
+    <None Include="Resources\Icons\Selected\arrow-right.png" />
+    <None Include="Resources\Icons\Selected\arrow-left.png" />
+    <None Include="Resources\Icons\Selected\arrow-down.png" />
+    <None Include="Resources\Icons\Selected\arrow-up.png" />
     <Content Include="DBMotionFrames.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -363,15 +371,17 @@
       <DependentUpon>DBMotionFrames.mdf</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Street2.jpg" />
-    <None Include="Street3.jpg" />
-    <None Include="Street4.jpg" />
-    <None Include="Street5.jpg" />
-    <None Include="Street6.jpg" />
-    <None Include="Street7.jpg" />
-    <None Include="OnGuardNoPIctures.jpg" />
-    <Content Include="zoom-in.png" />
-    <Content Include="zoom-out.png" />
+    <None Include="Resources\Samples\Street1.jpg" />
+    <None Include="Resources\Samples\Street2.jpg" />
+    <None Include="Resources\Samples\Street3.jpg" />
+    <None Include="Resources\Samples\Street4.jpg" />
+    <None Include="Resources\Samples\Street5.jpg" />
+    <None Include="Resources\Samples\Street6.jpg" />
+    <None Include="Resources\Samples\Street7.jpg" />
+    <None Include="Resources\Images\OnGuardNoPictures.jpg" />
+    <Content Include="Resources\Icons\Guardian.ico" />
+    <Content Include="Resources\Icons\zoom-in.png" />
+    <Content Include="Resources\Icons\zoom-out.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
@@ -391,25 +401,25 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
-    <Analyzer Include="packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
-    <Analyzer Include="packages\Microsoft.CodeQuality.Analyzers.2.9.6\analyzers\dotnet\cs\Humanizer.dll" />
-    <Analyzer Include="packages\Microsoft.CodeQuality.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll" />
-    <Analyzer Include="packages\Microsoft.CodeQuality.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll" />
-    <Analyzer Include="packages\Microsoft.NetCore.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll" />
-    <Analyzer Include="packages\Microsoft.NetCore.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
-    <Analyzer Include="packages\Microsoft.NetFramework.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
-    <Analyzer Include="packages\Microsoft.NetFramework.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\analyzers\dotnet\cs\Humanizer.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.NetCore.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.NetCore.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
-    <Error Condition="!Exists('packages\Microsoft.CodeQuality.Analyzers.2.9.6\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeQuality.Analyzers.2.9.6\build\Microsoft.CodeQuality.Analyzers.props'))" />
-    <Error Condition="!Exists('packages\Microsoft.NetCore.Analyzers.2.9.6\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.NetCore.Analyzers.2.9.6\build\Microsoft.NetCore.Analyzers.props'))" />
-    <Error Condition="!Exists('packages\Microsoft.NetFramework.Analyzers.2.9.6\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.NetFramework.Analyzers.2.9.6\build\Microsoft.NetFramework.Analyzers.props'))" />
-    <Error Condition="!Exists('packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.6\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.6\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeQuality.Analyzers.2.9.6\build\Microsoft.CodeQuality.Analyzers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.NetCore.Analyzers.2.9.6\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.NetCore.Analyzers.2.9.6\build\Microsoft.NetCore.Analyzers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.NetFramework.Analyzers.2.9.6\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.NetFramework.Analyzers.2.9.6\build\Microsoft.NetFramework.Analyzers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.6\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.6\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
   </Target>
 </Project>
