@@ -6,8 +6,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace SAAI
 {
 
-
-
   /// <summary>
   /// Mainly a wrapper around the dictionary holding all the cameras.
   /// However, it also keeps track of the current camera and adds some helper methods.
@@ -131,8 +129,9 @@ namespace SAAI
     /// <returns></returns>
     public static CameraCollection Load()
     {
+      CameraCollection all = Storage.GetAllCameras();
 
-      CameraCollection all = new CameraCollection();
+      /*CameraCollection all = new CameraCollection();
       string path = Storage.GetFilePath("CameraData.bin");
 
       if (File.Exists(path))
@@ -146,7 +145,7 @@ namespace SAAI
           }
 
         }
-      }
+      }*/
 
       foreach (var cam in all.CameraDictionary.Values)
       {
@@ -159,11 +158,12 @@ namespace SAAI
 
     public static void Save(CameraCollection allCameras)
     {
-      BinaryFormatter serializer = new BinaryFormatter();
+      Storage.SaveCameras(allCameras);
+      /*BinaryFormatter serializer = new BinaryFormatter();
       using (Stream stream = new FileStream(Storage.GetFilePath("CameraData.bin"), FileMode.Create))
       {
         serializer.Serialize(stream, allCameras);
-      }
+      }*/
     }
 
     #region IDisposable Support

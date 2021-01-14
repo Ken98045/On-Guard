@@ -18,18 +18,21 @@ namespace SAAI
     private ImageObjectType objectType;
     public int Confidence { get; set; }       // Confidence values are very good in defining "people". 
     public int MinPercentOverlap { get; set; }  // A measurement for how much of an object must overlap the Area of Interest to be considered Interesting
-    public int NumberOfFrames { get; set; } // Currently not implemented.  When we determine movement direction this will define how many frames we look in
+    public int TimeFrame { get; set; } // Currently not implemented.  When we determine movement direction this will define how many frames we look in
     public int MinimumXSize { get; set; }   //In part this regulates how close the object is to the camera.  I don't see a reason for maximum size
     public int MinimumYSize { get; set; }   //In part this regulates how close the object is to the camera.  I don't see a reason for maximum size
 
     public ImageObjectType ObjectType { get => objectType; set => objectType = value; } // people, animals, cars, etc.
 
+    public Guid ID { get; set; }
+
     public ObjectCharacteristics()
     {
+      ID = Guid.NewGuid();
       objectType = ImageObjectType.People;
       Confidence = 90;
       MinPercentOverlap = 50;
-      NumberOfFrames = 1;
+      TimeFrame = 1;
       MinimumXSize = 0;
       MinimumYSize = 0;
 
@@ -37,10 +40,11 @@ namespace SAAI
 
     public ObjectCharacteristics(ObjectCharacteristics src)
     {
+      ID = src.ID;
       objectType = src.objectType;
       Confidence = src.Confidence;
       MinPercentOverlap = src.MinPercentOverlap;
-      NumberOfFrames = src.NumberOfFrames;
+      TimeFrame = src.TimeFrame;
       MinimumXSize = src.MinimumXSize;
       MinimumYSize = src.MinimumYSize;
     }

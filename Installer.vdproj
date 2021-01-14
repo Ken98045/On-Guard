@@ -21,7 +21,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4F60E9FEF33C3D86051C5581D91C2B34"
+        "MsmKey" = "8:_46631BEE35571A85706EED7CA8E694EF"
         "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -70,7 +70,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_4F60E9FEF33C3D86051C5581D91C2B34"
+        "OwnerKey" = "8:_46631BEE35571A85706EED7CA8E694EF"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -254,14 +254,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_4F60E9FEF33C3D86051C5581D91C2B34"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_46631BEE35571A85706EED7CA8E694EF"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_4F60E9FEF33C3D86051C5581D91C2B34"
+                    "_46631BEE35571A85706EED7CA8E694EF"
                     {
                     "Name" = "8:Newtonsoft.Json.dll"
                     "Attributes" = "3:512"
@@ -457,15 +457,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:On Guard"
-        "ProductCode" = "8:{90101BA6-7EA3-447F-B1F2-51D143E9CDDB}"
-        "PackageCode" = "8:{BE2AE6EE-5A85-46A5-AE60-3BD271185FA8}"
+        "ProductCode" = "8:{8393C651-32B1-4F50-8304-4A0402AFE70F}"
+        "PackageCode" = "8:{A0121095-8771-46AA-AE4A-1223DFE5B895}"
         "UpgradeCode" = "8:{DCA433DA-BECE-4E39-AED0-767091896BEF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.4.7"
+        "ProductVersion" = "8:1.5.1"
         "Manufacturer" = "8:On Guard"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -774,8 +774,8 @@
                             "Type" = "3:3"
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1202"
+                            "Setting" = "3:2"
+                            "Value" = "8:"
                             "DefaultValue" = "8:#1202"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -845,7 +845,7 @@
                             "ContextData" = "8:1;True=1;False=0"
                             "Attributes" = "3:0"
                             "Setting" = "3:0"
-                            "Value" = "3:1"
+                            "Value" = "3:0"
                             "DefaultValue" = "3:1"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -888,8 +888,8 @@
                             "Type" = "3:3"
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1202"
+                            "Setting" = "3:2"
+                            "Value" = "8:"
                             "DefaultValue" = "8:#1202"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -993,7 +993,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5CB4A6F49A464B2B9E79E076B7AEB041"
             {
-            "SourcePath" = "8:obj\\Release\\On Guard.exe"
+            "SourcePath" = "8:obj\\Debug\\On Guard.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CB628D0D56A842DF94CD2CA065E7A47D"

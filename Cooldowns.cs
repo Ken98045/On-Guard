@@ -6,9 +6,11 @@ namespace SAAI
   [Serializable]
   public class CooldownTracker
   {
-    public int CooldownTime { get; set; }  // Copied from AOI (changeable from UI?
+    public int CooldownTime { get; set; }  // Copied from AOI 
 
     public DateTime LastSent { get; set; }
+
+    internal object _lock = new object();
 
     // Determies whether you should notify or not.
     // AND, since we wouldn't be asking whether we should notify unless we intend to notify
@@ -17,24 +19,31 @@ namespace SAAI
     {
       bool notify = false;
 
-      TimeSpan elapsed = DateTime.Now - LastSent;
-      if (elapsed.TotalSeconds >= CooldownTime)
+      lock (_lock)
       {
-        // Dbg.Write("CooldownTracker CountdownExpired: " + elapsed.TotalSeconds.ToString());
-        notify = true;
-        Reset();
+        TimeSpan elapsed = DateTime.Now - LastSent;
+        if (elapsed.TotalSeconds >= CooldownTime)
+        {
+          // Dbg.Write("CooldownTracker CountdownExpired: " + elapsed.TotalSeconds.ToString());
+          notify = true;
+          Reset();
+        }
+        else
+        {
+          // Dbg.Write("CooldownTracker CooldownExpired - NOT Expired: " + elapsed.TotalSeconds.ToString());
+        }
       }
-      else
-      {
-        // Dbg.Write("CooldownTracker CooldownExpired - NOT Expired: " + elapsed.TotalSeconds.ToString());
-      }
+
       return notify;
     }
 
     public virtual void Reset()
     {
       // Dbg.Write("Cooldown reset");
-      LastSent = DateTime.Now;
+      lock (_lock)
+      {
+        LastSent = DateTime.Now - TimeSpan.FromSeconds(1);  // put it in the past just a bit to prevent resend
+      }
     }
 
   }
@@ -134,14 +143,17 @@ namespace SAAI
     {
       bool notify = false;
 
-      TimeSpan elapsed = DateTime.Now - LastSent;
-      if (elapsed.TotalMinutes >= CooldownTime)
+      lock (_lock)
       {
-        notify = true;
-        Reset();
-      }
-      else
-      {
+        TimeSpan elapsed = DateTime.Now - LastSent;
+        if (elapsed.TotalMinutes >= CooldownTime)
+        {
+          notify = true;
+          Reset();
+        }
+        else
+        {
+        }
       }
       return notify;
     }

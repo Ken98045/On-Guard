@@ -18,8 +18,8 @@ namespace SAAI
 
     // The registration marks allow for slight adjustment of the Areas of Interest if the camera moves.  It also 
     // Allows you to put the camera back at the correct position if you move the camera (accidently or on purpose)
-    private int RegistrationXResolution;      // You can keep the same camera but you might change the resolution on pictures
-    private int RegistrationYResolution;      // "" and both of these never change until you change the registration mark
+    public int RegistrationXResolution { get; set; }      // You can keep the same camera but you might change the resolution on pictures
+    public int RegistrationYResolution { get; set; }      // "" and both of these never change until you change the registration mark
     private int registrationX;
     private int registrationY;
 
@@ -57,7 +57,6 @@ namespace SAAI
         {
           if (BitmapResolution.YResolution != RegistrationYResolution)
           {
-
             adjY = (int)((double)adjY * ((double)(BitmapResolution.YResolution) / (double)(RegistrationYResolution)));
           }
         }
@@ -122,7 +121,7 @@ namespace SAAI
       CameraPrefix = prefix;
       Path = path;
       Monitoring = true;
-      AOI = new AreasOfInterestCollection(CameraPrefix);
+      AOI = new AreasOfInterestCollection(Path, CameraPrefix);
       NoMotionTimeout = 90;
     }
 
@@ -160,7 +159,7 @@ namespace SAAI
         FrameHistory = new History(300);
       }
 
-      AOI = new AreasOfInterestCollection(CameraPrefix);
+      // AOI = new AreasOfInterestCollection(Path, CameraPrefix);
       CameraEmailAccumulator = new EmailAccumulator(Settings.Default.MaxEventTime);
       if (Monitoring)
       {
