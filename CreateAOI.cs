@@ -141,7 +141,7 @@ namespace SAAI
               peopleCheck.Checked = true;
               peopleConfidenceNumeric.Value = obj.Confidence;
               peopleMinimumOverlap.Value = obj.MinPercentOverlap;
-              peopleFramesNumeric.Value = obj.NumberOfFrames;
+              peopleFramesNumeric.Value = obj.TimeFrame;
               peopleMinXNumeric.Value = obj.MinimumXSize;
               peopleMinYNumeric.Value = obj.MinimumYSize;
               break;
@@ -150,7 +150,7 @@ namespace SAAI
               carsCheck.Checked = true;
               carsConfidenceNumeric.Value = obj.Confidence;
               carsOverlapNumeric.Value = obj.MinPercentOverlap;
-              carsFramesNumeric.Value = obj.NumberOfFrames;
+              carsFramesNumeric.Value = obj.TimeFrame;
               carsMinXNumeric.Value = obj.MinimumXSize;
               carsMinYNumeric.Value = obj.MinimumYSize;
               break;
@@ -159,7 +159,7 @@ namespace SAAI
               motorcycleCheck.Checked = true;
               motorcyclesConfidenceNumeric.Value = obj.Confidence;
               motorcyclesOverlapNumeric.Value = obj.MinPercentOverlap;
-              motorcyclesFramesNumeric.Value = obj.NumberOfFrames;
+              motorcyclesFramesNumeric.Value = obj.TimeFrame;
               motorcyclesMinXNumeric.Value = obj.MinimumXSize;
               motorcyclesMinYNumeric.Value = obj.MinimumYSize;
               break;
@@ -168,7 +168,7 @@ namespace SAAI
               truckCheck.Checked = true;
               trucksConfidenceNumeric.Value = obj.Confidence;
               trucksOverlapNumeric.Value = obj.MinPercentOverlap;
-              trucksFramesNumeric.Value = obj.NumberOfFrames;
+              trucksFramesNumeric.Value = obj.TimeFrame;
               trucksMinXNumeric.Value = obj.MinimumXSize;
               trucksMinYNumeric.Value = obj.MinimumYSize;
               break;
@@ -177,7 +177,7 @@ namespace SAAI
               bikeCheck.Checked = true;
               bikesConfidenceNumeric.Value = obj.Confidence;
               bikesOverlapNumeric.Value = obj.MinPercentOverlap;
-              bikesFramesNumeric.Value = obj.NumberOfFrames;
+              bikesFramesNumeric.Value = obj.TimeFrame;
               bikesMinXNumeric.Value = obj.MinimumXSize;
               bikesMinYNumeric.Value = obj.MinimumYSize;
               break;
@@ -186,7 +186,7 @@ namespace SAAI
               bearsCheck.Checked = true;
               bearsConfidenceNumeric.Value = obj.Confidence;
               bearsOverlapNumeric.Value = obj.MinPercentOverlap;
-              bearsFramesNumeric.Value = obj.NumberOfFrames;
+              bearsFramesNumeric.Value = obj.TimeFrame;
               bearsMinXNumeric.Value = obj.MinimumXSize;
               bearsMinYNumeric.Value = obj.MinimumXSize;
               break;
@@ -195,7 +195,7 @@ namespace SAAI
               animalsCheck.Checked = true;
               animalsConfidenceNumeric.Value = obj.Confidence;
               animalsOverlapNumeric.Value = obj.MinPercentOverlap;
-              animalsFramesNumeric.Value = obj.NumberOfFrames;
+              animalsFramesNumeric.Value = obj.TimeFrame;
               animalsMinXNumeric.Value = obj.MinimumXSize;
               animalsMinYNumeric.Value = obj.MinimumXSize;
               break;
@@ -264,7 +264,7 @@ namespace SAAI
             ObjectType = ImageObjectType.People,
             Confidence = (int)peopleConfidenceNumeric.Value,
             MinPercentOverlap = (int)peopleMinimumOverlap.Value,
-            NumberOfFrames = (int)peopleFramesNumeric.Value,
+            TimeFrame = (int)peopleFramesNumeric.Value,
             MinimumXSize = (int)peopleMinXNumeric.Value,
             MinimumYSize = (int)peopleMinYNumeric.Value,
 
@@ -280,7 +280,7 @@ namespace SAAI
             ObjectType = ImageObjectType.Cars,
             Confidence = (int)carsConfidenceNumeric.Value,
             MinPercentOverlap = (int)carsOverlapNumeric.Value,
-            NumberOfFrames = (int)carsFramesNumeric.Value,
+            TimeFrame = (int)carsFramesNumeric.Value,
             MinimumXSize = (int)carsMinXNumeric.Value,
             MinimumYSize = (int)carsMinYNumeric.Value,
 
@@ -295,7 +295,7 @@ namespace SAAI
             ObjectType = ImageObjectType.Trucks,
             Confidence = (int)trucksConfidenceNumeric.Value,
             MinPercentOverlap = (int)trucksOverlapNumeric.Value,
-            NumberOfFrames = (int)trucksFramesNumeric.Value,
+            TimeFrame = (int)trucksFramesNumeric.Value,
             MinimumXSize = (int)trucksMinXNumeric.Value,
             MinimumYSize = (int)trucksMinYNumeric.Value,
           };
@@ -309,7 +309,7 @@ namespace SAAI
             ObjectType = ImageObjectType.Motorcycles,
             Confidence = (int)motorcyclesConfidenceNumeric.Value,
             MinPercentOverlap = (int)motorcyclesOverlapNumeric.Value,
-            NumberOfFrames = (int)motorcyclesFramesNumeric.Value,
+            TimeFrame = (int)motorcyclesFramesNumeric.Value,
             MinimumXSize = (int)motorcyclesMinXNumeric.Value,
             MinimumYSize = (int)motorcyclesMinYNumeric.Value,
           };
@@ -323,7 +323,7 @@ namespace SAAI
             ObjectType = ImageObjectType.Bikes,
             Confidence = (int)bikesConfidenceNumeric.Value,
             MinPercentOverlap = (int)bikesOverlapNumeric.Value,
-            NumberOfFrames = (int)bikesFramesNumeric.Value,
+            TimeFrame = (int)bikesFramesNumeric.Value,
             MinimumXSize = (int)bikesMinXNumeric.Value,
             MinimumYSize = (int)bikesMinYNumeric.Value,
           };
@@ -337,7 +337,7 @@ namespace SAAI
             ObjectType = ImageObjectType.Bears,
             Confidence = (int)bearsConfidenceNumeric.Value,
             MinPercentOverlap = (int)bearsOverlapNumeric.Value,
-            NumberOfFrames = (int)bearsFramesNumeric.Value,
+            TimeFrame = (int)bearsFramesNumeric.Value,
             MinimumXSize = (int)bearsMinXNumeric.Value,
             MinimumYSize = (int)bearsMinYNumeric.Value,
           };
@@ -351,7 +351,7 @@ namespace SAAI
             ObjectType = ImageObjectType.Animals,
             Confidence = (int)animalsConfidenceNumeric.Value,
             MinPercentOverlap = (int)animalsOverlapNumeric.Value,
-            NumberOfFrames = (int)animalsFramesNumeric.Value,
+            TimeFrame = (int)animalsFramesNumeric.Value,
             MinimumXSize = (int)animalsMinXNumeric.Value,
             MinimumYSize = (int)animalsMinYNumeric.Value,
           };

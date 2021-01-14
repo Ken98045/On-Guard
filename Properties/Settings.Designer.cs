@@ -145,30 +145,6 @@ namespace SAAI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("15")]
-        public int BackupQueue {
-            get {
-                return ((int)(this["BackupQueue"]));
-            }
-            set {
-                this["BackupQueue"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int ThrottleSkip {
-            get {
-                return ((int)(this["ThrottleSkip"]));
-            }
-            set {
-                this["ThrottleSkip"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public double TimePerFrame {
             get {

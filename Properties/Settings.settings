@@ -32,12 +32,6 @@
     <Setting Name="AISetup" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="BackupQueue" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">15</Value>
-    </Setting>
-    <Setting Name="ThrottleSkip" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
-    </Setting>
     <Setting Name="TimePerFrame" Type="System.Double" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>

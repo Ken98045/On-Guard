@@ -95,7 +95,7 @@ namespace SAAI
     {
       if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
       {
-        _focusRect = new Rectangle(e.X - 5, e.Y - 5, 10, 10);
+        _focusRect = BitmapResolution.ScaleScreenToData(new Rectangle(e.X - 5, e.Y - 5, 10, 10));
         ZoneFocus = e.Location;
       }
 

@@ -66,20 +66,44 @@ namespace SAAI
       Notifications = new AreaNotificationOption();
     }
 
+    public AreaOfInterest
+    
+    (
+      Guid id,
+      string name,
+      AOIType areaType,
+      Rectangle areaRect,
+      int originalXResolution,
+      int originalYResolution,
+      MovementType movementType,
+      AreaNotificationOption notifications,
+      List<ObjectCharacteristics> searchCritera
+      )
+
+    {
+      ID = id;
+      AOIName = name;
+      AOIType = areaType;
+      AreaRect = areaRect;
+      OriginalXResolution = originalXResolution;
+      OriginalYResolution = originalYResolution;
+      MovementType = movementType;
+      Notifications = notifications;
+      SearchCriteria = searchCritera;
+    }
+
+
     // Copy constructor for an area.
     public AreaOfInterest(AreaOfInterest src)
     {
-      ID = src.ID;              // Guid.NewGuid();      // unsure if we always want this
+      ID = src.ID;              // 
       AOIName = src.AOIName;
       AOIType = src.AOIType;
       AreaRect = src.AreaRect;
-      OriginalYResolution = src.OriginalXResolution;
+      OriginalXResolution = src.OriginalXResolution;
       OriginalYResolution = src.OriginalYResolution;
       MovementType = src.MovementType;
-      ID = src.ID;
       Notifications = new AreaNotificationOption(src.Notifications);
-      
-
       SearchCriteria = new List<ObjectCharacteristics>(src.SearchCriteria);
     }
 
@@ -89,8 +113,8 @@ namespace SAAI
     {
       Rectangle adjRect = new Rectangle(AreaRect.X, AreaRect.Y, AreaRect.Width, AreaRect.Height);
 
-      adjRect.X = (int)((double)AreaRect.X * ((double)(BitmapResolution.XResolution) / (double)( OriginalXResolution)));
-      adjRect.Y = (int)((double)AreaRect.Y * ((double)(BitmapResolution.YResolution ) / (double)(OriginalYResolution)));
+      adjRect.X = (int)((double)AreaRect.X * ((double)(BitmapResolution.XResolution) / (double)(OriginalXResolution)));
+      adjRect.Y = (int)((double)AreaRect.Y * ((double)(BitmapResolution.YResolution) / (double)(OriginalYResolution)));
       adjRect.Width = (int)((double)AreaRect.Width * ((double)(BitmapResolution.XResolution) / (double)OriginalXResolution));
       adjRect.Height = (int)((double)AreaRect.Height * ((double)(BitmapResolution.YResolution) / (double)OriginalYResolution));
 
@@ -99,14 +123,14 @@ namespace SAAI
 
     public void SetRect(Rectangle rect)
     {
-      
+
     }
 
     public void AdjustRect(int xOffset, int yOffset)
     {
       double xRatio = (double)BitmapResolution.XResolution / (double)OriginalXResolution;
-      double yRatio = (double)BitmapResolution.YResolution / (double)OriginalYResolution ;
-      AreaRect.X = AreaRect.X - (int) (xRatio * (double)xOffset);
+      double yRatio = (double)BitmapResolution.YResolution / (double)OriginalYResolution;
+      AreaRect.X = AreaRect.X - (int)(xRatio * (double)xOffset);
       AreaRect.Y = AreaRect.Y - (int)(yRatio * (double)yOffset);
 
     }

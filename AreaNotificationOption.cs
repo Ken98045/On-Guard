@@ -55,14 +55,19 @@ namespace SAAI
   public class UrlOptions
   {
     public string Url { get; set; }
-    public bool Active { get; set; }
+    public int WaitTime { get; set; }
+    public Guid ID { get; set; }
+    public int BIFlags { get; set; }
 
     public UrlCooldown CoolDown { get; set; }
 
-    public UrlOptions(string url, int coolDown)
+    public UrlOptions(string url, int waitTime, int coolDown, int biFlags)
     {
+      ID = Guid.NewGuid();
       Url = url;
       CoolDown = new UrlCooldown(coolDown);
+      WaitTime = waitTime;
+      BIFlags = biFlags;
     }
   }
 
@@ -82,6 +87,7 @@ namespace SAAI
     public MQTTCoolDown mqttCooldown {get; set;}
     public string NoMotionUrlNotify { get; set; }
     public bool NoMotionMQTTNotify { get; set; }
+    public Guid ID { get; }
 
     public AreaNotificationOption()
     {

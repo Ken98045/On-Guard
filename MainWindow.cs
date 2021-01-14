@@ -45,8 +45,8 @@ namespace SAAI
     bool _showObjects = true;
     Bitmap _screenBitmap;
     Bitmap _areaBackgroundBitmap;
-    double _xScale;
-    double _yScale;
+    //double _xScale;
+    //double _yScale;
     bool _showingLiveView;
     int _imagesBeingProcessed;
     int _numberOfImagesProcessed;
@@ -82,27 +82,13 @@ namespace SAAI
     readonly private PerformanceCounter theCPUCounter =
        new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
-    enum Direction // For modifying areas
-    {
-      None,
-      West,
-      East,
-      North,
-      South,
-      NorthWest,
-      NorthEast,
-      SouthEast,
-      SouthWest
-    }
-
-
     public MainWindow()
     {
 
       // Settings.Default.Reset();   // Only uncomment this when you want to clear out the stored settings
 
-      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
-      AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+      //Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      // AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
       InitializeComponent();
       _monitorQueueThread = new Thread(MonitorQueue);
@@ -424,11 +410,8 @@ namespace SAAI
       {
         lock (_fileLock)
         {
-
-
           while (true)
           {
-
             if (motionOnlyCheckbox.Checked)
             {
               GetNextMotion(!_directionUp); // sets _current;
@@ -574,13 +557,13 @@ namespace SAAI
       BitmapResolution.YResolution = _screenBitmap.Height;
       if (null == pictureImage)
       {
-        _xScale = 1.0;
-        _yScale = 1.0;
+        BitmapResolution.XScale = 1.0;
+        BitmapResolution.YScale = 1.0;
       }
       else
       {
-        _xScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
-        _yScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
+        BitmapResolution.XScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
+        BitmapResolution.YScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
       }
 
       stream.Position = 0;
@@ -799,7 +782,7 @@ namespace SAAI
     {
       Rectangle rect = new Rectangle(_modifyBox.Location.X, _modifyBox.Location.Y, _modifyBox.Width, _modifyBox.Height);
       Point zoneFocus = _modifyBox.ZoneFocus;
-      Rectangle scaledRect = ScaleScreenToData(rect);
+      Rectangle scaledRect = BitmapResolution.ScaleScreenToData(rect);
 
       _modifyingArea = false;
       ControlMoverOrResizer.Stop(_modifyBox);
@@ -820,6 +803,7 @@ namespace SAAI
               if (_modifyingAreaID == Guid.Empty)
               {
                 _currentCamera.AOI.AddArea(dlg.Area);
+                _currentCamera.AOI.Save();
               }
               else
               {
@@ -853,8 +837,8 @@ namespace SAAI
 
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
-      int mouseX = (int)Math.Round((e.Location.X * _xScale));
-      int mouseY = (int)Math.Round(e.Location.Y * _yScale);
+      int mouseX = (int)Math.Round((e.Location.X * BitmapResolution.XScale));
+      int mouseY = (int)Math.Round(e.Location.Y * BitmapResolution.YScale);
       xPosLabel.Text = mouseX.ToString();
       yPosLabel.Text = mouseY.ToString();
     }
@@ -865,8 +849,8 @@ namespace SAAI
     void AdjustAreasOfInterest(int clickX, int clickY)
     {
 
-      int newX = (int)Math.Round(clickX * _xScale);
-      int newY = (int)Math.Round(clickY * _yScale);
+      int newX = (int)Math.Round(clickX * BitmapResolution.XScale);
+      int newY = (int)Math.Round(clickY * BitmapResolution.YScale);
 
       int offsetX = _currentCamera.RegistrationX - newX;
       int offsetY = _currentCamera.RegistrationY - newY;
@@ -1093,27 +1077,16 @@ namespace SAAI
     }
 
 
-    public Rectangle ScaleScreenToData(Rectangle rect)
-    {
-      Rectangle result = new Rectangle((int)Math.Round(rect.X * _xScale), (int)Math.Round(rect.Y * _yScale), (int)Math.Round(rect.Width * _xScale), (int)Math.Round(rect.Height * _yScale));
-      return result;
-    }
-
-    public Point ScaleScreenToData(Point point)
-    {
-      Point result = new Point((int)Math.Round(point.X * _xScale), (int)Math.Round(point.Y * _yScale));
-      return result;
-    }
 
     public Rectangle ScaleDataToScreen(Rectangle rect)
     {
-      Rectangle result = new Rectangle((int)Math.Round(rect.X / _xScale), (int)Math.Round(rect.Y / _yScale), (int)Math.Round(rect.Width / _xScale), (int)Math.Round(rect.Height / _yScale));
+      Rectangle result = new Rectangle((int)Math.Round(rect.X / BitmapResolution.XScale), (int)Math.Round(rect.Y / BitmapResolution.YScale), (int)Math.Round(rect.Width / BitmapResolution.XScale), (int)Math.Round(rect.Height / BitmapResolution.YScale));
       return result;
     }
 
     public Point ScaleDataToScreen(Point point)
     {
-      Point result = new Point((int)Math.Round(point.X / _xScale), (int)Math.Round(point.Y / _yScale));
+      Point result = new Point((int)Math.Round(point.X / BitmapResolution.XScale), (int)Math.Round(point.Y / BitmapResolution.YScale));
       return result;
     }
 
@@ -1188,7 +1161,7 @@ namespace SAAI
       }
       catch (WebException ex)
       {
-        Dbg.Write("MainWindow - LiveCameraButton_Click = WebException snapshot/live image: " + ex.Message);
+        Dbg.Write("MainWindow - There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message);
         if (sender is System.Windows.Forms.Timer)
         {
           Application.Exit();
@@ -1315,18 +1288,17 @@ namespace SAAI
 
     // Here we passed all of the tests from the AI and have compared the objects to the AOIs.
     // Now, we need to figure out who to notify and notify them
+
     static async void Notify(Frame frame)
     {
-
       // Url notification is (right now)  oriented toward notifying BlueIris cameras to record.
       // So, there is no sense notifying it multiple times.  However, different areas
-      // may have different cool down times, etc. .  
+      // may have different cool down times, etc.  
       // So, we go through the list and take note of all urls to notify
       // The hashset will not accept duplicates.
       string fileName = frame.Item.PendingFile;
 
-      HashSet<string> urlsToNotify = new HashSet<string>();
-      //HashSet<string> activityType = new HashSet<string>();
+      List<UrlOptions> urlsToNotify = new List<UrlOptions>();
       string objectsFound = string.Empty;
 
       bool first = true;
@@ -1351,24 +1323,23 @@ namespace SAAI
 
         foreach (var notifyUrl in ooi.Area.Notifications.Urls)
         {
-          if (notifyUrl.Active)
+          if (notifyUrl.CoolDown.CooldownExpired())
           {
-
-            if (notifyUrl.CoolDown.CooldownExpired())
-            {
-              urlsToNotify.Add(notifyUrl.Url);
-            }
-            else
-            {
-            }
+            urlsToNotify.Add(notifyUrl);
+          }
+          else
+          {
+            Dbg.Trace("In cooldown: " + ooi.Area.AOIName + " - " + frame.Item.PendingFile);
           }
         }
       }
 
-      foreach (var url in urlsToNotify)
+      foreach (var notify in urlsToNotify)
       {
         string urlStr;
-        if (url == "{Auto Fill}")
+        string confirmStr = string.Empty;
+
+        if (notify.Url.Contains("{Auto Fill"))
         {
           urlStr = string.Format("http://{0}:{1}/admin?trigger&camera={2}&user={3}&pw={4}&jpeg={5}&memo={6}",
             frame.Item.CamData.LiveContactData.CameraIPAddress,
@@ -1379,22 +1350,49 @@ namespace SAAI
             HttpUtility.UrlEncode(fileName),
             objectsFound);
 
+
+          if ((int) notify.BIFlags > 0)
+          {
+            int flags = (int) notify.BIFlags;
+            if (notify.BIFlags == (int) BIFLAGS.Reset)
+            {
+              flags = -1; // just clearer
+            }
+
+            confirmStr = string.Format("http://{0}:{1}/admin?camera={2}&user={3}&pw={4}&flagalert={5}&jpeg={6}&flagclip",
+            frame.Item.CamData.LiveContactData.CameraIPAddress,
+            frame.Item.CamData.LiveContactData.Port,
+            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.ShortCameraName),
+            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.CameraUserName),
+            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.CameraPassword),
+            flags,
+            HttpUtility.UrlEncode(fileName));
+
+          }
         }
         else
         {
-          urlStr = url;
+          urlStr = notify.Url;
         }
 
         _test = frame;
 
-        await NotifyUrl(urlStr).ConfigureAwait(false);
-      }
+        if (notify.WaitTime > 0)
+        {
+          Dbg.Trace("Delaying: " + notify.WaitTime.ToString() + " before sending url " + urlStr);
+          await Task.Delay(1000 * notify.WaitTime).ConfigureAwait(false);
+        }
 
-      /*
-      if (!string.IsNullOrEmpty(emailRecipients))
-      {
-        await NotifyViaEmail(emailRecipients, activityType, fileName).ConfigureAwait(false);
-      }*/
+        // Do the standard notify
+        await NotifyUrl(urlStr).ConfigureAwait(false);
+        Dbg.Trace("Sent URL Notification: " + urlStr);
+
+        if (!string.IsNullOrEmpty(confirmStr))
+        {
+          await NotifyUrl(confirmStr).ConfigureAwait(false);
+          Dbg.Trace("Sent BI Notification: " + confirmStr);
+        }
+      }
 
     }
 
@@ -1931,11 +1929,19 @@ namespace SAAI
           {
             Dbg.Write("MainWindow - AddMotionFramesTable SQL Exception - " + ex.Message);
           }
+          catch (InvalidOperationException ex)
+          {
+            Dbg.Write("MainWindow - AddMotionFramesTable Invalid Operation Exception - " + ex.Message);
+          }
         }
       }
       catch (SqlException ex)
       {
         Dbg.Write("MainWindow - SQL Exception opeinging connection for adding motion file to database: " + ex.Message);
+      }
+      catch (InvalidOperationException ex)
+      {
+        Dbg.Write("MainWindow - InvalidOperation Exception opeinging connection for adding motion file to database: " + ex.Message);
       }
     }
 
@@ -2003,6 +2009,10 @@ namespace SAAI
               {
                 Dbg.Write("MainWindow - GetNextMotion - SQL Exception: " + ex.Message);
               }
+              catch (InvalidOperationException ex)
+              {
+                Dbg.Write("MainWindow - GetNextMotion - InvalidOperation Exception: " + ex.Message);
+              }
 
               if (readSuccess)
               {
@@ -2031,7 +2041,11 @@ namespace SAAI
       }
       catch (SqlException ex)
       {
-        Dbg.Write("MainWindow - GetNextMotion - Opening Connection: " + ex.Message);
+        Dbg.Write("MainWindow - SQLException - GetNextMotion - Opening Connection: " + ex.Message);
+      }
+      catch (InvalidOperationException ex)
+      {
+        Dbg.Write("MainWindow - InvalidOperationException - GetNextMotion - Opening Connection: " + ex.Message);
       }
 
       return result;
@@ -2060,6 +2074,12 @@ namespace SAAI
         {
           Dbg.Write("MainWindow -  InsertMotionIfNecessary - Sql Exception on opening database connection: " + ex.Message);
           return;
+        }
+        catch (InvalidOperationException ex)
+        {
+          Dbg.Write("MainWindow -  InsertMotionIfNecessary - InvalidOperation Exception on opening database connection: " + ex.Message);
+          return;
+
         }
 
         using (SqlCommand cmd = new SqlCommand(q, con))
@@ -2125,6 +2145,10 @@ namespace SAAI
       catch (SqlException ex)
       {
         Dbg.Write("MainWindow - DeleteMissingMotion - Sql exception opening connection: " + ex.Message);
+      }
+      catch (InvalidOperationException ex)
+      {
+        Dbg.Write("MainWindow - DeleteMissingMotion - InvaidOperation exception opening connection: " + ex.Message);
       }
     }
 
@@ -2294,7 +2318,6 @@ namespace SAAI
 
     private void OnClosed(object sender, FormClosedEventArgs e)
     {
-
     }
 
     private void AddEditEmailAddressesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2305,10 +2328,8 @@ namespace SAAI
         {
           EmailAddresses.Save();
         }
-
       }
     }
-
 
     private void OnCameraSelected(object sender, EventArgs e)
     {
@@ -2321,8 +2342,8 @@ namespace SAAI
 
     private void OnSizeChanged(object sender, EventArgs e)
     {
-      _xScale = (double)BitmapResolution.XResolution / (double)pictureImage.Width;
-      _yScale = (double)BitmapResolution.YResolution / (double)pictureImage.Height;
+      BitmapResolution.XScale = (double)BitmapResolution.XResolution / (double)pictureImage.Width;
+      BitmapResolution.YScale = (double)BitmapResolution.YResolution / (double)pictureImage.Height;
 
     }
 

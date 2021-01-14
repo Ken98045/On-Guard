@@ -10,29 +10,40 @@ namespace SAAI
   /// </summary>
   public partial class AddUrlDialog : Form
   {
-    public string Url { get; set; }
-    public int CoolDown { get; set; }
 
-    public AddUrlDialog(string url, int cooldown)
+    public UrlOptions Options { get; }
+
+    public AddUrlDialog(UrlOptions options)
     {
       InitializeComponent();
-      Url = url;
-      CoolDown = cooldown;
-      urlText.Text = Url;
-
-      if (cooldown > 0)
+      Options = options;
+      if (null == options)
       {
-        urlCoolDownNumeric.Value = cooldown;
+        Options = new UrlOptions(string.Empty, 0, 300, 0);
       }
+
+      urlText.Text = Options.Url;
+      urlCoolDownNumeric.Value = Options.CoolDown.CooldownTime;
+      WaitTimeNumeric.Value = Options.WaitTime;
 
     }
 
     private void OkButton_Click(object sender, EventArgs e)
     {
-      Url = urlText.Text;
-      CoolDown = (int)urlCoolDownNumeric.Value;
-      DialogResult = DialogResult.OK;
-
+      if (string.IsNullOrEmpty(urlText.Text))
+      {
+        MessageBox.Show(this, "You must enter an URL to notify (or we can't get there from here)!", "The URL Cannot be Empty!");
+        DialogResult = DialogResult.None;
+      }
+      else
+      {
+        Options.BIFlags = 0;
+        Options.Url = urlText.Text;
+        if (FlagCheckBox.Checked) Options.BIFlags |= (int) BIFLAGS.Flagged;
+        if (ConfirmCheckBox.Checked) Options.BIFlags |= (int) BIFLAGS.Confirmed;
+        if (ResetCheckBox.Checked) Options.BIFlags |= (int) BIFLAGS.Reset;
+        DialogResult = DialogResult.OK;
+      }
     }
 
     private void CancelButton_Click(object sender, EventArgs e)
@@ -45,5 +56,32 @@ namespace SAAI
       urlText.Text = "{Auto Fill}";
     }
 
+    private void ConfirmOnCheckChanged(object sender, EventArgs e)
+    {
+    }
+
+
+    private void FlagCheckChanged(object sender, EventArgs e)
+    {
+    }
+
+
+    private void ResetCheckBox_CheckedChanged(object sender, EventArgs e)
+    {
+      if (ResetCheckBox.Checked)
+      {
+        FlagCheckBox.Checked = false;
+        ConfirmCheckBox.Checked = false;
+      }
+    }
   }
+
+  public enum BIFLAGS
+  {
+    Uncomfirmed = 0,
+    Flagged = 1,
+    Confirmed = 2,
+    Reset = 4
+  }
+
 }

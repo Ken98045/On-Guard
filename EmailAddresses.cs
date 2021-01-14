@@ -30,46 +30,12 @@ namespace SAAI
 
     public static void Save()
     {
-      BinaryFormatter serializer = new BinaryFormatter();
-      using (Stream stream = new FileStream(Storage.GetFilePath("EmailAddresses.bin"), FileMode.Create))
-      {
-        serializer.Serialize(stream, EmailAddressList);
-      }
-
+      Storage.SaveEmailAddresses(EmailAddressList);
     }
 
     public static void Load()
     {
-      string fileName = "EmailAddresses.bin";
-      string path = Storage.GetFilePath(fileName);
-      bool exists = false;
-      bool redirected = false;
-
-      if (File.Exists(path))
-      {
-        exists = true;
-      }
-      else if (File.Exists(fileName))
-      {
-        exists = true;  // The old file location
-        redirected = true;
-        path = fileName;
-      }
-
-      if (exists)
-      { 
-        BinaryFormatter serializer = new BinaryFormatter();
-        using (Stream reader = new FileStream(path, FileMode.Open))
-        {
-          EmailAddressList = (List<EmailOptions>)serializer.Deserialize(reader);
-        }
-
-        if (redirected)
-        {
-          Save(); // Re-save in the new location
-        }
-      }
+      EmailAddressList = Storage.GetEmailAddresses();
     }
-
   }
 }
