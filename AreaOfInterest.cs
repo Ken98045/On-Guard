@@ -34,7 +34,8 @@ namespace SAAI
     Motorcycles,
     Bikes,
     Animals,
-    Bears
+    Bears,
+    Birds
   }
 
   /// <summary>

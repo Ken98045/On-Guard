@@ -522,7 +522,7 @@ namespace SAAI
       return result;
     }
 
-    readonly string[] _itemsOfSecurityInterest = new string[15] {"person",
+    readonly string[] _itemsOfSecurityInterest = new string[16] {"person",
                                                             "car",
                                                             "truck",
                                                             "bicycle",
@@ -536,7 +536,8 @@ namespace SAAI
                                                             "sheep",
                                                             "cow",
                                                             "elephant",
-                                                            "bear"
+                                                            "bear",
+                                                            "bird"
                                           };
 
     private List<ImageObject> ProcessImage(Stream stream, string imageName)
