@@ -166,7 +166,7 @@ namespace SAAI
 
     private void AddEmailButton_Click(object sender, EventArgs e)
     {
-      using (AddEmailDlg dlg = new AddEmailDlg())
+      using (AddEmailDialog dlg = new AddEmailDialog())
       {
         if (dlg.ShowDialog() == DialogResult.OK)
         {

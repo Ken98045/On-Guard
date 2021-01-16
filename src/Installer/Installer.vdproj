@@ -287,7 +287,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_55B0BE71F8494529B2660899785424E2"
             {
-            "SourcePath" = "8:bin\\Release\\DBMotionFrames_log.ldf"
+            "SourcePath" = "8:..\\AIDisplay\\bin\\Release\\DBMotionFrames_log.ldf"
             "TargetName" = "8:DBMotionFrames_log.ldf"
             "Tag" = "8:"
             "Folder" = "8:_C6F4FA510D784BD39DD9EC2DCB479E32"
@@ -307,7 +307,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_62C36CBD57C048CF9B079FFBF2784D51"
             {
-            "SourcePath" = "8:bin\\Release\\DBMotionFrames.mdf"
+            "SourcePath" = "8:..\\AIDisplay\\bin\\Release\\DBMotionFrames.mdf"
             "TargetName" = "8:DBMotionFrames.mdf"
             "Tag" = "8:"
             "Folder" = "8:_C6F4FA510D784BD39DD9EC2DCB479E32"

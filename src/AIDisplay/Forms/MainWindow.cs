@@ -1621,7 +1621,7 @@ namespace SAAI
 
     private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      using (AboutDlg dlg = new AboutDlg())
+      using (AboutDialog dlg = new AboutDialog())
       {
         dlg.ShowDialog();
       }
