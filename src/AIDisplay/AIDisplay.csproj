@@ -357,11 +357,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DBMotionFrames.mdf">
+    <Content Include="Database\DBMotionFrames.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="DBMotionFrames_log.ldf">
-      <DependentUpon>DBMotionFrames.mdf</DependentUpon>
+    <Content Include="Database\DBMotionFrames_log.ldf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Icons\arrow-down.png" />
