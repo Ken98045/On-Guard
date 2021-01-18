@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0F48799EF24D4B948CE92F4A4535A28B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3F3C6C4B2D7B56431DE929DB4EAEC533"
         "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
         "MsmSig" = "8:_UNDEFINED"
@@ -51,8 +57,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8EA1B1999C70C0077D1CD7F4E9FD5A5B"
+        "MsmKey" = "8:_AB3A2B7D87F5489D812CA991631272E1"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -71,6 +77,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_0BF0082535EC202C12887CF98C8D644B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_8EA1B1999C70C0077D1CD7F4E9FD5A5B"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -254,6 +266,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0F48799EF24D4B948CE92F4A4535A28B"
+            {
+            "SourcePath" = "8:..\\AIDisplay\\DBMotionFrames.mdf"
+            "TargetName" = "8:DBMotionFrames.mdf"
+            "Tag" = "8:"
+            "Folder" = "8:_C6F4FA510D784BD39DD9EC2DCB479E32"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3F3C6C4B2D7B56431DE929DB4EAEC533"
             {
             "AssemblyRegister" = "3:1"
@@ -342,6 +374,26 @@
             "TargetName" = "8:DBMotionFrames_log.ldf"
             "Tag" = "8:"
             "Folder" = "8:_CB628D0D56A842DF94CD2CA065E7A47D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AB3A2B7D87F5489D812CA991631272E1"
+            {
+            "SourcePath" = "8:..\\AIDisplay\\DBMotionFrames_log.ldf"
+            "TargetName" = "8:DBMotionFrames_log.ldf"
+            "Tag" = "8:"
+            "Folder" = "8:_C6F4FA510D784BD39DD9EC2DCB479E32"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -458,7 +510,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:On Guard"
         "ProductCode" = "8:{8393C651-32B1-4F50-8304-4A0402AFE70F}"
-        "PackageCode" = "8:{A0121095-8771-46AA-AE4A-1223DFE5B895}"
+        "PackageCode" = "8:{1C36627E-E986-4933-8E70-BE46E8D15BA9}"
         "UpgradeCode" = "8:{DCA433DA-BECE-4E39-AED0-767091896BEF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -993,7 +1045,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5CB4A6F49A464B2B9E79E076B7AEB041"
             {
-            "SourcePath" = "8:..\\AIDisplay\\obj\\Debug\\On Guard.exe"
+            "SourcePath" = "8:..\\AIDisplay\\obj\\Release\\On Guard.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CB628D0D56A842DF94CD2CA065E7A47D"
