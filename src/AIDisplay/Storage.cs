@@ -46,7 +46,7 @@ namespace SAAI
         string ver = GetAppVersion();
         if (!string.IsNullOrEmpty(ver))
         {
-          SetAppVersion("1-5-1");
+          SetAppVersion("1-5-2");
         }
 
       }
