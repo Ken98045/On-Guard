@@ -1,7 +1,9 @@
-﻿using SAAI.Properties;
+﻿
+using SAAI.Properties;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+
 
 namespace SAAI
 {
@@ -130,6 +132,7 @@ namespace SAAI
             break;
         }
 
+
         switch (area.MovementType)
         {
           case MovementType.AnyActivity:
@@ -149,72 +152,17 @@ namespace SAAI
         {
           foreach (ObjectCharacteristics obj in area.SearchCriteria)
           {
-            switch (obj.ObjectType)
-            {
-              case ImageObjectType.People:
-                peopleCheck.Checked = true;
-                peopleConfidenceNumeric.Value = obj.Confidence;
-                peopleMinimumOverlap.Value = obj.MinPercentOverlap;
-                peopleFramesNumeric.Value = obj.TimeFrame;
-                peopleMinXNumeric.Value = obj.MinimumXSize;
-                peopleMinYNumeric.Value = obj.MinimumYSize;
-                break;
+            ListViewItem item = new ListViewItem(new string[]
+              { obj.ObjectType.ToString(),
+                obj.Confidence.ToString(),
+                obj.MinPercentOverlap.ToString(),
+                obj.MinimumXSize.ToString(),
+                obj.MinimumYSize.ToString(),
+                obj.TimeFrame.ToString() });
 
-              case ImageObjectType.Cars:
-                carsCheck.Checked = true;
-                carsConfidenceNumeric.Value = obj.Confidence;
-                carsOverlapNumeric.Value = obj.MinPercentOverlap;
-                carsFramesNumeric.Value = obj.TimeFrame;
-                carsMinXNumeric.Value = obj.MinimumXSize;
-                carsMinYNumeric.Value = obj.MinimumYSize;
-                break;
+            ObjectsListView.Items.Add(item);
 
-              case ImageObjectType.Motorcycles:
-                motorcycleCheck.Checked = true;
-                motorcyclesConfidenceNumeric.Value = obj.Confidence;
-                motorcyclesOverlapNumeric.Value = obj.MinPercentOverlap;
-                motorcyclesFramesNumeric.Value = obj.TimeFrame;
-                motorcyclesMinXNumeric.Value = obj.MinimumXSize;
-                motorcyclesMinYNumeric.Value = obj.MinimumYSize;
-                break;
-
-              case ImageObjectType.Trucks:
-                truckCheck.Checked = true;
-                trucksConfidenceNumeric.Value = obj.Confidence;
-                trucksOverlapNumeric.Value = obj.MinPercentOverlap;
-                trucksFramesNumeric.Value = obj.TimeFrame;
-                trucksMinXNumeric.Value = obj.MinimumXSize;
-                trucksMinYNumeric.Value = obj.MinimumYSize;
-                break;
-
-              case ImageObjectType.Bikes:
-                bikeCheck.Checked = true;
-                bikesConfidenceNumeric.Value = obj.Confidence;
-                bikesOverlapNumeric.Value = obj.MinPercentOverlap;
-                bikesFramesNumeric.Value = obj.TimeFrame;
-                bikesMinXNumeric.Value = obj.MinimumXSize;
-                bikesMinYNumeric.Value = obj.MinimumYSize;
-                break;
-
-              case ImageObjectType.Bears:
-                bearsCheck.Checked = true;
-                bearsConfidenceNumeric.Value = obj.Confidence;
-                bearsOverlapNumeric.Value = obj.MinPercentOverlap;
-                bearsFramesNumeric.Value = obj.TimeFrame;
-                bearsMinXNumeric.Value = obj.MinimumXSize;
-                bearsMinYNumeric.Value = obj.MinimumXSize;
-                break;
-
-              case ImageObjectType.Animals:
-                animalsCheck.Checked = true;
-                animalsConfidenceNumeric.Value = obj.Confidence;
-                animalsOverlapNumeric.Value = obj.MinPercentOverlap;
-                animalsFramesNumeric.Value = obj.TimeFrame;
-                animalsMinXNumeric.Value = obj.MinimumXSize;
-                animalsMinYNumeric.Value = obj.MinimumXSize;
-                break;
-
-            }
+            item.Tag = obj;
           }
         }
       }
@@ -230,13 +178,10 @@ namespace SAAI
       }
       else
       {
-        if (Area.SearchCriteria != null)
-        {
-          Area.SearchCriteria.Clear();
-        }
 
         Area.AOIName = aoiNameText.Text;
 
+        // Set the area type
         if (doorButton.Checked)
         {
           Area.AOIType = AOIType.Door;
@@ -258,6 +203,7 @@ namespace SAAI
           Area.AOIType = AOIType.IgnoreObjects;
         }
 
+        // Set the Movement type
         if (anyActivityButton.Checked)
         {
           Area.MovementType = MovementType.AnyActivity;
@@ -271,115 +217,26 @@ namespace SAAI
           Area.MovementType = MovementType.Departure;
         }
 
-        if (peopleCheck.Checked)
+        if (Area.SearchCriteria != null)
         {
-          ObjectCharacteristics c = new ObjectCharacteristics()
-          {
-            ObjectType = ImageObjectType.People,
-            Confidence = (int)peopleConfidenceNumeric.Value,
-            MinPercentOverlap = (int)peopleMinimumOverlap.Value,
-            TimeFrame = (int)peopleFramesNumeric.Value,
-            MinimumXSize = (int)peopleMinXNumeric.Value,
-            MinimumYSize = (int)peopleMinYNumeric.Value,
-
-
-          };
-          Area.SearchCriteria.Add(c);
+          Area.SearchCriteria.Clear();
         }
 
-        if (carsCheck.Checked)
+        foreach (ListViewItem item in ObjectsListView.Items)
         {
-          ObjectCharacteristics c = new ObjectCharacteristics
-          {
-            ObjectType = ImageObjectType.Cars,
-            Confidence = (int)carsConfidenceNumeric.Value,
-            MinPercentOverlap = (int)carsOverlapNumeric.Value,
-            TimeFrame = (int)carsFramesNumeric.Value,
-            MinimumXSize = (int)carsMinXNumeric.Value,
-            MinimumYSize = (int)carsMinYNumeric.Value,
-
-          };
-          Area.SearchCriteria.Add(c);
+          Area.SearchCriteria.Add((ObjectCharacteristics)item.Tag);
         }
 
-        if (truckCheck.Checked)
-        {
-          ObjectCharacteristics c = new ObjectCharacteristics
-          {
-            ObjectType = ImageObjectType.Trucks,
-            Confidence = (int)trucksConfidenceNumeric.Value,
-            MinPercentOverlap = (int)trucksOverlapNumeric.Value,
-            TimeFrame = (int)trucksFramesNumeric.Value,
-            MinimumXSize = (int)trucksMinXNumeric.Value,
-            MinimumYSize = (int)trucksMinYNumeric.Value,
-          };
-          Area.SearchCriteria.Add(c);
-        }
-
-        if (motorcycleCheck.Checked)
-        {
-          ObjectCharacteristics c = new ObjectCharacteristics
-          {
-            ObjectType = ImageObjectType.Motorcycles,
-            Confidence = (int)motorcyclesConfidenceNumeric.Value,
-            MinPercentOverlap = (int)motorcyclesOverlapNumeric.Value,
-            TimeFrame = (int)motorcyclesFramesNumeric.Value,
-            MinimumXSize = (int)motorcyclesMinXNumeric.Value,
-            MinimumYSize = (int)motorcyclesMinYNumeric.Value,
-          };
-          Area.SearchCriteria.Add(c);
-        }
-
-        if (bikeCheck.Checked)
-        {
-          ObjectCharacteristics c = new ObjectCharacteristics
-          {
-            ObjectType = ImageObjectType.Bikes,
-            Confidence = (int)bikesConfidenceNumeric.Value,
-            MinPercentOverlap = (int)bikesOverlapNumeric.Value,
-            TimeFrame = (int)bikesFramesNumeric.Value,
-            MinimumXSize = (int)bikesMinXNumeric.Value,
-            MinimumYSize = (int)bikesMinYNumeric.Value,
-          };
-          Area.SearchCriteria.Add(c);
-        }
-
-        if (bearsCheck.Checked)
-        {
-          ObjectCharacteristics c = new ObjectCharacteristics
-          {
-            ObjectType = ImageObjectType.Bears,
-            Confidence = (int)bearsConfidenceNumeric.Value,
-            MinPercentOverlap = (int)bearsOverlapNumeric.Value,
-            TimeFrame = (int)bearsFramesNumeric.Value,
-            MinimumXSize = (int)bearsMinXNumeric.Value,
-            MinimumYSize = (int)bearsMinYNumeric.Value,
-          };
-          Area.SearchCriteria.Add(c);
-        }
-
-        if (animalsCheck.Checked)
-        {
-          ObjectCharacteristics c = new ObjectCharacteristics
-          {
-            ObjectType = ImageObjectType.Animals,
-            Confidence = (int)animalsConfidenceNumeric.Value,
-            MinPercentOverlap = (int)animalsOverlapNumeric.Value,
-            TimeFrame = (int)animalsFramesNumeric.Value,
-            MinimumXSize = (int)animalsMinXNumeric.Value,
-            MinimumYSize = (int)animalsMinYNumeric.Value,
-          };
-          Area.SearchCriteria.Add(c);
-        }
-
-        _rectangle = new Rectangle((int)xNumeric.Value, (int)yNumeric.Value, (int)widthNumeric.Value, (int)heighNumeric.Value);
-        Area.AreaRect = _rectangle;
-        Area.OriginalXResolution = BitmapResolution.XResolution;
-        Area.OriginalYResolution = BitmapResolution.YResolution;
       }
 
-      return result;
+      _rectangle = new Rectangle((int)xNumeric.Value, (int)yNumeric.Value, (int)widthNumeric.Value, (int)heighNumeric.Value);
+      Area.AreaRect = _rectangle;
+      Area.OriginalXResolution = BitmapResolution.XResolution;
+      Area.OriginalYResolution = BitmapResolution.YResolution;
 
+      Storage.SaveArea(Area);
+
+      return result;
     }
 
     private void OKButton_Click(object sender, EventArgs e)
@@ -429,6 +286,59 @@ namespace SAAI
       else
       {
         DialogResult = DialogResult.None;
+      }
+    }
+
+
+    private void AddButton_Click(object sender, EventArgs e)
+    {
+      using (ObjectDefinitionDialog dlg = new ObjectDefinitionDialog())
+      {
+        DialogResult result = dlg.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          ListViewItem item = new ListViewItem(new string[] { dlg.ObjectType, dlg.Confidence.ToString(), dlg.Overlap.ToString(), dlg.MinX.ToString(), dlg.MinY.ToString(), dlg.History.ToString() });
+          item = ObjectsListView.Items.Add(item);
+          ObjectCharacteristics objChar = new ObjectCharacteristics();
+          objChar.ObjectType = dlg.ObjectType;
+          objChar.Confidence = dlg.Confidence;
+          objChar.MinPercentOverlap = dlg.Overlap;
+          objChar.MinimumXSize = dlg.MinX;
+          objChar.MinimumYSize = dlg.MinY;
+          objChar.TimeFrame = dlg.History;
+
+          item.Tag = objChar;
+        }
+
+      }
+    }
+
+    // Editing ObjectCharacteristics
+    private void ObjectsListView_ItemActivate(object sender, EventArgs e)
+    {
+      ListViewItem item = ObjectsListView.SelectedItems[0];
+      ObjectCharacteristics objChar = (ObjectCharacteristics)item.Tag;
+      using (ObjectDefinitionDialog dlg = new ObjectDefinitionDialog(objChar))
+      {
+        DialogResult result = dlg.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          objChar.ObjectType = dlg.ObjectType;
+          objChar.Confidence = dlg.Confidence;
+          objChar.MinPercentOverlap = dlg.Overlap;
+          objChar.MinimumXSize = dlg.MinX;
+          objChar.MinimumYSize = dlg.MinY;
+          objChar.TimeFrame = dlg.History;
+        }
+      }
+
+    }
+
+    private void RemoveButton_Click(object sender, EventArgs e)
+    {
+      if(ObjectsListView.SelectedItems.Count > 0)
+      {
+        ObjectsListView.Items.RemoveAt(ObjectsListView.SelectedIndices[0]);
       }
     }
   }

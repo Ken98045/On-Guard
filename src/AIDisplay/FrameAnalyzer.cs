@@ -55,30 +55,25 @@ namespace SAAI
         {
           foreach (ImageObject imageObject in _imageObjects)
           {
-
             // Each area cares about specific types of objects.
             // The overlap for each type varies as does the confidences.
             // Right now we don't care about the number of frames the object is in or whether
             // the object is moving into or out of the area. 
-
-
             foreach (AreaOfInterest area in _areas)
             {
-              // The search critera defines whether we are looking for people, vehicles, animals, etc.
-              if (null != area.SearchCriteria)
+              if (area.IsItemOfAreaInterest(imageObject.Label))
               {
-                foreach (ObjectCharacteristics criteria in area.SearchCriteria)
+                // The search critera defines whether we are looking for people, vehicles, animals, etc.
+                if (null != area.SearchCriteria)
                 {
-                  // First find out what type of object the AI thinks this is.
-                  ImageObjectType objectType = ObjectTypeFromLabel(imageObject.Label);
-
-                  if (criteria.ObjectType != ImageObjectType.Irrelevant)
+                  foreach (ObjectCharacteristics criteria in area.SearchCriteria)
                   {
+                    // First find out what type of object the AI thinks this is.
                     // If this is a type of object we generally might care about for security purposes
                     // then we compare the overlap to to minimum overlap to see if we still care
                     // (and yes, there are more elegant ways to do this, but it is easier to debug like this
 
-                    if (criteria.ObjectType == objectType)
+                    if (MatchesSpecialTag(criteria, imageObject.Label) || criteria.ObjectType == imageObject.Label)
                     {
 
                       int percentOverlap = ObjectToAreaOverlap(imageObject, area);
@@ -135,19 +130,23 @@ namespace SAAI
                     }
                     else
                     {
-                      if (objectType != ImageObjectType.Irrelevant)
+                      if (!MatchesSpecialTag(criteria, imageObject.Label) && criteria.ObjectType != imageObject.Label)
                       {
-                        reason = area.AOIName + ": Object mismatch: " + criteria.ObjectType.ToString() + " - " + objectType.ToString() + " - " + imageObject.Label;
+                        reason = area.AOIName + ": Object mismatch: " + criteria.ObjectType + " - " + imageObject.Label;
                         failureReasons.Add(reason);
                       }
                     }
                   }
-                  else { /*failureReasons.Add(area.AOIName + ": Object Irrelevant -  " + imageObject.Label); */}
+                }
+                else
+                {
+                  reason = "No search critera";
+                  failureReasons.Add(reason);
                 }
               }
               else
               {
-                reason = "No search critera";
+                reason = "Object: " + imageObject.Label + " does not match any searh criteria for area: " + area.AOIName;
                 failureReasons.Add(reason);
               }
             }
@@ -166,7 +165,7 @@ namespace SAAI
                   foreach (var criteria in ignore.SearchCriteria)
                   {
                     ImageObjectType objectType = ObjectTypeFromLabel(imageObject.Label);
-                    if (criteria.ObjectType == objectType)
+                    if (MatchesSpecialTag(criteria, imageObject.Label) ||  criteria.ObjectType == imageObject.Label)
                     {
                       // Yes, it is the type of object we ignore
                       int ignoreOverlap = ObjectToAreaOverlap(imageObject, ignore); // Does it overlap
@@ -268,6 +267,68 @@ namespace SAAI
       return objects;
     }
 
+
+    public static bool IsMammal(string label)
+    {
+      bool result = false;
+
+      switch (label)
+      {
+        case "dog":
+        case "bear":
+        case "cat":
+        case "horse":
+        case "sheep":
+        case "cow":
+        case "elephant":
+        case "zebra":
+        case "giraffe":
+          result = true;
+          break;
+      }
+
+      return result;
+    }
+
+    public static bool MatchesSpecialTag(ObjectCharacteristics objChar, string label)
+    {
+      bool result = false;
+
+      switch (objChar.ObjectType)
+      {
+        case "* Any Vehicle":
+          result = IsVehicle(label);
+          break;
+
+        case "* Any Mammal":
+          result = IsMammal(label);
+          break;
+      }
+
+
+      return result;
+    }
+
+    public static bool IsVehicle(string label)
+    {
+      bool result = false;
+
+      switch(label)
+      {
+        case "car":
+        case "truck":
+        case "bicycle":
+        case "motorbike":
+        case "bus":
+        case "train": // ?
+        case "boat":
+        case "aeroplane":
+          result = true;
+          break;
+      }
+
+      return result;
+    }
 
     public static ImageObjectType ObjectTypeFromLabel(string label)
     {

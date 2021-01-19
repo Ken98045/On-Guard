@@ -202,6 +202,14 @@ namespace SAAI
       }
     }
 
+    public static void SaveArea(AreaOfInterest area)
+    {
+      using (RegistryKey key = FindCameraKey(GetGlobalString("CurrentCameraPath"), GetGlobalString("CurrentCameraPrefix")))
+      {
+        SaveArea(key, area);
+      }
+    }
+
     public static void SaveArea(string cameraPath, string cameraPrefix, AreaOfInterest area)
     {
       using (RegistryKey camKey = FindCameraKey(cameraPath, cameraPrefix))
@@ -298,7 +306,7 @@ namespace SAAI
             {
               obj.ID = Guid.Parse(objectID);
               string objType = (string)optionKey.GetValue("ImageObjectType");
-              obj.ObjectType = (ImageObjectType)Enum.Parse(typeof(ImageObjectType), objType);
+              obj.ObjectType = objType;
               obj.Confidence = (int)optionKey.GetValue("Confidence");
               obj.MinPercentOverlap = (int)optionKey.GetValue("Overlap");
               obj.TimeFrame = (int)optionKey.GetValue("TimeFrame");
@@ -488,6 +496,8 @@ namespace SAAI
       {
         s_cameras.DeleteSubKeyTree(keyName, false);
       }
+
+
 
       // Now we can save the new data
       s_cameras.SetValue("CurrentCamera", allCameras.CurrentCameraPath, RegistryValueKind.String);

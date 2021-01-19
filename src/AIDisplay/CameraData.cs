@@ -39,7 +39,7 @@ namespace SAAI
 
         return adjX;
       }
-      set 
+      set
       {
         if (BitmapResolution.XResolution != RegistrationXResolution)
         {
@@ -133,7 +133,7 @@ namespace SAAI
         ArgumentNullException argumentNullException = new ArgumentNullException("src in CameraData copy constructor");
         throw argumentNullException;
       }
-      else 
+      else
       {
         ID = Guid.NewGuid();
         FrameHistory = new History(300);
@@ -187,8 +187,22 @@ namespace SAAI
       }
     }
 
+    public bool IsItemOfCameraInterest(string label)
+    {
+      bool result = false;
+      bool stop = false;
 
+      foreach (var area in AOI)
+      {
+        if (area.IsItemOfAreaInterest(label))
+        {
+          result = true;
+          break;
+        }
+      }
 
+      return result;
+    }
 
     // PathAndPrefix allows us to monitor the directory for motion images.  It also identifies the camera 
     public static string PathAndPrefix(CameraData camera)

@@ -180,6 +180,12 @@
     <Compile Include="Forms\CleanupDialog.Designer.cs">
       <DependentUpon>CleanupDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ObjectDefinitionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ObjectDefinitionDialog.Designer.cs">
+      <DependentUpon>ObjectDefinitionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrameAccumulator.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HIstory.cs" />
@@ -326,6 +332,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\OutgoingEmailDialog.resx">
       <DependentUpon>OutgoingEmailDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ObjectDefinitionDialog.resx">
+      <DependentUpon>ObjectDefinitionDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

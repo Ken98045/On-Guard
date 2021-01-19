@@ -133,8 +133,26 @@ namespace SAAI
       double yRatio = (double)BitmapResolution.YResolution / (double)OriginalYResolution;
       AreaRect.X = AreaRect.X - (int)(xRatio * (double)xOffset);
       AreaRect.Y = AreaRect.Y - (int)(yRatio * (double)yOffset);
-
     }
+
+    public bool IsItemOfAreaInterest(string label)
+    {
+      bool result = false;
+      bool stop = false;
+
+      foreach (var searchCriteria in SearchCriteria)
+      {
+        if (searchCriteria.ObjectType == label || FrameAnalyzer.MatchesSpecialTag(searchCriteria, label))
+        {
+          result = true;
+          stop = true;
+          break;
+        }
+      }
+
+      return result;
+    }
+
 
     #region IDisposable Support
     private bool disposedValue = false; // To detect redundant calls

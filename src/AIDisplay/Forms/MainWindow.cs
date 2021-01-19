@@ -532,22 +532,6 @@ namespace SAAI
       return result;
     }
 
-    readonly string[] _itemsOfSecurityInterest = new string[15] {"person",
-                                                            "car",
-                                                            "truck",
-                                                            "bicycle",
-                                                            "motorbike",
-                                                            "bus",
-                                                            "train",
-                                                            "boat",
-                                                            "cat",
-                                                            "dog",
-                                                            "horse",
-                                                            "sheep",
-                                                            "cow",
-                                                            "elephant",
-                                                            "bear"
-                                          };
 
     private List<ImageObject> ProcessImage(Stream stream, string imageName)
     {
@@ -617,7 +601,7 @@ namespace SAAI
           string[] subItems = new string[6];
           foreach (ImageObject obj in _frameObjects)
           {
-            if (_itemsOfSecurityInterest.Contains(obj.Label))
+            if (_currentCamera.IsItemOfCameraInterest(obj.Label))
             {
               subItems[0] = obj.Label;
               subItems[1] = obj.Confidence.ToString();
@@ -1631,15 +1615,23 @@ namespace SAAI
       }
     }
 
+    delegate void RefreshDelegate(object sender, EventArgs e);
     private void Refresh_Click(object sender, EventArgs e)
     {
-      using (WaitCursor _ = new WaitCursor())
+      if (!this.InvokeRequired)
       {
-        lock (_fileLock)
+        using (WaitCursor _ = new WaitCursor())
         {
-          _current = 0;
-          InitAnalyzer(_currentCamera.CameraPrefix, _currentCamera.Path);
+          lock (_fileLock)
+          {
+            _current = 0;
+            InitAnalyzer(_currentCamera.CameraPrefix, _currentCamera.Path);
+          }
         }
+      }
+      else
+      {
+        BeginInvoke(new RefreshDelegate(Refresh_Click), new object[] { null, null });
       }
     }
 
