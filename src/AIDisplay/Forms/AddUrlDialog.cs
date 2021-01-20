@@ -26,6 +26,21 @@ namespace SAAI
         urlText.Text = Options.Url;
         urlCoolDownNumeric.Value = Options.CoolDown.CooldownTime;
         WaitTimeNumeric.Value = Options.WaitTime;
+
+        if ((Options.BIFlags & (int) BIFLAGS.Flagged) > 0)
+        {
+          FlagCheckBox.Checked = true;
+        }
+
+        if ((Options.BIFlags & (int) BIFLAGS.Confirmed) > 0)
+        {
+          ConfirmCheckBox.Checked = true;
+        }
+
+        if ((Options.BIFlags & (int) BIFLAGS.Reset) > 0)
+        {
+          ResetCheckBox.Checked = true;
+        }
       }
 
     }
@@ -44,6 +59,8 @@ namespace SAAI
         if (FlagCheckBox.Checked) Options.BIFlags |= (int) BIFLAGS.Flagged;
         if (ConfirmCheckBox.Checked) Options.BIFlags |= (int) BIFLAGS.Confirmed;
         if (ResetCheckBox.Checked) Options.BIFlags |= (int) BIFLAGS.Reset;
+        Options.CoolDown.CooldownTime = (int) urlCoolDownNumeric.Value;
+        Options.WaitTime = (int)WaitTimeNumeric.Value;
         DialogResult = DialogResult.OK;
       }
     }
