@@ -18,7 +18,7 @@ namespace SAAI
     public AboutDialog()
     {
       InitializeComponent();
-      //assemblyLabel.Text = String.Format("Version {0}", AssemblyVersion);
+      assemblyLabel.Text = String.Format(AssemblyVersion);
     }
 
     public static string AssemblyTitle

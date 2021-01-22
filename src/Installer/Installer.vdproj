@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_0B0CC6963D8880FECEB841AF5023BE7C"
+        "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3F3C6C4B2D7B56431DE929DB4EAEC533"
         "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
         "MsmSig" = "8:_UNDEFINED"
@@ -33,13 +39,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CB5713B335E693AB4A38683A908A6A66"
-        "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E824D2B73982D5D2C7AE4B768F6F71A2"
+        "MsmKey" = "8:_7DACE4EAE4203A8DC24363CEB6A02A9F"
         "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -64,13 +64,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E824D2B73982D5D2C7AE4B768F6F71A2"
+        "OwnerKey" = "8:_7DACE4EAE4203A8DC24363CEB6A02A9F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CB5713B335E693AB4A38683A908A6A66"
+        "OwnerKey" = "8:_0B0CC6963D8880FECEB841AF5023BE7C"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -223,6 +223,37 @@
         }
         "File"
         {
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0B0CC6963D8880FECEB841AF5023BE7C"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_0B0CC6963D8880FECEB841AF5023BE7C"
+                    {
+                    "Name" = "8:Newtonsoft.Json.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Newtonsoft.Json.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_CB628D0D56A842DF94CD2CA065E7A47D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3F3C6C4B2D7B56431DE929DB4EAEC533"
             {
             "AssemblyRegister" = "3:1"
@@ -274,45 +305,14 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_CB5713B335E693AB4A38683A908A6A66"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_CB5713B335E693AB4A38683A908A6A66"
-                    {
-                    "Name" = "8:Newtonsoft.Json.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Newtonsoft.Json.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_CB628D0D56A842DF94CD2CA065E7A47D"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E824D2B73982D5D2C7AE4B768F6F71A2"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7DACE4EAE4203A8DC24363CEB6A02A9F"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:MQTTnet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_E824D2B73982D5D2C7AE4B768F6F71A2"
+                    "_7DACE4EAE4203A8DC24363CEB6A02A9F"
                     {
                     "Name" = "8:MQTTnet.dll"
                     "Attributes" = "3:512"
@@ -457,15 +457,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:On Guard"
-        "ProductCode" = "8:{F0357210-9831-4D59-8F92-E29953A93943}"
-        "PackageCode" = "8:{417F4C87-FBAC-4D98-80F2-A6CF2A0E6BDF}"
+        "ProductCode" = "8:{430DC4F3-93DA-4C3D-A8FF-6EA3E0612A34}"
+        "PackageCode" = "8:{074A433A-8D8A-48E1-8B84-35608B14170C}"
         "UpgradeCode" = "8:{DCA433DA-BECE-4E39-AED0-767091896BEF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.5.2"
+        "ProductVersion" = "8:1.6.1"
         "Manufacturer" = "8:On Guard"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
