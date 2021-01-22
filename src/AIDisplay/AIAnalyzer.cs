@@ -78,23 +78,17 @@ namespace SAAI
     readonly List<ImageObject> _previousPeople = new List<ImageObject>();  // The usually do move, but
     readonly private object _fileLock = new object();
 
-    readonly string _AILocation;
-    readonly int _AIPort;
     const int MultiDefinitionOverlap = 92;
     const int ParkedOverlap = 95;
     const double minVehicleConfidence = 0.40;
-
+    int lastAIUsed = 0;
 
     public AIAnalyzer()
     {
-      _AILocation = Storage.GetGlobalString("DeepStackIPAddress");
-      _AIPort = Storage.GetGlobalInt("DeepStackPort");;
     }
 
     public AIAnalyzer(string aiAddress, int port)
     {
-      _AILocation = aiAddress;
-      _AIPort = port;
     }
 
 
@@ -118,10 +112,9 @@ namespace SAAI
         }
       }
 
-
-
       return fileNames;
     }
+
 
     /*public async void AnalyzeAllImages(string path)
     {
@@ -447,13 +440,14 @@ namespace SAAI
       return people;
     }
 
-    public async Task<List<ImageObject>> ProcessVideoImageViaAI(Stream stream, string imageName)
+    // This is the one called by the UI indirectly, and by the connection test function directly
+    public async Task<List<ImageObject>> ProcessImageSync(AILocation ai, Stream stream, string imageName)
     {
       List<ImageObject> objectList;
 
       try
       {
-        objectList = await DetectObjects(stream, imageName).ConfigureAwait(true);
+        objectList = await DetectObjects(ai, stream, imageName).ConfigureAwait(true);
       }
       catch (AiNotFoundException ex)
       {
@@ -461,12 +455,24 @@ namespace SAAI
       }
 
       return objectList;
-
     }
+
+    // Called by the AI to navigate through the working set
+    public async Task<List<ImageObject>> ProcessVideoImageViaAI(Stream stream, string imageName)
+    {
+      List<ImageObject> result = null;
+      AILocation ai = AILocation.GetAvailableAI();
+      if (ai != null)
+      {
+        result = await ProcessImageSync(ai, stream, imageName).ConfigureAwait(false);  // yes, it is not really async, but this doesn't know it
+      }
+      return result;
+    }
+
 
     // This function is used by the UI to detect objects.  It is not currently
     // used async, but may be in the future
-    public async Task<List<ImageObject>> DetectObjects(Stream stream, string imageName)
+    public async Task<List<ImageObject>> DetectObjects(AILocation aiLocation, Stream stream, string imageName)
     {
       List<ImageObject> objects = null;
 
@@ -480,7 +486,7 @@ namespace SAAI
           { content, "image", imageName }
         })
           {
-            string url = string.Format("http://{0}:{1}/v1/vision/detection", _AILocation, _AIPort);
+            string url = string.Format("http://{0}:{1}/v1/vision/detection", aiLocation.IPAddress, aiLocation.Port);
 
             HttpResponseMessage output = null;
             try
@@ -531,6 +537,7 @@ namespace SAAI
       return objects;
     }
 
+
     // This function is used by the (semi) live data, not the UI
     public async Task<AIResult> DetectObjectsAsync(Stream stream, PendingItem pending)
     {
@@ -553,7 +560,12 @@ namespace SAAI
           { content, "image", pending.PendingFile }
         })
           {
-            string url = string.Format("http://{0}:{1}/v1/vision/detection", _AILocation, _AIPort);
+            AILocation ai = AILocation.GetAvailableAI();
+            if (ai == null)
+            {
+              throw new AiNotFoundException("No AI Location is Currently Defined");
+            }
+            string url = string.Format("http://{0}:{1}/v1/vision/detection", ai.IPAddress, ai.Port);
 
             HttpResponseMessage output = null;
             try

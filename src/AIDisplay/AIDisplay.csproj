@@ -125,6 +125,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AILocation.cs" />
     <Compile Include="Controls\ZoneBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -160,6 +161,12 @@
     <Compile Include="AreaOfInterest.cs" />
     <Compile Include="AreasOfInterestCollection.cs" />
     <Compile Include="BitmapResolution.cs" />
+    <Compile Include="Forms\AILocationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AILocationDialog.Designer.cs">
+      <DependentUpon>AILocationDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CameraConfigurationDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -293,6 +300,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AddUrlDialog.resx">
       <DependentUpon>AddUrlDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AILocationDialog.resx">
+      <DependentUpon>AILocationDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CameraConfigurationDialog.resx">
       <DependentUpon>CameraConfigurationDialog.cs</DependentUpon>

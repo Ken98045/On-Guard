@@ -203,6 +203,9 @@ namespace SAAI
         using (SettingsDialog dlg = new SettingsDialog())
         {
           result = dlg.ShowDialog();   // AI and other application settings
+          if (result == DialogResult.OK)
+          {
+          }
         }
 
         if (result != DialogResult.OK)
@@ -573,14 +576,12 @@ namespace SAAI
           {
             if (x is AiNotFoundException) // This we know how to handle.
             {
-              MessageBox.Show(x.Message + Environment.NewLine + "Either start the DeepStack AI or change the locaton and port of that application.", "Setup Error!");
+              MessageBox.Show(x.Message + Environment.NewLine + "Either start the DeepStack AI or change the location and port of that application.", "Setup Error!");
               using (SettingsDialog dlg = new SettingsDialog())
               {
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                   _frameObjects = null;
-                  MessageBox.Show("You must now restart this application!", "Exit Now!");
-                  Application.Exit();
                 }
               }
 

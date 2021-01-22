@@ -42,6 +42,7 @@ namespace SAAI
         s_base = Registry.CurrentUser;
         key.CreateSubKey(@"Software\K2Software\OnGuard\Cameras", true); // creates the full tree if necessary
         s_base = s_base.OpenSubKey(@"Software\K2Software\OnGuard", true);   // The base area used for global stuff
+        s_base.CreateSubKey("AILocations");
         s_cameras = s_base.OpenSubKey("Cameras", true);
         string ver = GetAppVersion();
         if (!string.IsNullOrEmpty(ver))
@@ -81,13 +82,13 @@ namespace SAAI
               EmailOptions opt = new EmailOptions();
               {
                 opt.EmailAddress = address;
-                opt.NumberOfImages = (int) option.GetValue("NumberOfImages", 0);
-                opt.AllTheTime = bool.Parse((string) (option.GetValue("AllTheTime")));
+                opt.NumberOfImages = (int)option.GetValue("NumberOfImages", 0);
+                opt.AllTheTime = bool.Parse((string)(option.GetValue("AllTheTime")));
                 opt.StartTime = DateTime.Parse((string)option.GetValue("StartTime", "12:00am"));
                 opt.EndTime = DateTime.Parse((string)option.GetValue("EndTime", "11:59:59pm"));
-                opt.SizeDownToPercent = (int) option.GetValue("SizeDownPercent", 20);
-                opt.CoolDown = new EmailCooldown((int) option.GetValue("CooldownTime"));
-                opt.DaysOfWeek[0] = bool.Parse((string) option.GetValue("Sunday"));
+                opt.SizeDownToPercent = (int)option.GetValue("SizeDownPercent", 20);
+                opt.CoolDown = new EmailCooldown((int)option.GetValue("CooldownTime"));
+                opt.DaysOfWeek[0] = bool.Parse((string)option.GetValue("Sunday"));
                 opt.DaysOfWeek[1] = bool.Parse((string)option.GetValue("Monday"));
                 opt.DaysOfWeek[2] = bool.Parse((string)option.GetValue("Tuesday"));
                 opt.DaysOfWeek[3] = bool.Parse((string)option.GetValue("Wednesday"));
@@ -108,8 +109,8 @@ namespace SAAI
     public static void SaveEmailAddresses(List<EmailOptions> addresses)
     {
       if (addresses != null)
-      { 
-      s_base.DeleteSubKeyTree("EmailAddresses", false);
+      {
+        s_base.DeleteSubKeyTree("EmailAddresses", false);
 
         using (RegistryKey key = s_base.CreateSubKey("EmailAddresses"))
         {
@@ -399,6 +400,50 @@ namespace SAAI
       return notify;
     }
 
+    public static List<AILocation> GetAILocations()
+    {
+      List<AILocation> result = new List<AILocation>();
+
+      using (RegistryKey key = s_base.OpenSubKey("AILocations"))
+      {
+        foreach (string locationID in key.GetSubKeyNames())
+        {
+          using (RegistryKey locationKey = key.OpenSubKey(locationID))
+          {
+            AILocation location = new AILocation(Guid.Parse(locationID), (string)locationKey.GetValue("IPAddress"), (int)locationKey.GetValue("Port"));
+            result.Add(location);
+          }
+        }
+      }
+
+      return result;
+    }
+
+    public static void SetAILocation(AILocation location)
+    {
+      using (RegistryKey key = s_base.OpenSubKey("AILocations", true))
+      {
+        using (RegistryKey aiKey = key.CreateSubKey(location.ID.ToString(), true))
+        {
+          aiKey.SetValue("IPAddress", location.IPAddress, RegistryValueKind.String);
+          aiKey.SetValue("Port", location.Port, RegistryValueKind.DWord);
+        }
+      }
+    }
+
+    public static void RemoveAILocation(string id)
+    {
+      using (RegistryKey key = s_base.OpenSubKey("AILocations", true))
+      {
+        key.DeleteSubKey(id, false);
+      }
+    }
+
+    public static void RemoveGlobalValue(string valueName)
+    {
+      s_base.DeleteValue(valueName, false);
+    }
+
     public static string GetCameraPrefix(RegistryKey reg)
     {
       string prefix = (string)reg.GetValue("Prefix");
@@ -513,7 +558,7 @@ namespace SAAI
 
     public static string GetGlobalString(string keyName)
     {
-      return (string) s_base.GetValue(keyName, string.Empty);
+      return (string)s_base.GetValue(keyName, string.Empty);
     }
 
     public static int GetGlobalInt(string keyName)
@@ -531,7 +576,7 @@ namespace SAAI
       s_base.SetValue(keyName, value, RegistryValueKind.DWord);
     }
 
-    public static void SetGlobalBool (string keyName, bool value)
+    public static void SetGlobalBool(string keyName, bool value)
     {
       SetGlobalString(keyName, value.ToString());
     }
@@ -555,7 +600,7 @@ namespace SAAI
     public static double GetGlobalDouble(string keyName)
     {
       double result = 0;
-      string str = (string) s_base.GetValue(keyName, string.Empty);
+      string str = (string)s_base.GetValue(keyName, string.Empty);
       if (!string.IsNullOrEmpty(str))
       {
         result = double.Parse(str);

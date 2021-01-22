@@ -1,4 +1,6 @@
-﻿namespace SAAI
+﻿
+
+namespace SAAI
 {
   partial class SettingsDialog
   {
@@ -31,18 +33,16 @@
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDialog));
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
-      this.label1 = new System.Windows.Forms.Label();
-      this.label2 = new System.Windows.Forms.Label();
-      this.ipAddressText = new System.Windows.Forms.TextBox();
-      this.portNumeric = new System.Windows.Forms.NumericUpDown();
-      this.label3 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
       this.label5 = new System.Windows.Forms.Label();
       this.snapshotNumeric = new System.Windows.Forms.NumericUpDown();
       this.label6 = new System.Windows.Forms.Label();
       this.panel1 = new System.Windows.Forms.Panel();
-      this.label12 = new System.Windows.Forms.Label();
-      this.testButton = new System.Windows.Forms.Button();
+      this.RemoveButton = new System.Windows.Forms.Button();
+      this.AddButton = new System.Windows.Forms.Button();
+      this.aiLocationListView = new System.Windows.Forms.ListView();
+      this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.panel2 = new System.Windows.Forms.Panel();
       this.label13 = new System.Windows.Forms.Label();
       this.label10 = new System.Windows.Forms.Label();
@@ -52,7 +52,6 @@
       this.label9 = new System.Windows.Forms.Label();
       this.maxEventNumeric = new System.Windows.Forms.NumericUpDown();
       this.label7 = new System.Windows.Forms.Label();
-      ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.snapshotNumeric)).BeginInit();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
@@ -62,81 +61,23 @@
       // 
       // okButton
       // 
-      this.okButton.Location = new System.Drawing.Point(260, 519);
+      this.okButton.Location = new System.Drawing.Point(260, 611);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 1;
+      this.okButton.TabIndex = 0;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);
       // 
       // cancelButton
       // 
-      this.cancelButton.Location = new System.Drawing.Point(350, 519);
+      this.cancelButton.Location = new System.Drawing.Point(350, 611);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 2;
+      this.cancelButton.TabIndex = 1;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
-      // 
-      // label1
-      // 
-      this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(11, 54);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(238, 13);
-      this.label1.TabIndex = 2;
-      this.label1.Text = "IP Address or computer name  of the  AI:";
-      // 
-      // label2
-      // 
-      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label2.Location = new System.Drawing.Point(398, 35);
-      this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(235, 86);
-      this.label2.TabIndex = 3;
-      this.label2.Text = "For this computer leave it \"localhost\"\r\nRarely this may not work.  Try \"127.0.0.1" +
-    "\"\r\nRarely that may not work.  Then try the IPV4 address of this computer.";
-      // 
-      // ipAddresText
-      // 
-      this.ipAddressText.Location = new System.Drawing.Point(256, 51);
-      this.ipAddressText.Name = "ipAddresText";
-      this.ipAddressText.Size = new System.Drawing.Size(134, 20);
-      this.ipAddressText.TabIndex = 0;
-      this.ipAddressText.Text = "localhost";
-      // 
-      // portNumeric
-      // 
-      this.portNumeric.Location = new System.Drawing.Point(264, 108);
-      this.portNumeric.Maximum = new decimal(new int[] {
-            65535,
-            0,
-            0,
-            0});
-      this.portNumeric.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-      this.portNumeric.Name = "portNumeric";
-      this.portNumeric.Size = new System.Drawing.Size(89, 20);
-      this.portNumeric.TabIndex = 1;
-      this.portNumeric.Value = new decimal(new int[] {
-            80,
-            0,
-            0,
-            0});
-      // 
-      // label3
-      // 
-      this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(116, 108);
-      this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(142, 13);
-      this.label3.TabIndex = 6;
-      this.label3.Text = "Port Number fof the AI:  ";
       // 
       // label4
       // 
@@ -144,9 +85,9 @@
       this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label4.Location = new System.Drawing.Point(205, 10);
       this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(208, 16);
+      this.label4.Size = new System.Drawing.Size(226, 16);
       this.label4.TabIndex = 7;
-      this.label4.Text = "Location of the DeepStack AI";
+      this.label4.Text = "Location of the DeepStack AI(s)";
       // 
       // label5
       // 
@@ -197,40 +138,60 @@
       // panel1
       // 
       this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.panel1.Controls.Add(this.label12);
-      this.panel1.Controls.Add(this.testButton);
-      this.panel1.Controls.Add(this.portNumeric);
+      this.panel1.Controls.Add(this.RemoveButton);
+      this.panel1.Controls.Add(this.AddButton);
+      this.panel1.Controls.Add(this.aiLocationListView);
       this.panel1.Controls.Add(this.label4);
-      this.panel1.Controls.Add(this.label3);
-      this.panel1.Controls.Add(this.label2);
-      this.panel1.Controls.Add(this.label1);
-      this.panel1.Controls.Add(this.ipAddressText);
       this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.panel1.Location = new System.Drawing.Point(12, 13);
+      this.panel1.Location = new System.Drawing.Point(12, 21);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(660, 205);
+      this.panel1.Size = new System.Drawing.Size(660, 285);
       this.panel1.TabIndex = 11;
       // 
-      // label12
+      // RemoveButton
       // 
-      this.label12.AutoSize = true;
-      this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label12.Location = new System.Drawing.Point(389, 155);
-      this.label12.Name = "label12";
-      this.label12.Size = new System.Drawing.Size(108, 16);
-      this.label12.TabIndex = 9;
-      this.label12.Text = "<---- Important!";
+      this.RemoveButton.Location = new System.Drawing.Point(337, 245);
+      this.RemoveButton.Name = "RemoveButton";
+      this.RemoveButton.Size = new System.Drawing.Size(62, 23);
+      this.RemoveButton.TabIndex = 1;
+      this.RemoveButton.Text = "Remove";
+      this.RemoveButton.UseVisualStyleBackColor = true;
+      this.RemoveButton.Click += new System.EventHandler(this.RemoveButton_Click);
       // 
-      // testButton
+      // AddButton
       // 
-      this.testButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-      this.testButton.Location = new System.Drawing.Point(192, 149);
-      this.testButton.Name = "testButton";
-      this.testButton.Size = new System.Drawing.Size(191, 28);
-      this.testButton.TabIndex = 2;
-      this.testButton.Text = "Test DeepStack Connection";
-      this.testButton.UseVisualStyleBackColor = false;
-      this.testButton.Click += new System.EventHandler(this.TestButton_Click);
+      this.AddButton.Location = new System.Drawing.Point(259, 245);
+      this.AddButton.Name = "AddButton";
+      this.AddButton.Size = new System.Drawing.Size(62, 23);
+      this.AddButton.TabIndex = 0;
+      this.AddButton.Text = "Add";
+      this.AddButton.UseVisualStyleBackColor = true;
+      this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
+      // 
+      // aiLocationListView
+      // 
+      this.aiLocationListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+      this.aiLocationListView.FullRowSelect = true;
+      this.aiLocationListView.HideSelection = false;
+      this.aiLocationListView.Location = new System.Drawing.Point(138, 44);
+      this.aiLocationListView.Name = "aiLocationListView";
+      this.aiLocationListView.Size = new System.Drawing.Size(383, 187);
+      this.aiLocationListView.TabIndex = 10;
+      this.aiLocationListView.UseCompatibleStateImageBehavior = false;
+      this.aiLocationListView.View = System.Windows.Forms.View.Details;
+      this.aiLocationListView.ItemActivate += new System.EventHandler(this.OnActivate);
+      // 
+      // columnHeader1
+      // 
+      this.columnHeader1.Text = "IP Address";
+      this.columnHeader1.Width = 242;
+      // 
+      // columnHeader2
+      // 
+      this.columnHeader2.Text = "Port";
+      this.columnHeader2.Width = 120;
       // 
       // panel2
       // 
@@ -246,7 +207,7 @@
       this.panel2.Controls.Add(this.label6);
       this.panel2.Controls.Add(this.label5);
       this.panel2.Controls.Add(this.snapshotNumeric);
-      this.panel2.Location = new System.Drawing.Point(12, 238);
+      this.panel2.Location = new System.Drawing.Point(12, 326);
       this.panel2.Name = "panel2";
       this.panel2.Size = new System.Drawing.Size(660, 258);
       this.panel2.TabIndex = 0;
@@ -352,14 +313,13 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.ClientSize = new System.Drawing.Size(684, 554);
+      this.ClientSize = new System.Drawing.Size(741, 646);
       this.Controls.Add(this.panel2);
       this.Controls.Add(this.panel1);
       this.Controls.Add(this.cancelButton);
       this.Controls.Add(this.okButton);
       this.Name = "SettingsDialog";
       this.Text = "Application Settings";
-      ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.snapshotNumeric)).EndInit();
       this.panel1.ResumeLayout(false);
       this.panel1.PerformLayout();
@@ -375,11 +335,6 @@
 
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox ipAddressText;
-        private System.Windows.Forms.NumericUpDown portNumeric;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown snapshotNumeric;
@@ -394,7 +349,10 @@
     private System.Windows.Forms.NumericUpDown maxEventNumeric;
     private System.Windows.Forms.Label label7;
     private System.Windows.Forms.Label label13;
-    private System.Windows.Forms.Button testButton;
-    private System.Windows.Forms.Label label12;
+    private System.Windows.Forms.Button RemoveButton;
+    private System.Windows.Forms.Button AddButton;
+    private System.Windows.Forms.ListView aiLocationListView;
+    private System.Windows.Forms.ColumnHeader columnHeader1;
+    private System.Windows.Forms.ColumnHeader columnHeader2;
   }
 }

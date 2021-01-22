@@ -16,76 +16,60 @@ namespace SAAI
   /// </summary>
   public partial class SettingsDialog : Form
   {
-
     public SettingsDialog()
     {
       InitializeComponent();
-      string ipAddress;
-      int aiPort = Storage.GetGlobalInt("DeepStackPort");
 
-      if (!string.IsNullOrEmpty("ipAddress") && aiPort != 0)
+
+      aiLocationListView.Sorting = SortOrder.Ascending;
+
+      // The older (pre 1-6-1) version may have used the old registry format.
+      // If so, get it, but delete it.
+      string oldIPAddress = Storage.GetGlobalString("DeepStackIPAddress");
+      if (!string.IsNullOrEmpty(oldIPAddress))
       {
-        ipAddress = Storage.GetGlobalString("DeepStackIPAddress");
-        if (string.IsNullOrEmpty(ipAddress))
-        {
-          ipAddress = Settings.Default.AIIPAddress;
-
-        }
-        ipAddressText.Text = ipAddress;
-
-        int port = Storage.GetGlobalInt("DeepStackPort");
-        if (port == 0)
-        {
-          port = Settings.Default.AIPort;
-        }
-        portNumeric.Value = port;
-
-        double snapshot = Storage.GetGlobalDouble("FrameInterval");
-        if (snapshot == 0.0)
-        {
-          snapshot = (double)Settings.Default.TimePerFrame;
-        }
-        snapshotNumeric.Value = (decimal)snapshot;
-
-        int maxEvent = Storage.GetGlobalInt("MaxEventTime");
-        if (maxEvent == 0)
-        {
-          maxEvent = Settings.Default.MaxEventTime;
-        }
-        maxEventNumeric.Value = maxEvent;
-
-        int eventInterval = Storage.GetGlobalInt("EventInterval");
-        if (eventInterval == 0)
-        {
-          eventInterval = Settings.Default.EventInterval;
-        }
-        eventIntervalNumeric.Value = eventInterval;
+        int aiPort = Storage.GetGlobalInt("DeepStackPort");
+        AILocation location = new AILocation(Guid.NewGuid(), oldIPAddress, aiPort);
+        AILocation.AILocations.Add(location); // put it in the new format
+        Storage.RemoveGlobalValue("DeepStackIPAddress");  // get rid of the old format
+        Storage.RemoveGlobalValue("DeepStackPort");
       }
 
+      foreach (var location in AILocation.AILocations)
+      {
+        ListViewItem item = new ListViewItem(new string[] { location.IPAddress, location.Port.ToString() });
+        aiLocationListView.Items.Add(item);
+        item.Tag = location;
+      }
+
+      double snapshot = Storage.GetGlobalDouble("FrameInterval");
+      if (snapshot == 0.0)
+      {
+        snapshot = (double)Settings.Default.TimePerFrame;
+      }
+      snapshotNumeric.Value = (decimal)snapshot;
+
+      int maxEvent = Storage.GetGlobalInt("MaxEventTime");
+      if (maxEvent == 0)
+      {
+        maxEvent = Settings.Default.MaxEventTime;
+      }
+      maxEventNumeric.Value = maxEvent;
+
+      int eventInterval = Storage.GetGlobalInt("EventInterval");
+      if (eventInterval == 0)
+      {
+        eventInterval = Settings.Default.EventInterval;
+      }
+      eventIntervalNumeric.Value = eventInterval;
     }
 
     private void OkButton_Click(object sender, EventArgs e)
     {
-      if (!string.IsNullOrEmpty(ipAddressText.Text))
-      {
-        if (ipAddressText.Text.Contains("http") || ipAddressText.Text.Contains("//"))
-        {
-          MessageBox.Show("The IP Address or machine name must not include \"http\" or \"//\"");
-        }
-        else
-        {
-          Storage.SetGlobalString("DeepStackIPAddress", ipAddressText.Text);
-          Storage.SetGlobalInt("DeepStackPort", (int)portNumeric.Value);
-          Storage.SetGlobalDouble("FrameInterval", (double) snapshotNumeric.Value);
-          Storage.SetGlobalInt("MaxEventTime", (int)maxEventNumeric.Value);
-          Storage.SetGlobalInt("EventInterval", (int)eventIntervalNumeric.Value);
-          DialogResult = DialogResult.OK;
-        }
-      }
-      else
-      {
-        MessageBox.Show("The IP Address or computer name must not be empty.");
-      }
+      Storage.SetGlobalDouble("FrameInterval", (double)snapshotNumeric.Value);
+      Storage.SetGlobalInt("MaxEventTime", (int)maxEventNumeric.Value);
+      Storage.SetGlobalInt("EventInterval", (int)eventIntervalNumeric.Value);
+      DialogResult = DialogResult.OK;
 
     }
 
@@ -95,35 +79,53 @@ namespace SAAI
 
     }
 
-    private async void TestButton_Click(object sender, EventArgs e)
+
+    private void AddButton_Click(object sender, EventArgs e)
     {
-      // Create source.
-      object O = Resources.ResourceManager.GetObject("OnGuard"); //Return an object from the image chan1.png in the project
-      using (Bitmap bm = (Bitmap)O)
+      using (AILocationDialog dlg = new AILocationDialog())
       {
-        using (MemoryStream mem = new MemoryStream())
+        DialogResult result = dlg.ShowDialog();
+        if (result == DialogResult.OK)
         {
-          bm.Save(mem, ImageFormat.Jpeg);
-          mem.Position = 0;
-          try
+          ListViewItem item = new ListViewItem(new string[] { dlg.Location.IPAddress, dlg.Location.Port.ToString() });
+          item.Tag = dlg.Location;
+          aiLocationListView.Items.Add(item);
+        }
+      }
+
+      DialogResult = DialogResult.None;
+    }
+
+    private void RemoveButton_Click(object sender, EventArgs e)
+    {
+      if (aiLocationListView.SelectedItems.Count > 0)
+      {
+        int index = aiLocationListView.SelectedIndices[0];
+        AILocation location = (AILocation) aiLocationListView.Items[index].Tag;
+        Storage.RemoveAILocation(location.ID.ToString());
+        AILocation.Refresh();
+        aiLocationListView.Items.RemoveAt(index);
+      }
+    }
+
+    private void OnActivate(object sender, EventArgs e)
+    {
+      if (aiLocationListView.SelectedItems.Count > 0)
+      {
+        int index = aiLocationListView.SelectedIndices[0];
+        ListViewItem item = aiLocationListView.Items[index];
+        AILocation location = (AILocation)item.Tag;
+        using (AILocationDialog dlg = new AILocationDialog(location))
+        {
+          DialogResult result = dlg.ShowDialog();
+          if (result == DialogResult.OK)
           {
-            AIAnalyzer ai = new AIAnalyzer(ipAddressText.Text, (int)portNumeric.Value);
-            List<ImageObject> imageObjects = await ai.ProcessVideoImageViaAI(mem, "Test Image").ConfigureAwait(false);
-            if (imageObjects != null && imageObjects.Count > 0)
-            {
-              MessageBox.Show(this, "Successfully processed a picture via DeepStack", "Success!");
-            }
-            else
-            {
-              MessageBox.Show(this, "The AI Test FAILED!. DeepStack was found, but the image was not processed successfully.  Check your DeepStack startup to make sure --VISION-DETECTION True is set!", "Test Failure!");
-            }
-          }
-          catch (AiNotFoundException ex)
-          {
-            MessageBox.Show(this, "The AI Test FAILED!. Check the IP Address and port.  Make sure DeepStack is running.", "Test Failed!");
+            aiLocationListView.Items[index].SubItems[0].Text = dlg.Location.IPAddress;
+            aiLocationListView.Items[index].SubItems[1].Text = dlg.Location.Port.ToString();
           }
         }
       }
+
     }
   }
 }
