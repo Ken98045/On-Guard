@@ -496,6 +496,16 @@ namespace SAAI
             LiveContactData = GetContactData(camKey)
           }; // GetCamera(
 
+          if (cam.RegistrationX > 5000 || cam.RegistrationX < -1000)
+          {
+            Dbg.Write("Bad Read on Registration X");
+          }
+
+          if (cam.RegistrationY < -500 || cam.RegistrationY > 3000)
+          {
+            Dbg.Write("Bad Read on Registraion Y");
+          }
+
           cameras.AddCamera(cam);
         }
       }
@@ -509,7 +519,7 @@ namespace SAAI
       key.SetValue("CameraPassword", data.CameraPassword, RegistryValueKind.String);
       key.SetValue("UserName", data.CameraUserName, RegistryValueKind.String);
       key.SetValue("XResolution", data.CameraXResolution, RegistryValueKind.DWord);
-      key.SetValue("YResolution", data.CameraXResolution, RegistryValueKind.DWord);
+      key.SetValue("YResolution", data.CameraYResolution, RegistryValueKind.DWord);
       key.SetValue("Port", data.Port, RegistryValueKind.DWord);
       key.SetValue("CameraName", data.ShortCameraName, RegistryValueKind.String);
     }
@@ -521,7 +531,15 @@ namespace SAAI
       camKey.SetValue("Path", camera.Path);
       SetCameraContactData(camKey, camera.LiveContactData);
       camKey.SetValue("MotionStoppedTimeout", camera.NoMotionTimeout, RegistryValueKind.DWord);
+      if (camera.RegistrationX > 5000 || camera.RegistrationX < -1000)
+      {
+        Dbg.Write("Bad X registration value on Write");
+      }
       camKey.SetValue("RegistrationX", camera.RegistrationX, RegistryValueKind.DWord);
+      if (camera.RegistrationY > 3000 || camera.RegistrationY < -500)
+      {
+        Dbg.Write("Bad Y registration value on Write");
+      }
       camKey.SetValue("RegistrationY", camera.RegistrationY, RegistryValueKind.DWord);
       camKey.SetValue("RegistrationXResolution", camera.RegistrationXResolution, RegistryValueKind.DWord);
       camKey.SetValue("RegistrationYResolution", camera.RegistrationYResolution, RegistryValueKind.DWord);
@@ -541,8 +559,6 @@ namespace SAAI
       {
         s_cameras.DeleteSubKeyTree(keyName, false);
       }
-
-
 
       // Now we can save the new data
       s_cameras.SetValue("CurrentCamera", allCameras.CurrentCameraPath, RegistryValueKind.String);

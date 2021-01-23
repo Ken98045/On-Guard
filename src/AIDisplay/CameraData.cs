@@ -46,6 +46,10 @@ namespace SAAI
           RegistrationXResolution = BitmapResolution.XResolution;
         }
 
+        if (value > 5000 || value  < -1000)
+        {
+          Dbg.Write("Bad set on registrationX");
+        }
         registrationX = value;
       }
     }
@@ -69,6 +73,11 @@ namespace SAAI
         if (BitmapResolution.YResolution != RegistrationYResolution)
         {
           RegistrationYResolution = BitmapResolution.YResolution;
+        }
+
+        if (value > 3000 || value < -500)
+        {
+          Dbg.Write("Bad Set on registrationY");
         }
 
         registrationY = value;
@@ -139,6 +148,16 @@ namespace SAAI
         FrameHistory = new History(300);
         CameraPrefix = src.CameraPrefix;
         Path = src.Path;
+        if (src.registrationX > 5000 || src.registrationX < -1000)
+        {
+          Dbg.Write("Bad Copy on registration x");
+        }
+
+        if (src.RegistrationY < -500 || src.registrationY > 3000)
+        {
+          Dbg.Write("Bad Copy on registration Y");
+        }
+
         RegistrationX = src.RegistrationX;
         RegistrationY = src.RegistrationY;
         Monitoring = src.Monitoring;

@@ -37,6 +37,8 @@ namespace SAAI
       this.OKButton = new System.Windows.Forms.Button();
       this.CancelButton = new System.Windows.Forms.Button();
       this.label4 = new System.Windows.Forms.Label();
+      this.AllCamerasCheckbox = new System.Windows.Forms.CheckBox();
+      this.DoNotDeleteMotionCheckbox = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.DaysNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.HoursNumeric)).BeginInit();
       this.SuspendLayout();
@@ -45,7 +47,7 @@ namespace SAAI
       // 
       this.label1.AutoSize = true;
       this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label1.Location = new System.Drawing.Point(12, 62);
+      this.label1.Location = new System.Drawing.Point(67, 62);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(385, 18);
       this.label1.TabIndex = 0;
@@ -54,26 +56,26 @@ namespace SAAI
       // label2
       // 
       this.label2.AutoSize = true;
-      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label2.Location = new System.Drawing.Point(102, 112);
+      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label2.Location = new System.Drawing.Point(91, 112);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(54, 20);
+      this.label2.Size = new System.Drawing.Size(51, 18);
       this.label2.TabIndex = 1;
       this.label2.Text = "Days:";
       // 
       // label3
       // 
       this.label3.AutoSize = true;
-      this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label3.Location = new System.Drawing.Point(99, 148);
+      this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label3.Location = new System.Drawing.Point(88, 149);
       this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(57, 20);
+      this.label3.Size = new System.Drawing.Size(54, 18);
       this.label3.TabIndex = 2;
       this.label3.Text = "Hours";
       // 
       // DaysNumeric
       // 
-      this.DaysNumeric.Location = new System.Drawing.Point(180, 115);
+      this.DaysNumeric.Location = new System.Drawing.Point(166, 115);
       this.DaysNumeric.Maximum = new decimal(new int[] {
             30,
             0,
@@ -90,7 +92,7 @@ namespace SAAI
       // 
       // HoursNumeric
       // 
-      this.HoursNumeric.Location = new System.Drawing.Point(180, 148);
+      this.HoursNumeric.Location = new System.Drawing.Point(166, 152);
       this.HoursNumeric.Maximum = new decimal(new int[] {
             24,
             0,
@@ -102,7 +104,7 @@ namespace SAAI
       // 
       // OKButton
       // 
-      this.OKButton.Location = new System.Drawing.Point(128, 198);
+      this.OKButton.Location = new System.Drawing.Point(180, 259);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
       this.OKButton.TabIndex = 5;
@@ -113,7 +115,7 @@ namespace SAAI
       // CancelButton
       // 
       this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.CancelButton.Location = new System.Drawing.Point(226, 198);
+      this.CancelButton.Location = new System.Drawing.Point(263, 259);
       this.CancelButton.Name = "CancelButton";
       this.CancelButton.Size = new System.Drawing.Size(75, 23);
       this.CancelButton.TabIndex = 6;
@@ -125,18 +127,43 @@ namespace SAAI
       // 
       this.label4.AutoSize = true;
       this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label4.Location = new System.Drawing.Point(34, 19);
+      this.label4.Location = new System.Drawing.Point(171, 19);
       this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(361, 20);
+      this.label4.Size = new System.Drawing.Size(177, 20);
       this.label4.TabIndex = 7;
-      this.label4.Text = "Cleanup Old Pictures (Current Camera Only)\r\n";
+      this.label4.Text = "Cleanup Old Pictures\r\n";
+      // 
+      // AllCamerasCheckbox
+      // 
+      this.AllCamerasCheckbox.AutoSize = true;
+      this.AllCamerasCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.AllCamerasCheckbox.Location = new System.Drawing.Point(92, 185);
+      this.AllCamerasCheckbox.Name = "AllCamerasCheckbox";
+      this.AllCamerasCheckbox.Size = new System.Drawing.Size(411, 22);
+      this.AllCamerasCheckbox.TabIndex = 8;
+      this.AllCamerasCheckbox.Text = "All Cameras  (If Not Checked Current CameraOnly)\r\n";
+      this.AllCamerasCheckbox.UseVisualStyleBackColor = true;
+      // 
+      // DoNotDeleteMotionCheckbox
+      // 
+      this.DoNotDeleteMotionCheckbox.AutoSize = true;
+      this.DoNotDeleteMotionCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.DoNotDeleteMotionCheckbox.Location = new System.Drawing.Point(91, 219);
+      this.DoNotDeleteMotionCheckbox.Name = "DoNotDeleteMotionCheckbox";
+      this.DoNotDeleteMotionCheckbox.Size = new System.Drawing.Size(378, 22);
+      this.DoNotDeleteMotionCheckbox.TabIndex = 9;
+      this.DoNotDeleteMotionCheckbox.Text = "Do Not Delete Files with Motion (can be slow!)\r\n";
+      this.DoNotDeleteMotionCheckbox.UseVisualStyleBackColor = true;
       // 
       // CleanupDialog
       // 
       this.AcceptButton = this.OKButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.ClientSize = new System.Drawing.Size(428, 235);
+      this.CancelButton = this.CancelButton;
+      this.ClientSize = new System.Drawing.Size(518, 291);
+      this.Controls.Add(this.DoNotDeleteMotionCheckbox);
+      this.Controls.Add(this.AllCamerasCheckbox);
       this.Controls.Add(this.label4);
       this.Controls.Add(this.CancelButton);
       this.Controls.Add(this.OKButton);
@@ -164,5 +191,7 @@ namespace SAAI
     private System.Windows.Forms.Button OKButton;
     new private System.Windows.Forms.Button CancelButton;
     private System.Windows.Forms.Label label4;
+    private System.Windows.Forms.CheckBox AllCamerasCheckbox;
+    private System.Windows.Forms.CheckBox DoNotDeleteMotionCheckbox;
   }
 }

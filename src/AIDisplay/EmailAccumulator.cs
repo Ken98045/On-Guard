@@ -245,8 +245,12 @@ namespace SAAI
         {
           if (opt.SizeDownToPercent != 100)
           {
-            theFiles[count] = ResizeImage(theFiles[count], opt.SizeDownToPercent);  
-            ++count;
+            string resizedName = ResizeImage(theFiles[count], opt.SizeDownToPercent);
+            if (!string.IsNullOrEmpty(resizedName))
+            {
+              theFiles[count] = resizedName;
+              ++count;
+            }
           }
         }
 
@@ -319,36 +323,40 @@ namespace SAAI
 
     public static string ResizeImage(string fileName, int scaleFactor)
     {
-      string destFile = Path.GetDirectoryName(fileName) + "\\Resized-" + DateTime.Now.Ticks.ToString() + ".jpg";
-
-      using (Image image = Bitmap.FromFile(fileName))
+      string destFile = string.Empty;
+      if (File.Exists(fileName))
       {
 
-        int width = (int)(image.Width * (double)scaleFactor / 100.0);
-        int height = (int)(image.Height * (double)scaleFactor / 100.0);
-
-        var destRect = new Rectangle(0, 0, width, height);
-        using (var destImage = new Bitmap(width, height))
+        destFile = Path.GetDirectoryName(fileName) + "\\Resized-" + DateTime.Now.Ticks.ToString() + ".jpg"; ;
+        using (Image image = Bitmap.FromFile(fileName))
         {
 
-          destImage.SetResolution(width, height);
+          int width = (int)(image.Width * (double)scaleFactor / 100.0);
+          int height = (int)(image.Height * (double)scaleFactor / 100.0);
 
-          using (var graphics = Graphics.FromImage(destImage))
+          var destRect = new Rectangle(0, 0, width, height);
+          using (var destImage = new Bitmap(width, height))
           {
-            graphics.CompositingMode = CompositingMode.SourceCopy;
-            graphics.CompositingQuality = CompositingQuality.HighQuality;
-            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            graphics.SmoothingMode = SmoothingMode.HighQuality;
-            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            using (var wrapMode = new ImageAttributes())
+            destImage.SetResolution(width, height);
+
+            using (var graphics = Graphics.FromImage(destImage))
             {
-              wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-              graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-            }
-          }
+              graphics.CompositingMode = CompositingMode.SourceCopy;
+              graphics.CompositingQuality = CompositingQuality.HighQuality;
+              graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+              graphics.SmoothingMode = SmoothingMode.HighQuality;
+              graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-          destImage.Save(destFile);
+              using (var wrapMode = new ImageAttributes())
+              {
+                wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+              }
+            }
+
+            destImage.Save(destFile);
+          }
         }
       }
       return destFile;
