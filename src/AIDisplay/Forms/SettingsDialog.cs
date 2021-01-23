@@ -62,6 +62,18 @@ namespace SAAI
         eventInterval = Settings.Default.EventInterval;
       }
       eventIntervalNumeric.Value = eventInterval;
+
+      // Database Stuff
+      string customConnectionString = Storage.GetGlobalString("CustomDatabaseConnectionString");
+      if (string.IsNullOrEmpty(customConnectionString))
+      {
+        ConnectionStringText.Text = Storage.GetGlobalString("DBConnectionString");  // the fully formatted one that is in use!
+      }
+      else
+      {
+        ConnectionStringText.Text = customConnectionString;
+      }
+
     }
 
     private void OkButton_Click(object sender, EventArgs e)
@@ -126,6 +138,30 @@ namespace SAAI
         }
       }
 
+    }
+
+    // This does not just get the exiting value, it reforms it from the base components!
+    private void GetDefaultButton_Click(object sender, EventArgs e)
+    {
+      // Since we are getting the value we need to format it
+      string baseConnectionString = Settings.Default.DBMotionFramesConnectionString;  // the base string with {0} in place of the file location
+
+      string dbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); // where we are putting it
+      dbLocation = Path.Combine(dbLocation, "OnGuardDatabase");
+      string connectionString = string.Format(baseConnectionString, dbLocation);   // insert the localdb path
+
+      Storage.SetGlobalString("DBConnectionString", connectionString);  // the one we use
+      Storage.RemoveGlobalValue("CustomDatabaseConnectionString");  // nuke any custom stuff the user set.
+      ConnectionStringText.Text = connectionString; // and display it
+    }
+
+    private void UseCustomButton_Click(object sender, EventArgs e)
+    {
+      if (!string.IsNullOrEmpty(ConnectionStringText.Text))
+      {
+        Storage.SetGlobalString("CustomDatabaseConnectionString", ConnectionStringText.Text); // His custom string stored here so we can get it back (unless nuked)!
+        Storage.SetGlobalString("DBConnectionString", ConnectionStringText.Text);   // This is the one actually used!
+      }
     }
   }
 }

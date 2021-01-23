@@ -96,7 +96,14 @@ namespace SAAI
           else
           {
             activity.Reset();
-            s_LogWriter.Close();
+            if (s_LogWriter != null)
+            {
+              try
+              {
+                s_LogWriter.Close();
+              }
+              catch { }
+            }
             s_LogWriter = null;
           }
         }

@@ -45,23 +45,30 @@ namespace SAAI
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.panel2 = new System.Windows.Forms.Panel();
       this.label13 = new System.Windows.Forms.Label();
-      this.label10 = new System.Windows.Forms.Label();
       this.label11 = new System.Windows.Forms.Label();
       this.eventIntervalNumeric = new System.Windows.Forms.NumericUpDown();
       this.label8 = new System.Windows.Forms.Label();
       this.label9 = new System.Windows.Forms.Label();
       this.maxEventNumeric = new System.Windows.Forms.NumericUpDown();
       this.label7 = new System.Windows.Forms.Label();
+      this.panel3 = new System.Windows.Forms.Panel();
+      this.label1 = new System.Windows.Forms.Label();
+      this.label2 = new System.Windows.Forms.Label();
+      this.label3 = new System.Windows.Forms.Label();
+      this.ConnectionStringText = new System.Windows.Forms.TextBox();
+      this.GetDefaultButton = new System.Windows.Forms.Button();
+      this.UseCustomButton = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.snapshotNumeric)).BeginInit();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.eventIntervalNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.maxEventNumeric)).BeginInit();
+      this.panel3.SuspendLayout();
       this.SuspendLayout();
       // 
       // okButton
       // 
-      this.okButton.Location = new System.Drawing.Point(260, 611);
+      this.okButton.Location = new System.Drawing.Point(272, 699);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 0;
@@ -71,7 +78,7 @@ namespace SAAI
       // 
       // cancelButton
       // 
-      this.cancelButton.Location = new System.Drawing.Point(350, 611);
+      this.cancelButton.Location = new System.Drawing.Point(369, 699);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 1;
@@ -83,7 +90,7 @@ namespace SAAI
       // 
       this.label4.AutoSize = true;
       this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label4.Location = new System.Drawing.Point(205, 10);
+      this.label4.Location = new System.Drawing.Point(244, 10);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(226, 16);
       this.label4.TabIndex = 7;
@@ -92,7 +99,7 @@ namespace SAAI
       // label5
       // 
       this.label5.AutoSize = true;
-      this.label5.Location = new System.Drawing.Point(31, 54);
+      this.label5.Location = new System.Drawing.Point(31, 45);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(96, 13);
       this.label5.TabIndex = 0;
@@ -106,7 +113,7 @@ namespace SAAI
             0,
             0,
             65536});
-      this.snapshotNumeric.Location = new System.Drawing.Point(133, 52);
+      this.snapshotNumeric.Location = new System.Drawing.Point(133, 43);
       this.snapshotNumeric.Maximum = new decimal(new int[] {
             120,
             0,
@@ -129,7 +136,7 @@ namespace SAAI
       // label6
       // 
       this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(198, 56);
+      this.label6.Location = new System.Drawing.Point(198, 47);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(379, 13);
       this.label6.TabIndex = 10;
@@ -143,14 +150,14 @@ namespace SAAI
       this.panel1.Controls.Add(this.aiLocationListView);
       this.panel1.Controls.Add(this.label4);
       this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.panel1.Location = new System.Drawing.Point(12, 21);
+      this.panel1.Location = new System.Drawing.Point(12, 9);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(660, 285);
+      this.panel1.Size = new System.Drawing.Size(717, 285);
       this.panel1.TabIndex = 11;
       // 
       // RemoveButton
       // 
-      this.RemoveButton.Location = new System.Drawing.Point(337, 245);
+      this.RemoveButton.Location = new System.Drawing.Point(365, 245);
       this.RemoveButton.Name = "RemoveButton";
       this.RemoveButton.Size = new System.Drawing.Size(62, 23);
       this.RemoveButton.TabIndex = 1;
@@ -160,7 +167,7 @@ namespace SAAI
       // 
       // AddButton
       // 
-      this.AddButton.Location = new System.Drawing.Point(259, 245);
+      this.AddButton.Location = new System.Drawing.Point(287, 245);
       this.AddButton.Name = "AddButton";
       this.AddButton.Size = new System.Drawing.Size(62, 23);
       this.AddButton.TabIndex = 0;
@@ -175,7 +182,7 @@ namespace SAAI
             this.columnHeader2});
       this.aiLocationListView.FullRowSelect = true;
       this.aiLocationListView.HideSelection = false;
-      this.aiLocationListView.Location = new System.Drawing.Point(138, 44);
+      this.aiLocationListView.Location = new System.Drawing.Point(166, 44);
       this.aiLocationListView.Name = "aiLocationListView";
       this.aiLocationListView.Size = new System.Drawing.Size(383, 187);
       this.aiLocationListView.TabIndex = 10;
@@ -197,7 +204,6 @@ namespace SAAI
       // 
       this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.panel2.Controls.Add(this.label13);
-      this.panel2.Controls.Add(this.label10);
       this.panel2.Controls.Add(this.label11);
       this.panel2.Controls.Add(this.eventIntervalNumeric);
       this.panel2.Controls.Add(this.label8);
@@ -207,32 +213,23 @@ namespace SAAI
       this.panel2.Controls.Add(this.label6);
       this.panel2.Controls.Add(this.label5);
       this.panel2.Controls.Add(this.snapshotNumeric);
-      this.panel2.Location = new System.Drawing.Point(12, 326);
+      this.panel2.Location = new System.Drawing.Point(12, 499);
       this.panel2.Name = "panel2";
-      this.panel2.Size = new System.Drawing.Size(660, 258);
+      this.panel2.Size = new System.Drawing.Size(717, 178);
       this.panel2.TabIndex = 0;
       // 
       // label13
       // 
-      this.label13.Location = new System.Drawing.Point(198, 178);
+      this.label13.Location = new System.Drawing.Point(198, 133);
       this.label13.Name = "label13";
-      this.label13.Size = new System.Drawing.Size(382, 53);
+      this.label13.Size = new System.Drawing.Size(479, 39);
       this.label13.TabIndex = 16;
       this.label13.Text = resources.GetString("label13.Text");
-      // 
-      // label10
-      // 
-      this.label10.Location = new System.Drawing.Point(198, 185);
-      this.label10.Name = "label10";
-      this.label10.Size = new System.Drawing.Size(382, 32);
-      this.label10.TabIndex = 16;
-      this.label10.Text = "Minutes -  When motion is detected capture pictures this long.  Used primarily fo" +
-    "r email.\r\n";
       // 
       // label11
       // 
       this.label11.AutoSize = true;
-      this.label11.Location = new System.Drawing.Point(10, 185);
+      this.label11.Location = new System.Drawing.Point(10, 140);
       this.label11.Name = "label11";
       this.label11.Size = new System.Drawing.Size(117, 13);
       this.label11.TabIndex = 1;
@@ -240,7 +237,7 @@ namespace SAAI
       // 
       // eventIntervalNumeric
       // 
-      this.eventIntervalNumeric.Location = new System.Drawing.Point(133, 183);
+      this.eventIntervalNumeric.Location = new System.Drawing.Point(133, 138);
       this.eventIntervalNumeric.Maximum = new decimal(new int[] {
             120,
             0,
@@ -262,16 +259,16 @@ namespace SAAI
       // 
       // label8
       // 
-      this.label8.Location = new System.Drawing.Point(198, 92);
+      this.label8.Location = new System.Drawing.Point(198, 76);
       this.label8.Name = "label8";
-      this.label8.Size = new System.Drawing.Size(386, 72);
+      this.label8.Size = new System.Drawing.Size(499, 47);
       this.label8.TabIndex = 13;
       this.label8.Text = resources.GetString("label8.Text");
       // 
       // label9
       // 
       this.label9.AutoSize = true;
-      this.label9.Location = new System.Drawing.Point(13, 98);
+      this.label9.Location = new System.Drawing.Point(13, 89);
       this.label9.Name = "label9";
       this.label9.Size = new System.Drawing.Size(114, 13);
       this.label9.TabIndex = 12;
@@ -279,7 +276,7 @@ namespace SAAI
       // 
       // maxEventNumeric
       // 
-      this.maxEventNumeric.Location = new System.Drawing.Point(133, 96);
+      this.maxEventNumeric.Location = new System.Drawing.Point(133, 87);
       this.maxEventNumeric.Maximum = new decimal(new int[] {
             120,
             0,
@@ -303,17 +300,87 @@ namespace SAAI
       // 
       this.label7.AutoSize = true;
       this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label7.Location = new System.Drawing.Point(198, 13);
+      this.label7.Location = new System.Drawing.Point(252, 13);
       this.label7.Name = "label7";
       this.label7.Size = new System.Drawing.Size(211, 16);
       this.label7.TabIndex = 8;
       this.label7.Text = "Image Capture and Reporting";
       // 
+      // panel3
+      // 
+      this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.panel3.Controls.Add(this.UseCustomButton);
+      this.panel3.Controls.Add(this.GetDefaultButton);
+      this.panel3.Controls.Add(this.ConnectionStringText);
+      this.panel3.Controls.Add(this.label3);
+      this.panel3.Controls.Add(this.label2);
+      this.panel3.Controls.Add(this.label1);
+      this.panel3.Location = new System.Drawing.Point(12, 310);
+      this.panel3.Name = "panel3";
+      this.panel3.Size = new System.Drawing.Size(717, 173);
+      this.panel3.TabIndex = 12;
+      // 
+      // label1
+      // 
+      this.label1.AutoSize = true;
+      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label1.Location = new System.Drawing.Point(248, 10);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(162, 16);
+      this.label1.TabIndex = 9;
+      this.label1.Text = "SQL Connection String";
+      // 
+      // label2
+      // 
+      this.label2.Location = new System.Drawing.Point(16, 35);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(681, 55);
+      this.label2.TabIndex = 10;
+      this.label2.Text = resources.GetString("label2.Text");
+      // 
+      // label3
+      // 
+      this.label3.AutoSize = true;
+      this.label3.Location = new System.Drawing.Point(34, 109);
+      this.label3.Name = "label3";
+      this.label3.Size = new System.Drawing.Size(91, 13);
+      this.label3.TabIndex = 11;
+      this.label3.Text = "Connection String";
+      // 
+      // ConnectionStringText
+      // 
+      this.ConnectionStringText.Location = new System.Drawing.Point(133, 106);
+      this.ConnectionStringText.Name = "ConnectionStringText";
+      this.ConnectionStringText.Size = new System.Drawing.Size(477, 20);
+      this.ConnectionStringText.TabIndex = 0;
+      // 
+      // GetDefaultButton
+      // 
+      this.GetDefaultButton.Location = new System.Drawing.Point(223, 138);
+      this.GetDefaultButton.Name = "GetDefaultButton";
+      this.GetDefaultButton.Size = new System.Drawing.Size(128, 23);
+      this.GetDefaultButton.TabIndex = 1;
+      this.GetDefaultButton.Text = "Get Default Setting";
+      this.GetDefaultButton.UseVisualStyleBackColor = true;
+      this.GetDefaultButton.Click += new System.EventHandler(this.GetDefaultButton_Click);
+      // 
+      // UseCustomButton
+      // 
+      this.UseCustomButton.Location = new System.Drawing.Point(363, 138);
+      this.UseCustomButton.Name = "UseCustomButton";
+      this.UseCustomButton.Size = new System.Drawing.Size(128, 23);
+      this.UseCustomButton.TabIndex = 2;
+      this.UseCustomButton.Text = "Use Custom Setting";
+      this.UseCustomButton.UseVisualStyleBackColor = true;
+      this.UseCustomButton.Click += new System.EventHandler(this.UseCustomButton_Click);
+      // 
       // SettingsDialog
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.ClientSize = new System.Drawing.Size(741, 646);
+      this.AutoScroll = true;
+      this.ClientSize = new System.Drawing.Size(759, 732);
+      this.Controls.Add(this.panel3);
       this.Controls.Add(this.panel2);
       this.Controls.Add(this.panel1);
       this.Controls.Add(this.cancelButton);
@@ -327,6 +394,8 @@ namespace SAAI
       this.panel2.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.eventIntervalNumeric)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.maxEventNumeric)).EndInit();
+      this.panel3.ResumeLayout(false);
+      this.panel3.PerformLayout();
       this.ResumeLayout(false);
 
     }
@@ -341,7 +410,6 @@ namespace SAAI
         private System.Windows.Forms.Label label6;
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.Panel panel2;
-    private System.Windows.Forms.Label label10;
     private System.Windows.Forms.Label label11;
     private System.Windows.Forms.NumericUpDown eventIntervalNumeric;
     private System.Windows.Forms.Label label8;
@@ -354,5 +422,12 @@ namespace SAAI
     private System.Windows.Forms.ListView aiLocationListView;
     private System.Windows.Forms.ColumnHeader columnHeader1;
     private System.Windows.Forms.ColumnHeader columnHeader2;
+    private System.Windows.Forms.Panel panel3;
+    private System.Windows.Forms.Button UseCustomButton;
+    private System.Windows.Forms.Button GetDefaultButton;
+    private System.Windows.Forms.TextBox ConnectionStringText;
+    private System.Windows.Forms.Label label3;
+    private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.Label label1;
   }
 }

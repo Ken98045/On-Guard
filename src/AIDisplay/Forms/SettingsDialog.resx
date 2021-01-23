@@ -122,7 +122,10 @@
 </value>
   </data>
   <data name="label8.Text" xml:space="preserve">
-    <value>Seconds =  When motion is detected capture pictures this long.   This is used for email only.  The longer this period is the longer it will be before the email is sent out.  If you are not sending emails and/or pictures with your email alert keep this value low.   However, it can avoid multiple email alerts if more than one Area of Interest is triggered.
-  Thisi is independent of the email cool down time.</value>
+    <value>In Seconds - When motion is detected capture pictures this long.   This is used for email only.  The longer this period is the longer the more pictures are collected and may potentially be sent.  If you are not sending emails and/or pictures with your email alert keep this value low. </value>
+  </data>
+  <data name="label2.Text" xml:space="preserve">
+    <value>On Guard requires SQL (database) support to run.  On Guard needs a way to locate that database.  This is done via the “connection string”. Normally you can just use the default value.  However, you may have another SQL installation you wish to use.  Thus, you have the opportunity to set your own connection string.  The Database definitions are in the files "DBMotionFrames.mdf" and "DBMotionFrames_log.ldf".  These files are installed into the folder Users\YourUserName\AppData\Roaming\OnGuardDatabase.  
+</value>
   </data>
 </root>

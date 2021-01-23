@@ -124,16 +124,19 @@ namespace SAAI
       Settings.Default.SettingsKey = "OnGuard";
       Settings.Default.Reload();
       Settings.Default.SettingChanging += Default_SettingChanging;
-      string dbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-      dbLocation = Path.Combine(dbLocation, "OnGuardDatabase");
 
+      
       _connectionString = Storage.GetGlobalString("DBConnectionString");
-      if (string.IsNullOrEmpty(_connectionString))
+      if (string.IsNullOrEmpty(_connectionString))  // only completely empty on first app use!
       {
+        // First use settings
+        string dbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        dbLocation = Path.Combine(dbLocation, "OnGuardDatabase");
         _connectionString = Settings.Default.DBMotionFramesConnectionString;
+        _connectionString = string.Format(_connectionString, dbLocation);
+        Storage.SetGlobalString("DBConnectionString", _connectionString);
       }
 
-      _connectionString = string.Format(_connectionString, dbLocation);
 
       if (!Storage.GetGlobalBool("SetupComplete"))
       {
