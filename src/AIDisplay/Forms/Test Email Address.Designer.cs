@@ -57,9 +57,9 @@
       this.emailAddressText.Location = new System.Drawing.Point(150, 30);
       this.emailAddressText.Name = "emailAddressText";
       this.emailAddressText.Size = new System.Drawing.Size(185, 20);
-      this.emailAddressText.TabIndex = 2;
+      this.emailAddressText.TabIndex = 0;
       // 
-      // Test_Email_Address
+      // TestEmailAddress
       // 
       this.AcceptButton = this.okButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -68,7 +68,7 @@
       this.Controls.Add(this.emailAddressText);
       this.Controls.Add(this.okButton);
       this.Controls.Add(this.label1);
-      this.Name = "Test_Email_Address";
+      this.Name = "TestEmailAddress";
       this.Text = "Enter the email address for the test";
       this.ResumeLayout(false);
       this.PerformLayout();
