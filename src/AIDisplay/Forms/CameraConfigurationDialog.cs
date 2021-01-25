@@ -24,7 +24,7 @@ namespace SAAI
   // In this dialog we return a list of AllCameraData and the CurrentCam(era)
   public partial class CameraConfigurationDialog : Form
   {
-    public CameraData CurrentCam { get; set; }
+    public CameraData SelectedCamera { get; set; }
     public CameraCollection AllCameraData { get; set; }
 
     public CameraConfigurationDialog(CameraCollection allCameras)
@@ -44,7 +44,7 @@ namespace SAAI
         removeCameraButton.Enabled = true;
       }
 
-      CurrentCam = AllCameraData.CurrentCamera;  // just a reference to the item in the new list.  May be null.  It is a  very convenient shortcut
+      SelectedCamera = AllCameraData.CurrentCamera;  // just a reference to the item in the new list.  May be null.  It is a  very convenient shortcut
       PopulateControls();
     }
 
@@ -81,33 +81,33 @@ namespace SAAI
       // Any time we leave this tab we save the data to the current camera.
       // Unless I implement some separate confirmation button (nah) this is the only good way to do it.
       // This will be hit on the OK button as well.
-      CurrentCam.LiveContactData.CameraIPAddress = cameraIPAddressText.Text;
-      CurrentCam.LiveContactData.Port = (int)portNumeric.Value;
-      CurrentCam.LiveContactData.ShortCameraName = cameraNameText.Text;
-      CurrentCam.LiveContactData.CameraUserName = cameraUserText.Text;
-      CurrentCam.LiveContactData.CameraPassword = cameraPasswordText.Text;
-      CurrentCam.LiveContactData.CameraXResolution = (int)cameraXResolutionNumeric.Value;
-      CurrentCam.LiveContactData.CameraYResolution = (int)cameraYResolutionNumeric.Value;
-      CurrentCam.NoMotionTimeout = (int)MotionTimeoutNumeric.Value;
-      CurrentCam.NoMotionTimeout = (int) MotionTimeoutNumeric.Value;
+      SelectedCamera.LiveContactData.CameraIPAddress = cameraIPAddressText.Text;
+      SelectedCamera.LiveContactData.Port = (int)portNumeric.Value;
+      SelectedCamera.LiveContactData.ShortCameraName = cameraNameText.Text;
+      SelectedCamera.LiveContactData.CameraUserName = cameraUserText.Text;
+      SelectedCamera.LiveContactData.CameraPassword = cameraPasswordText.Text;
+      SelectedCamera.LiveContactData.CameraXResolution = (int)cameraXResolutionNumeric.Value;
+      SelectedCamera.LiveContactData.CameraYResolution = (int)cameraYResolutionNumeric.Value;
+      SelectedCamera.NoMotionTimeout = (int)MotionTimeoutNumeric.Value;
+      SelectedCamera.NoMotionTimeout = (int) MotionTimeoutNumeric.Value;
     }
 
     void UpdateControlsFromCamera()
     {
-      if (null != CurrentCam)
+      if (null != SelectedCamera)
       {
-        cameraIPAddressText.Text = CurrentCam.LiveContactData.CameraIPAddress;
-        portNumeric.Value = CurrentCam.LiveContactData.Port;
-        cameraNameText.Text = CurrentCam.LiveContactData.ShortCameraName;
-        cameraUserText.Text = CurrentCam.LiveContactData.CameraUserName;
-        cameraPasswordText.Text = CurrentCam.LiveContactData.CameraPassword;
-        cameraXResolutionNumeric.Value = CurrentCam.LiveContactData.CameraXResolution;
-        cameraYResolutionNumeric.Value = CurrentCam.LiveContactData.CameraYResolution;
-        MotionTimeoutNumeric.Value = CurrentCam.NoMotionTimeout;
-        currentCameraLabel.Text = "Current Camera: " + CurrentCam.CameraPrefix + " at: " + CurrentCam.Path;
-        if (CurrentCam.NoMotionTimeout > 0)
+        cameraIPAddressText.Text = SelectedCamera.LiveContactData.CameraIPAddress;
+        portNumeric.Value = SelectedCamera.LiveContactData.Port;
+        cameraNameText.Text = SelectedCamera.LiveContactData.ShortCameraName;
+        cameraUserText.Text = SelectedCamera.LiveContactData.CameraUserName;
+        cameraPasswordText.Text = SelectedCamera.LiveContactData.CameraPassword;
+        cameraXResolutionNumeric.Value = SelectedCamera.LiveContactData.CameraXResolution;
+        cameraYResolutionNumeric.Value = SelectedCamera.LiveContactData.CameraYResolution;
+        MotionTimeoutNumeric.Value = SelectedCamera.NoMotionTimeout;
+        currentCameraLabel.Text = "Current Camera: " + SelectedCamera.CameraPrefix + " at: " + SelectedCamera.Path;
+        if (SelectedCamera.NoMotionTimeout > 0)
         {
-          MotionTimeoutNumeric.Value = CurrentCam.NoMotionTimeout;
+          MotionTimeoutNumeric.Value = SelectedCamera.NoMotionTimeout;
         }
 
         monitorListView.Items.Clear();
@@ -155,24 +155,24 @@ namespace SAAI
 
       }
 
-      if (CurrentCam != null)
+      if (SelectedCamera != null)
       {
-        cameraIPAddressText.Text = CurrentCam.LiveContactData.CameraIPAddress;
-        cameraPasswordText.Text = CurrentCam.LiveContactData.CameraPassword;
-        cameraUserText.Text = CurrentCam.LiveContactData.CameraUserName;
-        cameraXResolutionNumeric.Value = CurrentCam.LiveContactData.CameraXResolution;
-        cameraYResolutionNumeric.Value = CurrentCam.LiveContactData.CameraYResolution;
-        cameraNameText.Text = CurrentCam.LiveContactData.ShortCameraName;
-        if (CurrentCam.NoMotionTimeout > 0)
+        cameraIPAddressText.Text = SelectedCamera.LiveContactData.CameraIPAddress;
+        cameraPasswordText.Text = SelectedCamera.LiveContactData.CameraPassword;
+        cameraUserText.Text = SelectedCamera.LiveContactData.CameraUserName;
+        cameraXResolutionNumeric.Value = SelectedCamera.LiveContactData.CameraXResolution;
+        cameraYResolutionNumeric.Value = SelectedCamera.LiveContactData.CameraYResolution;
+        cameraNameText.Text = SelectedCamera.LiveContactData.ShortCameraName;
+        if (SelectedCamera.NoMotionTimeout > 0)
         {
-          MotionTimeoutNumeric.Value = CurrentCam.NoMotionTimeout;
+          MotionTimeoutNumeric.Value = SelectedCamera.NoMotionTimeout;
         }
 
       }
 
-      if (null != CurrentCam)
+      if (null != SelectedCamera)
       {
-        int currentIndex = CameraFromList(CameraData.PathAndPrefix(CurrentCam));
+        int currentIndex = CameraFromList(CameraData.PathAndPrefix(SelectedCamera));
         Debug.Assert(currentIndex >= 0);
         availableCamerasList.Items[currentIndex].Focused = true;
         availableCamerasList.Items[currentIndex].Selected = true;
@@ -183,7 +183,7 @@ namespace SAAI
 
     private void OkButton_Click(object sender, EventArgs e)
     {
-      if (null != CurrentCam)
+      if (null != SelectedCamera)
       {
         AllCameraData.CameraDictionary.Clear();   // the data is no longer valid
         foreach (ListViewItem item in availableCamerasList.Items)
@@ -191,7 +191,7 @@ namespace SAAI
           AllCameraData.AddCamera((CameraData)item.Tag);
         }
 
-        AllCameraData.CurrentCameraPath = CameraData.PathAndPrefix(CurrentCam);
+        AllCameraData.CurrentCameraPath = CameraData.PathAndPrefix(SelectedCamera);
 
 
         // AllCameraData only tracks it by the path, but it is a valid reference to an item on the list
@@ -244,11 +244,11 @@ namespace SAAI
           }
           else
           {
-            CurrentCam = new CameraData(dlg.CameraPrefix, dlg.CameraFilePath);
+            SelectedCamera = new CameraData(Guid.NewGuid(), dlg.CameraPrefix, dlg.CameraFilePath);
 
-            ListViewItem item = new ListViewItem(new string[] { CurrentCam.CameraPrefix, CurrentCam.Path })
+            ListViewItem item = new ListViewItem(new string[] { SelectedCamera.CameraPrefix, SelectedCamera.Path })
             {
-              Tag = CurrentCam
+              Tag = SelectedCamera
             };
             availableCamerasList.Items.Add(item);
             item.Selected = true;
@@ -266,14 +266,14 @@ namespace SAAI
     {
       if (e.IsSelected) // there can be only one
       {
-        CurrentCam = (CameraData)e.Item.Tag;
+        SelectedCamera = (CameraData)e.Item.Tag;
         UpdateControlsFromCamera();
       }
     }
 
     private void RemoveCameraButton_Click(object sender, EventArgs e)
     {
-      CurrentCam = null;  // The current camera is the one selected.  We need to select an item to delete it, so we always delete the "current" on
+      SelectedCamera = null;  // The current camera is the one selected.  We need to select an item to delete it, so we always delete the "current" on
 
       var cam = (CameraData) availableCamerasList.SelectedItems[0].Tag;
       cam.Dispose();
@@ -307,7 +307,7 @@ namespace SAAI
       int index = availableCamerasList.SelectedIndices[0];
       if (index >= 0)
       {
-        CurrentCam = (CameraData)availableCamerasList.Items[index].Tag;
+        SelectedCamera = (CameraData)availableCamerasList.Items[index].Tag;
         OkButton_Click(sender, e);
       }
     }
@@ -322,7 +322,7 @@ namespace SAAI
 
     private void OnMotionTimeoutChanged(object sender, EventArgs e)
     {
-      if (null != CurrentCam) CurrentCam.NoMotionTimeout = (int) MotionTimeoutNumeric.Value;
+      if (null != SelectedCamera) SelectedCamera.NoMotionTimeout = (int) MotionTimeoutNumeric.Value;
     }
   }
 }

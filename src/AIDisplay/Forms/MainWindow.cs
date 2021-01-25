@@ -78,7 +78,14 @@ namespace SAAI
     readonly ConcurrentDictionary<string, string> _filesPendingProcessing = new ConcurrentDictionary<string, string>(); // very short period of time where the file has been removed from the queue yet still hasn't been opened
     readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);  // set to shut down the MonitorQueue thread (and anything else)
 
-    CameraData _currentCamera;  // This is only a reference to the data in the AllCamera collection.  It saves a lot of typing and adds clarity
+    CameraData CurrentCam
+    {
+      get
+      {
+        return _allCameras.CurrentCamera;
+      }
+    }
+
     readonly private PerformanceCounter theCPUCounter =
        new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
@@ -146,13 +153,12 @@ namespace SAAI
       _analyzer = new AIAnalyzer();
 
       _allCameras = CameraCollection.Load();    // which also inits the camera
-      _currentCamera = _allCameras.CurrentCamera;
 
-      if (_currentCamera != null)
+      if (CurrentCam != null)
       {
-        Storage.SetGlobalString("CurrentCameraPath", _currentCamera.Path);
-        Storage.SetGlobalString("CurrentCameraPrefix", _currentCamera.CameraPrefix);
-        InitAnalyzer(_currentCamera.CameraPrefix, _currentCamera.Path);
+        Storage.SetGlobalString("CurrentCameraPath", CurrentCam.Path);            // TODO: Eliminate?
+        Storage.SetGlobalString("CurrentCameraPrefix", CurrentCam.CameraPrefix);
+        InitAnalyzer(CurrentCam.CameraPrefix, CurrentCam.Path);
       }
 
       foreach (var cam in _allCameras.CameraDictionary.Values)
@@ -171,9 +177,9 @@ namespace SAAI
         cameraCombo.Items.Add(cam);
       }
 
-      if (null != _currentCamera)
+      if (null != CurrentCam)
       {
-        cameraCombo.SelectedItem = _currentCamera;
+        cameraCombo.SelectedItem = CurrentCam;
       }
 
 
@@ -239,9 +245,9 @@ namespace SAAI
             _allCameras = cameraDialog.AllCameraData;    // the list has been copied and returned
             CameraCollection.Save(_allCameras);
 
-            if (null == cameraDialog.CurrentCam)
+            if (null == cameraDialog.SelectedCamera)
             {
-              Storage.SetGlobalString("CurrentCameraPath", string.Empty);
+              Storage.SetGlobalString("CurrentCameraPath", string.Empty);   // TODO: Remove?
               Storage.SetGlobalString("CurrentCameraPrefix", string.Empty);
             }
           }
@@ -498,7 +504,7 @@ namespace SAAI
                 if (result != null && result.Count > 0)
                 {
 
-                  FrameAnalyzer analyzer = new FrameAnalyzer(_currentCamera.AOI, result);
+                  FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, result);
                   AnalysisResult analysisResult = analyzer.AnalyzeFrame();
                   if (analysisResult.InterestingObjects.Count > 0)
                   {
@@ -605,7 +611,7 @@ namespace SAAI
           string[] subItems = new string[6];
           foreach (ImageObject obj in _frameObjects)
           {
-            if (_currentCamera.IsItemOfCameraInterest(obj.Label))
+            if (CurrentCam.IsItemOfCameraInterest(obj.Label))
             {
               subItems[0] = obj.Label;
               subItems[1] = obj.Confidence.ToString();
@@ -637,14 +643,16 @@ namespace SAAI
         ShowAreasOfInterest();
       }
 
-      if (!(_currentCamera.RegistrationX == 0 && _currentCamera.RegistrationY == 0))
+      if (!(CurrentCam.RegistrationX == 0 && CurrentCam.RegistrationY == 0))
       {
         using (SolidBrush registrationBrush = new SolidBrush(aoiRegistrationColor))
         {
           using (var graphics = Graphics.FromImage(_screenBitmap))
           {
-            Rectangle rect = Rectangle.FromLTRB(_currentCamera.RegistrationX - 10, _currentCamera.RegistrationY - 10,
-                                              _currentCamera.RegistrationX + 10, _currentCamera.RegistrationY + 10);
+            int x = (int)((((double)BitmapResolution.XResolution / (double)CurrentCam.RegistrationXResolution)) * (double)CurrentCam.RegistrationX);
+            int y = (int)((((double)BitmapResolution.YResolution / (double)CurrentCam.RegistrationYResolution)) * (double)CurrentCam.RegistrationY);
+            Rectangle rect = Rectangle.FromLTRB(x - 10, y - 10,
+                                              x + 10, y + 10);
 
             graphics.FillRectangle(registrationBrush, rect);
 
@@ -804,13 +812,13 @@ namespace SAAI
             case DialogResult.OK:
               if (_modifyingAreaID == Guid.Empty)
               {
-                _currentCamera.AOI.AddArea(dlg.Area);
-                _currentCamera.AOI.Save();
+                CurrentCam.AOI.AddArea(dlg.Area);
+                CurrentCam.AOI.Save();
               }
               else
               {
-                _currentCamera.AOI[_modifyingAreaID].AreaRect = scaledRect; // just update the area (does not need to be adjusted)
-                _currentCamera.AOI.Save();
+                CurrentCam.AOI[_modifyingAreaID].AreaRect = scaledRect; // just update the area (does not need to be adjusted)
+                CurrentCam.AOI.Save();
                 MessageBox.Show(pictureImage, "The Area of Interest was saved with new boundaries!", "Area Saved");
                 _modifyingAreaID = Guid.Empty;
               }
@@ -820,7 +828,7 @@ namespace SAAI
               // An artificial response saying "edit this area".  This only happen when the area
               // there is a request to modify an area that has come from the initial area creation
               // It does not happen here when the area is modified via the EditAreasOfInterest box
-              _currentCamera.AOI.AddArea(dlg.Area); // Even if we are modifying an area bounds we still save it
+              CurrentCam.AOI.AddArea(dlg.Area); // Even if we are modifying an area bounds we still save it
               StartEditingArea(dlg.Area.ID);
               break;
           }
@@ -829,9 +837,9 @@ namespace SAAI
       else
       {
         // If we are already modifying an area all we do is update the rectangle
-        _currentCamera.AOI[_modifyingAreaID].AreaRect = scaledRect; // does not need to be adjusted
-        _currentCamera.AOI[_modifyingAreaID].ZoneFocus = zoneFocus;
-        _currentCamera.AOI.Save();
+        CurrentCam.AOI[_modifyingAreaID].AreaRect = scaledRect; // does not need to be adjusted
+        CurrentCam.AOI[_modifyingAreaID].ZoneFocus = zoneFocus;
+        CurrentCam.AOI.Save();
         MessageBox.Show(pictureImage, "The boundaries of the current Area of Interest have been modified", "Area of Interest Changed!");
       }
 
@@ -854,14 +862,14 @@ namespace SAAI
       int newX = (int)Math.Round(clickX * BitmapResolution.XScale);
       int newY = (int)Math.Round(clickY * BitmapResolution.YScale);
 
-      int offsetX = _currentCamera.RegistrationX - newX;
-      int offsetY = _currentCamera.RegistrationY - newY;
+      int offsetX = CurrentCam.RegistrationX - newX;
+      int offsetY = CurrentCam.RegistrationY - newY;
 
       // If this area is of type registration then adjust everybody's x & Y
       // BUT, only if there was already a registration point
-      if (_currentCamera.RegistrationX > 0 && _currentCamera.RegistrationY > 0)
+      if (CurrentCam.RegistrationX > 0 && CurrentCam.RegistrationY > 0)
       {
-        foreach (var area in _currentCamera.AOI)
+        foreach (var area in CurrentCam.AOI)
         {
           area.AdjustRect(-offsetX, -offsetY);
           if (area.AreaRect.X < 0)
@@ -879,12 +887,15 @@ namespace SAAI
         CameraCollection.Save(_allCameras);
       }
 
-      _currentCamera.RegistrationX = newX;
-      _currentCamera.RegistrationY = newY;
-      _currentCamera.RegistrationX = _currentCamera.RegistrationX;
-      _currentCamera.RegistrationY = _currentCamera.RegistrationY;
-      _allCameras.CameraDictionary[CameraData.PathAndPrefix(_currentCamera)].RegistrationX = _currentCamera.RegistrationX;
-      _allCameras.CameraDictionary[CameraData.PathAndPrefix(_currentCamera)].RegistrationY = _currentCamera.RegistrationY;
+      Dbg.Write("AdjustAreasofInterest");
+      Storage.SetCameraInt(CurrentCam.Path, CurrentCam.CameraPrefix, "BackupXReg", newX);
+      Storage.SetCameraInt(CurrentCam.Path, CurrentCam.CameraPrefix, "BackupYReg", newY);
+      CurrentCam.RegistrationX = newX;
+      CurrentCam.RegistrationY = newY;
+      CurrentCam.RegistrationXResolution = BitmapResolution.XResolution;
+      CurrentCam.RegistrationYResolution = BitmapResolution.YResolution;
+      _allCameras.CameraDictionary[CameraData.PathAndPrefix(CurrentCam)].RegistrationX = CurrentCam.RegistrationX;
+      _allCameras.CameraDictionary[CameraData.PathAndPrefix(CurrentCam)].RegistrationY = CurrentCam.RegistrationY;
       CameraCollection.Save(_allCameras);
 
       if (_showingLiveView)
@@ -935,7 +946,7 @@ namespace SAAI
     private void OnMouseUp(object sender, MouseEventArgs e)
     {
 
-      if (_currentCamera.RegistrationX == 0 || _currentCamera.RegistrationY == 0)
+      if (CurrentCam.RegistrationX == 0 || CurrentCam.RegistrationY == 0)
       {
         if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
         {
@@ -981,7 +992,7 @@ namespace SAAI
           using (SolidBrush brush = new SolidBrush(aoiColor))
           {
 
-            foreach (AreaOfInterest area in _currentCamera.AOI)
+            foreach (AreaOfInterest area in CurrentCam.AOI)
             {
 
               Rectangle rect = area.GetRect();
@@ -996,7 +1007,7 @@ namespace SAAI
 
     private void EditAreasOfInterestToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      using (EditAreasOfInterest edit = new EditAreasOfInterest(_currentCamera.AOI)) // handles any changes in registration
+      using (EditAreasOfInterest edit = new EditAreasOfInterest(CurrentCam.AOI)) // handles any changes in registration
       {
         DialogResult result = edit.ShowDialog();
         if (result == DialogResult.Yes)
@@ -1025,8 +1036,8 @@ namespace SAAI
       {
         Parent = pictureImage
       };
-      Rectangle screenRect = ScaleDataToScreen(_currentCamera.AOI[_modifyingAreaID].GetRect());
-      Point zoneFocus = _currentCamera.AOI[_modifyingAreaID].ZoneFocus;
+      Rectangle screenRect = ScaleDataToScreen(CurrentCam.AOI[_modifyingAreaID].GetRect());
+      Point zoneFocus = CurrentCam.AOI[_modifyingAreaID].ZoneFocus;
       _modifyBox.Location = new Point(screenRect.X, screenRect.Y);
       _modifyBox.ZoneFocus = zoneFocus;
       _modifyBox.Size = screenRect.Size;
@@ -1104,7 +1115,7 @@ namespace SAAI
       {
         List<ImageObject> frameObjects = LoadImage(_fileNames[_current]);
         AIAnalyzer.RemoveDuplicateVehiclesInImage(frameObjects);
-        FrameAnalyzer analyzer = new FrameAnalyzer(_currentCamera.AOI, frameObjects);
+        FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, frameObjects);
         AnalysisResult result = analyzer.AnalyzeFrame();
         using (InterestingItemsDialog dlg = new InterestingItemsDialog(result))
         {
@@ -1123,7 +1134,7 @@ namespace SAAI
       string urlString;
 
       motionOnlyCheckbox.Checked = false;
-      CameraContactData data = _currentCamera.LiveContactData;  // for clarity
+      CameraContactData data = CurrentCam.LiveContactData;  // for clarity
       if (data.CameraXResolution > 0 && data.CameraYResolution > 0)
       {
         urlString = string.Format("http://{0}:{1}/image/{2}?q=100&w={3}&h={4}&user={5}&pw={6}",
@@ -1199,11 +1210,11 @@ namespace SAAI
     async void CameraDirectionButton(CameraDirections direction)
     {
       motionOnlyCheckbox.Checked = false;
-      string urlString = string.Format("http://{0}:{1}/cam/{2}/pos={3}&user={4}&pw={5}", _currentCamera.LiveContactData.CameraIPAddress,
-         _currentCamera.LiveContactData.Port.ToString(),
-        _currentCamera.LiveContactData.ShortCameraName, (int)direction,
-        _currentCamera.LiveContactData.CameraUserName,
-        _currentCamera.LiveContactData.CameraPassword);
+      string urlString = string.Format("http://{0}:{1}/cam/{2}/pos={3}&user={4}&pw={5}", CurrentCam.LiveContactData.CameraIPAddress,
+         CurrentCam.LiveContactData.Port.ToString(),
+        CurrentCam.LiveContactData.ShortCameraName, (int)direction,
+        CurrentCam.LiveContactData.CameraUserName,
+        CurrentCam.LiveContactData.CameraPassword);
       try
       {
         System.Net.HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(new Uri(urlString));
@@ -1347,6 +1358,7 @@ namespace SAAI
 
         if (notify.Url.Contains("{Auto Fill"))
         {
+          // "http://jasdfsafjifia.com/jasf";
           urlStr = string.Format("http://{0}:{1}/admin?trigger&camera={2}&user={3}&pw={4}&jpeg={5}&memo={6}",
             frame.Item.CamData.LiveContactData.CameraIPAddress,
             frame.Item.CamData.LiveContactData.Port,
@@ -1409,6 +1421,7 @@ namespace SAAI
       {
         try
         {
+          client.Timeout = TimeSpan.FromSeconds(20.0);
           Uri url = new Uri(urlStr);
           HttpResponseMessage response = await client.GetAsync(url).ConfigureAwait(false);
           if (response.IsSuccessStatusCode)
@@ -1425,8 +1438,12 @@ namespace SAAI
         catch (HttpException ex)
         {
           Dbg.Write("MainWindow - NotifyUrl - Exception caught in NotifyUrl: " + ex.Message);
-
         }
+        catch (Exception ex)
+        {
+          Dbg.Write("MainWindow - NotifyUrl - Unknown Exception caught in NotifyUrl: " + ex.Message);
+        }
+
       }
     }
 
@@ -1489,12 +1506,12 @@ namespace SAAI
       {
         motionOnlyCheckbox.Checked = false;
         string urlString = string.Format("http://{0}:{1}/admin?camera={2}&preset={3}&user={4}&pw={5}",
-        _currentCamera.LiveContactData.CameraIPAddress,
-        _currentCamera.LiveContactData.Port.ToString(),
-        _currentCamera.LiveContactData.ShortCameraName,
+        CurrentCam.LiveContactData.CameraIPAddress,
+        CurrentCam.LiveContactData.Port.ToString(),
+        CurrentCam.LiveContactData.ShortCameraName,
         (int)presetNumeric.Value,
-        _currentCamera.LiveContactData.CameraUserName,
-        _currentCamera.LiveContactData.CameraPassword);
+        CurrentCam.LiveContactData.CameraUserName,
+        CurrentCam.LiveContactData.CameraPassword);
 
         try
         {
@@ -1546,7 +1563,6 @@ namespace SAAI
       {
         tmp.StopMonitoring();
 
-        _currentCamera = null;
         _allCameras.Dispose();  // This cleans up the directory monitoring, and a lot of other stuff
         _allCameras = null;
         cameraCombo.Items.Clear();
@@ -1559,20 +1575,19 @@ namespace SAAI
           {
             _allCameras = dlg.AllCameraData;  // a reference, not a copy (since the dialog does a deep copy, and we want the altered one)
 
-            if (null == dlg.CurrentCam)
+            if (null == dlg.SelectedCamera)
             {
               Storage.SetGlobalString("CurrentCameraPath", string.Empty);    // we don't need to do this if we canceled the dlg
               Storage.SetGlobalString("CurrentCameraPrefix", string.Empty);
             }
             else
             {
-              SetCurrentCamera(dlg.CurrentCam);   // The one set by the dialog
+              SetCurrentCamera(dlg.SelectedCamera);   // The one set by the dialog
             }
           }
           else
           {
             _allCameras = new CameraCollection(tmp);
-            _currentCamera = _allCameras.CurrentCamera;
           }
         }
 
@@ -1582,9 +1597,9 @@ namespace SAAI
           cameraCombo.Items.Add(cam);
         }
 
-        if (null != _currentCamera && !string.IsNullOrEmpty(_currentCamera.CameraPrefix))
+        if (null != CurrentCam && !string.IsNullOrEmpty(CurrentCam.CameraPrefix))
         {
-          cameraCombo.SelectedItem = _currentCamera;
+          cameraCombo.SelectedItem = CurrentCam;
         }
 
         _allCameras.StartMonitoring();
@@ -1602,7 +1617,7 @@ namespace SAAI
 
     private void SetCurrentCamera(CameraData cam)
     {
-      _currentCamera = cam;
+      _allCameras.CurrentCameraPath = CameraData.PathAndPrefix(cam);    // which sets the current camera in _allCameras
       Storage.SetGlobalString("CurrentCameraPath", cam.Path);
       Storage.SetGlobalString("CurrentCameraPrefix", cam.CameraPrefix);
       // _allCameras.CameraDictionary[CameraData.PathAndPrefix(cam)] = cam;
@@ -1629,7 +1644,7 @@ namespace SAAI
           lock (_fileLock)
           {
             _current = 0;
-            InitAnalyzer(_currentCamera.CameraPrefix, _currentCamera.Path);
+            InitAnalyzer(CurrentCam.CameraPrefix, CurrentCam.Path);
           }
         }
       }
@@ -1998,9 +2013,18 @@ namespace SAAI
             {
 
               cmd.Parameters.AddWithValue("@lastTime", fileTime);
-              DateTime lastReadable = DateTime.FromFileTime(fileTime);  // debug only
-              cmd.Parameters.AddWithValue("@path", _currentCamera.Path);
-              cmd.Parameters.AddWithValue("@camera", _currentCamera.CameraPrefix);
+              DateTime lastReadable;
+              try
+              {
+                lastReadable = DateTime.FromFileTime(fileTime);  // debug only
+              }
+              catch (ArgumentOutOfRangeException)
+              {
+                lastReadable = DateTime.Now - TimeSpan.FromDays(10000);
+              }
+
+              cmd.Parameters.AddWithValue("@path", CurrentCam.Path);
+              cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
 
               try
               {
@@ -2110,8 +2134,8 @@ namespace SAAI
           {
             cmd.Parameters.AddWithValue("@creationTime", fi.CreationTime.ToFileTime());
             cmd.Parameters.AddWithValue("@fileName", fi.Name);
-            cmd.Parameters.AddWithValue("@path", _currentCamera.Path);
-            cmd.Parameters.AddWithValue("@camera", _currentCamera.CameraPrefix);
+            cmd.Parameters.AddWithValue("@path", CurrentCam.Path);
+            cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
             await cmd.ExecuteScalarAsync().ConfigureAwait(false);
           }
           catch (DbException ex)
@@ -2150,8 +2174,8 @@ namespace SAAI
 
             using (SqlCommand cmd = new SqlCommand(q, con))
             {
-              cmd.Parameters.AddWithValue("@path", _currentCamera.Path);
-              cmd.Parameters.AddWithValue("@camera", _currentCamera.CameraPrefix);
+              cmd.Parameters.AddWithValue("@path", CurrentCam.Path);
+              cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
               cmd.Parameters.AddWithValue("@fileName", fileName);
               await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
             }
@@ -2361,7 +2385,7 @@ namespace SAAI
 
     private void OnCameraSelected(object sender, EventArgs e)
     {
-      if (cameraCombo.SelectedItem != _currentCamera)
+      if (cameraCombo.SelectedItem != CurrentCam)
       {
         motionOnlyCheckbox.Checked = false;
         SetCurrentCamera((CameraData)cameraCombo.SelectedItem);
@@ -2378,7 +2402,7 @@ namespace SAAI
 
     private async void CleanupButton_Click(object sender, EventArgs e)
     {
-      using (CleanupDialog dlg = new CleanupDialog(_allCameras, _currentCamera.Path, _currentCamera.CameraPrefix))
+      using (CleanupDialog dlg = new CleanupDialog(_allCameras, CurrentCam.Path, CurrentCam.CameraPrefix))
       {
         DialogResult result = dlg.ShowDialog();
         if (result == DialogResult.OK)

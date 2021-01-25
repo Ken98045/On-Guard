@@ -481,37 +481,50 @@ namespace SAAI
 
       foreach (var camKeyName in s_cameras.GetSubKeyNames())
       {
-        using (RegistryKey camKey = s_cameras.OpenSubKey(camKeyName))
+        using (RegistryKey camKey = s_cameras.OpenSubKey(camKeyName, true))
         {
           string cameraPrefix = GetCameraPrefix(camKey);
           string cameraPath = GetCameraPath(camKey, camKeyName);  // contains path + prefix
-          CameraData cam = new CameraData(cameraPrefix, cameraPath)
-          {
-            RegistrationX = (int)camKey.GetValue("RegistrationX", 500),
-            RegistrationY = (int)camKey.GetValue("RegistrationY", 500),
-            RegistrationXResolution = (int)camKey.GetValue("RegistrationXResolution", 1280),
-            RegistrationYResolution = (int)camKey.GetValue("RegistrationYResolution", 1024),
-            Monitoring = bool.Parse((string)camKey.GetValue("Monitoring", "true")),
-            NoMotionTimeout = (int)camKey.GetValue("MotionStoppedTimeout", 90),
-            LiveContactData = GetContactData(camKey)
-          }; // GetCamera(
+          int registrationX = (int)camKey.GetValue("RegistrationX", 500);
+          int registrationY = (int)camKey.GetValue("RegistrationY", 500);
 
-          if (cam.RegistrationX > 5000 || cam.RegistrationX < -1000)
-          {
-            Dbg.Write("Bad Read on Registration X");
-          }
-
-          if (cam.RegistrationY < -500 || cam.RegistrationY > 3000)
-          {
-            Dbg.Write("Bad Read on Registraion Y");
-          }
+          CameraData cam = new CameraData(Guid.Parse(camKeyName), cameraPrefix, cameraPath);
+          cam.RegistrationX = registrationX;
+          cam.RegistrationY = registrationY;
+          cam.RegistrationXResolution = (int)camKey.GetValue("RegistrationXResolution", 1280);
+          cam.RegistrationYResolution = (int)camKey.GetValue("RegistrationYResolution", 1024);
+          cam.Monitoring = bool.Parse((string)camKey.GetValue("Monitoring", "true"));
+          cam.NoMotionTimeout = (int)camKey.GetValue("MotionStoppedTimeout", 90);
+          cam.LiveContactData = GetContactData(camKey);
 
           cameras.AddCamera(cam);
+          camKey.SetValue("BackupXReg", cam.RegistrationX, RegistryValueKind.DWord);
+          camKey.SetValue("BackupYReg", cam.RegistrationY, RegistryValueKind.DWord);
         }
       }
 
       return cameras;
     }
+
+    public static int GetCameraInt(string cameraPath, string cameraPrefix, string keyName)
+    {
+      int result = 0;
+
+      using (RegistryKey key = FindCameraKey(cameraPath, cameraPrefix))
+      {
+        result = (int) key.GetValue(keyName, 0);
+      }
+        return result;
+    }
+
+    public static void SetCameraInt(string cameraPath, string cameraPrefix, string keyName, int theValue)
+    {
+      using (RegistryKey key = FindCameraKey(cameraPath, cameraPrefix))
+      {
+        key.SetValue(keyName, theValue, RegistryValueKind.DWord );
+      }
+    }
+
 
     public static void SetCameraContactData(RegistryKey key, CameraContactData data)
     {
@@ -531,15 +544,21 @@ namespace SAAI
       camKey.SetValue("Path", camera.Path);
       SetCameraContactData(camKey, camera.LiveContactData);
       camKey.SetValue("MotionStoppedTimeout", camera.NoMotionTimeout, RegistryValueKind.DWord);
-      if (camera.RegistrationX > 5000 || camera.RegistrationX < -1000)
+
+      int backupXReg = (int) camKey.GetValue("BackupXReg", 0);
+      int backupYReg = (int)camKey.GetValue("BackupYReg", 0);
+
+      if (camera.RegistrationX != backupXReg)
       {
-        Dbg.Write("Bad X registration value on Write");
+        Dbg.Write("Invalid RegistrationX");
       }
+
+      if (camera.RegistrationY != backupYReg)
+      {
+        Dbg.Write("Invalid RegistrationY");
+      }
+
       camKey.SetValue("RegistrationX", camera.RegistrationX, RegistryValueKind.DWord);
-      if (camera.RegistrationY > 3000 || camera.RegistrationY < -500)
-      {
-        Dbg.Write("Bad Y registration value on Write");
-      }
       camKey.SetValue("RegistrationY", camera.RegistrationY, RegistryValueKind.DWord);
       camKey.SetValue("RegistrationXResolution", camera.RegistrationXResolution, RegistryValueKind.DWord);
       camKey.SetValue("RegistrationYResolution", camera.RegistrationYResolution, RegistryValueKind.DWord);

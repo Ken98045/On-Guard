@@ -227,14 +227,14 @@ namespace SAAI
           Area.SearchCriteria.Add((ObjectCharacteristics)item.Tag);
         }
 
+        _rectangle = new Rectangle((int)xNumeric.Value, (int)yNumeric.Value, (int)widthNumeric.Value, (int)heighNumeric.Value);
+        Area.AreaRect = _rectangle;
+        Area.OriginalXResolution = BitmapResolution.XResolution;
+        Area.OriginalYResolution = BitmapResolution.YResolution;
+
+        Storage.SaveArea(Area);
+
       }
-
-      _rectangle = new Rectangle((int)xNumeric.Value, (int)yNumeric.Value, (int)widthNumeric.Value, (int)heighNumeric.Value);
-      Area.AreaRect = _rectangle;
-      Area.OriginalXResolution = BitmapResolution.XResolution;
-      Area.OriginalYResolution = BitmapResolution.YResolution;
-
-      Storage.SaveArea(Area);
 
       return result;
     }
@@ -245,6 +245,10 @@ namespace SAAI
       {
         DialogResult = DialogResult.OK;
         Close();
+      }
+      else
+      {
+        DialogResult = DialogResult.None;
       }
     }
 

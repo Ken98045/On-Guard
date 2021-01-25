@@ -265,6 +265,11 @@ namespace SAAI
       // minWidthNumeric
       // 
       this.minWidthNumeric.Location = new System.Drawing.Point(235, 184);
+      this.minWidthNumeric.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
       this.minWidthNumeric.Name = "minWidthNumeric";
       this.minWidthNumeric.Size = new System.Drawing.Size(74, 20);
       this.minWidthNumeric.TabIndex = 3;
@@ -273,6 +278,11 @@ namespace SAAI
       // minHeightNumeric
       // 
       this.minHeightNumeric.Location = new System.Drawing.Point(235, 226);
+      this.minHeightNumeric.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
       this.minHeightNumeric.Name = "minHeightNumeric";
       this.minHeightNumeric.Size = new System.Drawing.Size(74, 20);
       this.minHeightNumeric.TabIndex = 4;

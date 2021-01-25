@@ -19,8 +19,34 @@ namespace SAAI
 
     // The registration marks allow for slight adjustment of the Areas of Interest if the camera moves.  It also 
     // Allows you to put the camera back at the correct position if you move the camera (accidently or on purpose)
-    public int RegistrationXResolution { get; set; }      // You can keep the same camera but you might change the resolution on pictures
-    public int RegistrationYResolution { get; set; }      // "" and both of these never change until you change the registration mark
+    private int _registrationXResolution;
+    private int _registrationYResolution;
+    public int RegistrationXResolution
+    {
+      get
+      {
+        return _registrationXResolution;
+      }
+      set
+      {
+        _registrationXResolution = value;
+      }
+    }
+
+    public int RegistrationYResolution
+    {
+      get
+      {
+        return _registrationYResolution;
+      }
+      set
+      {
+        _registrationYResolution = value;
+      }
+    }
+
+
+
     private int registrationX;
     private int registrationY;
 
@@ -28,28 +54,16 @@ namespace SAAI
     {
       get
       {
-        int adjX = registrationX;
-        if (registrationX > 0)
-        {
-          if (BitmapResolution.XResolution != RegistrationXResolution)
-          {
-            adjX = (int)((double)adjX * ((double)(BitmapResolution.XResolution) / (double)(RegistrationXResolution)));
-          }
-        }
-
-        return adjX;
+        return registrationX;
       }
       set
       {
-        if (BitmapResolution.XResolution != RegistrationXResolution)
+        int backupRegistrationX = Storage.GetCameraInt(Path, CameraPrefix, "BackupXReg");
+        if (backupRegistrationX != value)
         {
-          RegistrationXResolution = BitmapResolution.XResolution;
+          Dbg.Write("Invalid RegistrationX on set");
         }
 
-        if (value > 5000 || value  < -1000)
-        {
-          Dbg.Write("Bad set on registrationX");
-        }
         registrationX = value;
       }
     }
@@ -57,29 +71,15 @@ namespace SAAI
     {
       get
       {
-        int adjY = registrationY;
-        if (adjY > 0)
-        {
-          if (BitmapResolution.YResolution != RegistrationYResolution)
-          {
-            adjY = (int)((double)adjY * ((double)(BitmapResolution.YResolution) / (double)(RegistrationYResolution)));
-          }
-        }
-
-        return adjY;
+        return registrationY;
       }
       set
       {
-        if (BitmapResolution.YResolution != RegistrationYResolution)
+        int backupRegistrationY = Storage.GetCameraInt(Path, CameraPrefix, "BackupYReg");
+        if (backupRegistrationY != value)
         {
-          RegistrationYResolution = BitmapResolution.YResolution;
+          Dbg.Write("Invalid RegistrationY on set");
         }
-
-        if (value > 3000 || value < -500)
-        {
-          Dbg.Write("Bad Set on registrationY");
-        }
-
         registrationY = value;
       }
     }
@@ -123,9 +123,9 @@ namespace SAAI
     public History FrameHistory { get; set; }
 
 
-    public CameraData(string prefix, string path)
+    public CameraData(Guid id, string prefix, string path)
     {
-      ID = Guid.NewGuid();
+      ID = id;
       FrameHistory = new History(300);
       LiveContactData = new CameraContactData();
       CameraPrefix = prefix;
@@ -148,18 +148,22 @@ namespace SAAI
         FrameHistory = new History(300);
         CameraPrefix = src.CameraPrefix;
         Path = src.Path;
-        if (src.registrationX > 5000 || src.registrationX < -1000)
-        {
-          Dbg.Write("Bad Copy on registration x");
-        }
 
-        if (src.RegistrationY < -500 || src.registrationY > 3000)
+        int backupX = Storage.GetCameraInt(Path, CameraPrefix, "BackupXReg");
+        int backupY = Storage.GetCameraInt(Path, CameraPrefix, "BackupYReg");
+        if (backupX != src.registrationX)
         {
-          Dbg.Write("Bad Copy on registration Y");
+          Dbg.Write("Invalid X Registration on Camera Copy");
+        }
+        if (backupY != src.registrationY)
+        {
+          Dbg.Write("Invalid Y Registration on Camera Copy");
         }
 
         RegistrationX = src.RegistrationX;
         RegistrationY = src.RegistrationY;
+        RegistrationXResolution = src.RegistrationXResolution;
+        RegistrationYResolution = src.RegistrationYResolution;
         Monitoring = src.Monitoring;
         LiveContactData = new CameraContactData(src.LiveContactData);
         AOI = new AreasOfInterestCollection(src.AOI);
