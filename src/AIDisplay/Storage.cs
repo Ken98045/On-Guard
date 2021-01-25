@@ -498,8 +498,6 @@ namespace SAAI
           cam.LiveContactData = GetContactData(camKey);
 
           cameras.AddCamera(cam);
-          camKey.SetValue("BackupXReg", cam.RegistrationX, RegistryValueKind.DWord);
-          camKey.SetValue("BackupYReg", cam.RegistrationY, RegistryValueKind.DWord);
         }
       }
 
@@ -545,18 +543,6 @@ namespace SAAI
       SetCameraContactData(camKey, camera.LiveContactData);
       camKey.SetValue("MotionStoppedTimeout", camera.NoMotionTimeout, RegistryValueKind.DWord);
 
-      int backupXReg = (int) camKey.GetValue("BackupXReg", 0);
-      int backupYReg = (int)camKey.GetValue("BackupYReg", 0);
-
-      if (camera.RegistrationX != backupXReg)
-      {
-        Dbg.Write("Invalid RegistrationX");
-      }
-
-      if (camera.RegistrationY != backupYReg)
-      {
-        Dbg.Write("Invalid RegistrationY");
-      }
 
       camKey.SetValue("RegistrationX", camera.RegistrationX, RegistryValueKind.DWord);
       camKey.SetValue("RegistrationY", camera.RegistrationY, RegistryValueKind.DWord);

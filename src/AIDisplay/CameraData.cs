@@ -58,12 +58,6 @@ namespace SAAI
       }
       set
       {
-        int backupRegistrationX = Storage.GetCameraInt(Path, CameraPrefix, "BackupXReg");
-        if (backupRegistrationX != value)
-        {
-          Dbg.Write("Invalid RegistrationX on set");
-        }
-
         registrationX = value;
       }
     }
@@ -75,11 +69,6 @@ namespace SAAI
       }
       set
       {
-        int backupRegistrationY = Storage.GetCameraInt(Path, CameraPrefix, "BackupYReg");
-        if (backupRegistrationY != value)
-        {
-          Dbg.Write("Invalid RegistrationY on set");
-        }
         registrationY = value;
       }
     }
@@ -148,17 +137,6 @@ namespace SAAI
         FrameHistory = new History(300);
         CameraPrefix = src.CameraPrefix;
         Path = src.Path;
-
-        int backupX = Storage.GetCameraInt(Path, CameraPrefix, "BackupXReg");
-        int backupY = Storage.GetCameraInt(Path, CameraPrefix, "BackupYReg");
-        if (backupX != src.registrationX)
-        {
-          Dbg.Write("Invalid X Registration on Camera Copy");
-        }
-        if (backupY != src.registrationY)
-        {
-          Dbg.Write("Invalid Y Registration on Camera Copy");
-        }
 
         RegistrationX = src.RegistrationX;
         RegistrationY = src.RegistrationY;

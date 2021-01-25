@@ -888,8 +888,6 @@ namespace SAAI
       }
 
       Dbg.Write("AdjustAreasofInterest");
-      Storage.SetCameraInt(CurrentCam.Path, CurrentCam.CameraPrefix, "BackupXReg", newX);
-      Storage.SetCameraInt(CurrentCam.Path, CurrentCam.CameraPrefix, "BackupYReg", newY);
       CurrentCam.RegistrationX = newX;
       CurrentCam.RegistrationY = newY;
       CurrentCam.RegistrationXResolution = BitmapResolution.XResolution;
@@ -1435,12 +1433,17 @@ namespace SAAI
 
           response.Dispose();
         }
+        catch (HttpRequestException ex)
+        {
+          Dbg.Write("MainWindow - NotifyUrl - Exception caught in NotifyUrl: " + ex.Message + " --- " + urlStr);
+        }
         catch (HttpException ex)
         {
           Dbg.Write("MainWindow - NotifyUrl - Exception caught in NotifyUrl: " + ex.Message);
         }
         catch (Exception ex)
         {
+          Type t = ex.GetType();
           Dbg.Write("MainWindow - NotifyUrl - Unknown Exception caught in NotifyUrl: " + ex.Message);
         }
 
