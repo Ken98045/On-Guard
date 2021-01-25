@@ -62,8 +62,7 @@ namespace SAAI
 
       if (!userText.Text.Contains("@"))
       {
-        MessageBox.Show(this, "You must include '@' plus the domain in your email user name. For example: 'Jonn.Smith@foo.bar'", "Email Sender Format Error");
-        return;
+        MessageBox.Show(this, "You should ususally include '@' plus the domain in your email user name. For example: 'Jonn.Smith@foo.bar'", "Email Sender Format Error");
       }
 
       DialogResult destinationResult;
@@ -95,14 +94,7 @@ namespace SAAI
               mail.Body = "This is a test of your email server settings<br />";
 
               SmtpServer.Port = (int)portNumeric.Value;
-              SmtpServer.Port = Storage.GetGlobalInt("EmailPort");
-
-              string emailUserName = Storage.GetGlobalString("EmailUser");
-              string emailPassword = Storage.GetGlobalString("EmailPassword");
-              if (!string.IsNullOrEmpty(emailUserName))
-              {
-                SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
-              }
+              SmtpServer.Credentials = new System.Net.NetworkCredential(userText.Text, passwordText.Text);
               SmtpServer.EnableSsl = sslCheck.Checked;
 
               SmtpServer.Send(mail);
@@ -111,7 +103,7 @@ namespace SAAI
         }
         catch (SmtpException ex)
         {
-          MessageBox.Show("There was an error sending a test email to your email address", "Email Error!");
+          MessageBox.Show("There was an error sending a test email to your email address: " + ex.Message, "Email Error!");
           Dbg.Write("Email exception: " + ex.ToString());
           return;
         }
