@@ -865,28 +865,6 @@ namespace SAAI
       int offsetX = CurrentCam.RegistrationX - newX;
       int offsetY = CurrentCam.RegistrationY - newY;
 
-      // If this area is of type registration then adjust everybody's x & Y
-      // BUT, only if there was already a registration point
-      if (CurrentCam.RegistrationX > 0 && CurrentCam.RegistrationY > 0)
-      {
-        foreach (var area in CurrentCam.AOI)
-        {
-          area.AdjustRect(-offsetX, -offsetY);
-          if (area.AreaRect.X < 0)
-          {
-            area.AreaRect.X = 0;
-          }
-
-          if (area.AreaRect.Y < 0)
-          {
-            area.AreaRect.Y = 0;
-          }
-
-        }
-
-        CameraCollection.Save(_allCameras);
-      }
-
       Dbg.Write("AdjustAreasofInterest");
       CurrentCam.RegistrationX = newX;
       CurrentCam.RegistrationY = newY;
@@ -894,6 +872,34 @@ namespace SAAI
       CurrentCam.RegistrationYResolution = BitmapResolution.YResolution;
       _allCameras.CameraDictionary[CameraData.PathAndPrefix(CurrentCam)].RegistrationX = CurrentCam.RegistrationX;
       _allCameras.CameraDictionary[CameraData.PathAndPrefix(CurrentCam)].RegistrationY = CurrentCam.RegistrationY;
+
+      DialogResult shiftResult = MessageBox.Show(this, "You have the option to shift your areas with respect to the registration mark shift.  Do you want to do this?", "Shift Areas?", MessageBoxButtons.YesNo);
+
+      if (shiftResult == DialogResult.Yes)
+      {
+
+        // If this area is of type registration then adjust everybody's x & Y
+        // BUT, only if there was already a registration point
+        if (CurrentCam.RegistrationX > 0 && CurrentCam.RegistrationY > 0)
+        {
+          foreach (var area in CurrentCam.AOI)
+          {
+            area.AdjustRect(-offsetX, -offsetY);
+            if (area.AreaRect.X < 0)
+            {
+              area.AreaRect.X = 0;
+            }
+
+            if (area.AreaRect.Y < 0)
+            {
+              area.AreaRect.Y = 0;
+            }
+          }
+        }
+
+        CameraCollection.Save(_allCameras);
+      }
+
       CameraCollection.Save(_allCameras);
 
       if (_showingLiveView)
@@ -932,7 +938,7 @@ namespace SAAI
         {
           if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
           {
-            if (MessageBox.Show("You are about to set the registration point for this camera.  This helps you ensure that your camera is in the right position.  If the registration point has already been set, then any existing areas of interest will be shifted accordingly.  Are you sure you want to do this?", "Reset Camera Registration Point", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("You are about to set the registration point for this camera.  This helps you ensure that your camera is in the right position.  If the registration point has already been set, then you have the option to adjust any existing areas of interest with respect to this shift.  Are you sure you want to do this?", "Reset Camera Registration Point", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
               AdjustAreasOfInterest(e.X, e.Y);
             }
@@ -2429,269 +2435,269 @@ namespace SAAI
 
       q = "SELECT FileName FROM tblMotionFiles WHERE FileName = @fileName and @Path = @path";
 
-        using (SqlCommand cmd = new SqlCommand(q, con))
-        {
-          cmd.Parameters.AddWithValue("@fileName", Path.GetFileName(fileName));
-          cmd.Parameters.AddWithValue("@path", Path.GetDirectoryName(fileName));
+      using (SqlCommand cmd = new SqlCommand(q, con))
+      {
+        cmd.Parameters.AddWithValue("@fileName", Path.GetFileName(fileName));
+        cmd.Parameters.AddWithValue("@path", Path.GetDirectoryName(fileName));
         try
+        {
+          using (SqlDataReader reader = cmd.ExecuteReader())
           {
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            if (reader.HasRows)
             {
-              if (reader.HasRows)
-              {
-                result = true;
-              }
+              result = true;
             }
           }
-          catch (SqlException ex)
-          {
-            Dbg.Write("MainWindow - GetNextMotion - SQL Exception: " + ex.Message);
-          }
-          catch (InvalidOperationException ex)
-          {
-            Dbg.Write("MainWindow - GetNextMotion - InvalidOperation Exception: " + ex.Message);
-          }
-
         }
+        catch (SqlException ex)
+        {
+          Dbg.Write("MainWindow - GetNextMotion - SQL Exception: " + ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+          Dbg.Write("MainWindow - GetNextMotion - InvalidOperation Exception: " + ex.Message);
+        }
+
+      }
 
       return result;
     }
 
 
-private async Task CleanupAsync(List<FileInfo> expiredFiles, bool keepMotionFiles)
-{
-  using (SqlConnection con = new SqlConnection(_connectionString))
-  {
-    con.Open();
-    foreach (var info in expiredFiles)
+    private async Task CleanupAsync(List<FileInfo> expiredFiles, bool keepMotionFiles)
     {
-      try
+      using (SqlConnection con = new SqlConnection(_connectionString))
       {
-        bool deleteIt = true;
-
-        if (keepMotionFiles)
+        con.Open();
+        foreach (var info in expiredFiles)
         {
-          if (IsMotionFile(con, info.FullName))
+          try
           {
-            deleteIt = false;
+            bool deleteIt = true;
+
+            if (keepMotionFiles)
+            {
+              if (IsMotionFile(con, info.FullName))
+              {
+                deleteIt = false;
+              }
+            }
+
+            if (deleteIt)
+            {
+              File.Delete(info.FullName);
+            }
+
+            Thread.Sleep(0);  // avoid choking the UI
           }
-        }
-
-        if (deleteIt)
-        {
-          File.Delete(info.FullName);
-        }
-
-        Thread.Sleep(0);  // avoid choking the UI
-      }
-      catch (UnauthorizedAccessException ex)
-      {
-        MessageBox.Show("Unable to delete file: " + info.FullName + Environment.NewLine + "This is probably due to your anti-virus software." +
-          Environment.NewLine + "Exiting Cleanup!");
-        break;
-      }
-      catch (IOException)
-      {
-        Dbg.Write("Unable to find file: " + info.FullName + " when attempting deletion.");
-      }
-    }
-  }
-
-}
-
-private void AreasOfInterestToolStripMenuItem_Click(object sender, EventArgs e)
-{
-  if (!_modifyingArea)
-  {
-    ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
-    showAreasOfInterestCheck.Checked = menuItem.Checked;
-    ShowAreasOfInterestCheckChanged(null, null);
-  }
-
-}
-
-private void OnLiveImageTimer(Object o, EventArgs e)
-{
-  LiveCameraButton_Click(o, e);
-}
-
-private void LiveCheck_CheckedChanged(object sender, EventArgs e)
-{
-  motionOnlyCheckbox.Checked = false;
-  if (liveCheck.Checked)
-  {
-    showObjectRectanglesToolStripMenuItem.Checked = false;
-    showAreasOfInterestCheck.Checked = false;
-    _showObjects = false;
-    _liveTimer = new System.Windows.Forms.Timer
-    {
-      Interval = 100
-    };
-    _liveTimer.Tick += OnLiveImageTimer;
-    _liveTimer.Start();
-  }
-  else
-  {
-    _liveTimer.Dispose();
-    _liveTimer = null;
-  }
-
-}
-
-
-private void NotifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
-{
-  Show();
-  this.WindowState = FormWindowState.Normal;
-  notifyIcon.Visible = false;
-}
-
-private void OnResize(object sender, EventArgs e)
-{
-  if (this.WindowState == FormWindowState.Minimized)
-  {
-    Hide();
-    notifyIcon.Visible = true;
-    notifyIcon.ShowBalloonTip(1200);
-  }
-}
-
-private void LogFileToolStripMenuItem_Click(object sender, EventArgs e)
-{
-  string path = Storage.GetFilePath("OnGuard.txt");
-  if (File.Exists(path))
-  {
-    Process.Start(path);
-  }
-  else
-  {
-    MessageBox.Show("The log file does not exist.  Did you delete it?", "No Log File!");
-  }
-}
-
-
-private void OnMotionCheckChanged(object sender, EventArgs e)
-{
-  if (motionOnlyCheckbox.Checked)
-  {
-    buttonRight.BackColor = Color.LightGreen;
-    buttonLeft.BackColor = Color.LightGreen;
-  }
-  else
-  {
-    buttonRight.BackColor = SystemColors.Control;
-    buttonLeft.BackColor = SystemColors.Control;
-  }
-}
-
-private void MotionOnlyCheckbox_CheckedChanged(object sender, EventArgs e)
-{
-  if (motionOnlyCheckbox.Checked)
-  {
-    motionOnlyCheckbox.BackColor = Color.LightGreen;
-  }
-  else
-  {
-    motionOnlyCheckbox.BackColor = SystemColors.Control;
-  }
-}
-
-private void MQTTSettingsToolStripMenuItem_Click(object sender, EventArgs e)
-{
-
-  using (MQTTSettings mqttSettings = new MQTTSettings())
-  {
-    DialogResult result = mqttSettings.ShowDialog();
-    if (result == DialogResult.OK)
-    {
-      Dbg.Write("MQTT Settings Saved");
-    }
-  }
-}
-
-
-private void Button1_Click(object sender, EventArgs e)
-{
-  _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Before);
-  _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.After);
-  _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Both);
-}
-
-private async void TestImagesToolStripMenuItem_Click(object sender, EventArgs e)
-{
-  if (MessageBox.Show(this, "You are about to send test images to all cameras.  There is no guarantee that this images will match your Areas of Interest.  After the test pictures are saved your workspace will refresh.  Proceed?", "Send Test Images", MessageBoxButtons.YesNo) == DialogResult.Yes)
-  {
-    foreach (var cam in _allCameras.CameraDictionary)
-    {
-      string path = cam.Value.Path;
-      string[] pics = new string[7];
-      pics[0] = "Street1";
-      pics[1] = "Street2";
-      pics[2] = "Street3";
-      pics[3] = "Street4";
-      pics[4] = "Street5";
-      pics[5] = "Street6";
-      pics[6] = "Street7";
-
-
-      ResourceManager MyResourceClass = new ResourceManager(typeof(Resources));
-
-      ResourceSet resourceSet = MyResourceClass.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
-      foreach (DictionaryEntry entry in resourceSet)
-      {
-        string resourceKey = entry.Key.ToString();
-        object resource = entry.Value;
-      }
-
-      foreach (string pic in pics)
-      {
-        object O = Resources.ResourceManager.GetObject(pic); //Return an object from the image chan1.png in the project
-        using (Bitmap bm = (Bitmap)O)
-        {
-          using (MemoryStream mem = new MemoryStream())
+          catch (UnauthorizedAccessException ex)
           {
-            string fullPath = Path.Combine(path, cam.Value.CameraPrefix);
-            fullPath += pic;
-            fullPath += DateTime.Now.Ticks.ToString() + ".jpg";
-            bm.Save(fullPath, ImageFormat.Jpeg);
-            // bm.Save(mem, ImageFormat.Jpeg);
+            MessageBox.Show("Unable to delete file: " + info.FullName + Environment.NewLine + "This is probably due to your anti-virus software." +
+              Environment.NewLine + "Exiting Cleanup!");
+            break;
+          }
+          catch (IOException)
+          {
+            Dbg.Write("Unable to find file: " + info.FullName + " when attempting deletion.");
           }
         }
       }
+
     }
-  }
 
-  await Task.Delay(1000 * 3).ConfigureAwait(false);
-  Refresh_Click(null, null);
-}
-
-private void LogDetailedInformationToolStripMenuItem_Click(object sender, EventArgs e)
-{
-  ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
-  if (menuItem.Checked)
-  {
-    Dbg.LogLevel = 1;
-  }
-  else
-  {
-    Dbg.LogLevel = 0;
-  }
-}
-
-private void DeleteLogFileToolStripMenuItem_Click(object sender, EventArgs e)
-{
-  if (File.Exists(Storage.GetFilePath("OnGuard.txt")))
-  {
-    if (!Dbg.DeleteLogFile())
+    private void AreasOfInterestToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      MessageBox.Show("Unable to delete the log file - It is probably busy. Try again later", "Unable to Delete the log file!");
+      if (!_modifyingArea)
+      {
+        ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
+        showAreasOfInterestCheck.Checked = menuItem.Checked;
+        ShowAreasOfInterestCheckChanged(null, null);
+      }
+
     }
-  }
-  else
-  {
-    MessageBox.Show("Unable to delete the log file - It does not currently exist.", "No Log File!");
-  }
-}
+
+    private void OnLiveImageTimer(Object o, EventArgs e)
+    {
+      LiveCameraButton_Click(o, e);
+    }
+
+    private void LiveCheck_CheckedChanged(object sender, EventArgs e)
+    {
+      motionOnlyCheckbox.Checked = false;
+      if (liveCheck.Checked)
+      {
+        showObjectRectanglesToolStripMenuItem.Checked = false;
+        showAreasOfInterestCheck.Checked = false;
+        _showObjects = false;
+        _liveTimer = new System.Windows.Forms.Timer
+        {
+          Interval = 100
+        };
+        _liveTimer.Tick += OnLiveImageTimer;
+        _liveTimer.Start();
+      }
+      else
+      {
+        _liveTimer.Dispose();
+        _liveTimer = null;
+      }
+
+    }
+
+
+    private void NotifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+    {
+      Show();
+      this.WindowState = FormWindowState.Normal;
+      notifyIcon.Visible = false;
+    }
+
+    private void OnResize(object sender, EventArgs e)
+    {
+      if (this.WindowState == FormWindowState.Minimized)
+      {
+        Hide();
+        notifyIcon.Visible = true;
+        notifyIcon.ShowBalloonTip(1200);
+      }
+    }
+
+    private void LogFileToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      string path = Storage.GetFilePath("OnGuard.txt");
+      if (File.Exists(path))
+      {
+        Process.Start(path);
+      }
+      else
+      {
+        MessageBox.Show("The log file does not exist.  Did you delete it?", "No Log File!");
+      }
+    }
+
+
+    private void OnMotionCheckChanged(object sender, EventArgs e)
+    {
+      if (motionOnlyCheckbox.Checked)
+      {
+        buttonRight.BackColor = Color.LightGreen;
+        buttonLeft.BackColor = Color.LightGreen;
+      }
+      else
+      {
+        buttonRight.BackColor = SystemColors.Control;
+        buttonLeft.BackColor = SystemColors.Control;
+      }
+    }
+
+    private void MotionOnlyCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+      if (motionOnlyCheckbox.Checked)
+      {
+        motionOnlyCheckbox.BackColor = Color.LightGreen;
+      }
+      else
+      {
+        motionOnlyCheckbox.BackColor = SystemColors.Control;
+      }
+    }
+
+    private void MQTTSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
+      using (MQTTSettings mqttSettings = new MQTTSettings())
+      {
+        DialogResult result = mqttSettings.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          Dbg.Write("MQTT Settings Saved");
+        }
+      }
+    }
+
+
+    private void Button1_Click(object sender, EventArgs e)
+    {
+      _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Before);
+      _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.After);
+      _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Both);
+    }
+
+    private async void TestImagesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (MessageBox.Show(this, "You are about to send test images to all cameras.  There is no guarantee that this images will match your Areas of Interest.  After the test pictures are saved your workspace will refresh.  Proceed?", "Send Test Images", MessageBoxButtons.YesNo) == DialogResult.Yes)
+      {
+        foreach (var cam in _allCameras.CameraDictionary)
+        {
+          string path = cam.Value.Path;
+          string[] pics = new string[7];
+          pics[0] = "Street1";
+          pics[1] = "Street2";
+          pics[2] = "Street3";
+          pics[3] = "Street4";
+          pics[4] = "Street5";
+          pics[5] = "Street6";
+          pics[6] = "Street7";
+
+
+          ResourceManager MyResourceClass = new ResourceManager(typeof(Resources));
+
+          ResourceSet resourceSet = MyResourceClass.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+          foreach (DictionaryEntry entry in resourceSet)
+          {
+            string resourceKey = entry.Key.ToString();
+            object resource = entry.Value;
+          }
+
+          foreach (string pic in pics)
+          {
+            object O = Resources.ResourceManager.GetObject(pic); //Return an object from the image chan1.png in the project
+            using (Bitmap bm = (Bitmap)O)
+            {
+              using (MemoryStream mem = new MemoryStream())
+              {
+                string fullPath = Path.Combine(path, cam.Value.CameraPrefix);
+                fullPath += pic;
+                fullPath += DateTime.Now.Ticks.ToString() + ".jpg";
+                bm.Save(fullPath, ImageFormat.Jpeg);
+                // bm.Save(mem, ImageFormat.Jpeg);
+              }
+            }
+          }
+        }
+      }
+
+      await Task.Delay(1000 * 3).ConfigureAwait(false);
+      Refresh_Click(null, null);
+    }
+
+    private void LogDetailedInformationToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
+      if (menuItem.Checked)
+      {
+        Dbg.LogLevel = 1;
+      }
+      else
+      {
+        Dbg.LogLevel = 0;
+      }
+    }
+
+    private void DeleteLogFileToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (File.Exists(Storage.GetFilePath("OnGuard.txt")))
+      {
+        if (!Dbg.DeleteLogFile())
+        {
+          MessageBox.Show("Unable to delete the log file - It is probably busy. Try again later", "Unable to Delete the log file!");
+        }
+      }
+      else
+      {
+        MessageBox.Show("Unable to delete the log file - It does not currently exist.", "No Log File!");
+      }
+    }
   }
 
 }
