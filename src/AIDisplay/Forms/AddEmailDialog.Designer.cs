@@ -81,6 +81,7 @@
       this.emailAddressList.Name = "emailAddressList";
       this.emailAddressList.Size = new System.Drawing.Size(246, 95);
       this.emailAddressList.TabIndex = 33;
+      this.emailAddressList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnMouseDoubleClick);
       // 
       // AddEmailDialog
       // 

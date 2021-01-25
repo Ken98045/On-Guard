@@ -69,20 +69,20 @@
       this.DeleteButton.UseVisualStyleBackColor = true;
       this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
       // 
-      // OKButton
+      // oKButton
       // 
       this.oKButton.Location = new System.Drawing.Point(72, 196);
-      this.oKButton.Name = "OKButton";
+      this.oKButton.Name = "oKButton";
       this.oKButton.Size = new System.Drawing.Size(75, 23);
       this.oKButton.TabIndex = 3;
       this.oKButton.Text = "OK";
       this.oKButton.UseVisualStyleBackColor = true;
       this.oKButton.Click += new System.EventHandler(this.OKButton_Click);
       // 
-      // CancelButton
+      // cancelButton
       // 
       this.cancelButton.Location = new System.Drawing.Point(170, 196);
-      this.cancelButton.Name = "CancelButton";
+      this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 4;
       this.cancelButton.Text = "Cancel";
@@ -104,6 +104,7 @@
       this.emailAddressList.TabIndex = 5;
       this.emailAddressList.UseCompatibleStateImageBehavior = false;
       this.emailAddressList.View = System.Windows.Forms.View.Details;
+      this.emailAddressList.ItemActivate += new System.EventHandler(this.OnActivate);
       this.emailAddressList.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged);
       // 
       // columnHeader1

@@ -36,5 +36,14 @@ namespace SAAI
     {
       DialogResult = DialogResult.Cancel;
     }
+
+    private void OnMouseDoubleClick(object sender, MouseEventArgs e)
+    {
+      if (null != emailAddressList.SelectedItem)
+      {
+        EmailAddress = (string)emailAddressList.SelectedItem;
+      }
+      DialogResult = DialogResult.OK;
+    }
   }
 }

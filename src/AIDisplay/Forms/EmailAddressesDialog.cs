@@ -56,12 +56,15 @@ namespace SAAI
 
     private void EditButton_Click(object sender, EventArgs e)
     {
-      using (CreateEmailAddressDialog dlg = new CreateEmailAddressDialog((EmailOptions)emailAddressList.Items[emailAddressList.SelectedIndices[0]].Tag))
+      if (emailAddressList.SelectedIndices.Count > 0)
       {
-        DialogResult result = dlg.ShowDialog();
-        if (result == DialogResult.OK)
+        using (CreateEmailAddressDialog dlg = new CreateEmailAddressDialog((EmailOptions)emailAddressList.Items[emailAddressList.SelectedIndices[0]].Tag))
         {
-          emailAddressList.Items[emailAddressList.SelectedIndices[0]].Tag = dlg.Email;
+          DialogResult result = dlg.ShowDialog();
+          if (result == DialogResult.OK)
+          {
+            emailAddressList.Items[emailAddressList.SelectedIndices[0]].Tag = dlg.Email;
+          }
         }
       }
     }
@@ -83,6 +86,11 @@ namespace SAAI
         EditButton.Enabled = false;
         DeleteButton.Enabled = false;
       }
+    }
+
+    private void OnActivate(object sender, EventArgs e)
+    {
+      EditButton_Click(sender, e);
     }
   }
 }
