@@ -109,6 +109,7 @@ namespace SAAI
         UseMQTT = src.UseMQTT;
         NoMotionMQTTNotify = src.NoMotionMQTTNotify;
         mqttCooldown = new MQTTCoolDown(src.mqttCooldown.CooldownTime);
+        NoMotionUrlNotify = src.NoMotionUrlNotify;
       }
     }
   }

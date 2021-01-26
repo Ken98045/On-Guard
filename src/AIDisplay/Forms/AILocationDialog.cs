@@ -24,10 +24,17 @@ namespace SAAI
 
     public AILocationDialog(AILocation location)
     {
-      Location = location;
-      InitializeComponent();
-      ipAddressText.Text = Location.IPAddress;
-      portNumeric.Value = Location.Port;
+      if (location != null)
+      {
+        Location = location;
+        InitializeComponent();
+        ipAddressText.Text = Location.IPAddress;
+        portNumeric.Value = Location.Port;
+      }
+      else
+      {
+        throw new ArgumentNullException();
+      }
     }
 
     private void OKButton_Click(object sender, EventArgs e)
@@ -70,7 +77,7 @@ namespace SAAI
           try
           {
             AILocation location = new AILocation(Guid.NewGuid(), ipAddressText.Text, (int)portNumeric.Value);
-            AIAnalyzer ai = new AIAnalyzer(ipAddressText.Text, (int)portNumeric.Value);
+            AIAnalyzer ai = new AIAnalyzer();
             List<ImageObject> imageObjects = await ai.ProcessImageSync(location, mem, "Test Image").ConfigureAwait(false);
             if (imageObjects != null && imageObjects.Count > 0)
             {

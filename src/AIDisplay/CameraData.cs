@@ -191,7 +191,6 @@ namespace SAAI
     public bool IsItemOfCameraInterest(string label)
     {
       bool result = false;
-      bool stop = false;
 
       foreach (var area in AOI)
       {

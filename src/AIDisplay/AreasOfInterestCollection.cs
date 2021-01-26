@@ -88,7 +88,7 @@ namespace SAAI
     public void Save()
     {
       Debug.Assert(_cameraPath != null);
-      Debug.Assert(_cameraPrefix != null);
+      Debug.Assert(_cameraPath != null);
       Storage.SaveAllAreas(_cameraPath, _cameraPrefix, this);
       /*BinaryFormatter serializer = new BinaryFormatter();
       using (Stream stream = new FileStream(Storage.GetFilePath(_cameraPrefix + "-AreasOfInterest.bin"), FileMode.Create))

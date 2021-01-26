@@ -140,13 +140,16 @@ namespace SAAI
       bool result = false;
       bool stop = false;
 
-      foreach (var searchCriteria in SearchCriteria)
+      if (null != SearchCriteria)
       {
-        if (searchCriteria.ObjectType == label || FrameAnalyzer.MatchesSpecialTag(searchCriteria, label))
+        foreach (var searchCriteria in SearchCriteria)
         {
-          result = true;
-          stop = true;
-          break;
+          if (searchCriteria.ObjectType == label || FrameAnalyzer.MatchesSpecialTag(searchCriteria, label))
+          {
+            result = true;
+            stop = true;
+            break;
+          }
         }
       }
 

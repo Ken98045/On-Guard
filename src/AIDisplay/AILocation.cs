@@ -9,7 +9,7 @@ namespace SAAI
   public class AILocation
   {
 
-    static object s_lock;
+    static readonly object s_lock;
     static List<AILocation> aiLocations;
     // as a global
 

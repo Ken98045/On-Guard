@@ -159,47 +159,57 @@ namespace SAAI
 
     public static AreaOfInterest GetArea(RegistryKey camKey, Guid areaID)
     {
-      using (RegistryKey key = camKey.OpenSubKey(areaID.ToString()))
+      if (camKey != null && areaID != Guid.Empty)
       {
-        int x = (int)key.GetValue("x");
-        int y = (int)key.GetValue("y");
-        int width = (int)key.GetValue("width");
-        int height = (int)key.GetValue("height");
-        Rectangle rect = new Rectangle(x, y, width, height);
+        using (RegistryKey key = camKey.OpenSubKey(areaID.ToString()))
+        {
+          int x = (int)key.GetValue("x");
+          int y = (int)key.GetValue("y");
+          int width = (int)key.GetValue("width");
+          int height = (int)key.GetValue("height");
+          Rectangle rect = new Rectangle(x, y, width, height);
 
-        AreaOfInterest area = new AreaOfInterest(
-        areaID,
-        (string)key.GetValue("AreaName"),
-        (AOIType)Enum.Parse(typeof(AOIType), (string)key.GetValue("AOIType")),
-        rect,
-        (int)key.GetValue("OriginalXResolution"),
-        (int)key.GetValue("OriginalYResolution"),
-        (MovementType)Enum.Parse(typeof(MovementType), (string)key.GetValue("MovementType")),
-        GetNotificationOption(key),
-        GetCharacteristics(key)
-        );
+          AreaOfInterest area = new AreaOfInterest(
+          areaID,
+          (string)key.GetValue("AreaName"),
+          (AOIType)Enum.Parse(typeof(AOIType), (string)key.GetValue("AOIType")),
+          rect,
+          (int)key.GetValue("OriginalXResolution"),
+          (int)key.GetValue("OriginalYResolution"),
+          (MovementType)Enum.Parse(typeof(MovementType), (string)key.GetValue("MovementType")),
+          GetNotificationOption(key),
+          GetCharacteristics(key)
+          );
 
-        return area;
+          return area;
+        }
+      }
+      else
+      {
+        return null;
       }
     }
 
     public static void SaveArea(RegistryKey camKey, AreaOfInterest area)
     {
-      camKey.DeleteSubKeyTree(area.ID.ToString(), false);
-
-      using (RegistryKey key = camKey.CreateSubKey(area.ID.ToString(), true))
+      if (camKey != null && area != null)
       {
-        key.SetValue("x", area.AreaRect.X, RegistryValueKind.DWord);
-        key.SetValue("y", area.AreaRect.Y, RegistryValueKind.DWord);
-        key.SetValue("width", area.AreaRect.Width, RegistryValueKind.DWord);
-        key.SetValue("height", area.AreaRect.Height, RegistryValueKind.DWord);
-        key.SetValue("AreaName", area.AOIName, RegistryValueKind.String);
-        key.SetValue("AOIType", area.AOIType.ToString(), RegistryValueKind.String);
-        key.SetValue("OriginalXResolution", area.OriginalXResolution, RegistryValueKind.DWord);
-        key.SetValue("OriginalYResolution", area.OriginalYResolution, RegistryValueKind.DWord);
-        key.SetValue("MovementType", area.MovementType.ToString(), RegistryValueKind.String);
-        SaveNotificationOption(key, area.Notifications);
-        SaveCharacteristcs(key, area.SearchCriteria);
+        camKey.DeleteSubKeyTree(area.ID.ToString(), false);
+
+        using (RegistryKey key = camKey.CreateSubKey(area.ID.ToString(), true))
+        {
+          key.SetValue("x", area.AreaRect.X, RegistryValueKind.DWord);
+          key.SetValue("y", area.AreaRect.Y, RegistryValueKind.DWord);
+          key.SetValue("width", area.AreaRect.Width, RegistryValueKind.DWord);
+          key.SetValue("height", area.AreaRect.Height, RegistryValueKind.DWord);
+          key.SetValue("AreaName", area.AOIName, RegistryValueKind.String);
+          key.SetValue("AOIType", area.AOIType.ToString(), RegistryValueKind.String);
+          key.SetValue("OriginalXResolution", area.OriginalXResolution, RegistryValueKind.DWord);
+          key.SetValue("OriginalYResolution", area.OriginalYResolution, RegistryValueKind.DWord);
+          key.SetValue("MovementType", area.MovementType.ToString(), RegistryValueKind.String);
+          SaveNotificationOption(key, area.Notifications);
+          SaveCharacteristcs(key, area.SearchCriteria);
+        }
       }
     }
 
@@ -221,9 +231,12 @@ namespace SAAI
 
     public static void DeleteArea(string cameraPath, string cameraPrefix, AreaOfInterest area)
     {
-      using (RegistryKey camKey = FindCameraKey(cameraPath, cameraPrefix))
+      if (!string.IsNullOrEmpty(cameraPath) && !string.IsNullOrEmpty(cameraPrefix) && area != null)
       {
-        camKey.DeleteSubKey(area.ID.ToString());
+        using (RegistryKey camKey = FindCameraKey(cameraPath, cameraPrefix))
+        {
+          camKey.DeleteSubKey(area.ID.ToString());
+        }
       }
     }
 
@@ -248,11 +261,14 @@ namespace SAAI
 
     public static void SaveArea(CameraData cam, AreaOfInterest area)
     {
-      using (RegistryKey cameraKey = FindCameraKey(cam.Path, cam.CameraPrefix))
+      if (cam != null && area != null)
       {
-        if (null != cameraKey)
+        using (RegistryKey cameraKey = FindCameraKey(cam.Path, cam.CameraPrefix))
         {
-          SaveArea(cameraKey, area);
+          if (null != cameraKey)
+          {
+            SaveArea(cameraKey, area);
+          }
         }
       }
     }
@@ -261,13 +277,22 @@ namespace SAAI
     // TODO: Just save each area individually
     public static void SaveAllAreas(string cameraPath, string cameraPrefix, AreasOfInterestCollection areas)
     {
-      using (RegistryKey cameraKey = FindCameraKey(cameraPath, cameraPrefix))
+      if (!string.IsNullOrEmpty(cameraPath) && !string.IsNullOrEmpty(cameraPrefix) && areas != null)
       {
-        if (null != cameraKey)
+        using (RegistryKey cameraKey = FindCameraKey(cameraPath, cameraPrefix))
         {
-          foreach (AreaOfInterest area in areas)
+          if (null != cameraKey)
           {
-            SaveArea(cameraKey, area);
+            // First delete the areas to account for area deletion
+            foreach (string areaKeyName in cameraKey.GetSubKeyNames())
+            {
+              cameraKey.DeleteSubKeyTree(areaKeyName, false);
+            }
+            
+            foreach (AreaOfInterest area in areas)
+            {
+              SaveArea(cameraKey, area);
+            }
           }
         }
       }
@@ -275,18 +300,21 @@ namespace SAAI
 
     public static void SaveCharacteristcs(RegistryKey key, List<ObjectCharacteristics> objectChar)
     {
-      using (RegistryKey searchCritera = key.CreateSubKey("SearchCriteria"))
+      if (key != null && objectChar != null)
       {
-        foreach (var obj in objectChar)
+        using (RegistryKey searchCritera = key.CreateSubKey("SearchCriteria"))
         {
-          using (RegistryKey objKey = searchCritera.CreateSubKey(obj.ID.ToString(), true))
+          foreach (var obj in objectChar)
           {
-            objKey.SetValue("ImageObjectType", obj.ObjectType.ToString());
-            objKey.SetValue("Confidence", obj.Confidence, RegistryValueKind.DWord);
-            objKey.SetValue("Overlap", obj.MinPercentOverlap, RegistryValueKind.DWord);
-            objKey.SetValue("TimeFrame", obj.TimeFrame, RegistryValueKind.DWord);
-            objKey.SetValue("MinimumXSize", obj.MinimumXSize, RegistryValueKind.DWord);
-            objKey.SetValue("MinimumYSize", obj.MinimumYSize, RegistryValueKind.DWord);
+            using (RegistryKey objKey = searchCritera.CreateSubKey(obj.ID.ToString(), true))
+            {
+              objKey.SetValue("ImageObjectType", obj.ObjectType.ToString());
+              objKey.SetValue("Confidence", obj.Confidence, RegistryValueKind.DWord);
+              objKey.SetValue("Overlap", obj.MinPercentOverlap, RegistryValueKind.DWord);
+              objKey.SetValue("TimeFrame", obj.TimeFrame, RegistryValueKind.DWord);
+              objKey.SetValue("MinimumXSize", obj.MinimumXSize, RegistryValueKind.DWord);
+              objKey.SetValue("MinimumYSize", obj.MinimumYSize, RegistryValueKind.DWord);
+            }
           }
         }
       }
@@ -295,105 +323,114 @@ namespace SAAI
     public static List<ObjectCharacteristics> GetCharacteristics(RegistryKey key)
     {
       List<ObjectCharacteristics> list = new List<ObjectCharacteristics>();
-      using (RegistryKey searchCriteria = key.OpenSubKey("SearchCriteria"))
+      if (key != null)
       {
-        if (null != searchCriteria)
+        using (RegistryKey searchCriteria = key.OpenSubKey("SearchCriteria"))
         {
-          foreach (string objectID in searchCriteria.GetSubKeyNames())
+          if (null != searchCriteria)
           {
-            ObjectCharacteristics obj = new ObjectCharacteristics();
-
-            using (RegistryKey optionKey = searchCriteria.OpenSubKey(objectID))
+            foreach (string objectID in searchCriteria.GetSubKeyNames())
             {
-              obj.ID = Guid.Parse(objectID);
-              string objType = (string)optionKey.GetValue("ImageObjectType");
-              obj.ObjectType = objType;
-              obj.Confidence = (int)optionKey.GetValue("Confidence");
-              obj.MinPercentOverlap = (int)optionKey.GetValue("Overlap");
-              obj.TimeFrame = (int)optionKey.GetValue("TimeFrame");
-              obj.MinimumXSize = (int)optionKey.GetValue("MinimumXSize");
-              obj.MinimumYSize = (int)optionKey.GetValue("MinimumYSize");
-            }
+              ObjectCharacteristics obj = new ObjectCharacteristics();
 
-            list.Add(obj);
+              using (RegistryKey optionKey = searchCriteria.OpenSubKey(objectID))
+              {
+                obj.ID = Guid.Parse(objectID);
+                string objType = (string)optionKey.GetValue("ImageObjectType");
+                obj.ObjectType = objType;
+                obj.Confidence = (int)optionKey.GetValue("Confidence");
+                obj.MinPercentOverlap = (int)optionKey.GetValue("Overlap");
+                obj.TimeFrame = (int)optionKey.GetValue("TimeFrame");
+                obj.MinimumXSize = (int)optionKey.GetValue("MinimumXSize");
+                obj.MinimumYSize = (int)optionKey.GetValue("MinimumYSize");
+              }
+
+              list.Add(obj);
+            }
           }
         }
       }
-
       return list;
     }
 
     public static void SaveNotificationOption(RegistryKey key, AreaNotificationOption options)
     {
-      key.SetValue("UseMQTT", options.UseMQTT.ToString(), RegistryValueKind.String);
-      key.SetValue("MQTTCooldown", options.mqttCooldown.CooldownTime, RegistryValueKind.DWord);
-      key.SetValue("MQTTMotionStopped", options.NoMotionMQTTNotify.ToString(), RegistryValueKind.String);
-
-      if (!string.IsNullOrEmpty(options.NoMotionUrlNotify))
+      if (key != null && options != null)
       {
-        key.SetValue("MotionStoppedURL", options.NoMotionUrlNotify, RegistryValueKind.String);
-      }
+        key.SetValue("UseMQTT", options.UseMQTT.ToString(), RegistryValueKind.String);
+        key.SetValue("MQTTCooldown", options.mqttCooldown.CooldownTime, RegistryValueKind.DWord);
+        key.SetValue("MQTTMotionStopped", options.NoMotionMQTTNotify.ToString(), RegistryValueKind.String);
 
-      key.DeleteSubKeyTree("URLs", false);  // we are recreating it.
-
-      using (RegistryKey urls = key.CreateSubKey("URLs", true))
-      {
-        foreach (var notifyOption in options.Urls)
+        if (!string.IsNullOrEmpty(options.NoMotionUrlNotify))
         {
-          if (!string.IsNullOrEmpty(notifyOption.Url))
+          key.SetValue("MotionStoppedURL", options.NoMotionUrlNotify, RegistryValueKind.String);
+        }
+
+        key.DeleteSubKeyTree("URLs", false);  // we are recreating it.
+
+        using (RegistryKey urls = key.CreateSubKey("URLs", true))
+        {
+          foreach (var notifyOption in options.Urls)
           {
-            using (RegistryKey urlKey = urls.CreateSubKey(notifyOption.ID.ToString(), true))
+            if (!string.IsNullOrEmpty(notifyOption.Url))
             {
-              urlKey.SetValue("URL", notifyOption.Url, RegistryValueKind.String);
-              urlKey.SetValue("CoolDown", notifyOption.CoolDown.CooldownTime, RegistryValueKind.DWord);
-              urlKey.SetValue("WaitTime", notifyOption.WaitTime, RegistryValueKind.DWord);
-              urlKey.SetValue("BIFlags", notifyOption.BIFlags, RegistryValueKind.DWord);
+              using (RegistryKey urlKey = urls.CreateSubKey(notifyOption.ID.ToString(), true))
+              {
+                urlKey.SetValue("URL", notifyOption.Url, RegistryValueKind.String);
+                urlKey.SetValue("CoolDown", notifyOption.CoolDown.CooldownTime, RegistryValueKind.DWord);
+                urlKey.SetValue("WaitTime", notifyOption.WaitTime, RegistryValueKind.DWord);
+                urlKey.SetValue("BIFlags", notifyOption.BIFlags, RegistryValueKind.DWord);
+              }
             }
           }
         }
-      }
 
-      using (RegistryKey emails = key.CreateSubKey("Emails", true))
-      {
-        foreach (var email in options.Email)
+        using (RegistryKey emails = key.CreateSubKey("Emails", true))
         {
-          emails.CreateSubKey(email, true);
+          foreach (var email in options.Email)
+          {
+            emails.CreateSubKey(email, true);
+          }
         }
       }
     }
 
     public static AreaNotificationOption GetNotificationOption(RegistryKey key)
     {
-      AreaNotificationOption notify = new AreaNotificationOption
+      AreaNotificationOption notify = null;
+      if (key != null)
       {
-        UseMQTT = bool.Parse((string)key.GetValue("UseMQTT")),   // save true/false as string to make it more readable
-        mqttCooldown = new MQTTCoolDown((int)key.GetValue("MQTTCooldown")),
-        NoMotionMQTTNotify = bool.Parse((string)key.GetValue("MQTTMotionStopped")),
-        NoMotionUrlNotify = (string)key.GetValue("MotionStoppedURL")
-      };
-
-      using (RegistryKey urls = key.OpenSubKey("URLs"))
-      {
-        foreach (var urlID in urls.GetSubKeyNames())
+        notify = new AreaNotificationOption
         {
-          using (RegistryKey optionKey = urls.OpenSubKey(urlID))
+          UseMQTT = bool.Parse((string)key.GetValue("UseMQTT")),   // save true/false as string to make it more readable
+          mqttCooldown = new MQTTCoolDown((int)key.GetValue("MQTTCooldown")),
+          NoMotionMQTTNotify = bool.Parse((string)key.GetValue("MQTTMotionStopped")),
+          NoMotionUrlNotify = (string)key.GetValue("MotionStoppedURL")
+        };
+
+        using (RegistryKey urls = key.OpenSubKey("URLs"))
+        {
+          foreach (var urlID in urls.GetSubKeyNames())
           {
-            UrlOptions opt = new UrlOptions((string)optionKey.GetValue("URL"), (int)optionKey.GetValue("WaitTime"), (int)optionKey.GetValue("CoolDown"), (int)optionKey.GetValue("BIFlags"))
+            using (RegistryKey optionKey = urls.OpenSubKey(urlID))
             {
-              ID = Guid.Parse(urlID) // to keep it the same for debug otherwise not necessary
-            };
-            notify.Urls.Add(opt);
+              UrlOptions opt = new UrlOptions((string)optionKey.GetValue("URL"), (int)optionKey.GetValue("WaitTime"), (int)optionKey.GetValue("CoolDown"), (int)optionKey.GetValue("BIFlags"))
+              {
+                ID = Guid.Parse(urlID) // to keep it the same for debug otherwise not necessary
+              };
+              notify.Urls.Add(opt);
+            }
           }
         }
-      }
 
-      using (RegistryKey emails = key.OpenSubKey("Emails"))
-      {
-        if (null != emails)
+        using (RegistryKey emails = key.OpenSubKey("Emails"))
         {
-          foreach (var email in emails.GetSubKeyNames())
+          if (null != emails)
           {
-            notify.Email.Add(email);  // for email (the key name is the email name
+            foreach (var email in emails.GetSubKeyNames())
+            {
+              notify.Email.Add(email);  // for email (the key name is the email name
+            }
           }
         }
       }
@@ -421,12 +458,15 @@ namespace SAAI
 
     public static void SetAILocation(AILocation location)
     {
-      using (RegistryKey key = s_base.OpenSubKey("AILocations", true))
+      if (location != null)
       {
-        using (RegistryKey aiKey = key.CreateSubKey(location.ID.ToString(), true))
+        using (RegistryKey key = s_base.OpenSubKey("AILocations", true))
         {
-          aiKey.SetValue("IPAddress", location.IPAddress, RegistryValueKind.String);
-          aiKey.SetValue("Port", location.Port, RegistryValueKind.DWord);
+          using (RegistryKey aiKey = key.CreateSubKey(location.ID.ToString(), true))
+          {
+            aiKey.SetValue("IPAddress", location.IPAddress, RegistryValueKind.String);
+            aiKey.SetValue("Port", location.Port, RegistryValueKind.DWord);
+          }
         }
       }
     }
@@ -446,30 +486,45 @@ namespace SAAI
 
     public static string GetCameraPrefix(RegistryKey reg)
     {
-      string prefix = (string)reg.GetValue("Prefix");
+      string prefix = string.Empty;
+      if (reg != null)
+      {
+        prefix = (string)reg.GetValue("Prefix");
+      }
       return prefix;
     }
 
-    public static string GetCameraPath(RegistryKey key, string pathAndPrefix)
+    public static string GetCameraPath(RegistryKey key)
     {
-      string path = (string)key.GetValue("Path");
+      string path = string.Empty;
+      if (key != null)
+      {
+        path = (string)key.GetValue("Path");
+      }
       return path;
     }
 
     public static CameraContactData GetContactData(RegistryKey key)
     {
-      CameraContactData data = new CameraContactData
+      if (key != null)
       {
-        CameraIPAddress = (string)key.GetValue("IPAddress"),
-        CameraPassword = (string)key.GetValue("CameraPassword"),
-        CameraUserName = (string)key.GetValue("UserName"),
-        CameraXResolution = (int)key.GetValue("XResolution"),
-        CameraYResolution = (int)key.GetValue("YResolution"),
-        Port = (int)key.GetValue("Port"),
-        ShortCameraName = (string)key.GetValue("CameraName")
-      };
+        CameraContactData data = new CameraContactData
+        {
+          CameraIPAddress = (string)key.GetValue("IPAddress"),
+          CameraPassword = (string)key.GetValue("CameraPassword"),
+          CameraUserName = (string)key.GetValue("UserName"),
+          CameraXResolution = (int)key.GetValue("XResolution"),
+          CameraYResolution = (int)key.GetValue("YResolution"),
+          Port = (int)key.GetValue("Port"),
+          ShortCameraName = (string)key.GetValue("CameraName")
+        };
 
-      return data;
+        return data;
+      }
+      else
+      {
+        return null;
+      }
     }
 
     public static CameraCollection GetAllCameras()
@@ -484,7 +539,7 @@ namespace SAAI
         using (RegistryKey camKey = s_cameras.OpenSubKey(camKeyName, true))
         {
           string cameraPrefix = GetCameraPrefix(camKey);
-          string cameraPath = GetCameraPath(camKey, camKeyName);  // contains path + prefix
+          string cameraPath = GetCameraPath(camKey);  // contains path + prefix
           int registrationX = (int)camKey.GetValue("RegistrationX", 500);
           int registrationY = (int)camKey.GetValue("RegistrationY", 500);
 
@@ -510,69 +565,77 @@ namespace SAAI
 
       using (RegistryKey key = FindCameraKey(cameraPath, cameraPrefix))
       {
-        result = (int) key.GetValue(keyName, 0);
+        result = (int)key.GetValue(keyName, 0);
       }
-        return result;
+      return result;
     }
 
     public static void SetCameraInt(string cameraPath, string cameraPrefix, string keyName, int theValue)
     {
       using (RegistryKey key = FindCameraKey(cameraPath, cameraPrefix))
       {
-        key.SetValue(keyName, theValue, RegistryValueKind.DWord );
+        key.SetValue(keyName, theValue, RegistryValueKind.DWord);
       }
     }
 
 
     public static void SetCameraContactData(RegistryKey key, CameraContactData data)
     {
-      key.SetValue("IPAddress", data.CameraIPAddress, RegistryValueKind.String);
-      key.SetValue("CameraPassword", data.CameraPassword, RegistryValueKind.String);
-      key.SetValue("UserName", data.CameraUserName, RegistryValueKind.String);
-      key.SetValue("XResolution", data.CameraXResolution, RegistryValueKind.DWord);
-      key.SetValue("YResolution", data.CameraYResolution, RegistryValueKind.DWord);
-      key.SetValue("Port", data.Port, RegistryValueKind.DWord);
-      key.SetValue("CameraName", data.ShortCameraName, RegistryValueKind.String);
+      if (key != null && data != null)
+      {
+        key.SetValue("IPAddress", data.CameraIPAddress, RegistryValueKind.String);
+        key.SetValue("CameraPassword", data.CameraPassword, RegistryValueKind.String);
+        key.SetValue("UserName", data.CameraUserName, RegistryValueKind.String);
+        key.SetValue("XResolution", data.CameraXResolution, RegistryValueKind.DWord);
+        key.SetValue("YResolution", data.CameraYResolution, RegistryValueKind.DWord);
+        key.SetValue("Port", data.Port, RegistryValueKind.DWord);
+        key.SetValue("CameraName", data.ShortCameraName, RegistryValueKind.String);
+      }
     }
 
 
     public static void SaveCamera(RegistryKey camKey, CameraData camera)
     {
-      camKey.SetValue("Prefix", camera.CameraPrefix);
-      camKey.SetValue("Path", camera.Path);
-      SetCameraContactData(camKey, camera.LiveContactData);
-      camKey.SetValue("MotionStoppedTimeout", camera.NoMotionTimeout, RegistryValueKind.DWord);
-
-
-      camKey.SetValue("RegistrationX", camera.RegistrationX, RegistryValueKind.DWord);
-      camKey.SetValue("RegistrationY", camera.RegistrationY, RegistryValueKind.DWord);
-      camKey.SetValue("RegistrationXResolution", camera.RegistrationXResolution, RegistryValueKind.DWord);
-      camKey.SetValue("RegistrationYResolution", camera.RegistrationYResolution, RegistryValueKind.DWord);
-      camKey.SetValue("Monitoring", camera.Monitoring.ToString(), RegistryValueKind.String);
-
-      foreach (AreaOfInterest area in camera.AOI)
+      if (camKey != null && camera != null)
       {
-        SaveArea(camKey, area);
-      }
+        camKey.SetValue("Prefix", camera.CameraPrefix);
+        camKey.SetValue("Path", camera.Path);
+        SetCameraContactData(camKey, camera.LiveContactData);
+        camKey.SetValue("MotionStoppedTimeout", camera.NoMotionTimeout, RegistryValueKind.DWord);
 
+
+        camKey.SetValue("RegistrationX", camera.RegistrationX, RegistryValueKind.DWord);
+        camKey.SetValue("RegistrationY", camera.RegistrationY, RegistryValueKind.DWord);
+        camKey.SetValue("RegistrationXResolution", camera.RegistrationXResolution, RegistryValueKind.DWord);
+        camKey.SetValue("RegistrationYResolution", camera.RegistrationYResolution, RegistryValueKind.DWord);
+        camKey.SetValue("Monitoring", camera.Monitoring.ToString(), RegistryValueKind.String);
+
+        foreach (AreaOfInterest area in camera.AOI)
+        {
+          SaveArea(camKey, area);
+        }
+      }
     }
 
     public static void SaveCameras(CameraCollection allCameras)
     {
-      // Since we are saving everything we need to get rid of the old data
-      foreach (string keyName in s_cameras.GetSubKeyNames())
+      if (null != allCameras)
       {
-        s_cameras.DeleteSubKeyTree(keyName, false);
-      }
-
-      // Now we can save the new data
-      s_cameras.SetValue("CurrentCamera", allCameras.CurrentCameraPath, RegistryValueKind.String);
-
-      foreach (CameraData camera in allCameras.CameraDictionary.Values)
-      {
-        using (RegistryKey camKey = s_cameras.CreateSubKey(camera.ID.ToString(), true))
+        // Since we are saving everything we need to get rid of the old data
+        foreach (string keyName in s_cameras.GetSubKeyNames())
         {
-          SaveCamera(camKey, camera);
+          s_cameras.DeleteSubKeyTree(keyName, false);
+        }
+
+        // Now we can save the new data
+        s_cameras.SetValue("CurrentCamera", allCameras.CurrentCameraPath, RegistryValueKind.String);
+
+        foreach (CameraData camera in allCameras.CameraDictionary.Values)
+        {
+          using (RegistryKey camKey = s_cameras.CreateSubKey(camera.ID.ToString(), true))
+          {
+            SaveCamera(camKey, camera);
+          }
         }
       }
     }

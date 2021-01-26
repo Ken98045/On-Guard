@@ -865,7 +865,7 @@ namespace SAAI
       int offsetX = CurrentCam.RegistrationX - newX;
       int offsetY = CurrentCam.RegistrationY - newY;
 
-      Dbg.Write("AdjustAreasofInterest");
+      Dbg.Write("Setting Registration Point");
       CurrentCam.RegistrationX = newX;
       CurrentCam.RegistrationY = newY;
       CurrentCam.RegistrationXResolution = BitmapResolution.XResolution;
@@ -877,6 +877,7 @@ namespace SAAI
 
       if (shiftResult == DialogResult.Yes)
       {
+        Dbg.Write("Adjusting Areas with respect to registration point");
 
         // If this area is of type registration then adjust everybody's x & Y
         // BUT, only if there was already a registration point
@@ -1449,7 +1450,6 @@ namespace SAAI
         }
         catch (Exception ex)
         {
-          Type t = ex.GetType();
           Dbg.Write("MainWindow - NotifyUrl - Unknown Exception caught in NotifyUrl: " + ex.Message);
         }
 
@@ -1538,8 +1538,13 @@ namespace SAAI
             }
           }
         }
+        catch (HttpRequestException ex)
+        {
+          Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
+        }
         catch (Exception ex)
         {
+          Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
         }
 
         await Task.Delay(1000 * 5).ConfigureAwait(true);
@@ -1822,7 +1827,7 @@ namespace SAAI
               // We were able to open the file so it has been closed
               _filesPendingProcessing.TryRemove(pendingItem.PendingFile, out string f);
 
-              AIResult result = await _analyzer.DetectObjectsAsync(stream, pendingItem).ConfigureAwait(false); //really do it async
+              AIResult result = await AIAnalyzer.DetectObjectsAsync(stream, pendingItem).ConfigureAwait(false); //really do it async
 
               if (null == _allCameras)
               {
@@ -1966,6 +1971,7 @@ namespace SAAI
               cmd.Parameters.AddWithValue("@fileName", fi.Name);
               cmd.Parameters.AddWithValue("@path", pending.CamData.Path);
               cmd.Parameters.AddWithValue("@camera", pending.CamData.CameraPrefix);
+              Dbg.Trace("Adding to Motion table: " + fi.Name);
               int rowsAdded = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
             }
           }
@@ -2186,6 +2192,7 @@ namespace SAAI
               cmd.Parameters.AddWithValue("@path", CurrentCam.Path);
               cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
               cmd.Parameters.AddWithValue("@fileName", fileName);
+              Dbg.Trace("Removing motion from table - file missing: " + fileName);
               await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
             }
           }
@@ -2323,59 +2330,6 @@ namespace SAAI
     }
 
 
-    private static async Task SendEmail(string emailRecipients, HashSet<string> fileNames, HashSet<string> activityDesc)
-    {
-      try
-      {
-        using (MailMessage mail = new MailMessage())
-        {
-          using (SmtpClient SmtpServer = new SmtpClient(Storage.GetGlobalString("EmailServer")))
-          {
-            mail.BodyEncoding = Encoding.UTF8;
-            mail.IsBodyHtml = true;
-            mail.From = new MailAddress(Storage.GetGlobalString("EmailUser"));
-            string rec = emailRecipients.TrimEnd(new char[] { ';', ' ' });
-            mail.To.Add(rec);
-            mail.Subject = "Security Camera Alert";   // todo get via ui
-            mail.Body = "Your security camera noticed the following activity:<br />";
-
-            foreach (var desc in activityDesc)
-            {
-              mail.Body += desc + "<br/>";
-            }
-
-            System.Net.Mail.Attachment attachment;
-
-            foreach (string fileName in fileNames)
-            {
-              attachment = new System.Net.Mail.Attachment(fileName);
-              mail.Attachments.Add(attachment);
-            }
-
-            SmtpServer.Port = Storage.GetGlobalInt("EmailPort");
-            SmtpServer.Port = Storage.GetGlobalInt("EmailPort");
-            string emailUserName = Storage.GetGlobalString("EmailUser");
-            string emailPassword = Storage.GetGlobalString("EmailPassword");
-
-            if (!string.IsNullOrEmpty(emailUserName))
-            {
-              SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
-            }
-
-            SmtpServer.EnableSsl = Storage.GetGlobalBool("EmailSSL");
-
-            await SmtpServer.SendMailAsync(mail).ConfigureAwait(false);
-            Dbg.Write("Email sent to: " + emailRecipients);
-          }
-        }
-      }
-      catch (SmtpException ex)
-      {
-        Dbg.Write("MainWindow - SendEmail - Email exception: " + ex.ToString());
-      }
-
-    }
-
 
     private void OnClosed(object sender, FormClosedEventArgs e)
     {
@@ -2429,9 +2383,6 @@ namespace SAAI
     {
       bool result = false;
       string q;
-      bool readSuccess = false;
-
-
 
       q = "SELECT FileName FROM tblMotionFiles WHERE FileName = @fileName and @Path = @path";
 

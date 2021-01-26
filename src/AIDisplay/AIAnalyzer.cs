@@ -75,19 +75,14 @@ namespace SAAI
   class AIAnalyzer
   {
     List<ImageObject> _previousVehicles = new List<ImageObject>();  // The often don't move (parked)
-    readonly List<ImageObject> _previousPeople = new List<ImageObject>();  // The usually do move, but
+    // readonly List<ImageObject> _previousPeople = new List<ImageObject>();  // The usually do move, but
     readonly private object _fileLock = new object();
 
     const int MultiDefinitionOverlap = 92;
-    const int ParkedOverlap = 95;
+    const int ParkedOverlap = 97;
     const double minVehicleConfidence = 0.40;
-    int lastAIUsed = 0;
 
     public AIAnalyzer()
-    {
-    }
-
-    public AIAnalyzer(string aiAddress, int port)
     {
     }
 
@@ -472,7 +467,7 @@ namespace SAAI
 
     // This function is used by the UI to detect objects.  It is not currently
     // used async, but may be in the future
-    public async Task<List<ImageObject>> DetectObjects(AILocation aiLocation, Stream stream, string imageName)
+    public async static Task<List<ImageObject>> DetectObjects(AILocation aiLocation, Stream stream, string imageName)
     {
       List<ImageObject> objects = null;
 
@@ -539,7 +534,7 @@ namespace SAAI
 
 
     // This function is used by the (semi) live data, not the UI
-    public async Task<AIResult> DetectObjectsAsync(Stream stream, PendingItem pending)
+    public static async Task<AIResult> DetectObjectsAsync(Stream stream, PendingItem pending)
     {
       List<ImageObject> objects = null;
       AIResult aiResult = new AIResult
