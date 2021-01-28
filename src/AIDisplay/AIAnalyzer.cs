@@ -78,9 +78,11 @@ namespace SAAI
     // readonly List<ImageObject> _previousPeople = new List<ImageObject>();  // The usually do move, but
     readonly private object _fileLock = new object();
 
-    const int MultiDefinitionOverlap = 92;
+    const int MultiDefinitionOverlap = 95;
     const int ParkedOverlap = 97;
-    const double minVehicleConfidence = 0.40;
+    const double minVehicleConfidence = 0.45;
+    const double parkedTargetDistance = 0.05;
+    const double parkedTargetMax = 25.0;
 
     public AIAnalyzer()
     {
@@ -144,7 +146,7 @@ namespace SAAI
 
 
 
-    public void RemoveInvalidObjects(List<ImageObject> images)
+    public void RemoveInvalidObjects(CameraData camera, List<ImageObject> images)
     {
 
       if (images != null)
@@ -153,7 +155,7 @@ namespace SAAI
         //First, weed out any vehicles that are overlapps within this picture
         // This often happens when the same vehicles is identified as both a car and a truck (SUV, pickup, cars/trucks at an angle)
         RemoveDuplicateVehiclesInImage(images);
-        RemoveUnmovedVehicles(images);  // Now, remove vehicles that haven't moved
+        RemoveUnmovedVehicles(camera, images);  // Now, remove vehicles that haven't moved
       }
 
     }
@@ -277,14 +279,13 @@ namespace SAAI
     }
 
 
-    void RemoveUnmovedVehicles(List<ImageObject> objectList)
+    void RemoveUnmovedVehicles(CameraData camera, List<ImageObject> objectList)
     {
       Dbg.Trace("Object count before removing parked: " + objectList.Count.ToString());
 
       List<ImageObject> vehicles = new List<ImageObject>();
       int nonVehicleObjects = 0;
 
-      // Yes, once again we get a list of vehicles
       if (objectList != null && objectList.Count > 0)
       {
 
@@ -309,6 +310,12 @@ namespace SAAI
 
         int i = 0;
 
+        /*List<Frame> recentFrames = null;  
+        if (vehicles.Count > 0)
+        {
+          recentFrames = camera.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(5), DateTime.Now, TimeDirection.Before);
+        }*/
+
         while (i < vehicles.Count)
         {
 
@@ -323,13 +330,9 @@ namespace SAAI
               if (vehicles[i].Label == vehicles[j].Label)    // In this case we only remove  objects that are the same - A = car, B = car (not 100%, but what can we do?)
               {
                 int targetOverlap = ParkedOverlap;
-                if (AnimalOverlapsVehicleEdge(vehicles[i], objectList) || AnimalOverlapsVehicleEdge(_previousVehicles[j], objectList))
-                {
-                  targetOverlap = 85; // this throws off the object outline
-                }
 
                 bool foundParked = false;
-                int overlap = GetOverlap(vehicles[i], _previousVehicles[j]);
+                int overlap = AIAnalyzer.GetOverlap(vehicles[i], _previousVehicles[j]);
                 if (overlap >= targetOverlap)   // Shadows, etc. do cause event parked vehicles to shift in outline
                 {
                   Dbg.Trace("Vehicle found parked using area overlap");
@@ -337,9 +340,15 @@ namespace SAAI
                 }
                 else
                 {
-                  // Now we consider 2 points on both the parked and the subject vehicle.  If they match we consider it parked.
-                  // This is because people walking in front of a car may change the outlines.  (well, cars, etc could too, but...)
+                  // Now we consider 2 points on both the parked and the subject vehicle.  If they are close we consider it parked.
+                  // This is because people walking in front of a car may change the outlines.
                   // This is far from perfect, but it is worth trying.
+                  // Note that this assumes only one edge of the vehicle is covered at a time, but for now is better than nothing.
+                  // If the vehicle is still moving the next frame should tell via the overlap test so that is not a concern
+                  // TODO: keep the parked vehicle locations in a db table?
+                  // TODO: Parked vehicles that are covered by people/animals at both corners (we know where people are) will not be 
+                  // removed from the parked list?  We probably don't care about vehicles covered by vehicles because the moving vehicles are
+                  // movement in themselves, unless we care specifically what kind of vehicles we are concerned with.
                   Point pPreviousUL = new Point(_previousVehicles[j].ObjectRectangle.Left, _previousVehicles[j].ObjectRectangle.Top);
                   Point pPreviousLR = new Point(_previousVehicles[j].ObjectRectangle.Right, _previousVehicles[j].ObjectRectangle.Bottom);
                   Point pVehicleUL = new Point(vehicles[i].ObjectRectangle.Left, vehicles[i].ObjectRectangle.Top);
@@ -347,11 +356,18 @@ namespace SAAI
 
                   double ulDistance = GetPointDistance(pPreviousUL, pVehicleUL);
                   double lrDistance = GetPointDistance(pPreviousLR, pVehicleLR);
-                  double parkedSize = pVehicleUL.X - pVehicleLR.X;  // the width in pixels of the parked vehicle, to get a rough idea of its size
-                  double targetSize = .05 * parkedSize;
-
-                  if (ulDistance < targetSize || lrDistance > targetSize)
+                  double parkedSize = pVehicleLR.X - pVehicleUL.X;  // the width in pixels of the parked vehicle, to get a rough idea of its size
+                  double targetSize = parkedTargetDistance * parkedSize;
+                  if (targetSize > parkedTargetMax)
                   {
+                    targetSize = parkedTargetMax; // just a WAG pending test data
+                  }
+
+                  if (ulDistance < targetSize || lrDistance < targetSize)
+                  {
+                    Dbg.Trace("Parked Target Size: " + targetSize.ToString());
+                    Dbg.Trace("Parked ULDistance: " + ulDistance.ToString());
+                    Dbg.Trace("Parked LRDistance: " + lrDistance.ToString());
                     Dbg.Trace("Vehicle found parked using corners");
                     foundParked = true;
                   }
@@ -391,7 +407,7 @@ namespace SAAI
       Dbg.Trace("Total objects after parked vehicle check: " + objectList.Count.ToString() + " Vehicles remaining: " + vehicles.Count.ToString());
     }
 
-    static double GetPointDistance(Point p1, Point p2)
+    public static double GetPointDistance(Point p1, Point p2)
     {
       double result;
       double dw = Math.Pow((p1.X - p2.X), 2);
@@ -399,6 +415,7 @@ namespace SAAI
       result = Math.Sqrt(dw + dh);
       return result;
     }
+
 
     // As people (or other animals) walk in front of a car it can change the outline of the car
     // However, if the car is close enough to be recognized as a car, it would be somewhat rare for one person/animal

@@ -1851,7 +1851,7 @@ namespace SAAI
 
                 if (null != pendingItem.CamData)
                 {
-                  _analyzer.RemoveInvalidObjects(result.ObjectsFound);  // This may remove items from the list, and may zero it out
+                  _analyzer.RemoveInvalidObjects(pendingItem.CamData, result.ObjectsFound);  // This may remove items from the list, and may zero it out
 
                   if (result.ObjectsFound.Count > 0)
                   {
