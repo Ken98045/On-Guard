@@ -457,8 +457,8 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:On Guard"
-        "ProductCode" = "8:{C01D56CD-C1EE-4D8F-8719-1825B23A3D53}"
-        "PackageCode" = "8:{3D3560D6-E6BB-4436-97BE-9D0061AD7C29}"
+        "ProductCode" = "8:{46AA52D3-F2CC-45A5-B151-7D34FF2FA218}"
+        "PackageCode" = "8:{1A075F0D-1139-48A5-B070-54DCB4DFEE31}"
         "UpgradeCode" = "8:{DCA433DA-BECE-4E39-AED0-767091896BEF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
