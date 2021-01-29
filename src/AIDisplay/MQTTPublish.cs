@@ -10,6 +10,7 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Publishing;
 using MQTTnet.Client.Options;
+using MQTTnet.Exceptions;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Unsubscribing;
@@ -22,9 +23,10 @@ namespace SAAI
   public class MQTTPublish : IDisposable
   {
     static MqttClient s_client;
-    readonly static ManualResetEvent s_ready = new ManualResetEvent(false);
     private bool disposedValue;
     static private int _retryDelay = 0;
+    static bool _loggedError = false;
+    static bool _loggedNotConnected = false;
 
     static MQTTPublish()
     {
@@ -38,12 +40,16 @@ namespace SAAI
     {
       var factory = new MqttFactory();
       s_client = (MqttClient)factory.CreateMqttClient();
-      await Connect();
+      // await Connect();
 
     }
 
-    public static async Task Publish(string camera, AreaOfInterest area, Frame frame)
+    public static async Task Publish(string camera, AreaOfInterest area, Frame frame, InterestingObject io)
     {
+      bool result = true;
+      _loggedError = false;
+      _loggedNotConnected = false;
+
       if (area != null && frame != null)
       {
         string baseTopic = Storage.GetGlobalString("MQTTMotionTopic");
@@ -51,42 +57,60 @@ namespace SAAI
         baseTopic = baseTopic.Replace("{Area}", area.AOIName);
         baseTopic = baseTopic.Replace("{Motion}", "on");
 
-        foreach (InterestingObject io in frame.Interesting)
+        string topic = baseTopic;
+        topic = topic.Replace("{Object}", io.FoundObject.Label);
+
+        string payload = Storage.GetGlobalString("MQTTMotionPayload");
+        payload = payload.Replace("{File}", frame.Item.PendingFile);
+        payload = payload.Replace("{Confidence}", ((int)(io.FoundObject.Confidence * 100.0)).ToString());
+
+        if (payload.Contains("{Image}"))
         {
-          string topic = baseTopic;
-          topic = topic.Replace("{Object}", io.FoundObject.Label);
-
-          string payload = Storage.GetGlobalString("MQTTMotionPayload");
-          payload = payload.Replace("{File}", frame.Item.PendingFile);
-          payload = payload.Replace("{Confidence}", ((int)(io.FoundObject.Confidence * 100.0)).ToString());
           payload = payload.Replace("{Image}", LoadImage(frame.Item.PendingFile));
-          payload = payload.Replace("{Object}", io.FoundObject.Label);
-          payload = payload.Replace("{Motion}", "on");
-
-          await Publish(topic, payload).ConfigureAwait(false);
         }
+
+        payload = payload.Replace("{Object}", io.FoundObject.Label);
+        payload = payload.Replace("{Motion}", "on");
+
+        await SendToServer(topic, payload).ConfigureAwait(false);
       }
     }
 
-    public static async Task Publish(string topic, string payload)
+
+
+    public static async Task SendToServer(string topic, string payload)
     {
-      s_ready.WaitOne(10000);  // wait for the first connection attempt to complete (one way or the other) since the connection process is async
       int connectTryCount = 0;
 
       while (connectTryCount < 2 && !s_client.IsConnected)
       {
-        Dbg.Write("MQTTPublish - Client NotConnected");
+        if (!_loggedNotConnected)
+        {
+          Dbg.Write("MQTTPublish - Client NotConnected");
+          _loggedNotConnected = true;
+        }
+
         await Connect().ConfigureAwait(false);
         connectTryCount++;
-        Thread.Sleep(1000 * 2);
+        if (!s_client.IsConnected)
+        {
+          Task.Delay(1000 * 2);
+        }
       }
 
       if (s_client.IsConnected == false)
       {
-        Dbg.Write("MQTTPublish - Client NotConnected");
+        if (!_loggedNotConnected)
+        {
+          Dbg.Write("MQTTPublish - Client NotConnected");
+          _loggedNotConnected = true;
+        }
       }
       else
       {
+        _loggedNotConnected = false;
+        _loggedError = false;
+
         var message = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
                 .WithPayload(payload)
@@ -94,8 +118,28 @@ namespace SAAI
                 .WithRetainFlag()
                 .Build();
 
-        await s_client.PublishAsync(message).ConfigureAwait(false);
 
+        try
+        {
+          await s_client.PublishAsync(message).ConfigureAwait(false);
+          Dbg.Write("MQTT Message Sent");
+        }
+        catch (Exception ex)
+        {
+          Dbg.Write("MQTTPublish - Error publishing message: " + ex.Message);
+          try
+          {
+            if (s_client.IsConnected)
+            {
+              await s_client.DisconnectAsync();
+            }
+          }
+          catch (Exception)
+          {
+            Dbg.Trace("MQTTPublish - Exception closing connection after publish error - client still connected");
+            // Expected if the publish failed (but, probably not if the client still thinks it is connected).
+          }
+        }
       }
     }
 
@@ -124,55 +168,41 @@ namespace SAAI
           .Build();
 
 
-      _ = s_client.UseDisconnectedHandler(async e =>
-        {
-          Dbg.Write("MQTTPublish - Server Disconnected");
-
-          if (_retryDelay > 0)
-          {
-            await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-          }
-
-          _retryDelay = 5;
-
-          try
-          {
-            MqttClientAuthenticateResult disconnectRetryResult = await s_client.ConnectAsync(options).ConfigureAwait(false);
-            if (disconnectRetryResult.ResultCode != MqttClientConnectResultCode.Success)
-            {
-              HandleError(disconnectRetryResult);
-            }
-            else
-            {
-              Dbg.Write("MQTTPublish - Connected succeeded after retry");
-              s_ready.Set();
-            }
-          }
-          catch (Exception ex)
-          {
-            Dbg.Write("MQTTPublish - Reconnection Failed: " + ex.Message);
-          }
-        });
 
       if (s_client.IsConnected == false)
       {
         try
         {
           MqttClientAuthenticateResult result = await s_client.ConnectAsync(options, CancellationToken.None).ConfigureAwait(false);
-          s_ready.Set();
           if (result.ResultCode == MqttClientConnectResultCode.Success)
           {
             Dbg.Write("MQTTPublish - Connected to server!");
+            _loggedError = false;
+            _loggedNotConnected = false;
           }
           else
           {
             HandleError(result);  // Here we let it go setup the disconnect handler -- things may improve in the future
           }
         }
+        catch (MqttCommunicationException ex)
+        {
+          if (!_loggedNotConnected)
+          {
+            Dbg.Write("MQTTPublish - The Connection to server failed - it is unreachable - check your server status and your MQTT settings: " + ex.Message);
+            _loggedNotConnected = true;
+          }
+
+          return;
+
+        }
         catch (Exception ex)
         {
-          Dbg.Write("MQTTPublish - Connection to server failed: " + ex.Message);
-          s_ready.Set();  // Well, it isn't "ready", but there is no sense waiting for a connection that will never come
+          if (!_loggedNotConnected)
+          {
+            Dbg.Write("MQTTPublish - Connection to server failed: " + ex.Message);
+            _loggedNotConnected = true;
+          }
           return;
         }
       }
@@ -181,31 +211,40 @@ namespace SAAI
 
     static void HandleError(MqttClientAuthenticateResult result)
     {
+      string err = string.Empty;
+
       switch (result.ResultCode)
       {
         case MqttClientConnectResultCode.BadUserNameOrPassword:
-          Dbg.Write("MQTTPublish - Connect - Invalid User Name or Password!");
+          err = "MQTTPublish - Connect - Invalid User Name or Password!";
           DisposeInstance();
           break;
 
         case MqttClientConnectResultCode.BadAuthenticationMethod:
-          Dbg.Write("MQTTPublish - Connect - Bad authentication method - secure connection type invaid?  " + result.ResultCode.ToString());
+          err = "MQTTPublish - Connect - Bad authentication method - secure connection type invaid?  " + result.ResultCode.ToString();
           DisposeInstance();
           break;
 
         case MqttClientConnectResultCode.NotAuthorized:
-          Dbg.Write("MQTTPublish - Connect - User Not Authorized: " + result.ResultCode.ToString());
+          err = "MQTTPublish - Connect - User Not Authorized: " + result.ResultCode.ToString();
           DisposeInstance();
           break;
 
         case MqttClientConnectResultCode.ServerUnavailable:
-          Dbg.Write("MQTTPublish - Connect - The server is unavailable");
+          err = "MQTTPublish - Connect - The server is unavailable";
           break;
 
         default:
-          Dbg.Write("MQTTPublish - Connect Error - Error Code: " + result.ResultCode.ToString());
+          err = "MQTTPublish - Connect Error - Error Code: " + result.ResultCode.ToString();
           break;
       }
+
+      if (!_loggedError)
+      {
+        Dbg.Write(err);
+      }
+
+      _loggedError = true;
 
     }
 
@@ -215,8 +254,28 @@ namespace SAAI
 
       if (File.Exists(path))
       {
-        byte[] image = File.ReadAllBytes(path);
-        result = Convert.ToBase64String(image);
+        int retryCount = 0;
+        byte[] image = null;
+        while (retryCount < 2)
+        {
+          try
+          {
+            image = File.ReadAllBytes(path);
+            break;
+          }
+          catch (IOException)
+          {
+            // case seen when the file was in use
+            ++retryCount;
+            Thread.Sleep(200);
+          }
+        }
+
+        if (retryCount < 2)
+        {
+          // success!
+          result = Convert.ToBase64String(image);
+        }
       }
 
       return result;

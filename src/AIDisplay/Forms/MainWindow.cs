@@ -1339,7 +1339,7 @@ namespace SAAI
         {
           /*if (ooi.Area.Notifications.mqttCooldown.CooldownExpired())
           {*/
-          await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame).ConfigureAwait(false);
+          await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame, ooi).ConfigureAwait(false);
           /*}*/
         }
 
@@ -1939,7 +1939,7 @@ namespace SAAI
 
           string payload = Storage.GetGlobalString("MQTTStoppedPayload");
           payload = payload.Replace("{Motion}", "off");
-          await MQTTPublish.Publish(topic, payload).ConfigureAwait(false);
+          await MQTTPublish.SendToServer(topic, payload).ConfigureAwait(false);
         }
 
         if (!string.IsNullOrEmpty(area.Notifications.NoMotionUrlNotify))

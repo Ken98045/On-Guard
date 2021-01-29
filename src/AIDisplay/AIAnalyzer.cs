@@ -81,8 +81,8 @@ namespace SAAI
     const int MultiDefinitionOverlap = 95;
     const int ParkedOverlap = 97;
     const double minVehicleConfidence = 0.45;
-    const double parkedTargetDistance = 0.05;
-    const double parkedTargetMax = 25.0;
+    const double parkedTargetDistance = 0.04;
+    const double parkedTargetMax = 10.0;
 
     public AIAnalyzer()
     {
@@ -327,7 +327,7 @@ namespace SAAI
             for (int j = 0; j < _previousVehicles.Count; j++)
             {
 
-              if (vehicles[i].Label == vehicles[j].Label)    // In this case we only remove  objects that are the same - A = car, B = car (not 100%, but what can we do?)
+              if (vehicles[i].Label == _previousVehicles[j].Label)    // In this case we only remove  objects that are the same - A = car, B = car (not 100%, but what can we do?)
               {
                 int targetOverlap = ParkedOverlap;
 
@@ -358,10 +358,11 @@ namespace SAAI
                   double lrDistance = GetPointDistance(pPreviousLR, pVehicleLR);
                   double parkedSize = pVehicleLR.X - pVehicleUL.X;  // the width in pixels of the parked vehicle, to get a rough idea of its size
                   double targetSize = parkedTargetDistance * parkedSize;
-                  if (targetSize > parkedTargetMax)
+
+                  /*if (targetSize > parkedTargetMax)
                   {
                     targetSize = parkedTargetMax; // just a WAG pending test data
-                  }
+                  }*/
 
                   if (ulDistance < targetSize || lrDistance < targetSize)
                   {
@@ -370,6 +371,11 @@ namespace SAAI
                     Dbg.Trace("Parked LRDistance: " + lrDistance.ToString());
                     Dbg.Trace("Vehicle found parked using corners");
                     foundParked = true;
+                  }
+
+                  if (!foundParked)
+                  {
+                    Dbg.Trace("Vehicle found not parked using corners");
                   }
                 }
 
@@ -404,7 +410,7 @@ namespace SAAI
         }
       }
 
-      Dbg.Trace("Total objects after parked vehicle check: " + objectList.Count.ToString() + " Vehicles remaining: " + vehicles.Count.ToString());
+      Dbg.Trace(" Vehicles remaining after parking check: " + vehicles.Count.ToString());
     }
 
     public static double GetPointDistance(Point p1, Point p2)
