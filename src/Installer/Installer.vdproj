@@ -52,6 +52,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_345DE4B7ACEB7AF0F97A950D539CAEF4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_5CB4A6F49A464B2B9E79E076B7AEB041"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -65,12 +71,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_222F391BD38EDE9D635FB1033FCD622D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_345DE4B7ACEB7AF0F97A950D539CAEF4"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -458,8 +458,8 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:On Guard"
         "ProductCode" = "8:{46AA52D3-F2CC-45A5-B151-7D34FF2FA218}"
-        "PackageCode" = "8:{1A075F0D-1139-48A5-B070-54DCB4DFEE31}"
-        "UpgradeCode" = "8:{DCA433DA-BECE-4E39-AED0-767091896BEF}"
+        "PackageCode" = "8:{9626B1B8-75B4-4705-A9F4-164DF1E7510B}"
+        "UpgradeCode" = "8:{2AAF6273-5284-494A-B34A-19CD889DE037}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
