@@ -39,7 +39,7 @@ namespace SAAI
   public partial class MainWindow : Form
   {
     AIAnalyzer _analyzer;
-    List<string> _fileNames;
+    SortedList<DateTime, string> _fileNames;
 
     int _current = 0;
     bool _showObjects = true;
@@ -347,7 +347,7 @@ namespace SAAI
       numberOfFilesTextBox.Text = _fileNames.Count.ToString();
       if (_fileNames.Count > 0)
       {
-        LoadImage(_fileNames[_current]);
+        LoadImage(_fileNames.Values[_current]);
       }
       else
       {
@@ -392,7 +392,7 @@ namespace SAAI
             {
               try
               {
-                LoadImage(_fileNames[_current]);
+                LoadImage(_fileNames.Values[_current]);
                 break;
               }
               catch (FileNotFoundException)
@@ -462,7 +462,7 @@ namespace SAAI
                 {
                   if (_fileNames.Count > 0)
                   {
-                    LoadImage(_fileNames[_current]);
+                    LoadImage(_fileNames.Values[_current]);
                   }
                   break;
                 }
@@ -513,7 +513,7 @@ namespace SAAI
                 }
               }
 
-              currentNumberTextBox.Text = (_fileNames.IndexOf(file) + 1).ToString();
+              currentNumberTextBox.Text = (_fileNames.Values.IndexOf(file) + 1).ToString();
               fileNameTextBox.Text = file;
               _showingLiveView = false;
               FileInfo fi = new FileInfo(file);
@@ -679,7 +679,7 @@ namespace SAAI
           {
             if (_fileNames.Count > (int)(fileNumberUpDown.Value))
             {
-              LoadImage(_fileNames[(int)fileNumberUpDown.Value - 1]);
+              LoadImage(_fileNames.Values[(int)fileNumberUpDown.Value - 1]);
               _current = (int)fileNumberUpDown.Value - 1;
             }
           }
@@ -720,9 +720,12 @@ namespace SAAI
         lock (_fileLock)
         {
           motionOnlyCheckbox.Checked = false;
-          _fileNames.Reverse();
+          FileTimeComparer comp = (FileTimeComparer)_fileNames.Comparer;
+          comp.Reverse();
+          _fileNames = new SortedList<DateTime, string>(_fileNames, comp);
+
           _current = 0;
-          LoadImage(_fileNames[0]);
+          LoadImage(_fileNames.Values[0]);
           _directionUp = !_directionUp;
         }
       }
@@ -743,7 +746,7 @@ namespace SAAI
           if (_fileNames != null && _fileNames.Count > 0 && _showObjects != menuItem.Checked)
           {
             _showObjects = menuItem.Checked;
-            LoadImage(_fileNames[_current]);
+            LoadImage(_fileNames.Values[_current]);
           }
         }
       }
@@ -911,7 +914,7 @@ namespace SAAI
       {
         lock (_fileLock)
         {
-          LoadImage(_fileNames[_current]);
+          LoadImage(_fileNames.Values[_current]);
         }
       }
     }
@@ -982,7 +985,7 @@ namespace SAAI
           }
           else
           {
-            LoadImage(_fileNames[_current]);
+            LoadImage(_fileNames.Values[_current]);
           }
         }
       }
@@ -1026,7 +1029,7 @@ namespace SAAI
           {
             if (_fileNames != null && _fileNames.Count > 0)
             {
-              LoadImage(_fileNames[_current]);
+              LoadImage(_fileNames.Values[_current]);
             }
           }
         }
@@ -1118,7 +1121,7 @@ namespace SAAI
 
       if (null != _frameObjects)
       {
-        List<ImageObject> frameObjects = LoadImage(_fileNames[_current]);
+        List<ImageObject> frameObjects = LoadImage(_fileNames.Values[_current]);
         AIAnalyzer.RemoveDuplicateVehiclesInImage(frameObjects);
         FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, frameObjects);
         AnalysisResult result = analyzer.AnalyzeFrame();
@@ -1851,7 +1854,7 @@ namespace SAAI
 
                 if (null != pendingItem.CamData)
                 {
-                  _analyzer.RemoveInvalidObjects(result.ObjectsFound);  // This may remove items from the list, and may zero it out
+                  _analyzer.RemoveInvalidObjects(pendingItem.CamData, result.ObjectsFound);  // This may remove items from the list, and may zero it out
 
                   if (result.ObjectsFound.Count > 0)
                   {
@@ -2076,10 +2079,10 @@ namespace SAAI
               if (readSuccess)
               {
                 // OK, here we have the file name, now get the "current" picture index -- it may not exist
-                int index = _fileNames.IndexOf(result);
+                int index = _fileNames.Values.IndexOf(result);
                 if (index > -1)
                 {
-                  _current = _fileNames.IndexOf(result);
+                  _current = _fileNames.Values.IndexOf(result);
                   break;  // done
                 }
                 else

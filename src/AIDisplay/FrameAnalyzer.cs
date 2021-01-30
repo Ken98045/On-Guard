@@ -26,7 +26,6 @@ namespace SAAI
     public HashSet<string> FailureReasons { get; set; }
   }
 
-
   internal class FrameAnalyzer
   {
 
@@ -164,7 +163,6 @@ namespace SAAI
                 {
                   foreach (var criteria in ignore.SearchCriteria)
                   {
-                    ImageObjectType objectType = ObjectTypeFromLabel(imageObject.Label);
                     if (MatchesSpecialTag(criteria, imageObject.Label) ||  criteria.ObjectType == imageObject.Label)
                     {
                       // Yes, it is the type of object we ignore
@@ -327,6 +325,20 @@ namespace SAAI
           break;
       }
 
+      return result;
+    }
+
+
+    // As people (or other animals) walk in front of a car it can change the outline of the car
+    // However, if the car is close enough to be recognized as a car, it would be somewhat rare for one person/animal
+    // to change both the left and right edges of the car.  This can easily happen with multiple people,
+    // and rarely may happen with one person.  While the outline of the car can be changed enough that
+    // it is no longer recognized as a car, not much we can do about that.  
+    // So, here we do the best we can
+    static bool AnimalOverlapsVehicleEdge(ImageObject vehicle, List<ImageObject> foundObjects)
+    {
+      bool result = false;
+      // For now we just return false since thi feature is still bing worked on!
       return result;
     }
 

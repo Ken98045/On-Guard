@@ -132,6 +132,7 @@
     <EmbeddedResource Include="Controls\ZoneBox.resx">
       <DependentUpon>ZoneBox.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="FileTimeComparer.cs" />
     <Compile Include="Forms\AboutDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -202,6 +203,7 @@
     <Compile Include="Forms\MMS-Helper.Designer.cs">
       <DependentUpon>MMS-Helper.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImageObject.cs" />
     <Compile Include="MQTTPublish.cs" />
     <Compile Include="Forms\MQTTSettings.cs">
       <SubType>Form</SubType>

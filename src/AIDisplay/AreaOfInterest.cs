@@ -138,7 +138,6 @@ namespace SAAI
     public bool IsItemOfAreaInterest(string label)
     {
       bool result = false;
-      bool stop = false;
 
       if (null != SearchCriteria)
       {
@@ -147,7 +146,6 @@ namespace SAAI
           if (searchCriteria.ObjectType == label || FrameAnalyzer.MatchesSpecialTag(searchCriteria, label))
           {
             result = true;
-            stop = true;
             break;
           }
         }
