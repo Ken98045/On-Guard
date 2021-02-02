@@ -52,12 +52,13 @@ namespace SAAI
       this.maxEventNumeric = new System.Windows.Forms.NumericUpDown();
       this.label7 = new System.Windows.Forms.Label();
       this.panel3 = new System.Windows.Forms.Panel();
-      this.label1 = new System.Windows.Forms.Label();
-      this.label2 = new System.Windows.Forms.Label();
-      this.label3 = new System.Windows.Forms.Label();
-      this.ConnectionStringText = new System.Windows.Forms.TextBox();
-      this.GetDefaultButton = new System.Windows.Forms.Button();
       this.UseCustomButton = new System.Windows.Forms.Button();
+      this.GetDefaultButton = new System.Windows.Forms.Button();
+      this.ConnectionStringText = new System.Windows.Forms.TextBox();
+      this.label3 = new System.Windows.Forms.Label();
+      this.label2 = new System.Windows.Forms.Label();
+      this.label1 = new System.Windows.Forms.Label();
+      this.RefreshButton = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.snapshotNumeric)).BeginInit();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
@@ -145,6 +146,7 @@ namespace SAAI
       // panel1
       // 
       this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.panel1.Controls.Add(this.RefreshButton);
       this.panel1.Controls.Add(this.RemoveButton);
       this.panel1.Controls.Add(this.AddButton);
       this.panel1.Controls.Add(this.aiLocationListView);
@@ -157,7 +159,7 @@ namespace SAAI
       // 
       // RemoveButton
       // 
-      this.RemoveButton.Location = new System.Drawing.Point(365, 245);
+      this.RemoveButton.Location = new System.Drawing.Point(326, 245);
       this.RemoveButton.Name = "RemoveButton";
       this.RemoveButton.Size = new System.Drawing.Size(62, 23);
       this.RemoveButton.TabIndex = 1;
@@ -167,7 +169,7 @@ namespace SAAI
       // 
       // AddButton
       // 
-      this.AddButton.Location = new System.Drawing.Point(287, 245);
+      this.AddButton.Location = new System.Drawing.Point(253, 245);
       this.AddButton.Name = "AddButton";
       this.AddButton.Size = new System.Drawing.Size(62, 23);
       this.AddButton.TabIndex = 0;
@@ -320,39 +322,15 @@ namespace SAAI
       this.panel3.Size = new System.Drawing.Size(717, 173);
       this.panel3.TabIndex = 12;
       // 
-      // label1
+      // UseCustomButton
       // 
-      this.label1.AutoSize = true;
-      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label1.Location = new System.Drawing.Point(248, 10);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(162, 16);
-      this.label1.TabIndex = 9;
-      this.label1.Text = "SQL Connection String";
-      // 
-      // label2
-      // 
-      this.label2.Location = new System.Drawing.Point(16, 35);
-      this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(681, 55);
-      this.label2.TabIndex = 10;
-      this.label2.Text = resources.GetString("label2.Text");
-      // 
-      // label3
-      // 
-      this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(34, 109);
-      this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(91, 13);
-      this.label3.TabIndex = 11;
-      this.label3.Text = "Connection String";
-      // 
-      // ConnectionStringText
-      // 
-      this.ConnectionStringText.Location = new System.Drawing.Point(133, 106);
-      this.ConnectionStringText.Name = "ConnectionStringText";
-      this.ConnectionStringText.Size = new System.Drawing.Size(477, 20);
-      this.ConnectionStringText.TabIndex = 0;
+      this.UseCustomButton.Location = new System.Drawing.Point(363, 138);
+      this.UseCustomButton.Name = "UseCustomButton";
+      this.UseCustomButton.Size = new System.Drawing.Size(128, 23);
+      this.UseCustomButton.TabIndex = 2;
+      this.UseCustomButton.Text = "Use Custom Setting";
+      this.UseCustomButton.UseVisualStyleBackColor = true;
+      this.UseCustomButton.Click += new System.EventHandler(this.UseCustomButton_Click);
       // 
       // GetDefaultButton
       // 
@@ -364,15 +342,49 @@ namespace SAAI
       this.GetDefaultButton.UseVisualStyleBackColor = true;
       this.GetDefaultButton.Click += new System.EventHandler(this.GetDefaultButton_Click);
       // 
-      // UseCustomButton
+      // ConnectionStringText
       // 
-      this.UseCustomButton.Location = new System.Drawing.Point(363, 138);
-      this.UseCustomButton.Name = "UseCustomButton";
-      this.UseCustomButton.Size = new System.Drawing.Size(128, 23);
-      this.UseCustomButton.TabIndex = 2;
-      this.UseCustomButton.Text = "Use Custom Setting";
-      this.UseCustomButton.UseVisualStyleBackColor = true;
-      this.UseCustomButton.Click += new System.EventHandler(this.UseCustomButton_Click);
+      this.ConnectionStringText.Location = new System.Drawing.Point(133, 106);
+      this.ConnectionStringText.Name = "ConnectionStringText";
+      this.ConnectionStringText.Size = new System.Drawing.Size(477, 20);
+      this.ConnectionStringText.TabIndex = 0;
+      // 
+      // label3
+      // 
+      this.label3.AutoSize = true;
+      this.label3.Location = new System.Drawing.Point(34, 109);
+      this.label3.Name = "label3";
+      this.label3.Size = new System.Drawing.Size(91, 13);
+      this.label3.TabIndex = 11;
+      this.label3.Text = "Connection String";
+      // 
+      // label2
+      // 
+      this.label2.Location = new System.Drawing.Point(16, 35);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(681, 55);
+      this.label2.TabIndex = 10;
+      this.label2.Text = resources.GetString("label2.Text");
+      // 
+      // label1
+      // 
+      this.label1.AutoSize = true;
+      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label1.Location = new System.Drawing.Point(248, 10);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(162, 16);
+      this.label1.TabIndex = 9;
+      this.label1.Text = "SQL Connection String";
+      // 
+      // RefreshButton
+      // 
+      this.RefreshButton.Location = new System.Drawing.Point(399, 245);
+      this.RefreshButton.Name = "RefreshButton";
+      this.RefreshButton.Size = new System.Drawing.Size(62, 23);
+      this.RefreshButton.TabIndex = 2;
+      this.RefreshButton.Text = "Refresh";
+      this.RefreshButton.UseVisualStyleBackColor = true;
+      this.RefreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
       // 
       // SettingsDialog
       // 
@@ -429,5 +441,6 @@ namespace SAAI
     private System.Windows.Forms.Label label3;
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.Button RefreshButton;
   }
 }

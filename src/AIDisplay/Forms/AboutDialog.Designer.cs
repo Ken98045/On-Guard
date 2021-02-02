@@ -63,15 +63,15 @@
       // label2
       // 
       this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label2.Location = new System.Drawing.Point(232, 99);
+      this.label2.Location = new System.Drawing.Point(232, 100);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(393, 126);
+      this.label2.Size = new System.Drawing.Size(560, 351);
       this.label2.TabIndex = 2;
       this.label2.Text = resources.GetString("label2.Text");
       // 
       // OKButton
       // 
-      this.OKButton.Location = new System.Drawing.Point(281, 245);
+      this.OKButton.Location = new System.Drawing.Point(365, 472);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
       this.OKButton.TabIndex = 3;
@@ -111,7 +111,7 @@
       this.AcceptButton = this.OKButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(637, 277);
+      this.ClientSize = new System.Drawing.Size(804, 505);
       this.Controls.Add(this.assemblyLabel);
       this.Controls.Add(this.label4);
       this.Controls.Add(this.label3);

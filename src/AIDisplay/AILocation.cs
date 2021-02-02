@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace SAAI
 {
@@ -10,95 +11,77 @@ namespace SAAI
   {
 
     static readonly object s_lock;
-    static List<AILocation> aiLocations;
+    static BufferBlock<AILocation> aiList;
+
+    public static int AICount { get; set; }   // So we know whether to EXPECT an AI
+    
     // as a global
-
-    public static List<AILocation> AILocations
-    { 
-      get
-      {
-        lock (s_lock)
-        {
-          return aiLocations;
-        }
-      }
-
-      set
-      {
-        lock (s_lock)
-        {
-          aiLocations = value;
-        }
-      }
-    }
-
-    public Guid ID { get; set; }
-    public string IPAddress { get; set; }
-    public int Port { get; set; }
-    static private int Next { get; set; }
 
     // Static Constructor used to get the global values
     static AILocation()
     {
       s_lock = new object();
+      List<AILocation> result = new List<AILocation>();
+      aiList = new BufferBlock<AILocation>();
       Refresh();
     }
-
-    public static void Refresh()
-    {
-      lock (s_lock)
-      {
-        AILocations = Storage.GetAILocations(); // get the list from the registry
-      }
-    }
-
 
     public AILocation(Guid id, string ipAddress, int port)
     {
       ID = id;
       IPAddress = ipAddress;
       Port = port;
+      ++AICount;
+
     }
 
-    static public AILocation GetAvailableAI()
+    public async static Task ReturnToList(AILocation ai)
     {
-      AILocation result = null;
+      await aiList.SendAsync(ai).ConfigureAwait(false);
+    }
+
+    public async static Task<AILocation> GetAI()
+    {
+      AILocation ai = null;
+      try
+      {
+        if (AICount == 0)
+        {
+          throw new AiNotFoundException("No available AIs are defined"); 
+        }
+        ai = await aiList.ReceiveAsync(TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+      }
+      catch (InvalidOperationException)
+      {
+      }
+
+      return ai;  // which may be null
+
+    }
+
+
+    public Guid ID { get; set; }
+    public string IPAddress { get; set; }
+    public int Port { get; set; }
+    static private int Next { get; set; }
+
+    
+    public static void Refresh()
+    {
       lock (s_lock)
       {
-
-        // The global list may have changed since the last call!
-        int useItem = 0;
-        if (AILocation.Next < AILocation.AILocations.Count)
+        IList<AILocation> tmp;
+        aiList.TryReceiveAll(out tmp);  // to empty the list;
+        AICount = 0;
+        List<AILocation> locations = Storage.GetAILocations(); // get the list from the registry
+        foreach (var ai in locations)
         {
-          useItem = AILocation.Next;  
-        }
-        else
-        {
-          AILocation.Next = 0;  // start at the zero position, but still may not exist!
-          useItem = 0;  // yeah we will try it
-        }
-
-        if (useItem < AILocation.AILocations.Count) // which also accounts for the empty list possiblity
-        {
-          result = AILocation.AILocations[useItem];
-        }
-
-        // Now, change the next one! 
-        ++Next;
-        if (Next >= AILocation.AILocations.Count)
-        {
-          Next = 0; // start the list over (which may only have one (usually))
+          aiList.Post(ai);
+          ++AICount;
         }
       }
-
-      if (null == result)
-      {
-        Dbg.Trace("No AI Locations were found!");
-        throw new AiNotFoundException("No AI Locations were found! Please define at least one!");
-      }
-
-      return result;
     }
 
   }
+
 }

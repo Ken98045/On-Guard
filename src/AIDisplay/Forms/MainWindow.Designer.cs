@@ -46,8 +46,6 @@
     {
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-      this.buttonRight = new System.Windows.Forms.Button();
-      this.buttonLeft = new System.Windows.Forms.Button();
       this.objectListView = new System.Windows.Forms.ListView();
       this.label = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.confidence = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -86,16 +84,19 @@
       this.camLeftButton = new System.Windows.Forms.Button();
       this.camUpButton = new System.Windows.Forms.Button();
       this.refreshButton = new System.Windows.Forms.Button();
-      this.pictureImage = new System.Windows.Forms.PictureBox();
-      this.cpuProgress = new System.Windows.Forms.ProgressBar();
       this.label8 = new System.Windows.Forms.Label();
       this.label9 = new System.Windows.Forms.Label();
       this.cameraCombo = new System.Windows.Forms.ComboBox();
-      this.toolsPanel = new System.Windows.Forms.Panel();
+      this.FrameProgressPanel = new System.Windows.Forms.Panel();
+      this.FPSProgress = new SAAI.Controls.EnhnacedProgressBar();
+      this.label13 = new System.Windows.Forms.Label();
       this.motionOnlyCheckbox = new System.Windows.Forms.CheckBox();
       this.CleanupButton = new System.Windows.Forms.Button();
+      this.buttonRight = new System.Windows.Forms.Button();
+      this.buttonLeft = new System.Windows.Forms.Button();
       this.mainPanel = new System.Windows.Forms.Panel();
       this.picturePanel = new System.Windows.Forms.Panel();
+      this.pictureImage = new System.Windows.Forms.PictureBox();
       this.xTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.label10 = new System.Windows.Forms.Label();
       this.numberOfImagesLabel = new System.Windows.Forms.Label();
@@ -123,43 +124,16 @@
       this.label12 = new System.Windows.Forms.Label();
       this.XResLabel = new System.Windows.Forms.Label();
       this.YResLabel = new System.Windows.Forms.Label();
+      this.cpuProgress = new SAAI.Controls.EnhnacedProgressBar();
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).BeginInit();
       this.LiveOnDemandGroup.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.pictureImage)).BeginInit();
-      this.toolsPanel.SuspendLayout();
+      this.FrameProgressPanel.SuspendLayout();
       this.mainPanel.SuspendLayout();
       this.picturePanel.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.pictureImage)).BeginInit();
       this.menuStrip2.SuspendLayout();
       this.SuspendLayout();
-      // 
-      // buttonRight
-      // 
-      this.buttonRight.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.buttonRight.BackgroundImage = global::SAAI.Properties.Resources.arrow_right;
-      this.buttonRight.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-      this.buttonRight.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.buttonRight.Location = new System.Drawing.Point(696, 110);
-      this.buttonRight.Name = "buttonRight";
-      this.buttonRight.Size = new System.Drawing.Size(31, 23);
-      this.buttonRight.TabIndex = 1;
-      this.buttonRight.Text = "---->";
-      this.buttonRight.UseVisualStyleBackColor = true;
-      this.buttonRight.Click += new System.EventHandler(this.ButtonRight_Click);
-      // 
-      // buttonLeft
-      // 
-      this.buttonLeft.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.buttonLeft.BackgroundImage = global::SAAI.Properties.Resources.arrow_left;
-      this.buttonLeft.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-      this.buttonLeft.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.buttonLeft.Location = new System.Drawing.Point(654, 110);
-      this.buttonLeft.Name = "buttonLeft";
-      this.buttonLeft.Size = new System.Drawing.Size(31, 23);
-      this.buttonLeft.TabIndex = 2;
-      this.buttonLeft.Text = "<---";
-      this.buttonLeft.UseVisualStyleBackColor = true;
-      this.buttonLeft.Click += new System.EventHandler(this.ButtonLeft_Click);
       // 
       // objectListView
       // 
@@ -552,37 +526,11 @@
       this.refreshButton.UseVisualStyleBackColor = true;
       this.refreshButton.Click += new System.EventHandler(this.Refresh_Click);
       // 
-      // pictureImage
-      // 
-      this.pictureImage.ErrorImage = global::SAAI.Properties.Resources.OnGuardNoPIctures;
-      this.pictureImage.Location = new System.Drawing.Point(1, 1);
-      this.pictureImage.Name = "pictureImage";
-      this.pictureImage.Size = new System.Drawing.Size(1280, 960);
-      this.pictureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-      this.pictureImage.TabIndex = 0;
-      this.pictureImage.TabStop = false;
-      this.pictureImage.SizeChanged += new System.EventHandler(this.OnSizeChanged);
-      this.pictureImage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
-      this.pictureImage.MouseEnter += new System.EventHandler(this.OnMouseEnter);
-      this.pictureImage.MouseLeave += new System.EventHandler(this.OnMouseLeave);
-      this.pictureImage.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
-      this.pictureImage.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
-      // 
-      // cpuProgress
-      // 
-      this.cpuProgress.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.cpuProgress.Location = new System.Drawing.Point(903, 75);
-      this.cpuProgress.MarqueeAnimationSpeed = 300;
-      this.cpuProgress.Name = "cpuProgress";
-      this.cpuProgress.Size = new System.Drawing.Size(73, 15);
-      this.cpuProgress.TabIndex = 34;
-      this.cpuProgress.Value = 50;
-      // 
       // label8
       // 
       this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label8.AutoSize = true;
-      this.label8.Location = new System.Drawing.Point(841, 77);
+      this.label8.Location = new System.Drawing.Point(841, 86);
       this.label8.Name = "label8";
       this.label8.Size = new System.Drawing.Size(56, 13);
       this.label8.TabIndex = 35;
@@ -609,40 +557,61 @@
       this.cameraCombo.TabIndex = 37;
       this.cameraCombo.SelectionChangeCommitted += new System.EventHandler(this.OnCameraSelected);
       // 
-      // toolsPanel
+      // FrameProgressPanel
       // 
-      this.toolsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+      this.FrameProgressPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.toolsPanel.AutoScroll = true;
-      this.toolsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.toolsPanel.Controls.Add(this.motionOnlyCheckbox);
-      this.toolsPanel.Controls.Add(this.CleanupButton);
-      this.toolsPanel.Controls.Add(this.objectListView);
-      this.toolsPanel.Controls.Add(this.LiveOnDemandGroup);
-      this.toolsPanel.Controls.Add(this.cameraCombo);
-      this.toolsPanel.Controls.Add(this.label9);
-      this.toolsPanel.Controls.Add(this.label4);
-      this.toolsPanel.Controls.Add(this.label8);
-      this.toolsPanel.Controls.Add(this.fileNameTextBox);
-      this.toolsPanel.Controls.Add(this.cpuProgress);
-      this.toolsPanel.Controls.Add(this.goToFileTextBox);
-      this.toolsPanel.Controls.Add(this.label5);
-      this.toolsPanel.Controls.Add(this.refreshButton);
-      this.toolsPanel.Controls.Add(this.goToFileButton);
-      this.toolsPanel.Controls.Add(this.label2);
-      this.toolsPanel.Controls.Add(this.analyzeButton);
-      this.toolsPanel.Controls.Add(this.fileNumberUpDown);
-      this.toolsPanel.Controls.Add(this.reverseListButton);
-      this.toolsPanel.Controls.Add(this.showAreasOfInterestCheck);
-      this.toolsPanel.Controls.Add(this.currentNumberTextBox);
-      this.toolsPanel.Controls.Add(this.label3);
-      this.toolsPanel.Controls.Add(this.buttonRight);
-      this.toolsPanel.Controls.Add(this.goToFileNameButton);
-      this.toolsPanel.Controls.Add(this.buttonLeft);
-      this.toolsPanel.Location = new System.Drawing.Point(16, 979);
-      this.toolsPanel.Name = "toolsPanel";
-      this.toolsPanel.Size = new System.Drawing.Size(1289, 155);
-      this.toolsPanel.TabIndex = 38;
+      this.FrameProgressPanel.AutoScroll = true;
+      this.FrameProgressPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.FrameProgressPanel.Controls.Add(this.cpuProgress);
+      this.FrameProgressPanel.Controls.Add(this.FPSProgress);
+      this.FrameProgressPanel.Controls.Add(this.label13);
+      this.FrameProgressPanel.Controls.Add(this.motionOnlyCheckbox);
+      this.FrameProgressPanel.Controls.Add(this.CleanupButton);
+      this.FrameProgressPanel.Controls.Add(this.objectListView);
+      this.FrameProgressPanel.Controls.Add(this.LiveOnDemandGroup);
+      this.FrameProgressPanel.Controls.Add(this.cameraCombo);
+      this.FrameProgressPanel.Controls.Add(this.label9);
+      this.FrameProgressPanel.Controls.Add(this.label4);
+      this.FrameProgressPanel.Controls.Add(this.label8);
+      this.FrameProgressPanel.Controls.Add(this.fileNameTextBox);
+      this.FrameProgressPanel.Controls.Add(this.goToFileTextBox);
+      this.FrameProgressPanel.Controls.Add(this.label5);
+      this.FrameProgressPanel.Controls.Add(this.refreshButton);
+      this.FrameProgressPanel.Controls.Add(this.goToFileButton);
+      this.FrameProgressPanel.Controls.Add(this.label2);
+      this.FrameProgressPanel.Controls.Add(this.analyzeButton);
+      this.FrameProgressPanel.Controls.Add(this.fileNumberUpDown);
+      this.FrameProgressPanel.Controls.Add(this.reverseListButton);
+      this.FrameProgressPanel.Controls.Add(this.showAreasOfInterestCheck);
+      this.FrameProgressPanel.Controls.Add(this.currentNumberTextBox);
+      this.FrameProgressPanel.Controls.Add(this.label3);
+      this.FrameProgressPanel.Controls.Add(this.buttonRight);
+      this.FrameProgressPanel.Controls.Add(this.goToFileNameButton);
+      this.FrameProgressPanel.Controls.Add(this.buttonLeft);
+      this.FrameProgressPanel.Location = new System.Drawing.Point(16, 979);
+      this.FrameProgressPanel.Name = "FrameProgressPanel";
+      this.FrameProgressPanel.Size = new System.Drawing.Size(1289, 155);
+      this.FrameProgressPanel.TabIndex = 38;
+      // 
+      // FPSProgress
+      // 
+      this.FPSProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.FPSProgress.Location = new System.Drawing.Point(903, 58);
+      this.FPSProgress.Name = "FPSProgress";
+      this.FPSProgress.Size = new System.Drawing.Size(73, 15);
+      this.FPSProgress.TabIndex = 42;
+      this.FPSProgress.Load += new System.EventHandler(this.enhnacedProgressBar1_Load);
+      // 
+      // label13
+      // 
+      this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
+      this.label13.AutoSize = true;
+      this.label13.Location = new System.Drawing.Point(835, 60);
+      this.label13.Name = "label13";
+      this.label13.Size = new System.Drawing.Size(62, 13);
+      this.label13.TabIndex = 41;
+      this.label13.Text = "Frame Time";
       // 
       // motionOnlyCheckbox
       // 
@@ -660,13 +629,41 @@
       // 
       // CleanupButton
       // 
-      this.CleanupButton.Location = new System.Drawing.Point(844, 102);
+      this.CleanupButton.Location = new System.Drawing.Point(844, 110);
       this.CleanupButton.Name = "CleanupButton";
       this.CleanupButton.Size = new System.Drawing.Size(122, 23);
       this.CleanupButton.TabIndex = 38;
       this.CleanupButton.Text = "Cleanup Old Pictures";
       this.CleanupButton.UseVisualStyleBackColor = true;
       this.CleanupButton.Click += new System.EventHandler(this.CleanupButton_Click);
+      // 
+      // buttonRight
+      // 
+      this.buttonRight.Anchor = System.Windows.Forms.AnchorStyles.Left;
+      this.buttonRight.BackgroundImage = global::SAAI.Properties.Resources.arrow_right;
+      this.buttonRight.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+      this.buttonRight.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.buttonRight.Location = new System.Drawing.Point(696, 110);
+      this.buttonRight.Name = "buttonRight";
+      this.buttonRight.Size = new System.Drawing.Size(31, 23);
+      this.buttonRight.TabIndex = 1;
+      this.buttonRight.Text = "---->";
+      this.buttonRight.UseVisualStyleBackColor = true;
+      this.buttonRight.Click += new System.EventHandler(this.ButtonRight_Click);
+      // 
+      // buttonLeft
+      // 
+      this.buttonLeft.Anchor = System.Windows.Forms.AnchorStyles.Left;
+      this.buttonLeft.BackgroundImage = global::SAAI.Properties.Resources.arrow_left;
+      this.buttonLeft.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+      this.buttonLeft.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.buttonLeft.Location = new System.Drawing.Point(654, 110);
+      this.buttonLeft.Name = "buttonLeft";
+      this.buttonLeft.Size = new System.Drawing.Size(31, 23);
+      this.buttonLeft.TabIndex = 2;
+      this.buttonLeft.Text = "<---";
+      this.buttonLeft.UseVisualStyleBackColor = true;
+      this.buttonLeft.Click += new System.EventHandler(this.ButtonLeft_Click);
       // 
       // mainPanel
       // 
@@ -677,7 +674,7 @@
       this.mainPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
       this.mainPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.mainPanel.Controls.Add(this.picturePanel);
-      this.mainPanel.Controls.Add(this.toolsPanel);
+      this.mainPanel.Controls.Add(this.FrameProgressPanel);
       this.mainPanel.Location = new System.Drawing.Point(0, 28);
       this.mainPanel.Name = "mainPanel";
       this.mainPanel.Size = new System.Drawing.Size(1303, 1144);
@@ -695,6 +692,22 @@
       this.picturePanel.Name = "picturePanel";
       this.picturePanel.Size = new System.Drawing.Size(1290, 964);
       this.picturePanel.TabIndex = 39;
+      // 
+      // pictureImage
+      // 
+      this.pictureImage.ErrorImage = global::SAAI.Properties.Resources.OnGuardNoPIctures;
+      this.pictureImage.Location = new System.Drawing.Point(1, 1);
+      this.pictureImage.Name = "pictureImage";
+      this.pictureImage.Size = new System.Drawing.Size(1280, 960);
+      this.pictureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+      this.pictureImage.TabIndex = 0;
+      this.pictureImage.TabStop = false;
+      this.pictureImage.SizeChanged += new System.EventHandler(this.OnSizeChanged);
+      this.pictureImage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
+      this.pictureImage.MouseEnter += new System.EventHandler(this.OnMouseEnter);
+      this.pictureImage.MouseLeave += new System.EventHandler(this.OnMouseLeave);
+      this.pictureImage.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
+      this.pictureImage.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
       // 
       // xTestToolStripMenuItem
       // 
@@ -935,6 +948,14 @@
       this.YResLabel.TabIndex = 6;
       this.YResLabel.Text = "1920";
       // 
+      // cpuProgress
+      // 
+      this.cpuProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.cpuProgress.Location = new System.Drawing.Point(903, 86);
+      this.cpuProgress.Name = "cpuProgress";
+      this.cpuProgress.Size = new System.Drawing.Size(73, 15);
+      this.cpuProgress.TabIndex = 43;
+      // 
       // MainWindow
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -966,11 +987,11 @@
       ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).EndInit();
       this.LiveOnDemandGroup.ResumeLayout(false);
       this.LiveOnDemandGroup.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.pictureImage)).EndInit();
-      this.toolsPanel.ResumeLayout(false);
-      this.toolsPanel.PerformLayout();
+      this.FrameProgressPanel.ResumeLayout(false);
+      this.FrameProgressPanel.PerformLayout();
       this.mainPanel.ResumeLayout(false);
       this.picturePanel.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.pictureImage)).EndInit();
       this.menuStrip2.ResumeLayout(false);
       this.menuStrip2.PerformLayout();
       this.ResumeLayout(false);
@@ -1020,11 +1041,10 @@
     private System.Windows.Forms.NumericUpDown presetNumeric;
     private System.Windows.Forms.GroupBox LiveOnDemandGroup;
     private System.Windows.Forms.Button refreshButton;
-    private System.Windows.Forms.ProgressBar cpuProgress;
     private System.Windows.Forms.Label label8;
     private System.Windows.Forms.Label label9;
     private System.Windows.Forms.ComboBox cameraCombo;
-    private System.Windows.Forms.Panel toolsPanel;
+    private System.Windows.Forms.Panel FrameProgressPanel;
     private System.Windows.Forms.Panel mainPanel;
     private System.Windows.Forms.ToolStripMenuItem xTestToolStripMenuItem;
     private System.Windows.Forms.Button CleanupButton;
@@ -1057,6 +1077,9 @@
     private System.Windows.Forms.ToolStripMenuItem logDetailedInformationToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem deleteLogFileToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem testImagesToolStripMenuItem;
+    private System.Windows.Forms.Label label13;
+    private Controls.EnhnacedProgressBar FPSProgress;
+    private Controls.EnhnacedProgressBar cpuProgress;
   }
 }
 

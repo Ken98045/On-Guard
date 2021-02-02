@@ -30,12 +30,12 @@ namespace SAAI
       {
         int aiPort = Storage.GetGlobalInt("DeepStackPort");
         AILocation location = new AILocation(Guid.NewGuid(), oldIPAddress, aiPort);
-        AILocation.AILocations.Add(location); // put it in the new format
         Storage.RemoveGlobalValue("DeepStackIPAddress");  // get rid of the old format
         Storage.RemoveGlobalValue("DeepStackPort");
       }
 
-      foreach (var location in AILocation.AILocations)
+      List<AILocation> locations = Storage.GetAILocations();
+      foreach (var location in locations)
       {
         ListViewItem item = new ListViewItem(new string[] { location.IPAddress, location.Port.ToString() });
         aiLocationListView.Items.Add(item);
@@ -88,9 +88,7 @@ namespace SAAI
     private void CancelButton_Click(object sender, EventArgs e)
     {
       DialogResult = DialogResult.Cancel;
-
     }
-
 
     private void AddButton_Click(object sender, EventArgs e)
     {
@@ -161,6 +159,15 @@ namespace SAAI
       {
         Storage.SetGlobalString("CustomDatabaseConnectionString", ConnectionStringText.Text); // His custom string stored here so we can get it back (unless nuked)!
         Storage.SetGlobalString("DBConnectionString", ConnectionStringText.Text);   // This is the one actually used!
+      }
+    }
+
+    private void RefreshButton_Click(object sender, EventArgs e)
+    {
+      DialogResult result = MessageBox.Show(this, "This button re-reads the AI information from storage.  This can be useful if the status of your AI server(s) has changed", "Refresh AI Information", MessageBoxButtons.YesNo);
+      if (result == DialogResult.Yes)
+      {
+        AILocation.Refresh();
       }
     }
   }

@@ -1,5 +1,4 @@
 ﻿using SAAI.Properties;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,6 +7,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SAAI
 {
@@ -15,13 +16,11 @@ namespace SAAI
 
   class Response
   {
-
     public bool Success { get; set; }
     public ImageObject[] Predictions { get; set; }
-
   }
 
-  
+
 
   /// <summary>
   /// AIAnalyzer is the class that contacts the AI to analyze the picture.
@@ -29,15 +28,15 @@ namespace SAAI
   /// /// </summary>
   class AIAnalyzer
   {
-    List<ImageObject> _previousVehicles = new List<ImageObject>();  
+    List<ImageObject> _previousVehicles = new List<ImageObject>();
     // readonly List<ImageObject> _previousPeople = new List<ImageObject>();  // The usually do move, but
     readonly private object _fileLock = new object();
 
     const int MultiDefinitionOverlap = 95;
     const int ParkedOverlap = 97;
     const double minVehicleConfidence = 0.45;
-    const double parkedTargetDistance = 0.05;
-    const double parkedTargetMax = 20.0;
+    const double parkedTargetDistance = 0.04;
+    const double parkedTargetMax = 10.0;
 
     public AIAnalyzer()
     {
@@ -295,194 +294,6 @@ namespace SAAI
       return people;
     }
 
-    // This is the one called by the UI indirectly, and by the connection test function directly
-    public async Task<List<ImageObject>> ProcessImageSync(AILocation ai, Stream stream, string imageName)
-    {
-      List<ImageObject> objectList;
-
-      try
-      {
-        objectList = await DetectObjects(ai, stream, imageName).ConfigureAwait(true);
-      }
-      catch (AiNotFoundException ex)
-      {
-        throw ex;
-      }
-
-      return objectList;
-    }
-
-    // Called by the AI to navigate through the working set
-    public async Task<List<ImageObject>> ProcessVideoImageViaAI(Stream stream, string imageName)
-    {
-      List<ImageObject> result = null;
-      AILocation ai = AILocation.GetAvailableAI();
-      if (ai != null)
-      {
-        result = await ProcessImageSync(ai, stream, imageName).ConfigureAwait(false);  // yes, it is not really async, but this doesn't know it
-      }
-      return result;
-    }
-
-
-    // This function is used by the UI to detect objects.  It is not currently
-    // used async, but may be in the future
-    public async static Task<List<ImageObject>> DetectObjects(AILocation aiLocation, Stream stream, string imageName)
-    {
-      List<ImageObject> objects = null;
-
-      using (HttpClient client = new HttpClient())
-      {
-
-        using (StreamContent content = new StreamContent(stream))
-        {
-          using (var request = new MultipartFormDataContent
-        {
-          { content, "image", imageName }
-        })
-          {
-            string url = string.Format("http://{0}:{1}/v1/vision/detection", aiLocation.IPAddress, aiLocation.Port);
-
-            HttpResponseMessage output = null;
-            try
-            {
-              output = /*await*/ client.PostAsync(new Uri(url), request).Result;
-            }
-            catch (AggregateException ex)
-            {
-              throw new AiNotFoundException(url);
-            }
-            catch (Exception ex)
-            {
-              throw new AiNotFoundException(url);
-            }
-
-            if (!output.IsSuccessStatusCode)
-            {
-              throw new AiNotFoundException(url);
-            }
-
-            var jsonString = /*await*/ output.Content.ReadAsStringAsync().Result;
-            output.Dispose();
-            Response response = JsonConvert.DeserializeObject<Response>(jsonString);
-
-            if (response.Predictions != null && response.Predictions.Length > 0)
-            {
-
-              foreach (var result in response.Predictions)
-              {
-                if (objects == null)
-                {
-                  objects = new List<ImageObject>();
-                }
-
-                result.Success = true;
-
-                // Windows likes Rectangles, so it is easier to create one now
-                result.ObjectRectangle = Rectangle.FromLTRB(result.X_min, result.Y_min, result.X_max, result.Y_max);
-                result.ID = Guid.NewGuid(); // Keep an ID around for the life of the object
-
-                objects.Add(result);
-
-              }
-            }
-          }
-        }
-      }
-      return objects;
-    }
-
-
-    // This function is used by the (semi) live data, not the UI
-    public static async Task<AIResult> DetectObjectsAsync(Stream stream, PendingItem pending)
-    {
-      List<ImageObject> objects = null;
-      AIResult aiResult = new AIResult
-      {
-        ObjectsFound = objects,
-        Item = pending
-      };
-
-
-      using (HttpClient client = new HttpClient())
-      {
-
-        using (StreamContent content = new StreamContent(stream))
-        {
-
-          using (var request = new MultipartFormDataContent
-        {
-          { content, "image", pending.PendingFile }
-        })
-          {
-            AILocation ai = AILocation.GetAvailableAI();
-            if (ai == null)
-            {
-              throw new AiNotFoundException("No AI Location is Currently Defined");
-            }
-            string url = string.Format("http://{0}:{1}/v1/vision/detection", ai.IPAddress, ai.Port);
-
-            HttpResponseMessage output = null;
-            try
-            {
-              DateTime startPost = DateTime.Now;
-              pending.TimeDispatched = startPost;
-
-              output = await client.PostAsync(new Uri(url), request).ConfigureAwait(false);
-              pending.TimeProcessingByAI();
-              TimeSpan postTime = DateTime.Now - startPost;
-            }
-            catch (AggregateException ex)
-            {
-              throw new AiNotFoundException(url);
-            }
-            catch (Exception ex)
-            {
-              throw new AiNotFoundException(url);
-            }
-
-            if (!output.IsSuccessStatusCode)
-            {
-              throw new AiNotFoundException(url);
-            }
-
-            var jsonString = await output.Content.ReadAsStringAsync().ConfigureAwait(false);
-            output.Dispose();
-
-            TimeSpan processTime = pending.TimeProcessingByAI();
-            // Console.WriteLine("Process Time: " + processTime.TotalMilliseconds.ToString());
-            Response response = JsonConvert.DeserializeObject<Response>(jsonString);
-
-            if (response.Predictions != null && response.Predictions.Length > 0)
-            {
-
-              foreach (var result in response.Predictions)
-              {
-                if (objects == null)
-                {
-                  objects = new List<ImageObject>();
-                }
-
-                result.Success = true;
-
-                // Windows likes Rectangles, so it is easier to create one now
-                result.ObjectRectangle = Rectangle.FromLTRB(result.X_min, result.Y_min, result.X_max, result.Y_max);
-                result.ID = Guid.NewGuid();
-
-                objects.Add(result);
-
-                string o = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", result.Label, result.Confidence, result.X_min, result.Y_min, result.X_max, result.Y_max);
-                Dbg.Trace(o);
-              }
-            }
-            // DebugWriter.Write(jsonString);
-          }
-        }
-      }
-
-      aiResult.ObjectsFound = objects;
-      return aiResult;
-    }
 
     void RemoveUnmovedVehicles(CameraData camera, List<ImageObject> objectList)
     {

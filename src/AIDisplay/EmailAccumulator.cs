@@ -232,7 +232,7 @@ namespace SAAI
           ++count;
         }
 
-        string[] theDescriptions = new string[outgoing.Count];
+        string[] theDescriptions = new string[descriptions.Count];
         descriptions.CopyTo(theDescriptions);
 
 

@@ -90,38 +90,10 @@ namespace SAAI
       Debug.Assert(_cameraPath != null);
       Debug.Assert(_cameraPath != null);
       Storage.SaveAllAreas(_cameraPath, _cameraPrefix, this);
-      /*BinaryFormatter serializer = new BinaryFormatter();
-      using (Stream stream = new FileStream(Storage.GetFilePath(_cameraPrefix + "-AreasOfInterest.bin"), FileMode.Create))
-      {
-        serializer.Serialize(stream, _areas);
-      }*/
     }
 
     private void Load()
     {
-      /*string fileName = _cameraPrefix + "-AreasOfInterest.bin";
-      string path = Storage.GetFilePath(fileName);
-      bool exists = false;
-
-      if (File.Exists(path))
-      {
-        exists = true;
-      }
-
-      if (exists)
-      { 
-        BinaryFormatter serializer = new BinaryFormatter();
-        using (Stream reader = new FileStream(path, FileMode.Open))
-        {
-          _areas = (SortedDictionary<Guid, AreaOfInterest>)serializer.Deserialize(reader);
-        }
-      }
-      else
-      {
-        _areas = new SortedDictionary<Guid, AreaOfInterest>();
-      }
-      */
-
       _areas = Storage.GetAllAreas(_cameraPath, _cameraPrefix);
 
       // There is only one cooldown for the MQTT per area - kept in Notifications for now

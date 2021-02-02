@@ -32,6 +32,7 @@ using System.Drawing.Imaging;
 using System.Resources;
 using System.Collections;
 using System.Globalization;
+using System.Drawing.Drawing2D;
 
 namespace SAAI
 {
@@ -54,6 +55,8 @@ namespace SAAI
 
     readonly MostRecentCollection _recentTimes = new MostRecentCollection(10);
     readonly object _fileLock = new object();
+
+    private delegate void SetProgressDelegate(int cpuLoad);
 
     static Frame _test;
 
@@ -496,15 +499,19 @@ namespace SAAI
           continueTrying = false;
           if (File.Exists(file))
           {
-            using (FileStream stream = new FileStream(file, FileMode.Open))
+            FileInfo fi = new FileInfo(file);
+
+            using (FileStream stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.None))
             {
-              result = ProcessImage(stream, file);
+              int xResolution;
+              int yResolution;
+              result = ProcessImage(stream, file, out xResolution, out yResolution);
               if (!motionOnlyCheckbox.Checked)  // If the box is checked and we are loading the image then we know it is in the DB
               {
                 if (result != null && result.Count > 0)
                 {
 
-                  FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, result);
+                  FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, result, xResolution, yResolution);
                   AnalysisResult analysisResult = analyzer.AnalyzeFrame();
                   if (analysisResult.InterestingObjects.Count > 0)
                   {
@@ -516,7 +523,6 @@ namespace SAAI
               currentNumberTextBox.Text = (_fileNames.Values.IndexOf(file) + 1).ToString();
               fileNameTextBox.Text = file;
               _showingLiveView = false;
-              FileInfo fi = new FileInfo(file);
               _lastMotionTime = fi.CreationTime.ToFileTime();
             }
           }
@@ -545,7 +551,7 @@ namespace SAAI
     }
 
 
-    private List<ImageObject> ProcessImage(Stream stream, string imageName)
+    private List<ImageObject> ProcessImage(Stream stream, string imageName, out int xResolution, out int yResolution)
     {
 
       if (_frameObjects != null)
@@ -557,6 +563,8 @@ namespace SAAI
       // pictureImage.Image = null;
 
       Bitmap tmp = new Bitmap(stream);  // We don't know the width & height so we can't use a method that defines pixel format
+      xResolution = tmp.Width;
+      yResolution = tmp.Height;
       _screenBitmap = new Bitmap(tmp);  // The bitmap from the disk is 24bpp,the copy is 32bpp (and, yes, it matters)
       tmp.Dispose();
       BitmapResolution.XResolution = _screenBitmap.Width;
@@ -577,7 +585,10 @@ namespace SAAI
       {
         try
         {
-          _frameObjects = _analyzer.ProcessVideoImageViaAI(stream, imageName).Result;
+          DateTime start = DateTime.Now;
+          _frameObjects = AIDetection.AIProcessFromUI(stream, imageName).Result;
+          TimeSpan elapsed = DateTime.Now - start;
+          UpdateFrameProgressBar(elapsed);
         }
         catch (AggregateException ex)
         {
@@ -1056,16 +1067,16 @@ namespace SAAI
 
     void SetupEditingEnvironment()
     {
-      toolsPanel.BackColor = SystemColors.ControlDarkDark;
-      toolsPanel.Enabled = false;
+      FrameProgressPanel.BackColor = SystemColors.ControlDarkDark;
+      FrameProgressPanel.Enabled = false;
       menuStrip2.Enabled = false;
       Text = "On Guard ****** Creating/Modifying Area of Interest - Escape to Quit, F1 to Accept ******";
     }
 
     void StopEditingEnvironment()
     {
-      toolsPanel.BackColor = SystemColors.Control;
-      toolsPanel.Enabled = true;
+      FrameProgressPanel.BackColor = SystemColors.Control;
+      FrameProgressPanel.Enabled = true;
       menuStrip2.Enabled = true;
       Text = "On Guard";
 
@@ -1123,7 +1134,7 @@ namespace SAAI
       {
         List<ImageObject> frameObjects = LoadImage(_fileNames.Values[_current]);
         AIAnalyzer.RemoveDuplicateVehiclesInImage(frameObjects);
-        FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, frameObjects);
+        FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, frameObjects, _screenBitmap.Width, _screenBitmap.Height);
         AnalysisResult result = analyzer.AnalyzeFrame();
         using (InterestingItemsDialog dlg = new InterestingItemsDialog(result))
         {
@@ -1170,9 +1181,9 @@ namespace SAAI
             using (MemoryStream memStream = new MemoryStream())
             {
               stream.CopyTo(memStream);
-              //bitmap = new Bitmap(stream);
-
-              ProcessImage(memStream, "Live Image");
+              int xResolution = 0;
+              int yResolution = 0;
+              ProcessImage(memStream, "Live Image", out xResolution, out yResolution);
             }
           }
         }
@@ -1342,7 +1353,7 @@ namespace SAAI
         {
           /*if (ooi.Area.Notifications.mqttCooldown.CooldownExpired())
           {*/
-          await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame).ConfigureAwait(false);
+          await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame, ooi).ConfigureAwait(false);
           /*}*/
         }
 
@@ -1510,8 +1521,6 @@ namespace SAAI
     }
 
 
-
-
     private async void PresetButton_Click(object sender, EventArgs e)
     {
       using (WaitCursor _ = new WaitCursor())
@@ -1563,7 +1572,6 @@ namespace SAAI
 
     private void CameraSettingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-
       // Disconnect the monitoring from all monitoring cameras.
       foreach (var cam in _allCameras.CameraDictionary.Values)
       {
@@ -1680,8 +1688,6 @@ namespace SAAI
     }
 
 
-    private delegate void SetProgressDelegate(int cpuLoad);
-
     private void UpdateCPULoad(int cpuLoad)
     {
       if (cpuProgress.InvokeRequired)
@@ -1691,7 +1697,21 @@ namespace SAAI
 
       }
 
-      cpuProgress.Value = cpuLoad;
+      Color barColor;
+      if (cpuLoad < 50)
+      {
+        barColor = Color.LightGreen;
+      }
+      else if (cpuLoad < 75) 
+      {
+        barColor = Color.DarkOrange;
+      }
+      else
+      {
+        barColor = Color.Red;
+      }
+
+      cpuProgress.SetContents(barColor, cpuLoad, cpuLoad.ToString());
 
     }
 
@@ -1823,14 +1843,26 @@ namespace SAAI
         try
         {
           continueTrying = false;
+
+          int xRes = 0;
+          int yRes = 0;
+
           using (stream = File.OpenRead(pendingItem.PendingFile)) // May fail if the file is still open.  There is no other (good) way to tell if the file is still being written to
           {
+            Bitmap bm = new Bitmap(stream);
+            if (bm != null)
+            {
+              xRes = bm.Width;
+              yRes = bm.Height;
+              stream.Position = 0;
+            }
+
             if (!continueTrying)
             {
               // We were able to open the file so it has been closed
               _filesPendingProcessing.TryRemove(pendingItem.PendingFile, out string f);
 
-              AIResult result = await AIAnalyzer.DetectObjectsAsync(stream, pendingItem).ConfigureAwait(false); //really do it async
+              AIResult result = await AIDetection.DetectObjectsAsync(stream, pendingItem).ConfigureAwait(false); //really do it async
 
               if (null == _allCameras)
               {
@@ -1838,6 +1870,7 @@ namespace SAAI
                 return;
               }
 
+              UpdateFrameProgressBar(DateTime.Now - pendingItem.TimeDispatched);
               Interlocked.Increment(ref _numberOfImagesProcessed);
               UpdateNumberProcessed(_numberOfImagesProcessed);
               _recentTimes.AddValue(result.Item.TotalProcessingTime().TotalMilliseconds);
@@ -1859,7 +1892,8 @@ namespace SAAI
                   if (result.ObjectsFound.Count > 0)
                   {
                     Dbg.Trace("Starting FRAME analysis of file: " + pendingItem.PendingFile + " with: " + result.ObjectsFound.Count.ToString() + " objects");
-                    FrameAnalyzer frameAnalyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound);
+
+                    FrameAnalyzer frameAnalyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound, xRes, yRes);
                     interesting = frameAnalyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
 
                     frame.Interesting = interesting;
@@ -1920,6 +1954,38 @@ namespace SAAI
       }
     }
 
+    private delegate void SetProgressSpanDelegate(TimeSpan span);
+    void UpdateFrameProgressBar(TimeSpan span)
+    {
+      if (this.InvokeRequired)
+      {
+        BeginInvoke(new SetProgressSpanDelegate(UpdateFrameProgressBar), new object[] { span });
+        return;
+      }
+
+      int percent = (int) (span.TotalSeconds * 100.0);
+      if (percent > 100)
+      {
+        percent = 100;
+      }
+
+      string timeStr = string.Format("{0:0.000}", span.TotalSeconds);
+      Color barColor;
+      if (percent <= 40)
+      {
+        barColor = Color.LightGreen;
+      }
+      else if (percent < 75)
+      {
+        barColor = Color.DarkOrange;
+      }
+      else
+      {
+        barColor = Color.Red;
+      }
+      FPSProgress.SetContents(barColor, percent, timeStr);
+    }
+
     async void MotionStoppedNotify(object camObj)
     {
       CameraData camera = (CameraData)camObj;
@@ -1942,7 +2008,7 @@ namespace SAAI
 
           string payload = Storage.GetGlobalString("MQTTStoppedPayload");
           payload = payload.Replace("{Motion}", "off");
-          await MQTTPublish.Publish(topic, payload).ConfigureAwait(false);
+          await MQTTPublish.SendToServer(topic, payload).ConfigureAwait(false);
         }
 
         if (!string.IsNullOrEmpty(area.Notifications.NoMotionUrlNotify))
@@ -2329,10 +2395,7 @@ namespace SAAI
 
         }
       }
-
     }
-
-
 
     private void OnClosed(object sender, FormClosedEventArgs e)
     {
@@ -2651,6 +2714,11 @@ namespace SAAI
       {
         MessageBox.Show("Unable to delete the log file - It does not currently exist.", "No Log File!");
       }
+    }
+
+    private void enhnacedProgressBar1_Load(object sender, EventArgs e)
+    {
+
     }
   }
 

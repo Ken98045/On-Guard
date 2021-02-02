@@ -31,13 +31,17 @@ namespace SAAI
 
     readonly AreasOfInterestCollection _areas;
     readonly List<ImageObject> _imageObjects;
+    readonly int _bitmapXResolution;
+    readonly int _bitmapYResolution;
 
     List<InterestingObject> InterestingObjects { get; set; }
-    public FrameAnalyzer(AreasOfInterestCollection areas, List<ImageObject> imageObjects)
+    public FrameAnalyzer(AreasOfInterestCollection areas, List<ImageObject> imageObjects, int bitmapXResolution, int bitmapYResolution)
     {
       InterestingObjects = new List<InterestingObject>();
       _areas = areas;
       _imageObjects = imageObjects;
+      _bitmapXResolution = bitmapXResolution;
+      _bitmapYResolution = bitmapYResolution;
     }
 
     // because we will probably do this async
@@ -75,7 +79,7 @@ namespace SAAI
                     if (MatchesSpecialTag(criteria, imageObject.Label) || criteria.ObjectType == imageObject.Label)
                     {
 
-                      int percentOverlap = ObjectToAreaOverlap(imageObject, area);
+                      int percentOverlap = ObjectToAreaOverlap(imageObject, area, _bitmapXResolution, _bitmapYResolution);
 
                       if (percentOverlap >= criteria.MinPercentOverlap)
                       {
@@ -166,7 +170,7 @@ namespace SAAI
                     if (MatchesSpecialTag(criteria, imageObject.Label) ||  criteria.ObjectType == imageObject.Label)
                     {
                       // Yes, it is the type of object we ignore
-                      int ignoreOverlap = ObjectToAreaOverlap(imageObject, ignore); // Does it overlap
+                      int ignoreOverlap = ObjectToAreaOverlap(imageObject, ignore, _bitmapXResolution, _bitmapYResolution); // Does it overlap
                       {
                         if (ignoreOverlap > criteria.MinPercentOverlap) //
                         {
@@ -389,12 +393,19 @@ namespace SAAI
       return result;
     }
 
-    static int ObjectToAreaOverlap(ImageObject imageObject, AreaOfInterest area)
+    static int ObjectToAreaOverlap(ImageObject imageObject, AreaOfInterest area, int xResolution, int yResolution)
     {
       int overlap;
+
+      Rectangle adjRect = new Rectangle(area.AreaRect.X, area.AreaRect.Y, area.AreaRect.Width, area.AreaRect.Height);
+      adjRect.X = (int)((double)adjRect.X * ((double)(xResolution) / (double)area.OriginalXResolution));
+      adjRect.Y = (int)((double)adjRect.Y * ((double)(yResolution) / (double)(area.OriginalYResolution)));
+      adjRect.Width = (int)((double)adjRect.Width * ((double)(BitmapResolution.XResolution) / (double)area.OriginalXResolution));
+      adjRect.Height = (int)((double)adjRect.Height * ((double)(yResolution) / (double)area.OriginalYResolution));
+
       int objectArea = imageObject.ObjectRectangle.Width * imageObject.ObjectRectangle.Height;
       _ = area.GetRect().Width * area.GetRect().Height;
-      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, area.GetRect());
+      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, adjRect);
       int intersectArea = intersect.Width * intersect.Height;
 
       double percentage = (100.0 * intersectArea) / objectArea;

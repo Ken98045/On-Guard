@@ -5,7 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Usage", "CA2200:Rethrow to preserve stack details.", Justification = "<Pending>", Scope = "member", Target = "~M:SAAI.AIAnalyzer.ProcessVideoImageViaAI(System.IO.Stream,System.String)~System.Threading.Tasks.Task{System.Collections.Generic.List{SAAI.ImageObject}}")]
+[assembly: SuppressMessage("Usage", "CA2200:Rethrow to preserve stack details.", Justification = "<Pending>", Scope = "member", Target = "~M:SAAI.AIAnalyzer.AIProcessFromUI(System.IO.Stream,System.String)~System.Threading.Tasks.Task{System.Collections.Generic.List{SAAI.ImageObject}}")]
 [assembly: SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>", Scope = "member", Target = "~P:SAAI.ImageObject.Y_min")]
 [assembly: SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>", Scope = "member", Target = "~P:SAAI.ImageObject.X_min")]
 [assembly: SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>", Scope = "member", Target = "~P:SAAI.ImageObject.Y_max")]

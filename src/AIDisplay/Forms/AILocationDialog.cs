@@ -77,8 +77,7 @@ namespace SAAI
           try
           {
             AILocation location = new AILocation(Guid.NewGuid(), ipAddressText.Text, (int)portNumeric.Value);
-            AIAnalyzer ai = new AIAnalyzer();
-            List<ImageObject> imageObjects = await ai.ProcessImageSync(location, mem, "Test Image").ConfigureAwait(false);
+            List<ImageObject> imageObjects = AIDetection.ProcessTestImage(location, mem, "Test Image").Result;
             if (imageObjects != null && imageObjects.Count > 0)
             {
               MessageBox.Show(this, "Successfully processed a picture via DeepStack", "Success!");

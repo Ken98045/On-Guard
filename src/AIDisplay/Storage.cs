@@ -440,7 +440,6 @@ namespace SAAI
     public static List<AILocation> GetAILocations()
     {
       List<AILocation> result = new List<AILocation>();
-
       using (RegistryKey key = s_base.OpenSubKey("AILocations"))
       {
         foreach (string locationID in key.GetSubKeyNames())
