@@ -290,7 +290,7 @@ namespace SAAI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("{Picture}")]
+        [global::System.Configuration.DefaultSettingValueAttribute("{File}")]
         public string MQTTMotionPayload {
             get {
                 return ((string)(this["MQTTMotionPayload"]));

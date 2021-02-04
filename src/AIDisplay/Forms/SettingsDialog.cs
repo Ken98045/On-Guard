@@ -43,25 +43,24 @@ namespace SAAI
       }
 
       double snapshot = Storage.GetGlobalDouble("FrameInterval");
-      if (snapshot == 0.0)
+      if (snapshot != 0.0)
       {
-        snapshot = (double)Settings.Default.TimePerFrame;
+        snapshotNumeric.Value = (decimal)snapshot;
       }
-      snapshotNumeric.Value = (decimal)snapshot;
+      
 
       int maxEvent = Storage.GetGlobalInt("MaxEventTime");
-      if (maxEvent == 0)
+      if (maxEvent != 0)
       {
-        maxEvent = Settings.Default.MaxEventTime;
+        maxEventNumeric.Value = maxEvent;
       }
-      maxEventNumeric.Value = maxEvent;
 
       int eventInterval = Storage.GetGlobalInt("EventInterval");
-      if (eventInterval == 0)
+      if (eventInterval != 0)
       {
-        eventInterval = Settings.Default.EventInterval;
+        eventIntervalNumeric.Value = eventInterval;
       }
-      eventIntervalNumeric.Value = eventInterval;
+      
 
       // Database Stuff
       string customConnectionString = Storage.GetGlobalString("CustomDatabaseConnectionString");
@@ -69,11 +68,6 @@ namespace SAAI
       {
         ConnectionStringText.Text = Storage.GetGlobalString("DBConnectionString");  // the fully formatted one that is in use!
       }
-      else
-      {
-        ConnectionStringText.Text = customConnectionString;
-      }
-
     }
 
     private void OkButton_Click(object sender, EventArgs e)
@@ -138,19 +132,12 @@ namespace SAAI
 
     }
 
+
     // This does not just get the exiting value, it reforms it from the base components!
     private void GetDefaultButton_Click(object sender, EventArgs e)
     {
-      // Since we are getting the value we need to format it
-      string baseConnectionString = Settings.Default.DBMotionFramesConnectionString;  // the base string with {0} in place of the file location
-
-      string dbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); // where we are putting it
-      dbLocation = Path.Combine(dbLocation, "OnGuardDatabase");
-      string connectionString = string.Format(baseConnectionString, dbLocation);   // insert the localdb path
-
-      Storage.SetGlobalString("DBConnectionString", connectionString);  // the one we use
+      ConnectionStringText.Text = Storage.GetGlobalString("DBConnectionString");  // the one we use
       Storage.RemoveGlobalValue("CustomDatabaseConnectionString");  // nuke any custom stuff the user set.
-      ConnectionStringText.Text = connectionString; // and display it
     }
 
     private void UseCustomButton_Click(object sender, EventArgs e)

@@ -31,8 +31,6 @@ namespace SAAI
       ID = id;
       IPAddress = ipAddress;
       Port = port;
-      ++AICount;
-
     }
 
     public async static Task ReturnToList(AILocation ai)
@@ -70,14 +68,14 @@ namespace SAAI
     {
       lock (s_lock)
       {
+        AICount = 0;
         IList<AILocation> tmp;
         aiList.TryReceiveAll(out tmp);  // to empty the list;
-        AICount = 0;
         List<AILocation> locations = Storage.GetAILocations(); // get the list from the registry
         foreach (var ai in locations)
         {
           aiList.Post(ai);
-          ++AICount;
+          AICount++;
         }
       }
     }

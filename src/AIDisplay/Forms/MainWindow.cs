@@ -46,8 +46,6 @@ namespace SAAI
     bool _showObjects = true;
     Bitmap _screenBitmap;
     Bitmap _areaBackgroundBitmap;
-    //double _xScale;
-    //double _yScale;
     bool _showingLiveView;
     int _imagesBeingProcessed;
     int _numberOfImagesProcessed;
@@ -74,6 +72,7 @@ namespace SAAI
     readonly Thread _monitorQueueThread;
     readonly double _timePerFrame = 1.0;
     System.Windows.Forms.Timer _liveTimer;
+    bool _continueLiveVideo = false;
     bool _directionUp = false;  // direction is down because we start up at the last (most recent) picture
     long _lastMotionTime = long.MaxValue; // so we can go "down in the time for motion
 
@@ -133,18 +132,15 @@ namespace SAAI
 
       Settings.Default.SettingsKey = "OnGuard";
       Settings.Default.Reload();
-      Settings.Default.SettingChanging += Default_SettingChanging;
 
-
-      _connectionString = Storage.GetGlobalString("DBConnectionString");
-      if (string.IsNullOrEmpty(_connectionString))  // only completely empty on first app use!
+      _connectionString = Storage.GetGlobalString("CustomDatabaseConnectionString");
+      if (string.IsNullOrEmpty(_connectionString))
       {
-        // First use settings
-        string dbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        dbLocation = Path.Combine(dbLocation, "OnGuardDatabase");
-        _connectionString = Settings.Default.DBMotionFramesConnectionString;
-        _connectionString = string.Format(_connectionString, dbLocation);
-        Storage.SetGlobalString("DBConnectionString", _connectionString);
+        _connectionString = Storage.GetGlobalString("DBConnectionString");
+        if (string.IsNullOrEmpty(_connectionString))
+        {
+          _connectionString = GetDefaultConnectionString();
+        }  
       }
 
 
@@ -154,7 +150,6 @@ namespace SAAI
       }
 
       _analyzer = new AIAnalyzer();
-
       _allCameras = CameraCollection.Load();    // which also inits the camera
 
       if (CurrentCam != null)
@@ -191,12 +186,6 @@ namespace SAAI
       this.Focus();
     }
 
-
-
-    private void Default_SettingChanging(object sender, SettingChangingEventArgs e)
-    {
-      // Dbg.Write("Settings changing: " + e.SettingName + " value: " + e.NewValue.ToString());
-    }
 
     /// <summary>
     /// Called only once when they first start the application.
@@ -499,31 +488,29 @@ namespace SAAI
           continueTrying = false;
           if (File.Exists(file))
           {
+
+            int xResolution;
+            int yResolution;
+            result = ProcessImage(file, out xResolution, out yResolution);
             FileInfo fi = new FileInfo(file);
+            _lastMotionTime = fi.CreationTime.ToFileTime();
 
-            using (FileStream stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.None))
+            if (!motionOnlyCheckbox.Checked)  // If the box is checked and we are loading the image then we know it is in the DB
             {
-              int xResolution;
-              int yResolution;
-              result = ProcessImage(stream, file, out xResolution, out yResolution);
-              if (!motionOnlyCheckbox.Checked)  // If the box is checked and we are loading the image then we know it is in the DB
+              if (result != null && result.Count > 0)
               {
-                if (result != null && result.Count > 0)
-                {
 
-                  FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, result, xResolution, yResolution);
-                  AnalysisResult analysisResult = analyzer.AnalyzeFrame();
-                  if (analysisResult.InterestingObjects.Count > 0)
-                  {
-                    InsertMotionIfNecessary(file);
-                  }
+                FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, result, xResolution, yResolution);
+                AnalysisResult analysisResult = analyzer.AnalyzeFrame();
+                if (analysisResult.InterestingObjects.Count > 0)
+                {
+                  InsertMotionIfNecessary(file);
                 }
               }
 
               currentNumberTextBox.Text = (_fileNames.Values.IndexOf(file) + 1).ToString();
               fileNameTextBox.Text = file;
               _showingLiveView = false;
-              _lastMotionTime = fi.CreationTime.ToFileTime();
             }
           }
           else
@@ -551,7 +538,7 @@ namespace SAAI
     }
 
 
-    private List<ImageObject> ProcessImage(Stream stream, string imageName, out int xResolution, out int yResolution)
+    private List<ImageObject> ProcessImage(string imageName, out int xResolution, out int yResolution)
     {
 
       if (_frameObjects != null)
@@ -562,11 +549,13 @@ namespace SAAI
       objectListView.Items.Clear();
       // pictureImage.Image = null;
 
-      Bitmap tmp = new Bitmap(stream);  // We don't know the width & height so we can't use a method that defines pixel format
-      xResolution = tmp.Width;
-      yResolution = tmp.Height;
-      _screenBitmap = new Bitmap(tmp);  // The bitmap from the disk is 24bpp,the copy is 32bpp (and, yes, it matters)
-      tmp.Dispose();
+      using (Bitmap tmp = new Bitmap(imageName))
+      {
+        xResolution = tmp.Width;
+        yResolution = tmp.Height;
+        _screenBitmap = new Bitmap(tmp);  // The bitmap from the disk is 24bpp,the copy is 32bpp (and, yes, it matters)
+      }
+
       BitmapResolution.XResolution = _screenBitmap.Width;
       BitmapResolution.YResolution = _screenBitmap.Height;
       if (null == pictureImage)
@@ -580,72 +569,38 @@ namespace SAAI
         BitmapResolution.YScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
       }
 
-      stream.Position = 0;
       if (_showObjects)
       {
         try
         {
           DateTime start = DateTime.Now;
-          _frameObjects = AIDetection.AIProcessFromUI(stream, imageName).Result;
+          _frameObjects = AIDetection.AIProcessFromUI(imageName).Result;
           TimeSpan elapsed = DateTime.Now - start;
           UpdateFrameProgressBar(elapsed);
         }
         catch (AggregateException ex)
         {
-          ex.Handle((x) =>
+          if (ex.InnerException is AiNotFoundException) // This we know how to handle.
           {
-            if (x is AiNotFoundException) // This we know how to handle.
+            MessageBox.Show(ex.InnerException.Message + Environment.NewLine + "Either start the DeepStack AI or change the location and port of that application.", "Setup Error!");
+            using (SettingsDialog dlg = new SettingsDialog())
             {
-              MessageBox.Show(x.Message + Environment.NewLine + "Either start the DeepStack AI or change the location and port of that application.", "Setup Error!");
-              using (SettingsDialog dlg = new SettingsDialog())
+              if (dlg.ShowDialog() == DialogResult.OK)
               {
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                  _frameObjects = null;
-                }
-              }
-
-              return true;
-            }
-            else
-            {
-              return false;
-            }
-          });
-
-          return null;
-        }
-
-
-        if (_frameObjects != null)
-        {
-          string[] subItems = new string[6];
-          foreach (ImageObject obj in _frameObjects)
-          {
-            if (CurrentCam.IsItemOfCameraInterest(obj.Label))
-            {
-              subItems[0] = obj.Label;
-              subItems[1] = obj.Confidence.ToString();
-              subItems[2] = obj.ObjectRectangle.X.ToString();
-              subItems[3] = obj.ObjectRectangle.Y.ToString();
-              subItems[4] = obj.ObjectRectangle.Width.ToString();
-              subItems[5] = obj.ObjectRectangle.Height.ToString();
-              ListViewItem item = new ListViewItem(subItems);
-              objectListView.Items.Add(item);
-
-              using (Pen redPen = new Pen(Color.Red, 2))
-              {
-                using (var graphics = Graphics.FromImage(_screenBitmap))
-                {
-                  Rectangle rect = obj.ObjectRectangle;
-                  graphics.DrawRectangle(redPen, rect);
-                }
+                _frameObjects = null;
               }
             }
           }
+          return null;
         }
-      }
 
+        if (null != _frameObjects)
+        {
+          AIAnalyzer.RemoveItemsOfNoInterest(CurrentCam, _frameObjects);
+        }
+
+        DrawObjectRectangles(_frameObjects);
+      }
 
       goToFileTextBox.Text = "";
 
@@ -654,6 +609,48 @@ namespace SAAI
         ShowAreasOfInterest();
       }
 
+      DrawRegistrationMark();
+
+      pictureImage.Image = _screenBitmap;
+      XResLabel.Text = BitmapResolution.XResolution.ToString();
+      YResLabel.Text = BitmapResolution.YResolution.ToString();
+
+      return _frameObjects;
+    }
+
+    private void DrawObjectRectangles(List<ImageObject> imageObjects)
+    {
+      if (imageObjects != null)
+      {
+        using (var graphics = Graphics.FromImage(_screenBitmap))
+        {
+          using (Pen redPen = new Pen(Color.Red, 2))
+          {
+            string[] subItems = new string[6];
+            foreach (ImageObject obj in imageObjects)
+            {
+              if (CurrentCam.IsItemOfCameraInterest(obj.Label))
+              {
+                subItems[0] = obj.Label;
+                subItems[1] = obj.Confidence.ToString();
+                subItems[2] = obj.ObjectRectangle.X.ToString();
+                subItems[3] = obj.ObjectRectangle.Y.ToString();
+                subItems[4] = obj.ObjectRectangle.Width.ToString();
+                subItems[5] = obj.ObjectRectangle.Height.ToString();
+                ListViewItem item = new ListViewItem(subItems);
+                objectListView.Items.Add(item);
+
+                Rectangle rect = obj.ObjectRectangle;
+                graphics.DrawRectangle(redPen, rect);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    private void DrawRegistrationMark()
+    {
       if (!(CurrentCam.RegistrationX == 0 && CurrentCam.RegistrationY == 0))
       {
         using (SolidBrush registrationBrush = new SolidBrush(aoiRegistrationColor))
@@ -670,12 +667,6 @@ namespace SAAI
           }
         }
       }
-
-      pictureImage.Image = _screenBitmap;
-      XResLabel.Text = BitmapResolution.XResolution.ToString();
-      YResLabel.Text = BitmapResolution.YResolution.ToString();
-
-      return _frameObjects;
     }
 
 
@@ -1148,9 +1139,11 @@ namespace SAAI
     }
 
 
-    private async void LiveCameraButton_Click(object sender, EventArgs e)
+    private async void GetLiveImage(bool fromVideo)
     {
       string urlString;
+
+      _continueLiveVideo = false; // dont't try again unless success
 
       motionOnlyCheckbox.Checked = false;
       CameraContactData data = CurrentCam.LiveContactData;  // for clarity
@@ -1172,10 +1165,11 @@ namespace SAAI
         Uri uri = new Uri(urlString);
         System.Net.HttpWebRequest webRequest = (System.Net.HttpWebRequest)HttpWebRequest.Create(uri);
         webRequest.AllowWriteStreamBuffering = true;
-        webRequest.Timeout = 30000;
+        webRequest.Timeout = 3000;
 
         using (WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true))
         {
+          _continueLiveVideo = true;  // allow live video to proceed since we succeeded
           using (var stream = webResponse.GetResponseStream())
           {
             using (MemoryStream memStream = new MemoryStream())
@@ -1183,7 +1177,35 @@ namespace SAAI
               stream.CopyTo(memStream);
               int xResolution = 0;
               int yResolution = 0;
-              ProcessImage(memStream, "Live Image", out xResolution, out yResolution);
+
+              BitmapResolution.XResolution = _screenBitmap.Width;
+              BitmapResolution.YResolution = _screenBitmap.Height;
+              if (null == pictureImage)
+              {
+                BitmapResolution.XScale = 1.0;
+                BitmapResolution.YScale = 1.0;
+              }
+              else
+              {
+                BitmapResolution.XScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
+                BitmapResolution.YScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
+              }
+
+              _screenBitmap = new Bitmap(memStream);
+              BitmapResolution.XResolution = _screenBitmap.Width;
+              BitmapResolution.YResolution = _screenBitmap.Height;
+              if (null == pictureImage)
+              {
+                BitmapResolution.XScale = 1.0;
+                BitmapResolution.YScale = 1.0;
+              }
+              else
+              {
+                BitmapResolution.XScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
+                BitmapResolution.YScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
+              }
+
+              pictureImage.Image = _screenBitmap;
             }
           }
         }
@@ -1193,23 +1215,74 @@ namespace SAAI
       {
         Dbg.Write("MainWindow - LiveCameraButton_Click = Error  snapshot/live image: " + ex.Message);
         MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot - Application Exit");
-        Application.Exit();
       }
       catch (WebException ex)
       {
-        Dbg.Write("MainWindow - There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message);
-        if (sender is System.Windows.Forms.Timer)
+        if (null != _liveTimer)
         {
-          Application.Exit();
+          _liveTimer.Stop();
+          _liveTimer.Dispose();
+          _liveTimer = null;
+          liveCheck.Checked = false;
         }
-        MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot - Application Exit");
-        Application.Exit();
+        Dbg.Write("MainWindow - There was an error attempting to get a snapshot or continuous video.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message);
+        if (fromVideo)
+        {
+          MessageBox.Show("There was an error attempting to access your camera for continuous video.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error Getting Video - Application Exit");
+        }
+        else
+        {
+          MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot - Application Exit");
+        }
       }
+
+      DrawRegistrationMark();
 
       fileNameTextBox.Text = "Live Image";
       _showingLiveView = true;
-
+      XResLabel.Text = _screenBitmap.Width.ToString();
+      YResLabel.Text = _screenBitmap.Height.ToString();
     }
+
+
+
+    private async void LiveCameraButton_Click(object sender, EventArgs e)
+    {
+      GetLiveImage(false);
+    }
+
+    private void OnLiveImageTimer(Object o, EventArgs e)
+    {
+      if (_continueLiveVideo)
+      {
+        GetLiveImage(true);
+      }
+    }
+
+    private void LiveCheck_CheckedChanged(object sender, EventArgs e)
+    {
+      motionOnlyCheckbox.Checked = false;
+      if (liveCheck.Checked)
+      {
+        showObjectRectanglesToolStripMenuItem.Checked = false;
+        showAreasOfInterestCheck.Checked = false;
+        _showObjects = false;
+        _liveTimer = new System.Windows.Forms.Timer
+        {
+          Interval = 100
+        };
+        _liveTimer.Tick += OnLiveImageTimer;
+        _continueLiveVideo = true;
+        _liveTimer.Start();
+      }
+      else
+      {
+        _continueLiveVideo = false;
+        _liveTimer?.Dispose();
+        _liveTimer = null;
+      }
+    }
+
 
     // /cam/{cam-short-name}/pos=x Performs a PTZ command on the specified camera, where x= 0=left, 1=right, 2=up, 3=down, 4=home, 5=zoom in, 6=zoom out
 
@@ -1702,7 +1775,7 @@ namespace SAAI
       {
         barColor = Color.LightGreen;
       }
-      else if (cpuLoad < 75) 
+      else if (cpuLoad < 75)
       {
         barColor = Color.DarkOrange;
       }
@@ -1831,103 +1904,122 @@ namespace SAAI
     }
 
 
-    async Task StartAIAnalysis(PendingItem pendingItem)
+
+    // The FileWatcher stuff gives us a file name, but the file may not have completed writing
+    private async Task<Tuple<int, int>> WaitForFileReady(string fileName)
     {
-      Dbg.Trace("Starting AI analysis of file: " + pendingItem.PendingFile);
-      FileStream stream;
-
       bool continueTrying;
-      do
+      Tuple<int, int> result = null;
 
+      do
       {
+        continueTrying = true;
+
         try
         {
-          continueTrying = false;
-
-          int xRes = 0;
-          int yRes = 0;
-
-          using (stream = File.OpenRead(pendingItem.PendingFile)) // May fail if the file is still open.  There is no other (good) way to tell if the file is still being written to
+          // We need to open the file anyway, sow we might as well make a bitmap and get the resolution of the underlying file
+          using (Bitmap bitmap = new Bitmap(fileName)) // May fail if the file is still open.  There is no other (good) way to tell if the file is still being written to
           {
-            Bitmap bm = new Bitmap(stream);
-            if (bm != null)
-            {
-              xRes = bm.Width;
-              yRes = bm.Height;
-              stream.Position = 0;
-            }
-
-            if (!continueTrying)
-            {
-              // We were able to open the file so it has been closed
-              _filesPendingProcessing.TryRemove(pendingItem.PendingFile, out string f);
-
-              AIResult result = await AIDetection.DetectObjectsAsync(stream, pendingItem).ConfigureAwait(false); //really do it async
-
-              if (null == _allCameras)
-              {
-                // we went into camera setup, we can't process any further
-                return;
-              }
-
-              UpdateFrameProgressBar(DateTime.Now - pendingItem.TimeDispatched);
-              Interlocked.Increment(ref _numberOfImagesProcessed);
-              UpdateNumberProcessed(_numberOfImagesProcessed);
-              _recentTimes.AddValue(result.Item.TotalProcessingTime().TotalMilliseconds);
-              Interlocked.Decrement(ref _imagesBeingProcessed);
-              List<InterestingObject> interesting = null;
-              Frame frame = new Frame(pendingItem, interesting);
-
-
-              if (null != result.ObjectsFound)  // Did we find any objects the AI could recognize?
-              {
-                // Analyze the frame with respect to the areas of interest for this camera only.
-                // However, note (currently) that you can in theory have multiple "cameras" using the same prefix but different file paths.
-                // In that case we use the same AOI
-
-                if (null != pendingItem.CamData)
-                {
-                  _analyzer.RemoveInvalidObjects(pendingItem.CamData, result.ObjectsFound);  // This may remove items from the list, and may zero it out
-
-                  if (result.ObjectsFound.Count > 0)
-                  {
-                    Dbg.Trace("Starting FRAME analysis of file: " + pendingItem.PendingFile + " with: " + result.ObjectsFound.Count.ToString() + " objects");
-
-                    FrameAnalyzer frameAnalyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound, xRes, yRes);
-                    interesting = frameAnalyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
-
-                    frame.Interesting = interesting;
-                    Dbg.Write(interesting.Count.ToString() + " interesting objects found in file: " + pendingItem.PendingFile);
-
-
-                    if (interesting.Count > 0)
-                    {
-                      StartMotionTimeout(pendingItem);
-                    }
-
-                    frame.Item.CamData.FrameHistory.Add(frame);
-                    if (frame.Interesting.Count > 0)
-                    {
-                      var myTask = Task.Run(() => AddToMotionFramesTable(pendingItem));
-                    }
-
-                    Notify(frame);
-                  }
-                }
-              }
-
-              ProcessAccumulation(frame);
-            }
+            result = new Tuple<int, int>(bitmap.Width, bitmap.Height);
+            continueTrying = false;
           }
         }
         catch (IOException)
         {
           continueTrying = true;
-          await Task.Delay(100).ConfigureAwait(false);
+          await Task.Delay(20).ConfigureAwait(false);
         }
-
+        catch (ArgumentException ex)
+        {
+          continueTrying = true;
+          await Task.Delay(20).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+          Type t = ex.GetType();
+          Dbg.Trace("WaitForFileRead exception of type  " + t.ToString());
+        }
       } while (continueTrying);
 
+      return result;
+    }
+
+    async Task StartAIAnalysis(PendingItem pendingItem)
+    {
+      int xRes = 0;
+      int yRes = 0;
+
+      Dbg.Trace("Starting AI analysis of file: " + pendingItem.PendingFile);
+
+
+      Tuple<int, int> waitResult = await WaitForFileReady(pendingItem.PendingFile).ConfigureAwait(false);
+      xRes = waitResult.Item1;
+      yRes = waitResult.Item2;
+
+      Dbg.Trace("MainWindows - StartAIAnalysis - File ready for processing: " + pendingItem.PendingFile);
+
+      if (!_filesPendingProcessing.TryRemove(pendingItem.PendingFile, out string f))
+      {
+        Dbg.Trace("MainWindow StartAIAnalysis - failed to remove from pending file list: " + pendingItem.PendingFile);
+      }
+
+      AIResult result = await AIDetection.DetectObjectsAsync(pendingItem).ConfigureAwait(false); //really do it async
+      UpdateFrameProgressBar(DateTime.Now - pendingItem.TimeDispatched);
+
+
+      if (null == _allCameras)
+      {
+        // we went into camera setup, we can't process any further
+        return;
+      }
+
+      Interlocked.Increment(ref _numberOfImagesProcessed);
+      UpdateNumberProcessed(_numberOfImagesProcessed);
+      _recentTimes.AddValue(result.Item.TotalProcessingTime().TotalMilliseconds);
+      Interlocked.Decrement(ref _imagesBeingProcessed);
+      List<InterestingObject> interesting = null;
+      Frame frame = new Frame(pendingItem, interesting);
+
+
+      if (null != result.ObjectsFound)  // Did we find any objects the AI could recognize?
+      {
+        // Analyze the frame with respect to the areas of interest for this camera only.
+        // However, note (currently) that you can in theory have multiple "cameras" using the same prefix but different file paths.
+        // In that case we use the same AOI
+
+        if (null != pendingItem.CamData)
+        {
+          Dbg.Trace("The AI Found: " + result.ObjectsFound.Count.ToString() + " Total Objects");
+          _analyzer.RemoveInvalidObjects(pendingItem.CamData, result.ObjectsFound);  // This may remove items from the list, and may zero it out
+
+          if (result.ObjectsFound.Count > 0)
+          {
+            Dbg.Trace("Starting FRAME analysis of file: " + pendingItem.PendingFile + " with: " + result.ObjectsFound.Count.ToString() + " objects");
+
+            FrameAnalyzer frameAnalyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound, xRes, yRes);
+            interesting = frameAnalyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
+
+            frame.Interesting = interesting;
+            Dbg.Write(interesting.Count.ToString() + " interesting objects found in file: " + pendingItem.PendingFile);
+
+
+            if (interesting.Count > 0)
+            {
+              StartMotionTimeout(pendingItem);
+            }
+
+            frame.Item.CamData.FrameHistory.Add(frame);
+            if (frame.Interesting.Count > 0)
+            {
+              var myTask = Task.Run(() => AddToMotionFramesTable(pendingItem));
+            }
+
+            Notify(frame);
+          }
+        }
+      }
+
+      ProcessAccumulation(frame);
     }
 
     void StartMotionTimeout(PendingItem pending)
@@ -1963,7 +2055,7 @@ namespace SAAI
         return;
       }
 
-      int percent = (int) (span.TotalSeconds * 100.0);
+      int percent = (int)(span.TotalSeconds * 100.0);
       if (percent > 100)
       {
         percent = 100;
@@ -2021,6 +2113,16 @@ namespace SAAI
 
 
     #region SqlStuff
+
+    public static string GetDefaultConnectionString()
+    {
+      // Since we are getting the value we need to format it
+      string baseConnectionString = Settings.Default.DBMotionFramesConnectionString;  // the base string with {0} in place of the file location
+      string dbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); // where we are putting it
+      dbLocation = Path.Combine(dbLocation, "OnGuardDatabase");
+      string connectionString = string.Format(baseConnectionString, dbLocation);   // insert the localdb path
+      return connectionString;
+    }
 
     async void AddToMotionFramesTable(PendingItem pending)
     {
@@ -2529,34 +2631,6 @@ namespace SAAI
         ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
         showAreasOfInterestCheck.Checked = menuItem.Checked;
         ShowAreasOfInterestCheckChanged(null, null);
-      }
-
-    }
-
-    private void OnLiveImageTimer(Object o, EventArgs e)
-    {
-      LiveCameraButton_Click(o, e);
-    }
-
-    private void LiveCheck_CheckedChanged(object sender, EventArgs e)
-    {
-      motionOnlyCheckbox.Checked = false;
-      if (liveCheck.Checked)
-      {
-        showObjectRectanglesToolStripMenuItem.Checked = false;
-        showAreasOfInterestCheck.Checked = false;
-        _showObjects = false;
-        _liveTimer = new System.Windows.Forms.Timer
-        {
-          Interval = 100
-        };
-        _liveTimer.Tick += OnLiveImageTimer;
-        _liveTimer.Start();
-      }
-      else
-      {
-        _liveTimer.Dispose();
-        _liveTimer = null;
       }
 
     }

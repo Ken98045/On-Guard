@@ -21,11 +21,11 @@ namespace SAAI
       passwordText.Text = Storage.GetGlobalString("EmailPassword");
       sslCheck.Checked = Storage.GetGlobalBool("EmailSSL");
       int emailPort = Storage.GetGlobalInt("EmailPort");
-      if (emailPort == 0)
+      if (emailPort != 0)
       {
-        emailPort = (int)Settings.Default.EmailPort;
+        portNumeric.Value = emailPort;
       }
-      portNumeric.Value = emailPort;
+      
     }
 
     private void OkButton_Click(object sender, EventArgs e)

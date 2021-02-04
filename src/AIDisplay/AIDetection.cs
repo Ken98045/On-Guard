@@ -29,49 +29,142 @@ namespace SAAI
     }
 
     // Called by the AI to navigate through the working set UI
-    public static async Task<List<ImageObject>> AIProcessFromUI(Stream stream, string imageName)
+    public static async Task<List<ImageObject>> AIProcessFromUI(string imageName)
     {
       List<ImageObject> result = null;
       AILocation ai = null;
 
       do
       {
+        using (FileStream stream = new FileStream(imageName, FileMode.Open))
+        {
+          try
+          {
+            ai = await AILocation.GetAI().ConfigureAwait(false);
+          }
+          catch (AggregateException ex)
+          {
+            // The list is empty
+            Dbg.Write("The AI List Is Empty!");
+            throw ex.InnerException;  // which is an AINotFound exception
+          }
+          catch (AiNotFoundException ex)
+          {
+            Dbg.Write("An AI Died Or Was Not Found");
+            // the list is empty
+            throw;
+          }
+
+          try
+          {
+            result = AIFindObjects(ai, stream, imageName, false).Result;
+            await AILocation.ReturnToList(ai).ConfigureAwait(false);
+          }
+          catch (HttpRequestException)
+          {
+            AILocation.AICount--;
+            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
+            ai = null;
+          }
+          catch (AggregateException ex)
+          {
+            AILocation.AICount--;
+            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
+            ai = null;
+          }
+          catch (AiNotFoundException)
+          {
+            AILocation.AICount--;
+            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
+            ai = null;
+          }
+          catch (Exception ex)
+          {
+            AILocation.AICount--;
+            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
+            ai = null;
+          }
+        }
+
+      } while (ai == null);
+
+      return result;
+    }
+
+    // This function is used by the (semi) live data, not the UI
+    public static async Task<AIResult> DetectObjectsAsync(PendingItem pending)
+    {
+      List<ImageObject> objectsFound = null;
+      AILocation ai = null;
+      AIResult aiResult = null;
+
+      Dbg.Trace("AIDetection - DetectObjectsAsync starting analysis of: " + pending.PendingFile);
+
+      do
+      {
+        // Get an available AI. If there are none it throws
         try
         {
           ai = await AILocation.GetAI().ConfigureAwait(false);
         }
         catch (AggregateException ex)
         {
-          // The list is empty
-          throw ex.InnerException;  // which is an AINotFound exception
+          Dbg.Write("The AI List Is Empty!");
+          throw ex;
         }
-        catch (AiNotFoundException ex)
+        catch (AiNotFoundException)
         {
-          // the list is empty
+          Dbg.Write("The AI List Is Empty!");
           throw;
         }
 
+        // Do the AI Detection (async)
         try
         {
-          result = AIFindObjects(ai, stream, imageName, false).Result;
+          using (FileStream stream = File.OpenRead(pending.PendingFile))
+          {
+            pending.TimeToDispatch();
+            objectsFound = await AIFindObjects(ai, stream, pending.PendingFile, true).ConfigureAwait(false);  // throws if ai not available
+            pending.SetTimeProcessingByAI();
+            string dbg = "AIDetection - DetectObjectsAsync ending analysis of : " + pending.PendingFile;
+            if (null != objectsFound )
+            {
+              dbg += " with: " + objectsFound.Count.ToString() + " objects";
+            }
+            Dbg.Trace(dbg);
+          }
 
-          await AILocation.ReturnToList(ai).ConfigureAwait(false);
+          await AILocation.ReturnToList(ai).ConfigureAwait(false);  // put it back for re-use
 
+          aiResult = new AIResult();
+          aiResult.ObjectsFound = objectsFound;
+          aiResult.Item = pending;
+
+          if (aiResult.ObjectsFound != null)
+          {
+            foreach (var result in aiResult.ObjectsFound)
+            {
+              string o = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", result.Label, result.Confidence, result.X_min, result.Y_min, result.X_max, result.Y_max);
+              Dbg.Trace(o);
+            }
+          }
         }
         catch (AggregateException ex)
         {
+          Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
           AILocation.AICount--;
           ai = null;
         }
         catch (AiNotFoundException)
         {
+          Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
           AILocation.AICount--;
           ai = null;
         }
 
       } while (ai == null);
 
-      return result;
+      return aiResult;
     }
 
 
@@ -82,6 +175,7 @@ namespace SAAI
 
       using (HttpClient client = new HttpClient())
       {
+        client.Timeout = TimeSpan.FromSeconds(20);
 
         using (StreamContent content = new StreamContent(stream))
         {
@@ -117,7 +211,6 @@ namespace SAAI
               throw new AiNotFoundException(url);
             }
 
-
             if (!output.IsSuccessStatusCode)
             {
               throw new AiNotFoundException(url);
@@ -130,7 +223,16 @@ namespace SAAI
             JsonSerializerOptions opt = new JsonSerializerOptions();
             opt.PropertyNameCaseInsensitive = true;
 
-            Response response = (Response)JsonSerializer.Deserialize(jsonString, typeof(Response), opt);
+            Response response = null;
+
+            try
+            {
+              response = (Response)JsonSerializer.Deserialize(jsonString, typeof(Response), opt);
+            }
+            catch (Exception ex)
+            {
+
+            }
 
             if (response.Predictions != null && response.Predictions.Length > 0)
             {
@@ -158,64 +260,5 @@ namespace SAAI
       return objects;
     }
 
-    // This function is used by the (semi) live data, not the UI
-    public static async Task<AIResult> DetectObjectsAsync(Stream stream, PendingItem pending)
-    {
-      List<ImageObject> objectsFound = null;
-      AILocation ai = null;
-      AIResult aiResult = null;
-
-      do
-      {
-        // Get an available AI. If there are none it throws
-        try
-        {
-          ai = await AILocation.GetAI().ConfigureAwait(false);
-        }
-        catch (AggregateException ex)
-        {
-          throw ex;
-        }
-        catch (AiNotFoundException)
-        {
-          throw;
-        }
-
-        // Do the AI Detection (async)
-        try
-        {
-          pending.TimeDispatched = DateTime.Now;
-          objectsFound = await AIFindObjects(ai, stream, pending.PendingFile, true).ConfigureAwait(false);
-
-          aiResult = new AIResult();
-          aiResult.ObjectsFound = objectsFound;
-          aiResult.Item = pending;
-          aiResult.Item.TimeProcessingByAI();
-          await AILocation.ReturnToList(ai).ConfigureAwait(false);  // put it back for re-use
-
-          if (aiResult.ObjectsFound != null)
-          {
-            foreach (var result in aiResult.ObjectsFound)
-            {
-              string o = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", result.Label, result.Confidence, result.X_min, result.Y_min, result.X_max, result.Y_max);
-              Dbg.Trace(o);
-            }
-          }
-        }
-        catch (AggregateException ex)
-        {
-          AILocation.AICount--;
-          ai = null;
-        }
-        catch (AiNotFoundException)
-        {
-          AILocation.AICount--;
-          ai = null;
-        }
-
-      } while (ai == null);
-
-      return aiResult;
-    }
   }
 }

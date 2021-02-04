@@ -23,43 +23,40 @@ namespace SAAI
       UserText.Text = Storage.GetGlobalString("MQTTUser");
       PasswordText.Text = Storage.GetGlobalString("MQTTPassword");
 
-      int coolDown = Storage.GetGlobalInt("MQTTCoolDown");
-      if (coolDown == 0)
+      object coolDownObj = Storage.GetGetValue("MQTTCoolDown");
+      if (null != coolDownObj)
       {
-        coolDown = Settings.Default.MQTTCoolDown;
+        CoolDownNumeric.Value = (decimal)((int)coolDownObj);
       }
-      CoolDownNumeric.Value = coolDown;
 
       UseSecureLinkCheck.Checked = Storage.GetGlobalBool("MQTTUseSecureLink");
 
-      string motionTopic = Storage.GetGlobalString("MQTTMotionTopic");
-      if (string.IsNullOrEmpty(motionTopic))
+      string motionTopic = Storage.GetGlobalStringNull("MQTTMotionTopic");
+      if (null != motionTopic)
       {
-        motionTopic = Settings.Default.MQTTMotionTopic;
+        MotionActivityText.Text = motionTopic;
       }
-      MotionActivityText.Text = motionTopic;
+      
 
-      string motionPayload = Storage.GetGlobalString("MQTTMotionPayload");
-      if (string.IsNullOrEmpty(motionPayload))
+      string motionPayload = Storage.GetGlobalStringNull("MQTTMotionPayload");
+      if (null != motionPayload)
       {
-        motionPayload = Settings.Default.MQTTMotionPayload;
+        MotionActivityPayloadText.Text = motionPayload;
       }
-      MotionActivityPayloadText.Text = motionPayload;
+      
 
-      string stoppedTopic = Storage.GetGlobalString("MQTTStoppedTopic");
-      if (string.IsNullOrEmpty(stoppedTopic))
+      string stoppedTopic = Storage.GetGlobalStringNull("MQTTStoppedTopic");
+      if (null != stoppedTopic)
       {
-        stoppedTopic = Settings.Default.MQTTStoppedTopic;
+        StoppedActivityTopicText.Text = stoppedTopic;
       }
-      StoppedActivityTopicText.Text = stoppedTopic;
 
-      string stoppedPayload = Storage.GetGlobalString("MQTTStoppedPayload");
-      if (string.IsNullOrEmpty(stoppedPayload))
+      string stoppedPayload = Storage.GetGlobalStringNull("MQTTStoppedPayload");
+      if (null != stoppedPayload)
       {
-        stoppedPayload = Settings.Default.MQTTStoppedPayload;
+        StoppedPayloadText.Text = stoppedPayload;
       }
-      StoppedPayloadText.Text = stoppedPayload;
-
+      
       if (PortNumeric.Value == 0)
       {
         PortNumeric.Value = 1883;

@@ -33,14 +33,15 @@ namespace SAAI
       return DateTime.Now - TimeEnqueued;
     }
 
-    // Only call this when we are are ready to dispatch
+    // Only call this when we are are ready to dispatch the item to the AI
+    // It also (lamely) returns the time so far
     public TimeSpan TimeToDispatch()
     {
       TimeDispatched = DateTime.Now;
       return TimeDispatched - TimeEnqueued;
     }
 
-    public TimeSpan TimeProcessingByAI()
+    public TimeSpan SetTimeProcessingByAI()
     {
       TimeCompleted = DateTime.Now;
       return TimeCompleted - TimeDispatched;

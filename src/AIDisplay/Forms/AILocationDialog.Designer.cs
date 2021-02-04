@@ -29,6 +29,7 @@ namespace SAAI
     /// </summary>
     private void InitializeComponent()
     {
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AILocationDialog));
       this.OKButton = new System.Windows.Forms.Button();
       this.CancelButton = new System.Windows.Forms.Button();
       this.label12 = new System.Windows.Forms.Label();
@@ -44,7 +45,7 @@ namespace SAAI
       // 
       // OKButton
       // 
-      this.OKButton.Location = new System.Drawing.Point(217, 231);
+      this.OKButton.Location = new System.Drawing.Point(217, 264);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
       this.OKButton.TabIndex = 0;
@@ -55,7 +56,7 @@ namespace SAAI
       // CancelButton
       // 
       this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.CancelButton.Location = new System.Drawing.Point(310, 231);
+      this.CancelButton.Location = new System.Drawing.Point(310, 264);
       this.CancelButton.Name = "CancelButton";
       this.CancelButton.Size = new System.Drawing.Size(75, 23);
       this.CancelButton.TabIndex = 1;
@@ -66,7 +67,7 @@ namespace SAAI
       // 
       this.label12.AutoSize = true;
       this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label12.Location = new System.Drawing.Point(346, 172);
+      this.label12.Location = new System.Drawing.Point(346, 218);
       this.label12.Name = "label12";
       this.label12.Size = new System.Drawing.Size(108, 16);
       this.label12.TabIndex = 16;
@@ -75,7 +76,7 @@ namespace SAAI
       // testButton
       // 
       this.testButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-      this.testButton.Location = new System.Drawing.Point(149, 166);
+      this.testButton.Location = new System.Drawing.Point(149, 212);
       this.testButton.Name = "testButton";
       this.testButton.Size = new System.Drawing.Size(191, 28);
       this.testButton.TabIndex = 12;
@@ -116,13 +117,12 @@ namespace SAAI
       // 
       // label2
       // 
-      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label2.Location = new System.Drawing.Point(358, 45);
+      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label2.Location = new System.Drawing.Point(358, 47);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(235, 79);
+      this.label2.Size = new System.Drawing.Size(235, 155);
       this.label2.TabIndex = 14;
-      this.label2.Text = "For this computer leave it \"localhost\"\r\nRarely this may not work.  Try \"127.0.0.1" +
-    "\"\r\nRarely that may not work.  Then try the IPV4 address of this computer.";
+      this.label2.Text = resources.GetString("label2.Text");
       // 
       // label1
       // 
@@ -156,8 +156,7 @@ namespace SAAI
       this.AcceptButton = this.OKButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.CancelButton = this.CancelButton;
-      this.ClientSize = new System.Drawing.Size(602, 272);
+      this.ClientSize = new System.Drawing.Size(602, 300);
       this.Controls.Add(this.label4);
       this.Controls.Add(this.label12);
       this.Controls.Add(this.testButton);

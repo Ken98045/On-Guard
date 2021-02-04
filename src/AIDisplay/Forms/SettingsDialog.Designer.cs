@@ -38,6 +38,7 @@ namespace SAAI
       this.snapshotNumeric = new System.Windows.Forms.NumericUpDown();
       this.label6 = new System.Windows.Forms.Label();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.RefreshButton = new System.Windows.Forms.Button();
       this.RemoveButton = new System.Windows.Forms.Button();
       this.AddButton = new System.Windows.Forms.Button();
       this.aiLocationListView = new System.Windows.Forms.ListView();
@@ -58,7 +59,7 @@ namespace SAAI
       this.label3 = new System.Windows.Forms.Label();
       this.label2 = new System.Windows.Forms.Label();
       this.label1 = new System.Windows.Forms.Label();
-      this.RefreshButton = new System.Windows.Forms.Button();
+      this.label10 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.snapshotNumeric)).BeginInit();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
@@ -146,6 +147,7 @@ namespace SAAI
       // panel1
       // 
       this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.panel1.Controls.Add(this.label10);
       this.panel1.Controls.Add(this.RefreshButton);
       this.panel1.Controls.Add(this.RemoveButton);
       this.panel1.Controls.Add(this.AddButton);
@@ -156,6 +158,16 @@ namespace SAAI
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(717, 285);
       this.panel1.TabIndex = 11;
+      // 
+      // RefreshButton
+      // 
+      this.RefreshButton.Location = new System.Drawing.Point(399, 245);
+      this.RefreshButton.Name = "RefreshButton";
+      this.RefreshButton.Size = new System.Drawing.Size(62, 23);
+      this.RefreshButton.TabIndex = 2;
+      this.RefreshButton.Text = "Refresh";
+      this.RefreshButton.UseVisualStyleBackColor = true;
+      this.RefreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
       // 
       // RemoveButton
       // 
@@ -376,15 +388,14 @@ namespace SAAI
       this.label1.TabIndex = 9;
       this.label1.Text = "SQL Connection String";
       // 
-      // RefreshButton
+      // label10
       // 
-      this.RefreshButton.Location = new System.Drawing.Point(399, 245);
-      this.RefreshButton.Name = "RefreshButton";
-      this.RefreshButton.Size = new System.Drawing.Size(62, 23);
-      this.RefreshButton.TabIndex = 2;
-      this.RefreshButton.Text = "Refresh";
-      this.RefreshButton.UseVisualStyleBackColor = true;
-      this.RefreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
+      this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label10.Location = new System.Drawing.Point(562, 44);
+      this.label10.Name = "label10";
+      this.label10.Size = new System.Drawing.Size(150, 187);
+      this.label10.TabIndex = 11;
+      this.label10.Text = resources.GetString("label10.Text");
       // 
       // SettingsDialog
       // 
@@ -442,5 +453,6 @@ namespace SAAI
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Button RefreshButton;
+    private System.Windows.Forms.Label label10;
   }
 }

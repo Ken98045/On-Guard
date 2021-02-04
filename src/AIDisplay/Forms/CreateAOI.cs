@@ -333,6 +333,12 @@ namespace SAAI
           objChar.MinimumXSize = dlg.MinX;
           objChar.MinimumYSize = dlg.MinY;
           objChar.TimeFrame = dlg.History;
+          item.SubItems[0].Text = dlg.ObjectType;
+          item.SubItems[1].Text = dlg.Confidence.ToString();
+          item.SubItems[2].Text = dlg.Overlap.ToString();
+          item.SubItems[3].Text = dlg.MinX.ToString();
+          item.SubItems[4].Text = dlg.MinY.ToString();
+          item.SubItems[5].Text = dlg.History.ToString();
         }
       }
 

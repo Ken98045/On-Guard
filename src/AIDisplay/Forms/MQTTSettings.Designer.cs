@@ -295,7 +295,7 @@ namespace SAAI
       this.MotionActivityPayloadText.Name = "MotionActivityPayloadText";
       this.MotionActivityPayloadText.Size = new System.Drawing.Size(404, 20);
       this.MotionActivityPayloadText.TabIndex = 20;
-      this.MotionActivityPayloadText.Text = "{Picture}";
+      this.MotionActivityPayloadText.Text = "{File}";
       // 
       // label13
       // 

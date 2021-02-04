@@ -117,4 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label2.Text" xml:space="preserve">
+    <value>NOTE:
+If you intend to use more than one instance of the AI DO NOT USE "localhost".
+
+Instead, use the IP address of your local machine.  This is due to the fact that "failover" will not work if you use "localhost".
+</value>
+  </data>
 </root>

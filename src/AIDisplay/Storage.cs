@@ -644,10 +644,27 @@ namespace SAAI
       return (string)s_base.GetValue(keyName, string.Empty);
     }
 
+    public static string GetGlobalStringNull(string keyName)
+    {
+      return (string)s_base.GetValue(keyName);
+    }
+
+    public static object GetGetValue(string keyName)
+    {
+      return s_base.GetValue(keyName);
+    }
+
+
     public static int GetGlobalInt(string keyName)
     {
       return (int)s_base.GetValue(keyName, 0);
     }
+
+    public static int GetGlobalIntExcept(string keyName)
+    {
+      return (int)s_base.GetValue(keyName);
+    }
+
 
     public static void SetGlobalString(string keyName, string value)
     {

@@ -120,7 +120,7 @@ namespace SAAI
     /// </summary>
     /// <param name="camera"></param>
     /// <param name="images"></param>
-    private static void RemoveItemsOfNoInterest(CameraData camera, List<ImageObject> images)
+    public static void RemoveItemsOfNoInterest(CameraData camera, List<ImageObject> images)
     {
       List<ImageObject> result = new List<ImageObject>();
 
@@ -149,7 +149,7 @@ namespace SAAI
 
         if (!addedOne)
         {
-          Dbg.Trace("AIAnalyzer - RemoveItemsOfNoInterest - Weeded out: " + io.Label);
+          Dbg.Trace("AIAnalyzer - RemoveItemsOfNoInterest - Camera: " + camera.CameraPrefix + " - Weeded out: " + io.Label);
         }
       }
 
