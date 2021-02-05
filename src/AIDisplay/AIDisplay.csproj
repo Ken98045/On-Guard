@@ -195,6 +195,12 @@
     <Compile Include="Forms\AILocationDialog.Designer.cs">
       <DependentUpon>AILocationDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AnalysisSettingsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AnalysisSettingsDialog.Designer.cs">
+      <DependentUpon>AnalysisSettingsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CameraConfigurationDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -332,6 +338,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AILocationDialog.resx">
       <DependentUpon>AILocationDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AnalysisSettingsDialog.resx">
+      <DependentUpon>AnalysisSettingsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CameraConfigurationDialog.resx">
       <DependentUpon>CameraConfigurationDialog.cs</DependentUpon>

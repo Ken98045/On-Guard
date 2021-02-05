@@ -140,6 +140,7 @@ namespace SAAI
         if (string.IsNullOrEmpty(_connectionString))
         {
           _connectionString = GetDefaultConnectionString();
+          Storage.SetGlobalString("DBConnectionString", _connectionString);
         }  
       }
 
@@ -2793,6 +2794,14 @@ namespace SAAI
     private void enhnacedProgressBar1_Load(object sender, EventArgs e)
     {
 
+    }
+
+    private void AnalysisSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      using (AnalysisSettingsDialog dlg = new AnalysisSettingsDialog())
+      {
+        dlg.ShowDialog();
+      }
     }
   }
 

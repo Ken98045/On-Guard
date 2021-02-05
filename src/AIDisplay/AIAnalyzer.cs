@@ -220,14 +220,17 @@ namespace SAAI
                   if (vehicles[i].Confidence > vehicles[j].Confidence)
                   {
                     // This case is for the earlier > later
-                    double beforeConfidence = vehicles[i].Confidence;
-                    vehicles[i].Confidence = vehicles[i].Confidence + ((vehicles[i].Confidence - vehicles[j].Confidence) * 4.0);
-                    if (vehicles[i].Confidence >= 1.0)
+                    if (Storage.GetGlobalBool("BumpMultiVehicleConfidence", true))
                     {
-                      vehicles[i].Confidence = 0.9999;  // this number is below 1 and is magic in the sense that it can be recognized by the user
-                    }
+                      double beforeConfidence = vehicles[i].Confidence;
+                      vehicles[i].Confidence = vehicles[i].Confidence + ((vehicles[i].Confidence - vehicles[j].Confidence) * 4.0);
+                      if (vehicles[i].Confidence >= 1.0)
+                      {
+                        vehicles[i].Confidence = 0.9999;  // this number is below 1 and is magic in the sense that it can be recognized by the user
+                      }
 
-                    Dbg.Trace("Boosting vehicle confidence from: " + beforeConfidence.ToString() + " After: " + vehicles[i].Confidence.ToString());
+                      Dbg.Trace("Boosting vehicle confidence from: " + beforeConfidence.ToString() + " After: " + vehicles[i].Confidence.ToString());
+                    }
 
                     Dbg.Trace("Removing duplicate vehicle (1) " + vehicles[j].Label);
                     // Since there was an overlap, remove the lower confidence vehicle
@@ -342,19 +345,34 @@ namespace SAAI
 
             for (int j = 0; j < _previousVehicles.Count; j++)
             {
-
               if (vehicles[i].Label == vehicles[j].Label)    // In this case we only remove  objects that are the same - A = car, B = car (not 100%, but what can we do?)
               {
                 int targetOverlap = ParkedOverlap;
 
                 bool foundParked = false;
                 int overlap = AIAnalyzer.GetOverlap(vehicles[i], _previousVehicles[j]);
-                if (overlap >= targetOverlap)   // Shadows, etc. do cause event parked vehicles to shift in outline
+                if (Storage.GetGlobalBool("ExcludeParkedUsingOverlap", true))
                 {
-                  Dbg.Trace("Vehicle found parked using area overlap");
-                  foundParked = true;
+                  if (overlap >= targetOverlap)   // Shadows, etc. do cause event parked vehicles to shift in outline
+                  {
+                    Dbg.Trace("Vehicle found parked using area overlap - Previous: " + 
+                      "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
+                      " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
+                      " Width: " + _previousVehicles[j].ObjectRectangle.Width.ToString() +
+                      "Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
+                      );
+
+                    Dbg.Trace("Vehicle found parked using area overlap - Current: " +
+                      "X: " + vehicles[i].ObjectRectangle.X.ToString() +
+                      " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
+                      " Width: " + vehicles[i].ObjectRectangle.Width.ToString() +
+                      " Height: " + vehicles[i].ObjectRectangle.Height.ToString()
+                      );
+                    foundParked = true;
+                  }
                 }
-                else
+                
+                if (!foundParked)
                 {
                   // Now we consider 2 points on both the parked and the subject vehicle.  If they are close we consider it parked.
                   // This is because people walking in front of a car may change the outlines.
@@ -379,13 +397,30 @@ namespace SAAI
                     targetSize = parkedTargetMax; // just a WAG pending test data
                   }
 
-                  if (ulDistance < targetSize || lrDistance < targetSize)
+                  if (Storage.GetGlobalBool("ExcludeParkedUsingCorners", true))
                   {
-                    Dbg.Trace("Parked Target Size: " + targetSize.ToString());
-                    Dbg.Trace("Parked ULDistance: " + ulDistance.ToString());
-                    Dbg.Trace("Parked LRDistance: " + lrDistance.ToString());
-                    Dbg.Trace("Vehicle found parked using corners");
-                    foundParked = true;
+                    if (ulDistance < targetSize || lrDistance < targetSize)
+                    {
+                      Dbg.Trace("Parked Target Size: " + targetSize.ToString());
+                      Dbg.Trace("Parked ULDistance: " + ulDistance.ToString());
+                      Dbg.Trace("Parked LRDistance: " + lrDistance.ToString());
+
+                      Dbg.Trace("Vehicle found parked using Corners - Previous: " +
+                        "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
+                        " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
+                        " Width: " + _previousVehicles[j].ObjectRectangle.Width.ToString() +
+                        "Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
+                        );
+
+                      Dbg.Trace("Vehicle found parked using Corners - Current: " +
+                        "X: " + vehicles[i].ObjectRectangle.X.ToString() +
+                        " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
+                        " Width: " + vehicles[i].ObjectRectangle.Width.ToString() +
+                        " Height: " + vehicles[i].ObjectRectangle.Height.ToString()
+                        );
+
+                      foundParked = true;
+                    }
                   }
                 }
 

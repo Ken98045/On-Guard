@@ -96,9 +96,12 @@ namespace SAAI
       {
         foreach (var ii in frames[index].Interesting)
         {
-          foreach (var email in ii.Area.Notifications.Email)
+          if (null != ii.Area.Notifications && null != ii.Area.Notifications.Email)
           {
-            emailAddresses[email] = email;
+            foreach (var email in ii.Area.Notifications.Email)
+            {
+              emailAddresses[email] = email;
+            }
           }
         }
       }

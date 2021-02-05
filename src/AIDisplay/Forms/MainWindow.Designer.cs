@@ -88,7 +88,6 @@
       this.label9 = new System.Windows.Forms.Label();
       this.cameraCombo = new System.Windows.Forms.ComboBox();
       this.FrameProgressPanel = new System.Windows.Forms.Panel();
-      this.FPSProgress = new SAAI.Controls.EnhnacedProgressBar();
       this.label13 = new System.Windows.Forms.Label();
       this.motionOnlyCheckbox = new System.Windows.Forms.CheckBox();
       this.CleanupButton = new System.Windows.Forms.Button();
@@ -124,7 +123,9 @@
       this.label12 = new System.Windows.Forms.Label();
       this.XResLabel = new System.Windows.Forms.Label();
       this.YResLabel = new System.Windows.Forms.Label();
+      this.analysisSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.cpuProgress = new SAAI.Controls.EnhnacedProgressBar();
+      this.FPSProgress = new SAAI.Controls.EnhnacedProgressBar();
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).BeginInit();
       this.LiveOnDemandGroup.SuspendLayout();
@@ -594,15 +595,6 @@
       this.FrameProgressPanel.Size = new System.Drawing.Size(1289, 155);
       this.FrameProgressPanel.TabIndex = 38;
       // 
-      // FPSProgress
-      // 
-      this.FPSProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.FPSProgress.Location = new System.Drawing.Point(903, 58);
-      this.FPSProgress.Name = "FPSProgress";
-      this.FPSProgress.Size = new System.Drawing.Size(73, 15);
-      this.FPSProgress.TabIndex = 42;
-      this.FPSProgress.Load += new System.EventHandler(this.enhnacedProgressBar1_Load);
-      // 
       // label13
       // 
       this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -808,6 +800,7 @@
             this.outgoingEmailServerToolStripMenuItem1,
             this.addEditEmailAddressesToolStripMenuItem1,
             this.mQTTSettingsToolStripMenuItem,
+            this.analysisSettingsToolStripMenuItem,
             this.testImagesToolStripMenuItem});
       this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
       this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(46, 20);
@@ -948,6 +941,13 @@
       this.YResLabel.TabIndex = 6;
       this.YResLabel.Text = "1920";
       // 
+      // analysisSettingsToolStripMenuItem
+      // 
+      this.analysisSettingsToolStripMenuItem.Name = "analysisSettingsToolStripMenuItem";
+      this.analysisSettingsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.analysisSettingsToolStripMenuItem.Text = "Analysis Settings";
+      this.analysisSettingsToolStripMenuItem.Click += new System.EventHandler(this.AnalysisSettingsToolStripMenuItem_Click);
+      // 
       // cpuProgress
       // 
       this.cpuProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -955,6 +955,15 @@
       this.cpuProgress.Name = "cpuProgress";
       this.cpuProgress.Size = new System.Drawing.Size(73, 15);
       this.cpuProgress.TabIndex = 43;
+      // 
+      // FPSProgress
+      // 
+      this.FPSProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.FPSProgress.Location = new System.Drawing.Point(903, 58);
+      this.FPSProgress.Name = "FPSProgress";
+      this.FPSProgress.Size = new System.Drawing.Size(73, 15);
+      this.FPSProgress.TabIndex = 42;
+      this.FPSProgress.Load += new System.EventHandler(this.enhnacedProgressBar1_Load);
       // 
       // MainWindow
       // 
@@ -1080,6 +1089,7 @@
     private System.Windows.Forms.Label label13;
     private Controls.EnhnacedProgressBar FPSProgress;
     private Controls.EnhnacedProgressBar cpuProgress;
+    private System.Windows.Forms.ToolStripMenuItem analysisSettingsToolStripMenuItem;
   }
 }
 

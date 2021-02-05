@@ -692,6 +692,23 @@ namespace SAAI
       return result;
     }
 
+    public static bool GetGlobalBool(string keyName, bool useDefault)
+    {
+      bool result = false;
+      string str = GetGlobalString(keyName);
+      if (!string.IsNullOrEmpty(str))
+      {
+        result = bool.Parse(str);
+      }
+      else
+      {
+        return useDefault;
+      }
+
+      return result;
+    }
+
+
     public static void SetGlobalDouble(string keyName, double value)
     {
       s_base.SetValue(keyName, value.ToString(), RegistryValueKind.String);
