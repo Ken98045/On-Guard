@@ -141,7 +141,7 @@ namespace SAAI
         {
           _connectionString = GetDefaultConnectionString();
           Storage.SetGlobalString("DBConnectionString", _connectionString);
-        }  
+        }
       }
 
 
@@ -1384,16 +1384,11 @@ namespace SAAI
     /// <param name="fileName"></param>
     void OnCameraImage(CameraData camData, string fileName)
     {
-      lock (_fileLock)  // Since the check on the files processed/processing check/add must be attomic with respect to the queue
+      if (_filesPendingProcessing.TryAdd(fileName, fileName))
       {
-        if (!_filesPendingProcessing.ContainsKey(fileName)) // So we won't get double adds like the FileSystemWatcher does
-        {
-          _filesPendingProcessing.TryAdd(fileName, fileName);
-          _fileQueue.Enqueue(new PendingItem(camData, fileName));
-          _wakeFileQueue.Set(); // Wake up the queue monitoring thread.  Maybe it can process it right now
-        }
+        _fileQueue.Enqueue(new PendingItem(camData, fileName));
+        _wakeFileQueue.Set(); // Wake up the queue monitoring thread.  Maybe it can process it right now
       }
-
     }
 
     // Here we passed all of the tests from the AI and have compared the objects to the AOIs.
@@ -1950,12 +1945,19 @@ namespace SAAI
       int xRes = 0;
       int yRes = 0;
 
-      Dbg.Trace("Starting AI analysis of file: " + pendingItem.PendingFile);
-
-
-      Tuple<int, int> waitResult = await WaitForFileReady(pendingItem.PendingFile).ConfigureAwait(false);
-      xRes = waitResult.Item1;
-      yRes = waitResult.Item2;
+      if (_filesPendingProcessing.ContainsKey(pendingItem.PendingFile))
+      {
+        // By definition it should be in this list, but ....
+        Dbg.Trace("StartAIAnalysis - Starting ready check for file: " + pendingItem.PendingFile);
+        Tuple<int, int> waitResult = await WaitForFileReady(pendingItem.PendingFile).ConfigureAwait(false);
+        xRes = waitResult.Item1;
+        yRes = waitResult.Item2;
+      }
+      else
+      {
+        Dbg.Trace("StartAIAnalysis - File not in queue for analysis - already processed?");
+        return;
+      }
 
       Dbg.Trace("MainWindows - StartAIAnalysis - File ready for processing: " + pendingItem.PendingFile);
 
