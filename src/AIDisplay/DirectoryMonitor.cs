@@ -40,8 +40,10 @@ namespace SAAI
       try
       {
         Watcher = new FileSystemWatcher(location.Path, location.CameraPrefix + "*.jpg");
+        Watcher.InternalBufferSize = 1024 * 1024 * 2;
         cameraData = location;
         Watcher.Changed += FileChanged;
+        Watcher.Error += Watcher_Error;
         Watcher.NotifyFilter = NotifyFilters.LastWrite;
         Watcher.EnableRaisingEvents = true;
       }
@@ -51,6 +53,11 @@ namespace SAAI
       {
         Dbg.Write("DirectoryMonitor constructor exception: " + ex.Message);
       }
+    }
+
+    private void Watcher_Error(object sender, ErrorEventArgs e)
+    {
+      Dbg.Write("DirectoryMonitory - File System Watcher Error!");
     }
 
     // You can get at least 2 notifications for each new image file.  One when it is 
