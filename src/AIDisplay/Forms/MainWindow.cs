@@ -151,23 +151,16 @@ namespace SAAI
       }
 
       _analyzer = new AIAnalyzer();
-      _allCameras = CameraCollection.Load();    // which also inits the camera
+      _allCameras = CameraCollection.Load();  
 
       if (CurrentCam != null)
       {
-        Storage.SetGlobalString("CurrentCameraPath", CurrentCam.Path);            // TODO: Eliminate?
+        Storage.SetGlobalString("CurrentCameraPath", CurrentCam.Path);
         Storage.SetGlobalString("CurrentCameraPrefix", CurrentCam.CameraPrefix);
         InitAnalyzer(CurrentCam.CameraPrefix, CurrentCam.Path);
       }
 
-      foreach (var cam in _allCameras.CameraDictionary.Values)
-      {
-        if (cam.Monitoring)
-        {
-          cam.Monitor.OnNewImage += OnCameraImage;
-        }
-      }
-
+      _allCameras.StartMonitoring(OnCameraImage);
 
       string urlString = string.Empty;
 
@@ -1642,21 +1635,10 @@ namespace SAAI
     private void CameraSettingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
       // Disconnect the monitoring from all monitoring cameras.
-      foreach (var cam in _allCameras.CameraDictionary.Values)
-      {
-        if (cam.Monitoring)
-        {
-          if (null != cam.Monitor)
-          {
-            cam.Monitor.OnNewImage -= OnCameraImage;
-          }
-        }
-      }
+      _allCameras.StopMonitoring(OnCameraImage);
 
       using (CameraCollection tmp = new CameraCollection(_allCameras))
       {
-        tmp.StopMonitoring();
-
         _allCameras.Dispose();  // This cleans up the directory monitoring, and a lot of other stuff
         _allCameras = null;
         cameraCombo.Items.Clear();
@@ -1695,18 +1677,10 @@ namespace SAAI
         {
           cameraCombo.SelectedItem = CurrentCam;
         }
-
-        _allCameras.StartMonitoring();
-
-        // And reconnnect all cameras to this form for new images
-        foreach (var cam in _allCameras.CameraDictionary.Values)
-        {
-          if (cam.Monitoring)
-          {
-            cam.Monitor.OnNewImage += OnCameraImage;
-          }
-        }
       }
+
+      _allCameras.StartMonitoring(OnCameraImage);
+
     }
 
     private void SetCurrentCamera(CameraData cam)
@@ -2088,7 +2062,6 @@ namespace SAAI
       lock (camera)
       {
         camera.MotionStoppedTimer.Dispose();
-        camera.Monitor = null;
         camera.MotionStoppedTimer = null;
       }
 

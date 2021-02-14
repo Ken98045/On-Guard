@@ -380,11 +380,10 @@ namespace SAAI
             string rec = emailRecipients.TrimEnd(new char[] { ';', ' ' });
             mail.To.Add(rec);
             mail.Subject = "Security Camera Alert";   // todo get via ui
-            mail.Body = "Security camera activity:<br />";
-
+            mail.Body = "Security camera activity:" + Environment.NewLine;
             foreach (var desc in activityDesc)
             {
-              mail.Body += desc + "<br/>";
+              mail.Body += desc + Environment.NewLine;
             }
 
             System.Net.Mail.Attachment attachment;

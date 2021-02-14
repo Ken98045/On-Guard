@@ -97,25 +97,28 @@ namespace SAAI
       CameraDictionary.Remove(CameraData.PathAndPrefix(camData));
     }
 
-    public void StopMonitoring()
+    public void StopMonitoring(CameraEventHandler imageHandler)
     {
       foreach(var cam in CameraDictionary.Values)
       {
         if (cam.Monitoring)
         {
+          cam.Monitor.OnNewImage -= imageHandler;
           cam.Monitor?.Dispose();
-          cam.Monitor = null; 
+          cam.Monitor = null;
+          // Do not reset the Monitoring flag since we will need to restart later
         }
       }
     }
 
-    public void StartMonitoring()
+    public void StartMonitoring(CameraEventHandler imageHandler)
     {
       foreach (var cam in CameraDictionary.Values)
       {
         if (cam.Monitoring)
         {
           cam.Monitor = new DirectoryMonitor(cam);
+          cam.Monitor.OnNewImage += imageHandler;
         }
       }
 

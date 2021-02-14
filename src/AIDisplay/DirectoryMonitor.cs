@@ -12,11 +12,12 @@ namespace SAAI
   /// </summary>
   public class DirectoryMonitor : IDisposable
   {
-    public FileSystemWatcher Watcher { get; }
+    public FileSystemWatcher Watcher { get; set; }
     public String Path() { return CameraData.PathAndPrefix(cameraData); }
     public event CameraEventHandler OnNewImage;
 
-    readonly CameraData cameraData;
+    CameraData cameraData;
+
     public DirectoryMonitor(CameraData location)
     {
       if (location == null || string.IsNullOrEmpty(location.Path))
@@ -37,11 +38,16 @@ namespace SAAI
 
       }
 
+      CreateWatcher(location);
+    }
+
+    private void CreateWatcher(CameraData location)
+    {
       try
       {
+        cameraData = location;
         Watcher = new FileSystemWatcher(location.Path, location.CameraPrefix + "*.jpg");
         Watcher.InternalBufferSize = 1024 * 1024 * 2;
-        cameraData = location;
         Watcher.Changed += FileChanged;
         Watcher.Error += Watcher_Error;
         Watcher.NotifyFilter = NotifyFilters.LastWrite;
@@ -51,13 +57,27 @@ namespace SAAI
       catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
       {
-        Dbg.Write("DirectoryMonitor constructor exception: " + ex.Message);
+        Dbg.Write("DirectoryMonitor CreateWatcher exception: " + ex.Message);
       }
     }
 
     private void Watcher_Error(object sender, ErrorEventArgs e)
     {
-      Dbg.Write("DirectoryMonitory - File System Watcher Error!");
+      Dbg.Write("DirectoryMonitory - File System Watcher Error! " + e.GetException().Message);
+      if (!disposedValue)
+      {
+        Dbg.Write("Attempting to recreate the DirectoryMonitor");
+        try
+        {
+          Watcher?.Dispose();
+        }
+        catch (Exception ex)
+        {
+        }
+
+        CreateWatcher(cameraData);
+      }
+
     }
 
     // You can get at least 2 notifications for each new image file.  One when it is 
@@ -72,6 +92,7 @@ namespace SAAI
         }
       }
     }
+
 
     #region IDisposable Support
     private bool disposedValue = false; // To detect redundant calls

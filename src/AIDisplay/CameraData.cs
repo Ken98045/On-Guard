@@ -165,27 +165,6 @@ namespace SAAI
 
       // AOI = new AreasOfInterestCollection(Path, CameraPrefix);
       CameraEmailAccumulator = new EmailAccumulator(Storage.GetGlobalInt("MaxEventTime"));
-      if (Monitoring)
-      {
-        Monitor = new DirectoryMonitor(this);
-      }
-    }
-
-    public void StopMonitoring()
-    {
-      if (Monitoring)
-      {
-        Monitor.Dispose();
-        Monitor = null;
-      }
-    }
-
-    public void StartMonitoring()
-    {
-      if (Monitoring)
-      {
-        Monitor = new DirectoryMonitor(this);
-      }
     }
 
     public bool IsItemOfCameraInterest(string label)
