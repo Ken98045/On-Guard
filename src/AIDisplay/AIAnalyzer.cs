@@ -390,7 +390,7 @@ namespace SAAI
 
                   double ulDistance = GetPointDistance(pPreviousUL, pVehicleUL);
                   double lrDistance = GetPointDistance(pPreviousLR, pVehicleLR);
-                  double parkedSize = pVehicleLR.X - pVehicleUL.X;  // the width in pixels of the parked vehicle, to get a rough idea of its size
+                  double parkedSize = pVehicleLR.X - pVehicleUL.X;  // * the width in pixels of the parked vehicle, to get a rough idea of its size
                   double targetSize = parkedTargetDistance * parkedSize;
                   if (targetSize > parkedTargetMax)
                   {
