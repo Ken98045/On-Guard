@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnGuardCore", "OnGuardCore.csproj", "{927CF148-F6BB-41EC-BB98-BF61D8CADBF3}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{A9FF5A82-23D4-4644-BF80-AD7E82CF40A9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{927CF148-F6BB-41EC-BB98-BF61D8CADBF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{927CF148-F6BB-41EC-BB98-BF61D8CADBF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{927CF148-F6BB-41EC-BB98-BF61D8CADBF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{927CF148-F6BB-41EC-BB98-BF61D8CADBF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9FF5A82-23D4-4644-BF80-AD7E82CF40A9}.Debug|Any CPU.ActiveCfg = Debug
+		{A9FF5A82-23D4-4644-BF80-AD7E82CF40A9}.Release|Any CPU.ActiveCfg = Release
+		{A9FF5A82-23D4-4644-BF80-AD7E82CF40A9}.Release|Any CPU.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {787AB3AB-A171-4077-9BAF-6F286EC75237}
+	EndGlobalSection
+EndGlobal
