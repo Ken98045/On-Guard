@@ -84,6 +84,7 @@ namespace OnGuardCore
       Storage.Instance.SetGlobalInt("MaxEventTime", (int)maxEventNumeric.Value);
       Storage.Instance.SetGlobalInt("EventInterval", (int)eventIntervalNumeric.Value);
       Storage.Instance.SetGlobalString("LogViewer", LogViewerText.Text);
+      Storage.Instance.Update();
       DialogResult = DialogResult.OK;
 
     }
@@ -155,6 +156,7 @@ namespace OnGuardCore
       {
         Storage.Instance.SetGlobalString("CustomDatabaseConnectionString", ConnectionStringText.Text); // His custom string stored here so we can get it back (unless nuked)!
         Storage.Instance.SetGlobalString("DBConnectionString", ConnectionStringText.Text);   // This is the one actually used!
+        Storage.Instance.Update();
       }
     }
 

@@ -105,7 +105,7 @@ namespace OnGuardCore
         {
           cam.Monitor?.Dispose();
           cam.Monitor = null;
-          cam.Monitoring = false;
+          // cam.Monitoring = false;
         }
       }
     }

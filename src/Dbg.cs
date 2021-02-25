@@ -26,7 +26,7 @@ namespace OnGuardCore
     static Dbg()
     {
       LogLevel = 0;
-      s_path = Storage.Instance.GetFilePath("OnGuard.txt");
+      s_path = Storage.GetFilePath("OnGuard.txt");
       processThread.Start();
     }
 

@@ -44,6 +44,7 @@ namespace OnGuardCore
       Storage.Instance.SetGlobalBool("EmailSSL", sslCheck.Checked);
       Storage.Instance.SetGlobalInt("EmailPort", (int)portNumeric.Value);
       Storage.Instance.SetGlobalBool("EmailSetup", true);
+      Storage.Instance.Update();
       DialogResult = DialogResult.OK;
     }
 

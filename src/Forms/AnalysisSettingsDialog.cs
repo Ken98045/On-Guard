@@ -25,6 +25,7 @@ namespace OnGuardCore
       Storage.Instance.SetGlobalBool("ExcludeParkedUsingOverlap", ParkedCarsOverlapCheckbox.Checked);
       Storage.Instance.SetGlobalBool("ExcludeParkedUsingCorners", ExcludeParkedCornersCheckbox.Checked);
       Storage.Instance.SetGlobalBool("BumpMultiVehicleConfidence", BumpVehicleConfidenceCheck.Checked);
+      Storage.Instance.Update();
       DialogResult = DialogResult.OK;
     }
 

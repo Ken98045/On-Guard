@@ -144,6 +144,9 @@ namespace OnGuardCore
         return;
       }
 
+      Storage.UseRegistry = false;
+      this.UseXMLDataSourceCheckedMenu.Checked = true;
+
       int currentCPU = (int)theCPUCounter.NextValue();
       currentCPU = (int)theCPUCounter.NextValue();
       _monitorQueueThread.Start();
@@ -159,6 +162,7 @@ namespace OnGuardCore
         {
           _connectionString = GetDefaultConnectionString();
           Storage.Instance.SetGlobalString("DBConnectionString", _connectionString);
+          Storage.Instance.Update();
         }
       }
 
@@ -175,6 +179,7 @@ namespace OnGuardCore
       {
         Storage.Instance.SetGlobalString("CurrentCameraPath", CurrentCam.Path);            // TODO: Eliminate?
         Storage.Instance.SetGlobalString("CurrentCameraPrefix", CurrentCam.CameraPrefix);
+        Storage.Instance.Update();
         await InitAnalyzer(CurrentCam.CameraPrefix, CurrentCam.Path).ConfigureAwait(true);
       }
 
@@ -259,6 +264,7 @@ namespace OnGuardCore
             {
               Storage.Instance.SetGlobalString("CurrentCameraPath", string.Empty);   // TODO: Remove?
               Storage.Instance.SetGlobalString("CurrentCameraPrefix", string.Empty);
+              Storage.Instance.Update();
             }
           }
         }
@@ -317,6 +323,7 @@ namespace OnGuardCore
       }
 
       Storage.Instance.SetGlobalBool("SetupComplete", true);
+      Storage.Instance.Update();
 
       MessageBox.Show("The application will now exit.  Please restart it to continue", "Setup Complete!");
       Dispose();
@@ -1683,11 +1690,13 @@ namespace OnGuardCore
           if (result == DialogResult.OK)
           {
             _allCameras = dlg.AllCameraData;  // a reference, not a copy (since the dialog does a deep copy, and we want the altered one)
+            Storage.Instance.SaveCameras(_allCameras);
 
             if (null == dlg.SelectedCamera)
             {
               Storage.Instance.SetGlobalString("CurrentCameraPath", string.Empty);    // we don't need to do this if we canceled the dlg
               Storage.Instance.SetGlobalString("CurrentCameraPrefix", string.Empty);
+              Storage.Instance.Update();
             }
             else
             {
@@ -1729,8 +1738,7 @@ namespace OnGuardCore
       _allCameras.CurrentCameraPath = CameraData.PathAndPrefix(cam);    // which sets the current camera in _allCameras
       Storage.Instance.SetGlobalString("CurrentCameraPath", cam.Path);
       Storage.Instance.SetGlobalString("CurrentCameraPrefix", cam.CameraPrefix);
-      // _allCameras.CameraDictionary[CameraData.PathAndPrefix(cam)] = cam;
-      CameraCollection.Save(_allCameras);
+      Storage.Instance.Update();
       InitAnalyzer(cam.CameraPrefix, cam.Path);
 
     }
@@ -2670,7 +2678,7 @@ namespace OnGuardCore
 
     private void LogFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      string path = Storage.Instance.GetFilePath("OnGuard.txt");
+      string path = Storage.GetFilePath("OnGuard.txt");
       string logViewer = Storage.Instance.GetGlobalString("LogViewer");
       if (string.IsNullOrEmpty(logViewer))
       {
@@ -2790,7 +2798,7 @@ namespace OnGuardCore
 
     private void DeleteLogFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      if (File.Exists(Storage.Instance.GetFilePath("OnGuard.txt")))
+      if (File.Exists(Storage.GetFilePath("OnGuard.txt")))
       {
         if (!Dbg.DeleteLogFile())
         {
@@ -2816,6 +2824,15 @@ namespace OnGuardCore
       }
     }
 
+    private void menuStrip2_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+    {
+
+    }
+
+    private void UseXMLCheckChanged(object sender, EventArgs eventArgs)
+    {
+      Storage.UseRegistry = !UseXMLDataSourceCheckedMenu.Checked;
+    }
   }
 
 }

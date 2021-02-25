@@ -23,11 +23,8 @@ namespace OnGuardCore
       UserText.Text = Storage.Instance.GetGlobalString("MQTTUser");
       PasswordText.Text = Storage.Instance.GetGlobalString("MQTTPassword");
 
-      object coolDownObj = Storage.Instance.GetValue("MQTTCoolDown");
-      if (null != coolDownObj)
-      {
-        CoolDownNumeric.Value = (decimal)((int)coolDownObj);
-      }
+      int coolDownValue = Storage.Instance.GetGlobalInt("MQTTCoolDown");
+      CoolDownNumeric.Value = (decimal)(coolDownValue);
 
       UseSecureLinkCheck.Checked = Storage.Instance.GetGlobalBool("MQTTUseSecureLink");
 
@@ -85,6 +82,7 @@ namespace OnGuardCore
       Storage.Instance.SetGlobalString("MQTTStoppedTopic", StoppedActivityTopicText.Text);
       Storage.Instance.SetGlobalString("MQTTStoppedPayload", StoppedPayloadText.Text);
       Storage.Instance.SetGlobalBool("JSONFormat", jjsonFormatPaths.Checked);
+      Storage.Instance.Update();
 
       DialogResult = DialogResult.OK;
 

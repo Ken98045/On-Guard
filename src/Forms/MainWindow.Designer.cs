@@ -115,6 +115,7 @@
       this.addEditEmailAddressesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.mQTTSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.analysisSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.UseXMLDataSourceCheckedMenu = new System.Windows.Forms.ToolStripMenuItem();
       this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -761,6 +762,7 @@
       this.menuStrip2.Size = new System.Drawing.Size(1317, 24);
       this.menuStrip2.TabIndex = 41;
       this.menuStrip2.Text = "menuStrip2";
+      this.menuStrip2.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip2_ItemClicked);
       // 
       // fileToolStripMenuItem1
       // 
@@ -822,6 +824,7 @@
             this.addEditEmailAddressesToolStripMenuItem1,
             this.mQTTSettingsToolStripMenuItem,
             this.analysisSettingsToolStripMenuItem,
+            this.UseXMLDataSourceCheckedMenu,
             this.testImagesToolStripMenuItem});
       this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
       this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(46, 20);
@@ -868,6 +871,14 @@
       this.analysisSettingsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
       this.analysisSettingsToolStripMenuItem.Text = "Analysis Settings";
       this.analysisSettingsToolStripMenuItem.Click += new System.EventHandler(this.AnalysisSettingsToolStripMenuItem_Click);
+      // 
+      // UseXMLDataSourceCheckedMenu
+      // 
+      this.UseXMLDataSourceCheckedMenu.CheckOnClick = true;
+      this.UseXMLDataSourceCheckedMenu.Name = "UseXMLDataSourceCheckedMenu";
+      this.UseXMLDataSourceCheckedMenu.Size = new System.Drawing.Size(209, 22);
+      this.UseXMLDataSourceCheckedMenu.Text = "Use XML Data";
+      this.UseXMLDataSourceCheckedMenu.CheckedChanged += new System.EventHandler(this.UseXMLCheckChanged);
       // 
       // testImagesToolStripMenuItem
       // 
@@ -1094,6 +1105,7 @@
     private EnhancedProgressBar FPSProgress;
     private EnhancedProgressBar cpuProgress;
     private System.Windows.Forms.ToolStripMenuItem analysisSettingsToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem UseXMLDataSourceCheckedMenu;
   }
 }
 

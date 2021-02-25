@@ -58,7 +58,7 @@ namespace OnGuardCore
     public Point ZoneFocus { get; set; }  // The point in the area used to determine motion to/from the MovementType - Always relative to the area
     public AreaNotificationOption Notifications { get; set; } // URL and Email notifications, maybe others in the future
 
-    public Guid ID { get; }   // a unique id for the area
+    public Guid ID { get; set; }   // a unique id for the area
 
     public AreaOfInterest()
     {
