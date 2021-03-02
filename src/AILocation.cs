@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
@@ -11,10 +12,15 @@ namespace OnGuardCore
   {
 
     static readonly object s_lock;
-    static BufferBlock<AILocation> aiList;
+    // static BufferBlock<AILocation> aiList;
+    static AwaitableQueue<AILocation> aiList;
 
-    public static int AICount { get; set; }   // So we know whether to EXPECT an AI
-    
+    private static int _aiCount;
+    public static int AICount
+    {
+      get => _aiCount; set => _aiCount = value;
+    }   // So we know whether to EXPECT an AI
+
     // as a global
 
     // Static Constructor used to get the global values
@@ -22,7 +28,7 @@ namespace OnGuardCore
     {
       s_lock = new object();
       List<AILocation> result = new List<AILocation>();
-      aiList = new BufferBlock<AILocation>();
+      aiList = new AwaitableQueue<AILocation>(30);
       Refresh();
     }
 
@@ -35,7 +41,7 @@ namespace OnGuardCore
 
     public async static Task ReturnToList(AILocation ai)
     {
-      await aiList.SendAsync(ai).ConfigureAwait(false);
+      aiList.Add(ai);
     }
 
     public async static Task<AILocation> GetAI()
@@ -43,16 +49,12 @@ namespace OnGuardCore
       AILocation ai = null;
       try
       {
-        if (AICount == 0)
-        {
-          throw new AiNotFoundException("No available AIs are defined"); 
-        }
-        ai = await aiList.ReceiveAsync(TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+        ai = await aiList.GetAsync();
       }
-      catch (InvalidOperationException)
+      catch (TaskCanceledException)
       {
+        // just let it return null
       }
-
       return ai;  // which may be null
 
     }
@@ -63,18 +65,21 @@ namespace OnGuardCore
     public int Port { get; set; }
     static private int Next { get; set; }
 
+    public static void Decrement()
+    {
+      Interlocked.Decrement(ref _aiCount);
+    }
+
     
     public static void Refresh()
     {
       lock (s_lock)
       {
         AICount = 0;
-        IList<AILocation> tmp;
-        aiList.TryReceiveAll(out tmp);  // to empty the list;
         List<AILocation> locations = Storage.Instance.GetAILocations(); // get the list from the registry
         foreach (var ai in locations)
         {
-          aiList.Post(ai);
+          aiList.Add(ai);
           AICount++;
         }
       }

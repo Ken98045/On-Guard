@@ -1,5 +1,4 @@
-﻿
-using OnGuardCore.Properties;
+﻿using OnGuardCore.Properties;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -36,6 +35,7 @@ using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using System.ComponentModel;
 using OnGuardCore.Src.Properties;
+using System.Runtime.InteropServices;
 
 namespace OnGuardCore
 {
@@ -56,6 +56,7 @@ namespace OnGuardCore
 
     readonly MostRecentCollection _recentTimes = new MostRecentCollection(10);
     readonly object _fileLock = new object();
+    readonly object _aiNotFoundLock = new object();
 
     private delegate void SetProgressDelegate(int cpuLoad);
 
@@ -144,8 +145,16 @@ namespace OnGuardCore
         return;
       }
 
-      Storage.UseRegistry = false;
-      this.UseXMLDataSourceCheckedMenu.Checked = true;
+      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+      {
+        Storage.UseRegistry = true;
+        UseXMLDataSourceCheckedMenu.Checked = false;
+      }
+      else
+      {
+        Storage.UseRegistry = false;
+        this.UseXMLDataSourceCheckedMenu.Checked = true;
+      }
 
       int currentCPU = (int)theCPUCounter.NextValue();
       currentCPU = (int)theCPUCounter.NextValue();
@@ -1241,7 +1250,7 @@ namespace OnGuardCore
       catch (HttpRequestException ex)
       {
         Dbg.Write("MainWindow - LiveCameraButton_Click = Error  snapshot/live image: " + ex.Message);
-        MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot - Application Exit");
+        MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot");
       }
       catch (WebException ex)
       {
@@ -1255,11 +1264,11 @@ namespace OnGuardCore
         Dbg.Write("MainWindow - There was an error attempting to get a snapshot or continuous video.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message);
         if (fromVideo)
         {
-          MessageBox.Show("There was an error attempting to access your camera for continuous video.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error Getting Video - Application Exit");
+          MessageBox.Show("There was an error attempting to access your camera for continuous video.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error Getting Video");
         }
         else
         {
-          MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot - Application Exit");
+          MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot");
         }
       }
 
@@ -1987,7 +1996,30 @@ namespace OnGuardCore
         Dbg.Trace("MainWindow StartAIAnalysis - failed to remove from pending file list: " + pendingItem.PendingFile);
       }
 
-      AIResult result = await AIDetection.DetectObjectsAsync(pendingItem).ConfigureAwait(false); //really do it async
+      AIResult result;
+      try
+      {
+        result = await AIDetection.DetectObjectsAsync(pendingItem).ConfigureAwait(false); //really do it async
+        lock (_aiNotFoundLock)
+        {
+          if (Storage.Instance.GetGlobalBool("SentAIGoneEmail"))
+          {
+            Storage.Instance.SetGlobalBool("SentAIGoneEmail", false);
+            Storage.Instance.Update();
+            UpdateControlText(AIStatus, "Connected");
+            UpdateControlColor(AIStatus, Color.LightGreen);
+          }
+        }
+      }
+      catch (AggregateException ex)
+      {
+        return;
+      }
+      catch (AiNotFoundException ex)
+      {
+        Task.Run(() => NotifyAIGone());
+        return;
+      }
       UpdateFrameProgressBar(DateTime.Now - pendingItem.TimeDispatched);
 
 
@@ -2044,6 +2076,107 @@ namespace OnGuardCore
       }
 
       ProcessAccumulation(frame);
+    }
+
+
+    private delegate void UpdateControlTextDelgate(Control control, string text);
+    private void UpdateControlText(Control control, string text)
+    {
+      if (this.InvokeRequired)
+      {
+        BeginInvoke(new UpdateControlTextDelgate(UpdateControlText), new object[] { control, text });
+        return;
+      }
+
+      control.Text = text;
+    }
+
+    private delegate void UpdateControlColorDelgate(Control control, Color color);
+    private void UpdateControlColor(Control control, Color color)
+    {
+      if (this.InvokeRequired)
+      {
+        BeginInvoke(new UpdateControlColorDelgate(UpdateControlColor), new object[] { control, color });
+        return;
+      }
+
+      control.BackColor = color;
+    }
+
+
+
+    private delegate Task TaskDelegate();
+    private async Task NotifyAIGone()
+    {
+      if (this.InvokeRequired)
+      {
+        this.BeginInvoke(new TaskDelegate(NotifyAIGone), new object[] { });
+        return;
+      }
+
+      string emailRecipient = Storage.Instance.GetGlobalString("NotifyAIGoneEmail");
+      bool sentEmailGone;
+
+      lock (_aiNotFoundLock)  // because it may take a while to update the state
+      {
+        sentEmailGone = Storage.Instance.GetGlobalBool("SentAIGoneEmail");
+        if (!sentEmailGone)
+        {
+          Storage.Instance.SetGlobalBool("SentAIGoneEmail", true);
+          Storage.Instance.Update();
+        }
+      }
+
+      if (!sentEmailGone)
+      {
+        AIStatus.Text = "Disconnected";
+        AIStatus.BackColor = Color.Red;
+        if (!string.IsNullOrEmpty(emailRecipient))
+        {
+          try
+          {
+            using (MailMessage mail = new MailMessage())
+            {
+              using (SmtpClient SmtpServer = new SmtpClient(Storage.Instance.GetGlobalString("EmailServer")))
+              {
+                mail.BodyEncoding = Encoding.UTF8;
+                mail.IsBodyHtml = true;
+                mail.From = new MailAddress(Storage.Instance.GetGlobalString("EmailUser"));
+                mail.To.Add(emailRecipient);
+                mail.Subject = "Security Camera AI Gone!";   // todo get via ui
+                mail.Body = "Your security camera AI Servers are Dead!";
+
+                SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
+                string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
+                string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
+
+                if (!string.IsNullOrEmpty(emailUserName))
+                {
+                  SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
+                }
+
+                SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
+                await SmtpServer.SendMailAsync(mail).ConfigureAwait(false);
+                Dbg.Write("MainWindow - NotifyAIGone - Email Sent!");
+
+                bool mqttSendAIDied = Storage.Instance.GetGlobalBool("MQTTSendAIDied");
+                if (mqttSendAIDied)
+                {
+                  string mqttAIDiedTopic = Storage.Instance.GetGlobalString("MQTTaiDiedTopic");
+                  string mqttAIDiedPayload = Storage.Instance.GetGlobalString("MQTTaiDiedPayload");
+                  await MQTTPublish.SendToServer(mqttAIDiedTopic, mqttAIDiedPayload).ConfigureAwait(false);
+                  Dbg.Write("AI Died MQTT message sent");
+                }
+
+              }
+            }
+          }
+          catch (SmtpException ex)
+          {
+            Dbg.Write("MainWindow - NotifyEmailGone - Email exception: " + ex.ToString());
+          }
+        }
+      }
     }
 
     void StartMotionTimeout(PendingItem pending)
@@ -2561,10 +2694,7 @@ namespace OnGuardCore
         DialogResult result = dlg.ShowDialog();
         if (result == DialogResult.OK)
         {
-          MessageBox.Show("You may continue working, but the working set will be refreshed upon completion!", "File Deletion About to Start!");
           await Task.Run(() => CleanupAsync(dlg.ExpiredFiles, dlg.ExcludeMotion)).ConfigureAwait(false);
-          Refresh_Click(sender, e);
-          MessageBox.Show("The working set was refreshed!", "Updated!");
         }
       }
     }
@@ -2778,9 +2908,6 @@ namespace OnGuardCore
         }
       }
 
-      await Task.Delay(1000 * 3).ConfigureAwait(false);
-      Refresh_Click(null, null);
-
     }
 
     private void LogDetailedInformationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2828,6 +2955,15 @@ namespace OnGuardCore
     {
 
     }
+
+    private void AIAlertMenuItemClicked(object sender, EventArgs e)
+    {
+      using (AIAlertDialog dlg = new AIAlertDialog())
+      {
+        dlg.ShowDialog();
+      }
+    }
+
 
     private void UseXMLCheckChanged(object sender, EventArgs eventArgs)
     {

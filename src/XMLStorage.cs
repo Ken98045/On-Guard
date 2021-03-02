@@ -116,6 +116,7 @@ namespace OnGuardCore
 
         try
         {
+          SetGlobalBool("SentAIGoneEmail", false);
           _doc.Save(_fileName);
         }
         catch (XmlException xmlEx)
@@ -261,7 +262,7 @@ namespace OnGuardCore
       {
         foreach (XmlNode ai in aiLocations.ChildNodes)
         {
-          AILocation aiLocation = new AILocation(Guid.Parse(ai.InnerText), GetAttribute(ai, "IPAddress"), int.Parse(GetAttribute(ai, "Port")));
+          AILocation aiLocation = new AILocation(Guid.Parse(GetAttribute(ai, "ID")), GetAttribute(ai, "IPAddress"), int.Parse(GetAttribute(ai, "Port")));
           result.Add(aiLocation);
         }
       }
@@ -655,14 +656,13 @@ namespace OnGuardCore
 
       // Now, look and see if this one exists
       XmlNode? node;
-      string aiQuery = SearchInnerDown("AI", location.ID.ToString());
+      string aiQuery = SearchAttributeDown("AI", "ID", location.ID.ToString());
       node = aiLocations.SelectSingleNode(aiQuery);
       if (node == null)
       {
         try
         {
           node = _doc.CreateElement("AI");
-          node.InnerText = location.ID.ToString();
           aiLocations.AppendChild(node);
         }
         catch (Exception ex)
@@ -671,6 +671,7 @@ namespace OnGuardCore
         }
       }
 
+      AddUpdateAttribute(node, "ID", location.ID.ToString());
       AddUpdateAttribute(node, "IPAddress", location.IPAddress);
       AddUpdateAttribute(node, "Port", location.Port.ToString());
       Update();
@@ -682,12 +683,11 @@ namespace OnGuardCore
       if (aiLocations == null)
       {
         XmlElement element = _doc.CreateElement("AILocations");
-
         _base.AppendChild(element);
       }
       else
       {
-        XmlNode? node = aiLocations.SelectSingleNode(id);
+        XmlNode? node = aiLocations.SelectSingleNode(SearchAttributeDown("AI", "ID", id));
         if (node != null)
         {
           aiLocations.RemoveChild(node);
@@ -850,8 +850,9 @@ namespace OnGuardCore
       XmlNode? cameraNode = FindCamera(cameraPath, cameraPrefix);
       if (null != cameraNode)
       {
+        XmlNode? areasNode = cameraNode.SelectSingleNode(FindElementNameDown("Areas"));
         // First delete the areas to account for area deletion
-        cameraNode.RemoveAll();
+        areasNode.RemoveAll();
 
         foreach (AreaOfInterest area in areas)
         {

@@ -90,6 +90,7 @@ namespace OnGuardCore
       Debug.Assert(_cameraPath != null);
       Debug.Assert(_cameraPath != null);
       Storage.Instance.SaveAllAreas(_cameraPath, _cameraPrefix, this);
+      Storage.Instance.Update();
     }
 
     private void Load()

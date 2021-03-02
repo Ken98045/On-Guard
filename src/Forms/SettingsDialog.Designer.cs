@@ -61,10 +61,10 @@ namespace OnGuardCore
       this.label2 = new System.Windows.Forms.Label();
       this.label1 = new System.Windows.Forms.Label();
       this.panel4 = new System.Windows.Forms.Panel();
-      this.label12 = new System.Windows.Forms.Label();
-      this.label14 = new System.Windows.Forms.Label();
-      this.LogViewerText = new System.Windows.Forms.TextBox();
       this.label15 = new System.Windows.Forms.Label();
+      this.LogViewerText = new System.Windows.Forms.TextBox();
+      this.label14 = new System.Windows.Forms.Label();
+      this.label12 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.snapshotNumeric)).BeginInit();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
@@ -107,7 +107,7 @@ namespace OnGuardCore
       // label5
       // 
       this.label5.AutoSize = true;
-      this.label5.Location = new System.Drawing.Point(31, 45);
+      this.label5.Location = new System.Drawing.Point(44, 45);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(104, 15);
       this.label5.TabIndex = 0;
@@ -121,7 +121,7 @@ namespace OnGuardCore
             0,
             0,
             65536});
-      this.snapshotNumeric.Location = new System.Drawing.Point(133, 43);
+      this.snapshotNumeric.Location = new System.Drawing.Point(160, 43);
       this.snapshotNumeric.Maximum = new decimal(new int[] {
             120,
             0,
@@ -144,7 +144,7 @@ namespace OnGuardCore
       // label6
       // 
       this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(198, 47);
+      this.label6.Location = new System.Drawing.Point(233, 45);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(420, 15);
       this.label6.TabIndex = 10;
@@ -160,9 +160,9 @@ namespace OnGuardCore
       this.panel1.Controls.Add(this.aiLocationListView);
       this.panel1.Controls.Add(this.label4);
       this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.panel1.Location = new System.Drawing.Point(12, -7);
+      this.panel1.Location = new System.Drawing.Point(0, -7);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(717, 285);
+      this.panel1.Size = new System.Drawing.Size(765, 285);
       this.panel1.TabIndex = 11;
       // 
       // label10
@@ -170,7 +170,7 @@ namespace OnGuardCore
       this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label10.Location = new System.Drawing.Point(562, 44);
       this.label10.Name = "label10";
-      this.label10.Size = new System.Drawing.Size(150, 187);
+      this.label10.Size = new System.Drawing.Size(180, 187);
       this.label10.TabIndex = 11;
       this.label10.Text = resources.GetString("label10.Text");
       // 
@@ -244,14 +244,14 @@ namespace OnGuardCore
       this.panel2.Controls.Add(this.label6);
       this.panel2.Controls.Add(this.label5);
       this.panel2.Controls.Add(this.snapshotNumeric);
-      this.panel2.Location = new System.Drawing.Point(12, 491);
+      this.panel2.Location = new System.Drawing.Point(0, 491);
       this.panel2.Name = "panel2";
-      this.panel2.Size = new System.Drawing.Size(717, 178);
+      this.panel2.Size = new System.Drawing.Size(765, 178);
       this.panel2.TabIndex = 0;
       // 
       // label13
       // 
-      this.label13.Location = new System.Drawing.Point(198, 133);
+      this.label13.Location = new System.Drawing.Point(235, 133);
       this.label13.Name = "label13";
       this.label13.Size = new System.Drawing.Size(479, 39);
       this.label13.TabIndex = 16;
@@ -260,7 +260,7 @@ namespace OnGuardCore
       // label11
       // 
       this.label11.AutoSize = true;
-      this.label11.Location = new System.Drawing.Point(10, 140);
+      this.label11.Location = new System.Drawing.Point(24, 140);
       this.label11.Name = "label11";
       this.label11.Size = new System.Drawing.Size(124, 15);
       this.label11.TabIndex = 1;
@@ -268,7 +268,7 @@ namespace OnGuardCore
       // 
       // eventIntervalNumeric
       // 
-      this.eventIntervalNumeric.Location = new System.Drawing.Point(133, 138);
+      this.eventIntervalNumeric.Location = new System.Drawing.Point(160, 138);
       this.eventIntervalNumeric.Maximum = new decimal(new int[] {
             120,
             0,
@@ -290,7 +290,7 @@ namespace OnGuardCore
       // 
       // label8
       // 
-      this.label8.Location = new System.Drawing.Point(198, 76);
+      this.label8.Location = new System.Drawing.Point(233, 76);
       this.label8.Name = "label8";
       this.label8.Size = new System.Drawing.Size(499, 47);
       this.label8.TabIndex = 13;
@@ -299,7 +299,7 @@ namespace OnGuardCore
       // label9
       // 
       this.label9.AutoSize = true;
-      this.label9.Location = new System.Drawing.Point(13, 89);
+      this.label9.Location = new System.Drawing.Point(19, 89);
       this.label9.Name = "label9";
       this.label9.Size = new System.Drawing.Size(129, 15);
       this.label9.TabIndex = 12;
@@ -307,7 +307,7 @@ namespace OnGuardCore
       // 
       // maxEventNumeric
       // 
-      this.maxEventNumeric.Location = new System.Drawing.Point(133, 87);
+      this.maxEventNumeric.Location = new System.Drawing.Point(160, 87);
       this.maxEventNumeric.Maximum = new decimal(new int[] {
             120,
             0,
@@ -346,9 +346,9 @@ namespace OnGuardCore
       this.panel3.Controls.Add(this.label3);
       this.panel3.Controls.Add(this.label2);
       this.panel3.Controls.Add(this.label1);
-      this.panel3.Location = new System.Drawing.Point(12, 310);
+      this.panel3.Location = new System.Drawing.Point(0, 310);
       this.panel3.Name = "panel3";
-      this.panel3.Size = new System.Drawing.Size(717, 173);
+      this.panel3.Size = new System.Drawing.Size(765, 173);
       this.panel3.TabIndex = 12;
       // 
       // UseCustomButton
@@ -412,38 +412,10 @@ namespace OnGuardCore
       this.panel4.Controls.Add(this.LogViewerText);
       this.panel4.Controls.Add(this.label14);
       this.panel4.Controls.Add(this.label12);
-      this.panel4.Location = new System.Drawing.Point(12, 683);
+      this.panel4.Location = new System.Drawing.Point(0, 683);
       this.panel4.Name = "panel4";
-      this.panel4.Size = new System.Drawing.Size(717, 132);
+      this.panel4.Size = new System.Drawing.Size(765, 132);
       this.panel4.TabIndex = 13;
-      // 
-      // label12
-      // 
-      this.label12.AutoSize = true;
-      this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label12.Location = new System.Drawing.Point(300, 11);
-      this.label12.Name = "label12";
-      this.label12.Size = new System.Drawing.Size(114, 16);
-      this.label12.TabIndex = 9;
-      this.label12.Text = "Log File Viewer";
-      // 
-      // label14
-      // 
-      this.label14.Location = new System.Drawing.Point(17, 36);
-      this.label14.Name = "label14";
-      this.label14.Size = new System.Drawing.Size(681, 36);
-      this.label14.TabIndex = 11;
-      this.label14.Text = "Specify the executable file that you would like to use for your log file viewer. " +
-    " For Windows \"Notepad.exe\" works well.  For Linux you may need to specify the fu" +
-    "ll path to the executable.\r\n";
-      // 
-      // LogViewerText
-      // 
-      this.LogViewerText.Location = new System.Drawing.Point(82, 80);
-      this.LogViewerText.Name = "LogViewerText";
-      this.LogViewerText.Size = new System.Drawing.Size(615, 23);
-      this.LogViewerText.TabIndex = 12;
-      this.LogViewerText.Text = "Notepad.exe";
       // 
       // label15
       // 
@@ -455,12 +427,40 @@ namespace OnGuardCore
       this.label15.TabIndex = 13;
       this.label15.Text = "Viewer: ";
       // 
+      // LogViewerText
+      // 
+      this.LogViewerText.Location = new System.Drawing.Point(82, 80);
+      this.LogViewerText.Name = "LogViewerText";
+      this.LogViewerText.Size = new System.Drawing.Size(615, 23);
+      this.LogViewerText.TabIndex = 12;
+      this.LogViewerText.Text = "Notepad.exe";
+      // 
+      // label14
+      // 
+      this.label14.Location = new System.Drawing.Point(17, 36);
+      this.label14.Name = "label14";
+      this.label14.Size = new System.Drawing.Size(681, 36);
+      this.label14.TabIndex = 11;
+      this.label14.Text = "Specify the executable file that you would like to use for your log file viewer. " +
+    " For Windows \"Notepad.exe\" works well.  For Linux you may need to specify the fu" +
+    "ll path to the executable.\r\n";
+      // 
+      // label12
+      // 
+      this.label12.AutoSize = true;
+      this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.label12.Location = new System.Drawing.Point(300, 11);
+      this.label12.Name = "label12";
+      this.label12.Size = new System.Drawing.Size(114, 16);
+      this.label12.TabIndex = 9;
+      this.label12.Text = "Log File Viewer";
+      // 
       // SettingsDialog
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.AutoScroll = true;
-      this.ClientSize = new System.Drawing.Size(750, 876);
+      this.ClientSize = new System.Drawing.Size(767, 876);
       this.Controls.Add(this.panel4);
       this.Controls.Add(this.panel3);
       this.Controls.Add(this.panel2);

@@ -38,21 +38,12 @@ namespace OnGuardCore
       {
         using (FileStream stream = new FileStream(imageName, FileMode.Open))
         {
-          try
+          ai = await AILocation.GetAI().ConfigureAwait(false);
+          if (null == ai)
           {
-            ai = await AILocation.GetAI().ConfigureAwait(false);
-          }
-          catch (AggregateException ex)
-          {
-            // The list is empty
             Dbg.Write("The AI List Is Empty!");
-            throw ex.InnerException;  // which is an AINotFound exception
-          }
-          catch (AiNotFoundException ex)
-          {
-            Dbg.Write("An AI Died Or Was Not Found");
-            // the list is empty
-            throw;
+            AiNotFoundException aiException = new AiNotFoundException("No AI Available in AIProcessFromUI");
+            throw aiException;
           }
 
           try
@@ -70,26 +61,26 @@ namespace OnGuardCore
           }
           catch (HttpRequestException)
           {
-            AILocation.AICount--;
-            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
+            AILocation.Decrement();
+            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + (AILocation.AICount - 1).ToString());
             ai = null;
           }
           catch (AggregateException ex)
           {
-            AILocation.AICount--;
-            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
+            AILocation.Decrement();
+            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + (AILocation.AICount - 1).ToString());
             ai = null;
           }
           catch (AiNotFoundException)
           {
-            AILocation.AICount--;
-            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
+            AILocation.Decrement();
+            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + (AILocation.AICount - 1).ToString());
             ai = null;
           }
           catch (Exception ex)
           {
-            AILocation.AICount--;
-            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
+            AILocation.Decrement();
+            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + (AILocation.AICount - 1).ToString());
             ai = null;
           }
         }
@@ -111,19 +102,12 @@ namespace OnGuardCore
       do
       {
         // Get an available AI. If there are none it throws
-        try
-        {
-          ai = await AILocation.GetAI().ConfigureAwait(false);
-        }
-        catch (AggregateException ex)
+        ai = await AILocation.GetAI().ConfigureAwait(false);
+        if (null == ai)
         {
           Dbg.Write("The AI List Is Empty!");
-          throw ex;
-        }
-        catch (AiNotFoundException)
-        {
-          Dbg.Write("The AI List Is Empty!");
-          throw;
+          AiNotFoundException aiNotFoundException = new AiNotFoundException("No AI Available in DetectObjectsAsync");
+          throw aiNotFoundException;
         }
 
         // Do the AI Detection (async)
@@ -135,7 +119,7 @@ namespace OnGuardCore
             objectsFound = await AIFindObjects(ai, stream, pending.PendingFile, true).ConfigureAwait(false);  // throws if ai not available
             pending.SetTimeProcessingByAI();
             string dbg = "AIDetection - DetectObjectsAsync ending analysis of : " + pending.PendingFile;
-            if (null != objectsFound )
+            if (null != objectsFound)
             {
               dbg += " with: " + objectsFound.Count.ToString() + " objects";
             }
@@ -160,13 +144,13 @@ namespace OnGuardCore
         catch (AggregateException ex)
         {
           Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
-          AILocation.AICount--;
+          AILocation.Decrement();
           ai = null;
         }
         catch (AiNotFoundException)
         {
           Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
-          AILocation.AICount--;
+          AILocation.Decrement();
           ai = null;
         }
 
