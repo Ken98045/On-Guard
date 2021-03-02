@@ -47,7 +47,11 @@ namespace OnGuardCore
 
     private void OKButton_Click(object sender, EventArgs e)
     {
-      Storage.Instance.SetGlobalString("NotifyAIGoneEmail", (string)EmailListBox.SelectedItem);
+      if (EmailListBox.SelectedItems.Count > 0)
+      {
+        Storage.Instance.SetGlobalString("NotifyAIGoneEmail", (string)EmailListBox.SelectedItem);
+      }
+
       Storage.Instance.SetGlobalString("MQTTaiDiedTopic", AIDiedTopicText.Text);
       Storage.Instance.SetGlobalString("MQTTaiDiedPayload", AIDiedPayloadText.Text);
       Storage.Instance.SetGlobalBool("MQTTSendAIDied", sendAIDiedMQTTCheckbox.Checked);
