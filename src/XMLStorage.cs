@@ -92,7 +92,7 @@ namespace OnGuardCore
 
       try
       {
-        _doc.Load(_fileName);
+        _doc.Load(Storage.GetFilePath(_fileName));
         _root = _doc.DocumentElement;
         _base = _root.FirstChild;
         _cameras = _base.SelectSingleNode(FindElementNameDown("Cameras"));
@@ -117,14 +117,13 @@ namespace OnGuardCore
         try
         {
           SetGlobalBool("SentAIGoneEmail", false);
-          _doc.Save(_fileName);
+          Update();
         }
         catch (XmlException xmlEx)
         {
           Dbg.Write("Error writing OnGuardStorage.xml");
 
         }
-
       }
       catch (IOException)
       {
@@ -134,7 +133,7 @@ namespace OnGuardCore
         _base = publisher.AppendChild(app);
         XmlElement camera = _doc.CreateElement("Cameras");
         _cameras = _base.AppendChild(camera);
-        _doc.Save(_fileName);
+        Update();
       }
     }
 
@@ -144,7 +143,7 @@ namespace OnGuardCore
       {
         try
         {
-          _doc.Save(_fileName);
+          _doc.Save(Storage.GetFilePath(_fileName));
         }
         catch (Exception ex)
         {
@@ -254,8 +253,8 @@ namespace OnGuardCore
       XmlNode? aiLocations = _base.SelectSingleNode(FindElementNameDown("AILocations"));
       if (aiLocations == null)
       {
-        XmlElement element = _doc.CreateElement("AILocations");
-        _base.AppendChild(element);
+        aiLocations = _doc.CreateElement("AILocations");
+        _base.AppendChild(aiLocations);
       }
 
       if (null != aiLocations.ChildNodes)

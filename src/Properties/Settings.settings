@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="OnGuardCore.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="OnGuardCore.Src.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="AIPort" Type="System.Int32" Scope="User">
@@ -76,6 +76,9 @@
     </Setting>
     <Setting Name="MQTTStoppedPayload" Type="System.String" Scope="User">
       <Value Profile="(Default)">{Motion}</Value>
+    </Setting>
+    <Setting Name="UseXML" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

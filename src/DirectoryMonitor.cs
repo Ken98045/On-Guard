@@ -12,11 +12,12 @@ namespace OnGuardCore
   /// </summary>
   public class DirectoryMonitor : IDisposable
   {
-    public FileSystemWatcher Watcher { get; }
+    public FileSystemWatcher Watcher { get; set; }
     public String Path() { return CameraData.PathAndPrefix(cameraData); }
     public event CameraEventHandler OnNewImage;
 
-    readonly CameraData cameraData;
+    CameraData cameraData;
+
     public DirectoryMonitor(CameraData location)
     {
       if (location == null || string.IsNullOrEmpty(location.Path))
@@ -37,11 +38,16 @@ namespace OnGuardCore
 
       }
 
+      CreateWatcher(location);
+    }
+
+    private void CreateWatcher(CameraData location)
+    {
       try
       {
+        cameraData = location;
         Watcher = new FileSystemWatcher(location.Path, location.CameraPrefix + "*.jpg");
         Watcher.InternalBufferSize = 1024 * 1024 * 2;
-        cameraData = location;
         Watcher.Changed += FileChanged;
         Watcher.Error += Watcher_Error;
         Watcher.NotifyFilter = NotifyFilters.LastWrite;
@@ -51,13 +57,27 @@ namespace OnGuardCore
       catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
       {
-        Dbg.Write("DirectoryMonitor constructor exception: " + ex.Message);
+        Dbg.Write("DirectoryMonitor CreateWatcher exception: " + ex.Message);
       }
     }
 
     private void Watcher_Error(object sender, ErrorEventArgs e)
     {
-      Dbg.Write("DirectoryMonitory - File System Watcher Error!");
+      Dbg.Write("DirectoryMonitory - File System Watcher Error! " + e.GetException().Message);
+      if (!disposedValue)
+      {
+        Dbg.Write("Attempting to recreate the DirectoryMonitor");
+        try
+        {
+          Watcher?.Dispose();
+        }
+        catch (Exception ex)
+        {
+        }
+
+        CreateWatcher(cameraData);
+      }
+
     }
 
     // You can get at least 2 notifications for each new image file.  One when it is 
@@ -73,6 +93,7 @@ namespace OnGuardCore
       }
     }
 
+
     #region IDisposable Support
     private bool disposedValue = false; // To detect redundant calls
 
@@ -87,18 +108,9 @@ namespace OnGuardCore
           Watcher.Dispose();
         }
 
-        // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-        // TODO: set large fields to null.
         disposedValue = true;
       }
     }
-
-    // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-    // ~DirectoryMonitor()
-    // {
-    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-    //   Dispose(false);
-    // }
 
     // This code added to correctly implement the disposable pattern.
     public void Dispose()

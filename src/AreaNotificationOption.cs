@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using OnGuardCore.Properties;
+using OnGuardCore.Src.Properties;
 using System.Diagnostics;
 
 namespace OnGuardCore

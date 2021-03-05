@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using OnGuardCore.Properties;
+using OnGuardCore.Src.Properties;
 
 namespace OnGuardCore
 {

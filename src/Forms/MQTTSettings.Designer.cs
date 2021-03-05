@@ -110,6 +110,11 @@ namespace OnGuardCore
             0,
             0,
             0});
+      this.PortNumeric.Minimum = new decimal(new int[] {
+            80,
+            0,
+            0,
+            0});
       this.PortNumeric.Name = "PortNumeric";
       this.PortNumeric.Size = new System.Drawing.Size(97, 23);
       this.PortNumeric.TabIndex = 1;

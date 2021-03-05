@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
-using OnGuardCore.Properties;
+using OnGuardCore.Src.Properties;
 
 namespace OnGuardCore
 {
@@ -18,47 +18,54 @@ namespace OnGuardCore
     {
       InitializeComponent();
 
-      ServerText.Text = Storage.Instance.GetGlobalString("MQTTServerAddress");
-      PortNumeric.Value = Storage.Instance.GetGlobalInt("MQTTPort");
+      string server = Storage.Instance.GetGlobalString("MQTTServerAddress");
+      if (!string.IsNullOrEmpty(server))
+      {
+        ServerText.Text = server;
+      }
+
+      int port = Storage.Instance.GetGlobalInt("MQTTPort");
+      if (port >= 80)
+      {
+        PortNumeric.Value = port;
+      }
+
       UserText.Text = Storage.Instance.GetGlobalString("MQTTUser");
       PasswordText.Text = Storage.Instance.GetGlobalString("MQTTPassword");
 
       int coolDownValue = Storage.Instance.GetGlobalInt("MQTTCoolDown");
-      CoolDownNumeric.Value = (decimal)(coolDownValue);
+      if (coolDownValue >= 5)
+      {
+        CoolDownNumeric.Value = (decimal) coolDownValue;
+      }
 
       UseSecureLinkCheck.Checked = Storage.Instance.GetGlobalBool("MQTTUseSecureLink");
 
       string motionTopic = Storage.Instance.GetGlobalStringNull("MQTTMotionTopic");
-      if (null != motionTopic)
+      if (!string.IsNullOrEmpty(motionTopic))
       {
         MotionActivityText.Text = motionTopic;
       }
-      
 
       string motionPayload = Storage.Instance.GetGlobalStringNull("MQTTMotionPayload");
-      if (null != motionPayload)
+      if (!string.IsNullOrEmpty(motionPayload))
       {
         MotionActivityPayloadText.Text = motionPayload;
       }
       
 
       string stoppedTopic = Storage.Instance.GetGlobalStringNull("MQTTStoppedTopic");
-      if (null != stoppedTopic)
+      if (!string.IsNullOrEmpty(stoppedTopic))
       {
         StoppedActivityTopicText.Text = stoppedTopic;
       }
 
       string stoppedPayload = Storage.Instance.GetGlobalStringNull("MQTTStoppedPayload");
-      if (null != stoppedPayload)
+      if (!string.IsNullOrEmpty(stoppedPayload))
       {
         StoppedPayloadText.Text = stoppedPayload;
       }
       
-      if (PortNumeric.Value == 0)
-      {
-        PortNumeric.Value = 1883;
-      }
-
       if (string.IsNullOrEmpty(ServerText.Text))
       {
         ServerText.Text = "localhost";

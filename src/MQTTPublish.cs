@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OnGuardCore.Properties;
+using OnGuardCore.Src.Properties;
 
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;

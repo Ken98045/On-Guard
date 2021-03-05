@@ -1,4 +1,4 @@
-﻿using OnGuardCore.Properties;
+﻿using OnGuardCore.Src.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

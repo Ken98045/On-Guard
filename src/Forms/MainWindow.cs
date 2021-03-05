@@ -1,4 +1,4 @@
-﻿using OnGuardCore.Properties;
+﻿using OnGuardCore.Src.Properties;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -145,7 +145,10 @@ namespace OnGuardCore
         return;
       }
 
-      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+      Storage.UseRegistry = false;  // temporarily force use of xml
+      bool useXML = Storage.Instance.GetGlobalBool("UseXML", false);
+
+      if (!useXML && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
       {
         Storage.UseRegistry = true;
         UseXMLDataSourceCheckedMenu.Checked = false;
@@ -155,6 +158,14 @@ namespace OnGuardCore
         Storage.UseRegistry = false;
         this.UseXMLDataSourceCheckedMenu.Checked = true;
       }
+
+      bool logDetail = Storage.Instance.GetGlobalBool("LogDetailedInformation");
+      if (logDetail)
+      {
+        Dbg.LogLevel = 1;
+        logDetailedInformationToolStripMenuItem.Checked = true;
+      }
+
 
       int currentCPU = (int)theCPUCounter.NextValue();
       currentCPU = (int)theCPUCounter.NextValue();
@@ -1094,16 +1105,16 @@ namespace OnGuardCore
 
     void SetupEditingEnvironment()
     {
-      FrameProgressPanel.BackColor = SystemColors.ControlDarkDark;
-      FrameProgressPanel.Enabled = false;
+      ToolsPanel.BackColor = SystemColors.ControlDarkDark;
+      ToolsPanel.Enabled = false;
       menuStrip2.Enabled = false;
       Text = "On Guard ****** Creating/Modifying Area of Interest - Escape to Quit, F1 to Accept ******";
     }
 
     void StopEditingEnvironment()
     {
-      FrameProgressPanel.BackColor = SystemColors.Control;
-      FrameProgressPanel.Enabled = true;
+      ToolsPanel.BackColor = SystemColors.Control;
+      ToolsPanel.Enabled = true;
       menuStrip2.Enabled = true;
       Text = "On Guard";
 
@@ -2921,6 +2932,9 @@ namespace OnGuardCore
       {
         Dbg.LogLevel = 0;
       }
+
+      Storage.Instance.SetGlobalBool("LogDetailedInformation", menuItem.Checked);
+      Storage.Instance.Update();
     }
 
     private void DeleteLogFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2967,7 +2981,15 @@ namespace OnGuardCore
 
     private void UseXMLCheckChanged(object sender, EventArgs eventArgs)
     {
+      Storage.UseRegistry = false;  // temporarily force xml
+      Storage.Instance.SetGlobalBool("UseXML", UseXMLDataSourceCheckedMenu.Checked);
+      Storage.Instance.Update();
       Storage.UseRegistry = !UseXMLDataSourceCheckedMenu.Checked;
+    }
+
+    private void YResLabel_Click(object sender, EventArgs e)
+    {
+
     }
   }
 

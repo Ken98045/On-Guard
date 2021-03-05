@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OnGuardCore.Properties {
+namespace OnGuardCore.Src.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -321,6 +321,18 @@ namespace OnGuardCore.Properties {
             }
             set {
                 this["MQTTStoppedPayload"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseXML {
+            get {
+                return ((bool)(this["UseXML"]));
+            }
+            set {
+                this["UseXML"] = value;
             }
         }
     }

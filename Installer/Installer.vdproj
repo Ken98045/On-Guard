@@ -294,9 +294,9 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:On Guard"
-        "ProductCode" = "8:{CA879C4E-2407-4007-97BB-D139619EF8C5}"
-        "PackageCode" = "8:{C51AB16E-B2F5-42ED-B68B-7CB1CB165F6A}"
-        "UpgradeCode" = "8:{2BC79088-9868-4BB8-8C96-1AE533F92C26}"
+        "ProductCode" = "8:{1751CE69-23B1-49DB-9B68-D48C95D39CA5}"
+        "PackageCode" = "8:{91902DDE-E7E1-4968-B298-1BF9ED188999}"
+        "UpgradeCode" = "8:{37949FDD-3777-4044-8876-417A39F8B52D}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"

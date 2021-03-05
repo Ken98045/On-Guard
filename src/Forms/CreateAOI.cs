@@ -1,5 +1,6 @@
 ﻿
-using OnGuardCore.Properties;
+using OnGuardCore.Src.
+  Properties;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
