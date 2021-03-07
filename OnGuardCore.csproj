@@ -8,6 +8,8 @@
     <Version>2.0.0</Version>
     <AssemblyName>OnGuard</AssemblyName>
     <Platforms>AnyCPU;x64</Platforms>
+    <Configurations>Debug;Release;xsx</Configurations>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

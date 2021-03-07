@@ -1222,37 +1222,22 @@ namespace OnGuardCore
             using (MemoryStream memStream = new MemoryStream())
             {
               stream.CopyTo(memStream);
-              int xResolution = 0;
-              int yResolution = 0;
-
-              BitmapResolution.XResolution = _screenBitmap.Width;
-              BitmapResolution.YResolution = _screenBitmap.Height;
-              if (null == pictureImage)
-              {
-                BitmapResolution.XScale = 1.0;
-                BitmapResolution.YScale = 1.0;
-              }
-              else
-              {
-                BitmapResolution.XScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
-                BitmapResolution.YScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
-              }
 
               _screenBitmap = new Bitmap(memStream);
-              BitmapResolution.XResolution = _screenBitmap.Width;
-              BitmapResolution.YResolution = _screenBitmap.Height;
-              if (null == pictureImage)
+
+              if (null == _screenBitmap)
               {
-                BitmapResolution.XScale = 1.0;
-                BitmapResolution.YScale = 1.0;
+                MessageBox.Show(this, "There was an error obtaining the snapshot/video.  Please check your Live Camera settings", "Error Contacting the Camera");
               }
               else
               {
+                pictureImage.Image = _screenBitmap;
+
+                BitmapResolution.XResolution = _screenBitmap.Width;
+                BitmapResolution.YResolution = _screenBitmap.Height;
                 BitmapResolution.XScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
                 BitmapResolution.YScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
               }
-
-              pictureImage.Image = _screenBitmap;
             }
           }
         }
