@@ -446,8 +446,44 @@ namespace SAAI
         {
           using (RegistryKey locationKey = key.OpenSubKey(locationID))
           {
-            AILocation location = new AILocation(Guid.Parse(locationID), (string)locationKey.GetValue("IPAddress"), (int)locationKey.GetValue("Port"));
-            result.Add(location);
+            Guid id;
+            AILocation location = null;
+
+            if (Guid.TryParse(locationID, out id))
+            {
+              string ipAddress;
+              try
+              {
+                ipAddress = (string)locationKey.GetValue("IPAddress");
+              }
+              catch
+              {
+                continue;
+              }
+
+              if (!string.IsNullOrEmpty(ipAddress))
+              {
+                int port;
+                try
+                {
+                  port = (int)locationKey.GetValue("Port");
+                }
+                catch
+                {
+                  continue;
+                }
+
+                if (port > 0)
+                {
+                  location = new AILocation(id, ipAddress, port);
+                }
+              }
+            }
+
+            if (location != null)
+            {
+              result.Add(location);
+            }
           }
         }
       }

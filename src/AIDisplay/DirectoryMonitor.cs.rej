@@ -1,0 +1,10 @@
+diff a/src/AIDisplay/DirectoryMonitor.cs b/src/AIDisplay/DirectoryMonitor.cs	(rejected hunks)
+@@ -8,7 +8,7 @@
+ 
+   /// <summary>
+   /// A class to monitor a directory for new files that have motion identified by Blue Iris
+-  /// It then notifies the main UI of the new file. 
++  /// It then notifies the main UI of the new file.  
+   /// </summary>
+   public class DirectoryMonitor : IDisposable
+   {

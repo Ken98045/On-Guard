@@ -88,6 +88,8 @@
       this.label9 = new System.Windows.Forms.Label();
       this.cameraCombo = new System.Windows.Forms.ComboBox();
       this.FrameProgressPanel = new System.Windows.Forms.Panel();
+      this.cpuProgress = new SAAI.Controls.EnhnacedProgressBar();
+      this.FPSProgress = new SAAI.Controls.EnhnacedProgressBar();
       this.label13 = new System.Windows.Forms.Label();
       this.motionOnlyCheckbox = new System.Windows.Forms.CheckBox();
       this.CleanupButton = new System.Windows.Forms.Button();
@@ -112,6 +114,7 @@
       this.outgoingEmailServerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.addEditEmailAddressesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.mQTTSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.analysisSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -123,9 +126,6 @@
       this.label12 = new System.Windows.Forms.Label();
       this.XResLabel = new System.Windows.Forms.Label();
       this.YResLabel = new System.Windows.Forms.Label();
-      this.analysisSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.cpuProgress = new SAAI.Controls.EnhnacedProgressBar();
-      this.FPSProgress = new SAAI.Controls.EnhnacedProgressBar();
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).BeginInit();
       this.LiveOnDemandGroup.SuspendLayout();
@@ -305,7 +305,7 @@
       this.label6.AutoSize = true;
       this.label6.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label6.Location = new System.Drawing.Point(556, 7);
+      this.label6.Location = new System.Drawing.Point(571, 7);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(24, 15);
       this.label6.TabIndex = 16;
@@ -327,7 +327,7 @@
       this.xPosLabel.AutoSize = true;
       this.xPosLabel.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.xPosLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.xPosLabel.Location = new System.Drawing.Point(584, 7);
+      this.xPosLabel.Location = new System.Drawing.Point(599, 7);
       this.xPosLabel.Name = "xPosLabel";
       this.xPosLabel.Size = new System.Drawing.Size(35, 15);
       this.xPosLabel.TabIndex = 18;
@@ -595,6 +595,23 @@
       this.FrameProgressPanel.Size = new System.Drawing.Size(1289, 155);
       this.FrameProgressPanel.TabIndex = 38;
       // 
+      // cpuProgress
+      // 
+      this.cpuProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.cpuProgress.Location = new System.Drawing.Point(903, 86);
+      this.cpuProgress.Name = "cpuProgress";
+      this.cpuProgress.Size = new System.Drawing.Size(73, 15);
+      this.cpuProgress.TabIndex = 43;
+      // 
+      // FPSProgress
+      // 
+      this.FPSProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.FPSProgress.Location = new System.Drawing.Point(903, 58);
+      this.FPSProgress.Name = "FPSProgress";
+      this.FPSProgress.Size = new System.Drawing.Size(73, 15);
+      this.FPSProgress.TabIndex = 42;
+      this.FPSProgress.Load += new System.EventHandler(this.enhnacedProgressBar1_Load);
+      // 
       // label13
       // 
       this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -841,6 +858,13 @@
       this.mQTTSettingsToolStripMenuItem.Text = "MQTT Settings";
       this.mQTTSettingsToolStripMenuItem.Click += new System.EventHandler(this.MQTTSettingsToolStripMenuItem_Click);
       // 
+      // analysisSettingsToolStripMenuItem
+      // 
+      this.analysisSettingsToolStripMenuItem.Name = "analysisSettingsToolStripMenuItem";
+      this.analysisSettingsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.analysisSettingsToolStripMenuItem.Text = "Analysis Settings";
+      this.analysisSettingsToolStripMenuItem.Click += new System.EventHandler(this.AnalysisSettingsToolStripMenuItem_Click);
+      // 
       // testImagesToolStripMenuItem
       // 
       this.testImagesToolStripMenuItem.Name = "testImagesToolStripMenuItem";
@@ -902,7 +926,7 @@
       this.label11.AutoSize = true;
       this.label11.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label11.Location = new System.Drawing.Point(334, 7);
+      this.label11.Location = new System.Drawing.Point(358, 7);
       this.label11.Name = "label11";
       this.label11.Size = new System.Drawing.Size(41, 15);
       this.label11.TabIndex = 5;
@@ -913,7 +937,7 @@
       this.label12.AutoSize = true;
       this.label12.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label12.Location = new System.Drawing.Point(437, 7);
+      this.label12.Location = new System.Drawing.Point(454, 7);
       this.label12.Name = "label12";
       this.label12.Size = new System.Drawing.Size(41, 15);
       this.label12.TabIndex = 6;
@@ -924,7 +948,7 @@
       this.XResLabel.AutoSize = true;
       this.XResLabel.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.XResLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.XResLabel.Location = new System.Drawing.Point(377, 7);
+      this.XResLabel.Location = new System.Drawing.Point(401, 7);
       this.XResLabel.Name = "XResLabel";
       this.XResLabel.Size = new System.Drawing.Size(39, 15);
       this.XResLabel.TabIndex = 6;
@@ -935,35 +959,11 @@
       this.YResLabel.AutoSize = true;
       this.YResLabel.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.YResLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.YResLabel.Location = new System.Drawing.Point(488, 7);
+      this.YResLabel.Location = new System.Drawing.Point(505, 7);
       this.YResLabel.Name = "YResLabel";
       this.YResLabel.Size = new System.Drawing.Size(39, 15);
       this.YResLabel.TabIndex = 6;
       this.YResLabel.Text = "1920";
-      // 
-      // analysisSettingsToolStripMenuItem
-      // 
-      this.analysisSettingsToolStripMenuItem.Name = "analysisSettingsToolStripMenuItem";
-      this.analysisSettingsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-      this.analysisSettingsToolStripMenuItem.Text = "Analysis Settings";
-      this.analysisSettingsToolStripMenuItem.Click += new System.EventHandler(this.AnalysisSettingsToolStripMenuItem_Click);
-      // 
-      // cpuProgress
-      // 
-      this.cpuProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.cpuProgress.Location = new System.Drawing.Point(903, 86);
-      this.cpuProgress.Name = "cpuProgress";
-      this.cpuProgress.Size = new System.Drawing.Size(73, 15);
-      this.cpuProgress.TabIndex = 43;
-      // 
-      // FPSProgress
-      // 
-      this.FPSProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.FPSProgress.Location = new System.Drawing.Point(903, 58);
-      this.FPSProgress.Name = "FPSProgress";
-      this.FPSProgress.Size = new System.Drawing.Size(73, 15);
-      this.FPSProgress.TabIndex = 42;
-      this.FPSProgress.Load += new System.EventHandler(this.enhnacedProgressBar1_Load);
       // 
       // MainWindow
       // 
