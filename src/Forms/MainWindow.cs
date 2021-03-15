@@ -174,17 +174,7 @@ namespace OnGuardCore
       Settings.Default.SettingsKey = "OnGuard";
       Settings.Default.Reload();
 
-      _connectionString = Storage.Instance.GetGlobalString("CustomDatabaseConnectionString");
-      if (string.IsNullOrEmpty(_connectionString))
-      {
-        _connectionString = Storage.Instance.GetGlobalString("DBConnectionString");
-        if (string.IsNullOrEmpty(_connectionString))
-        {
-          _connectionString = GetDefaultConnectionString();
-          Storage.Instance.SetGlobalString("DBConnectionString", _connectionString);
-          Storage.Instance.Update();
-        }
-      }
+      GetConnectionString();
 
 
       if (!Storage.Instance.GetGlobalBool("SetupComplete"))
@@ -393,6 +383,32 @@ namespace OnGuardCore
 
       fileNumberUpDown.Maximum = _fileNames.Count;
       fileNumberUpDown.Minimum = (int)1;
+    }
+
+    private void GetConnectionString()
+    {
+      _connectionString = Storage.Instance.GetGlobalString("CustomDatabaseConnectionString");
+      string tmp = _connectionString;
+      if (string.IsNullOrEmpty(_connectionString))
+      {
+        _connectionString = Storage.Instance.GetGlobalString("DBConnectionString");
+        tmp = _connectionString;
+        _connectionString = _connectionString.Replace(";Asynchronous Processing=True", "");
+
+        if (tmp != _connectionString)
+        {
+          Storage.Instance.SetGlobalString("DBConnectionString", _connectionString);
+          Storage.Instance.Update();
+        }
+        else if (string.IsNullOrEmpty(_connectionString))
+        {
+          _connectionString = GetDefaultConnectionString();
+          _connectionString = _connectionString.Replace(";Asynchronous Processing=True", "");
+          Storage.Instance.SetGlobalString("DBConnectionString", _connectionString);
+          Storage.Instance.Update();
+        }
+      }
+
     }
 
     /// <summary>

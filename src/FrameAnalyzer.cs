@@ -149,7 +149,7 @@ namespace OnGuardCore
               }
               else
               {
-                reason = "Object: " + imageObject.Label + " does not match any searh criteria for area: " + area.AOIName;
+                reason = "Object: " + imageObject.Label + " does not match any search criteria for area: " + area.AOIName;
                 failureReasons.Add(reason);
               }
             }

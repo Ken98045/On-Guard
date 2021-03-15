@@ -92,8 +92,12 @@ namespace OnGuardCore
               s_LogWriter = new StreamWriter(s_path, true);
             }
 
-            s_LogWriter.WriteLine(output);
-            s_LogWriter.Flush();
+            try
+            {
+              s_LogWriter.WriteLine(output);
+              s_LogWriter.Flush();
+            }
+            catch { }
           }
           else
           {
@@ -113,7 +117,11 @@ namespace OnGuardCore
 
       if (s_LogWriter != null)
       {
-        s_LogWriter.Close();
+        try
+        {
+          s_LogWriter.Close();
+        }
+        catch { }
       }
     }
   }

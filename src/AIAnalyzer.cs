@@ -359,7 +359,7 @@ namespace OnGuardCore
                       "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
                       " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
                       " Width: " + _previousVehicles[j].ObjectRectangle.Width.ToString() +
-                      "Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
+                      " Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
                       );
 
                     Dbg.Trace("Vehicle found parked using area overlap - Current: " +
