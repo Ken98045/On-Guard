@@ -17,6 +17,7 @@ namespace OnGuardCore
     public bool Active { get; set; }          // Currently does nothing - may be used to turn on/off email activations
     public string EmailAddress { get; set; }
     public int NumberOfImages { get; set; }
+    public bool InlinePictures { get; set; }
     public bool AllTheTime { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }

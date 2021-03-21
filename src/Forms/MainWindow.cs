@@ -32,9 +32,7 @@ using System.Resources;
 using System.Collections;
 using System.Globalization;
 using System.Drawing.Drawing2D;
-using System.Diagnostics;
 using System.ComponentModel;
-using OnGuardCore.Src.Properties;
 using System.Runtime.InteropServices;
 
 namespace OnGuardCore
@@ -1202,7 +1200,7 @@ namespace OnGuardCore
     }
 
 
-    private async void GetLiveImage(bool fromVideo)
+    private async Task GetLiveImage(bool fromVideo)
     {
       string urlString;
 
@@ -1347,7 +1345,7 @@ namespace OnGuardCore
 
 
 
-    async void CameraDirectionButton(CameraDirections direction)
+    async Task CameraDirectionButton(CameraDirections direction)
     {
       motionOnlyCheckbox.Checked = false;
       string urlString = string.Format("http://{0}:{1}/cam/{2}/pos={3}&user={4}&pw={5}", CurrentCam.LiveContactData.CameraIPAddress,
@@ -1441,7 +1439,7 @@ namespace OnGuardCore
     // Here we passed all of the tests from the AI and have compared the objects to the AOIs.
     // Now, we need to figure out who to notify and notify them
 
-    static async void Notify(Frame frame)
+    static async Task Notify(Frame frame)
     {
       // Url notification is (right now)  oriented toward notifying BlueIris cameras to record.
       // So, there is no sense notifying it multiple times.  However, different areas
@@ -2457,7 +2455,7 @@ namespace OnGuardCore
     /// </summary>
     /// <param name="directionUp"></param>
     /// <returns></returns>
-    async void InsertMotionIfNecessary(string fileName)
+    async Task InsertMotionIfNecessary(string fileName)
     {
       string q = "IF NOT EXISTS(SELECT CreationTime FROM tblMotionFiles WHERE CreationTime = @creationTime AND FileName = @fileName)" +
         "INSERT INTO tblMotionFiles(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
@@ -2511,7 +2509,7 @@ namespace OnGuardCore
     /// This happens frequently when BlueIris or the user deletes the picture.
     /// </summary>
     /// <param name="fileName"></param>
-    async void DeleteMissingMotion(string fileName)
+    async Task DeleteMissingMotion(string fileName)
     {
 
       try
@@ -2752,7 +2750,7 @@ namespace OnGuardCore
     {
       using (SqlConnection con = new SqlConnection(_connectionString))
       {
-        con.Open();
+        await con.OpenAsync();
         foreach (var info in expiredFiles)
         {
           try

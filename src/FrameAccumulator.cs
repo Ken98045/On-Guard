@@ -96,8 +96,7 @@ namespace OnGuardCore
       GC.SuppressFinalize(this);
     }
 
-    public abstract void ProcessAccumulatedFrames(List<Frame> frames);
-
+    public abstract Task ProcessAccumulatedFrames(List<Frame> frames);
 
   }
 

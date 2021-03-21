@@ -525,6 +525,17 @@ namespace OnGuardCore
           emailOptions.StartTime = DateTime.Parse(GetAttribute(element, "StartTime"));
           emailOptions.EndTime = DateTime.Parse(GetAttribute(element, "EndTime"));
           emailOptions.SizeDownToPercent = int.Parse(GetAttribute(element, "SizeDownPercent"));
+          string inlinePictures = GetAttribute(element, "InlinePictures");
+          if (string.IsNullOrEmpty(inlinePictures))
+          {
+            emailOptions.InlinePictures = true; // the default is to inline pictures
+          }
+          else
+          {
+            emailOptions.InlinePictures = bool.Parse(inlinePictures);
+          }
+
+          
           emailOptions.CoolDown.CooldownTime = int.Parse(GetAttribute(element, "CooldownTime"));
           emailOptions.DaysOfWeek[0] = bool.Parse(GetAttribute(element, "Sunday"));
           emailOptions.DaysOfWeek[1] = bool.Parse(GetAttribute(element, "Monday"));
@@ -629,6 +640,7 @@ namespace OnGuardCore
         AddUpdateAttribute(element, "StartTime", address.StartTime.ToString());
         AddUpdateAttribute(element, "EndTime", address.EndTime.ToString());
         AddUpdateAttribute(element, "SizeDownPercent", address.SizeDownToPercent.ToString());
+        AddUpdateAttribute(element, "InlinePictures", address.InlinePictures.ToString());
         AddUpdateAttribute(element, "CooldownTime", address.CoolDown.CooldownTime.ToString());
         AddUpdateAttribute(element, "Sunday", address.DaysOfWeek[0].ToString());
         AddUpdateAttribute(element, "Monday", address.DaysOfWeek[1].ToString());

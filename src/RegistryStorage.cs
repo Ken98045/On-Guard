@@ -75,6 +75,16 @@ namespace OnGuardCore
                 opt.StartTime = DateTime.Parse((string)option.GetValue("StartTime", "12:00am"));
                 opt.EndTime = DateTime.Parse((string)option.GetValue("EndTime", "11:59:59pm"));
                 opt.SizeDownToPercent = (int)option.GetValue("SizeDownPercent", 20);
+                string inlinePictures = (string)option.GetValue("InlinePictures");
+                if (string.IsNullOrEmpty(inlinePictures))
+                {
+                  opt.InlinePictures = true;
+                }
+                else
+                {
+                  opt.InlinePictures = bool.Parse(inlinePictures);
+                }
+
                 opt.CoolDown = new EmailCooldown((int)option.GetValue("CooldownTime"));
                 opt.DaysOfWeek[0] = bool.Parse((string)option.GetValue("Sunday"));
                 opt.DaysOfWeek[1] = bool.Parse((string)option.GetValue("Monday"));
@@ -94,6 +104,7 @@ namespace OnGuardCore
       return addresses;
     }
 
+
     public void SaveEmailAddresses(List<EmailOptions> addresses)
     {
       if (addresses != null)
@@ -111,6 +122,7 @@ namespace OnGuardCore
               addr.SetValue("StartTime", address.StartTime.ToString(), RegistryValueKind.String);
               addr.SetValue("EndTime", address.EndTime.ToString(), RegistryValueKind.String);
               addr.SetValue("SizeDownPercent", address.SizeDownToPercent, RegistryValueKind.DWord);
+              addr.SetValue("InlinePictures", address.InlinePictures.ToString(), RegistryValueKind.String);
               addr.SetValue("CooldownTime", address.CoolDown.CooldownTime, RegistryValueKind.DWord);
               addr.SetValue("Sunday", address.DaysOfWeek[0].ToString(), RegistryValueKind.String);
               addr.SetValue("Monday", address.DaysOfWeek[1].ToString(), RegistryValueKind.String);

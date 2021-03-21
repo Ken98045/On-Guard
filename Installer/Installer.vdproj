@@ -326,15 +326,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:On Guard"
-        "ProductCode" = "8:{F639F961-920E-4A7C-8B58-E62E87C71A83}"
-        "PackageCode" = "8:{E892113E-C1B8-4E82-9588-0ED5F3BE8C0D}"
+        "ProductCode" = "8:{E8BC4A3D-004D-4CCE-AC55-3CAAAA2A1768}"
+        "PackageCode" = "8:{F72A934B-3D79-4BAF-B0D5-2C7111FCDD9C}"
         "UpgradeCode" = "8:{8A7763F2-8371-4764-B88E-3BC72A322E18}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.0.1"
+        "ProductVersion" = "8:2.0.2"
         "Manufacturer" = "8:On Guard"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/Ken98045/On-Guard"
@@ -890,7 +890,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_073C80DCE33C4F77A9148C3DD8AD722F"
             {
-            "SourcePath" = "8:..\\obj\\Debug\\net5.0-windows\\OnGuard.dll"
+            "SourcePath" = "8:..\\obj\\Release\\net5.0-windows\\OnGuard.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7E3EFA1BE17C442696E4370A9A6708C3"
@@ -1002,7 +1002,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_4F4FA6ACE7DE479FAFD814DBB7BE5891"
             {
-            "SourcePath" = "8:..\\obj\\Debug\\net5.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\obj\\Release\\net5.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7E3EFA1BE17C442696E4370A9A6708C3"
@@ -1086,7 +1086,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_B0E93E150E6C4BF88EB06476A326F985"
             {
-            "SourcePath" = "8:..\\obj\\Debug\\net5.0-windows\\OnGuard.dll"
+            "SourcePath" = "8:..\\obj\\Release\\net5.0-windows\\OnGuard.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7E3EFA1BE17C442696E4370A9A6708C3"

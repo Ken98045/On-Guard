@@ -6,6 +6,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net.Mail;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,7 +36,7 @@ namespace OnGuardCore
     // are included before others (in the limited email space).  From there we prefer interesting
     // pictures.  If we have room we include the others..
     // Note type frames list is in sorted order since it was copied from a SortedList
-    public override void ProcessAccumulatedFrames(List<Frame> frames)
+    public override async Task ProcessAccumulatedFrames(List<Frame> frames)
     {
 
       // The priority and interesting list contain indexes into the frames list
@@ -258,7 +259,7 @@ namespace OnGuardCore
         }
 
         // theFiles has both resized and not resized files
-        Task.Run(() => SendEmail(addr, theFiles, theDescriptions));
+        SendEmail(addr, theFiles, theDescriptions);
       }
     }
 
@@ -366,48 +367,53 @@ namespace OnGuardCore
 
     }
 
-    private static async Task SendEmail(string emailRecipients, string[] frames, string[] activityDesc)
+
+    // Sends an email to a recipient with attached pictures & descriptions.
+    // No longer sending async because some email servers choke when multiple requests are submitted.
+    // Thanks Comcast!  (They say you can have 25 open requests, but more than 3 results in an error).
+    private static async Task SendEmail(string emailRecipient, string[] frames, string[] activityDesc)
     {
+      EmailOptions option = EmailAddresses.GetEmailOptions(emailRecipient);
+
       try
       {
-        using (MailMessage mail = new MailMessage())
+        MailMessage mail = null;
+
+        // There area 2 different email formats we use.  
+        if (option.InlinePictures)
         {
-          using (SmtpClient SmtpServer = new SmtpClient(Storage.Instance.GetGlobalString("EmailServer")))
+          // This format puts the pictures in the body of the email using an HTML format.
+          // Most email clients can display these
+          mail = BuildInlineMessage(frames, activityDesc);
+        }
+        else
+        {
+          // MMS clients (and others) may not be able to handle HTML fomattted mail message.
+          // For these we just attach the images and hope for the best.
+          mail = BuildAttachmentMessage(frames, activityDesc);
+        }
+
+        using (SmtpClient SmtpServer = new SmtpClient(Storage.Instance.GetGlobalString("EmailServer")))
+        {
+          string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
+          string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
+
+          mail.From = new MailAddress(emailUserName);
+          string rec = emailRecipient.TrimEnd(new char[] { ';', ' ' });
+          mail.To.Add(rec);
+          mail.Subject = "Security Camera Alert";   // todo get via ui
+          SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
+
+          if (!string.IsNullOrEmpty(emailUserName))
           {
-            mail.BodyEncoding = Encoding.UTF8;
-            mail.IsBodyHtml = true;
-            mail.From = new MailAddress(Storage.Instance.GetGlobalString("EmailUser"));
-            string rec = emailRecipients.TrimEnd(new char[] { ';', ' ' });
-            mail.To.Add(rec);
-            mail.Subject = "Security Camera Alert";   // todo get via ui
-            mail.Body = "Security camera activity:" + Environment.NewLine;
-            foreach (var desc in activityDesc)
-            {
-              mail.Body += desc + Environment.NewLine;
-            }
-
-            System.Net.Mail.Attachment attachment;
-
-            foreach (var frame in frames)
-            {
-              attachment = new System.Net.Mail.Attachment(frame);
-              mail.Attachments.Add(attachment);
-            }
-
-            SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
-            string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
-            string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
-
-            if (!string.IsNullOrEmpty(emailUserName))
-            {
-              SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
-            }
-
-            SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
-
-            await SmtpServer.SendMailAsync(mail).ConfigureAwait(false);
-            Dbg.Write("Email sent to: " + rec);
+            SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
           }
+
+          SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
+
+          SmtpServer.Send(mail);
+          mail.Dispose();
+          Dbg.Write("Email sent to: " + rec);
         }
 
         foreach (var file in frames)
@@ -426,7 +432,75 @@ namespace OnGuardCore
       {
         Dbg.Write("Email exception: " + ex.ToString());
       }
+    }
 
+    static MailMessage BuildAttachmentMessage(string[] frames, string[] activityDesc)
+    {
+      MailMessage mail = new MailMessage();
+      mail.BodyEncoding = Encoding.UTF8;
+      mail.IsBodyHtml = true;
+
+      foreach (var desc in activityDesc)
+      {
+        mail.Body += desc + Environment.NewLine;
+      }
+
+      System.Net.Mail.Attachment attachment;
+      foreach (var frame in frames)
+      {
+        attachment = new System.Net.Mail.Attachment(frame);
+        mail.Attachments.Add(attachment);
+      }
+
+      return mail;
+    }
+
+    static MailMessage BuildInlineMessage(string[] frames, string[] activityDesc)
+    {
+      MailMessage mail = new MailMessage();
+      mail.BodyEncoding = Encoding.UTF8;
+      mail.IsBodyHtml = true;
+
+      string htmlOut = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">";
+      htmlOut += "<HTML><HEAD><META http-equiv=Content-Type content=\"text/html; charset=iso-8859-1\"></HEAD>";
+      htmlOut += "<BODY>";
+
+      foreach (var desc in activityDesc)
+      {
+        htmlOut += desc + "<br>";
+      }
+
+      htmlOut += "<b>";
+      htmlOut += "</b><br><br>";
+
+      System.Net.Mail.Attachment attachment;
+      int i = 0;
+
+      foreach (var frame in frames)
+      {
+        attachment = new System.Net.Mail.Attachment(frame);
+        mail.Attachments.Add(attachment);
+
+        attachment.ContentDisposition.DispositionType = DispositionTypeNames.Attachment;
+        attachment.ContentType.Name = Path.GetFileName(frame);
+        attachment.ContentDisposition.FileName = Path.GetFileName(frame);
+        string contentID = string.Format("Picture{0}", i);
+        attachment.ContentId = contentID;
+        attachment.ContentType.MediaType = "image/jpg";
+        mail.Attachments.Add(attachment);
+        htmlOut += string.Format("<img src=\"cid:{0}\" alt=\"\"><br><br>", contentID);
+        i++;
+      }
+
+      byte[] buffer;
+      MemoryStream mem = null;
+
+      buffer = Encoding.ASCII.GetBytes(htmlOut);
+      mem = new MemoryStream(buffer);
+      mem.Position = 0;
+      AlternateView alternate = new AlternateView(mem, MediaTypeNames.Text.Html);
+      mail.AlternateViews.Add(alternate);
+      return mail;
     }
   }
 }

@@ -30,6 +30,7 @@ namespace OnGuardCore
         emailText.Text = Email.EmailAddress;
         numberOfImages.Value = Email.NumberOfImages;
         sizeImageToNumeric.Value = Email.SizeDownToPercent;
+        htmlFormatCheckbox.Checked = Email.InlinePictures;
         coolDownNumeric.Value = Email.CoolDown.CooldownTime;
         check247.Checked = Email.AllTheTime;
         fromTime.Value = Email.StartTime;
@@ -53,6 +54,7 @@ namespace OnGuardCore
       Email.EmailAddress = this.emailText.Text;
       Email.NumberOfImages = (int)this.numberOfImages.Value;
       Email.SizeDownToPercent = (int)this.sizeImageToNumeric.Value;
+      Email.InlinePictures = htmlFormatCheckbox.Checked;
       Email.CoolDown.CooldownTime = (int)this.coolDownNumeric.Value;
       Email.AllTheTime = check247.Checked;
       Email.StartTime = this.fromTime.Value;
