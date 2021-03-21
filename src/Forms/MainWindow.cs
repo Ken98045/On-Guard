@@ -86,7 +86,14 @@ namespace OnGuardCore
     {
       get
       {
-        return _allCameras.CurrentCamera;
+        if (_allCameras != null)
+        {
+          return _allCameras.CurrentCamera;
+        }
+        else
+        {
+          return null;
+        }
       }
     }
 
