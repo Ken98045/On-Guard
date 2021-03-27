@@ -14,10 +14,31 @@ namespace OnGuardCore
     [STAThread]
     static void Main()
     {
+      MainWindow main = null;
+
       Application.SetHighDpiMode(HighDpiMode.DpiUnawareGdiScaled);
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
-      Application.Run(new MainWindow());
+
+      try
+      {
+        Application.Run(main = new MainWindow());
+      }
+#if !DEBUG
+      catch (ObjectDisposedException)
+      {
+      }
+      
+      catch (Exception ex)
+      {
+        MessageBox.Show("There was an unexpected error in On Guard.  Please report the following information: " + ex.Message, "Unexpected Error!");
+      }
+#endif
+      finally
+      {
+        main?.Dispose();
+      }
+
     }
   }
 }

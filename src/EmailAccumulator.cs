@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace OnGuardCore
 {
@@ -359,41 +360,49 @@ namespace OnGuardCore
     public static string ResizeImage(string fileName, int scaleFactor)
     {
       string destFile = string.Empty;
-      if (File.Exists(fileName))
+      try
       {
-
-        destFile = Path.GetDirectoryName(fileName) + "\\Resized-" + DateTime.Now.Ticks.ToString() + ".jpg"; ;
-        using (Image image = Bitmap.FromFile(fileName))
+        if (File.Exists(fileName))
         {
 
-          int width = (int)(image.Width * (double)scaleFactor / 100.0);
-          int height = (int)(image.Height * (double)scaleFactor / 100.0);
-
-          var destRect = new Rectangle(0, 0, width, height);
-          using (var destImage = new Bitmap(width, height))
+          destFile = Path.GetDirectoryName(fileName) + "\\Resized-" + DateTime.Now.Ticks.ToString() + ".jpg"; ;
+          using (Image image = Bitmap.FromFile(fileName))
           {
 
-            destImage.SetResolution(width, height);
+            int width = (int)(image.Width * (double)scaleFactor / 100.0);
+            int height = (int)(image.Height * (double)scaleFactor / 100.0);
 
-            using (var graphics = Graphics.FromImage(destImage))
+            var destRect = new Rectangle(0, 0, width, height);
+            using (var destImage = new Bitmap(width, height))
             {
-              graphics.CompositingMode = CompositingMode.SourceCopy;
-              graphics.CompositingQuality = CompositingQuality.HighQuality;
-              graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-              graphics.SmoothingMode = SmoothingMode.HighQuality;
-              graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-              using (var wrapMode = new ImageAttributes())
+              destImage.SetResolution(width, height);
+
+              using (var graphics = Graphics.FromImage(destImage))
               {
-                wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-              }
-            }
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            destImage.Save(destFile);
+                using (var wrapMode = new ImageAttributes())
+                {
+                  wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                  graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+              }
+
+              destImage.Save(destFile);
+            }
           }
         }
       }
+      catch (Exception ex)
+      {
+        MessageBox.Show("EmailAccumulator - There was an error attempting to create a resized image for file: " + fileName + " at scale factor: " + scaleFactor.ToString() + Environment.NewLine + ex.Message, "Error Resizing Picture!"); 
+      }
+
       return destFile;
 
     }
