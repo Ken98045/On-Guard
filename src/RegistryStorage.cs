@@ -75,6 +75,7 @@ namespace OnGuardCore
                 opt.StartTime = DateTime.Parse((string)option.GetValue("StartTime", "12:00am"));
                 opt.EndTime = DateTime.Parse((string)option.GetValue("EndTime", "11:59:59pm"));
                 opt.SizeDownToPercent = (int)option.GetValue("SizeDownPercent", 20);
+                opt.MaximumAttachmentSize = decimal.Parse((string) option.GetValue("MaximumAttachmentSize", "5.0"));
                 string inlinePictures = (string)option.GetValue("InlinePictures");
                 if (string.IsNullOrEmpty(inlinePictures))
                 {
@@ -122,6 +123,7 @@ namespace OnGuardCore
               addr.SetValue("StartTime", address.StartTime.ToString(), RegistryValueKind.String);
               addr.SetValue("EndTime", address.EndTime.ToString(), RegistryValueKind.String);
               addr.SetValue("SizeDownPercent", address.SizeDownToPercent, RegistryValueKind.DWord);
+              addr.SetValue("MaximumAttachmentSize", address.MaximumAttachmentSize, RegistryValueKind.String);
               addr.SetValue("InlinePictures", address.InlinePictures.ToString(), RegistryValueKind.String);
               addr.SetValue("CooldownTime", address.CoolDown.CooldownTime, RegistryValueKind.DWord);
               addr.SetValue("Sunday", address.DaysOfWeek[0].ToString(), RegistryValueKind.String);
@@ -176,6 +178,7 @@ namespace OnGuardCore
           rect,
           (int)key.GetValue("OriginalXResolution"),
           (int)key.GetValue("OriginalYResolution"),
+          new Point((int) key.GetValue("FocusX", x, RegistryValueOptions.None),  (int) key.GetValue("FocusY", y, RegistryValueOptions.None)),
           (MovementType)Enum.Parse(typeof(MovementType), (string)key.GetValue("MovementType")),
           GetNotificationOption(key),
           GetCharacteristics(key)
@@ -206,6 +209,8 @@ namespace OnGuardCore
           key.SetValue("AOIType", area.AOIType.ToString(), RegistryValueKind.String);
           key.SetValue("OriginalXResolution", area.OriginalXResolution, RegistryValueKind.DWord);
           key.SetValue("OriginalYResolution", area.OriginalYResolution, RegistryValueKind.DWord);
+          key.SetValue("FocusX", area.ZoneFocus.X, RegistryValueKind.DWord);
+          key.SetValue("FocusY", area.ZoneFocus.Y, RegistryValueKind.DWord);
           key.SetValue("MovementType", area.MovementType.ToString(), RegistryValueKind.String);
           SaveNotificationOption(key, area.Notifications);
           SaveCharacteristcs(key, area.SearchCriteria);

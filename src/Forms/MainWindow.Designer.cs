@@ -158,7 +158,7 @@
       this.objectListView.Location = new System.Drawing.Point(3, 12);
       this.objectListView.MultiSelect = false;
       this.objectListView.Name = "objectListView";
-      this.objectListView.Size = new System.Drawing.Size(397, 128);
+      this.objectListView.Size = new System.Drawing.Size(409, 128);
       this.objectListView.TabIndex = 3;
       this.objectListView.UseCompatibleStateImageBehavior = false;
       this.objectListView.View = System.Windows.Forms.View.Details;
@@ -167,33 +167,37 @@
       // 
       this.label.Name = "label";
       this.label.Text = "Type";
-      this.label.Width = 80;
+      this.label.Width = 75;
       // 
       // confidence
       // 
       this.confidence.Name = "confidence";
       this.confidence.Text = "Confidence";
-      this.confidence.Width = 70;
+      this.confidence.Width = 75;
       // 
       // xPosition
       // 
       this.xPosition.Name = "xPosition";
       this.xPosition.Text = "X Position";
+      this.xPosition.Width = 70;
       // 
       // yPosition
       // 
       this.yPosition.Name = "yPosition";
       this.yPosition.Text = "Y Position";
+      this.yPosition.Width = 70;
       // 
       // width
       // 
       this.width.Name = "width";
       this.width.Text = "Width";
+      this.width.Width = 55;
       // 
       // height
       // 
       this.height.Name = "height";
       this.height.Text = "Height";
+      this.height.Width = 55;
       // 
       // label1
       // 
@@ -412,7 +416,7 @@
       // 
       // presetNumeric
       // 
-      this.presetNumeric.Location = new System.Drawing.Point(95, 56);
+      this.presetNumeric.Location = new System.Drawing.Point(93, 56);
       this.presetNumeric.Maximum = new decimal(new int[] {
             200,
             0,
@@ -460,7 +464,7 @@
       this.liveCheck.BackColor = System.Drawing.SystemColors.Control;
       this.liveCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
       this.liveCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.liveCheck.Location = new System.Drawing.Point(95, 25);
+      this.liveCheck.Location = new System.Drawing.Point(93, 24);
       this.liveCheck.Name = "liveCheck";
       this.liveCheck.Size = new System.Drawing.Size(79, 25);
       this.liveCheck.TabIndex = 33;
@@ -471,7 +475,7 @@
       // camZoomOut
       // 
       this.camZoomOut.Image = ((System.Drawing.Image)(resources.GetObject("camZoomOut.Image")));
-      this.camZoomOut.Location = new System.Drawing.Point(177, 71);
+      this.camZoomOut.Location = new System.Drawing.Point(185, 71);
       this.camZoomOut.Name = "camZoomOut";
       this.camZoomOut.Size = new System.Drawing.Size(25, 25);
       this.camZoomOut.TabIndex = 30;
@@ -481,7 +485,7 @@
       // zoomInButton
       // 
       this.zoomInButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInButton.Image")));
-      this.zoomInButton.Location = new System.Drawing.Point(231, 21);
+      this.zoomInButton.Location = new System.Drawing.Point(239, 21);
       this.zoomInButton.Name = "zoomInButton";
       this.zoomInButton.Size = new System.Drawing.Size(25, 25);
       this.zoomInButton.TabIndex = 29;
@@ -491,7 +495,7 @@
       // camDownButton
       // 
       this.camDownButton.Image = ((System.Drawing.Image)(resources.GetObject("camDownButton.Image")));
-      this.camDownButton.Location = new System.Drawing.Point(205, 70);
+      this.camDownButton.Location = new System.Drawing.Point(213, 70);
       this.camDownButton.Name = "camDownButton";
       this.camDownButton.Size = new System.Drawing.Size(25, 25);
       this.camDownButton.TabIndex = 26;
@@ -501,7 +505,7 @@
       // camRightButton
       // 
       this.camRightButton.Image = ((System.Drawing.Image)(resources.GetObject("camRightButton.Image")));
-      this.camRightButton.Location = new System.Drawing.Point(231, 46);
+      this.camRightButton.Location = new System.Drawing.Point(239, 46);
       this.camRightButton.Name = "camRightButton";
       this.camRightButton.Size = new System.Drawing.Size(25, 25);
       this.camRightButton.TabIndex = 28;
@@ -511,7 +515,7 @@
       // camLeftButton
       // 
       this.camLeftButton.Image = ((System.Drawing.Image)(resources.GetObject("camLeftButton.Image")));
-      this.camLeftButton.Location = new System.Drawing.Point(177, 46);
+      this.camLeftButton.Location = new System.Drawing.Point(185, 46);
       this.camLeftButton.Name = "camLeftButton";
       this.camLeftButton.Size = new System.Drawing.Size(25, 25);
       this.camLeftButton.TabIndex = 27;
@@ -521,7 +525,7 @@
       // camUpButton
       // 
       this.camUpButton.Image = ((System.Drawing.Image)(resources.GetObject("camUpButton.Image")));
-      this.camUpButton.Location = new System.Drawing.Point(205, 24);
+      this.camUpButton.Location = new System.Drawing.Point(213, 24);
       this.camUpButton.Name = "camUpButton";
       this.camUpButton.Size = new System.Drawing.Size(25, 25);
       this.camUpButton.TabIndex = 25;
@@ -572,7 +576,7 @@
       // 
       // ToolsPanel
       // 
-      this.ToolsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+      this.ToolsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.ToolsPanel.AutoScroll = true;
       this.ToolsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -686,8 +690,8 @@
       // 
       // mainPanel
       // 
-      this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+      this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.mainPanel.AutoScroll = true;
       this.mainPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -702,7 +706,7 @@
       // 
       // StatusPanel
       // 
-      this.StatusPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+      this.StatusPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.StatusPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.StatusPanel.Controls.Add(this.numberOfImagesLabel);
@@ -815,8 +819,8 @@
       // 
       // picturePanel
       // 
-      this.picturePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+      this.picturePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.picturePanel.AutoScroll = true;
       this.picturePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;

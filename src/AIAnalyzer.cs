@@ -527,6 +527,7 @@ namespace OnGuardCore
   public class Frame
   {
     public DateTime Timestamp { get; }
+    public System.Timers.Timer WakeupTimer { get; set;}
     public PendingItem Item { get; set; }
     public List<InterestingObject> Interesting { get; set; }
 

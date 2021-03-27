@@ -23,6 +23,7 @@ namespace OnGuardCore
     public DateTime EndTime { get; set; }
     public bool[] DaysOfWeek;
     public int SizeDownToPercent { get; set; }  // Reduce the sizeof any images
+    public decimal MaximumAttachmentSize { get; set; }
 
     public EmailCooldown CoolDown { get; set; }
 

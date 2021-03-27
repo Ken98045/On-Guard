@@ -10,16 +10,18 @@ using Microsoft.VisualStudio.Threading;
 namespace OnGuardCore
 {
 
-  public class AwaitableQueue<T>
+  public class AwaitableQueue<T> : IDisposable
   {
     int _waitTime;
+    bool _stop;
 
     ConcurrentQueue<T> _q = new ConcurrentQueue<T>();
     AsyncAutoResetEvent _available = new AsyncAutoResetEvent(true);
+    private bool disposedValue;
 
     public AwaitableQueue(int waitTimeInSeconds)
     {
-      _waitTime = waitTimeInSeconds;
+      _waitTime = waitTimeInSeconds;  // 0 - no timeout
     }
 
     public void Add(T addIt)
@@ -32,7 +34,7 @@ namespace OnGuardCore
     {
       T result = default(T);
 
-      while (true)
+      while (!_stop)
       {
         if (_q.TryDequeue(out result))
         {
@@ -41,7 +43,11 @@ namespace OnGuardCore
         else
         {
           CancellationTokenSource source = new CancellationTokenSource();
-          source.CancelAfter(_waitTime * 1000);
+          if (_waitTime > 0)
+          {
+            source.CancelAfter(_waitTime * 1000);
+          }
+
           CancellationToken token = source.Token;
           await _available.WaitAsync(token).ConfigureAwait(false);
           if (token.IsCancellationRequested)
@@ -54,5 +60,24 @@ namespace OnGuardCore
       return result;
     }
 
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          _stop = true;
+          _available.Set();
+        }
+        disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose(disposing: true);
+      GC.SuppressFinalize(this);
+    }
   }
 }

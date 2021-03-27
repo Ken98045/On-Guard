@@ -57,10 +57,15 @@
       this.htmlFormatCheckbox = new System.Windows.Forms.CheckBox();
       this.label14 = new System.Windows.Forms.Label();
       this.label15 = new System.Windows.Forms.Label();
+      this.label16 = new System.Windows.Forms.Label();
+      this.MaximumAttachmentSizeNumeric = new System.Windows.Forms.NumericUpDown();
+      this.label17 = new System.Windows.Forms.Label();
+      this.label18 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.sizeImageToNumeric)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numberOfImages)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.coolDownNumeric)).BeginInit();
       this.panel1.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.MaximumAttachmentSizeNumeric)).BeginInit();
       this.SuspendLayout();
       // 
       // label1
@@ -79,12 +84,13 @@
       this.emailText.Name = "emailText";
       this.emailText.Size = new System.Drawing.Size(158, 23);
       this.emailText.TabIndex = 0;
+      this.emailText.TextChanged += new System.EventHandler(this.EmailText_TextChanged);
       // 
       // label11
       // 
       this.label11.AutoSize = true;
       this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label11.Location = new System.Drawing.Point(115, 108);
+      this.label11.Location = new System.Drawing.Point(276, 364);
       this.label11.Name = "label11";
       this.label11.Size = new System.Drawing.Size(111, 15);
       this.label11.TabIndex = 33;
@@ -92,7 +98,7 @@
       // 
       // sizeImageToNumeric
       // 
-      this.sizeImageToNumeric.Location = new System.Drawing.Point(242, 108);
+      this.sizeImageToNumeric.Location = new System.Drawing.Point(401, 362);
       this.sizeImageToNumeric.Minimum = new decimal(new int[] {
             5,
             0,
@@ -111,7 +117,7 @@
       // 
       this.label4.AutoSize = true;
       this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label4.Location = new System.Drawing.Point(29, 69);
+      this.label4.Location = new System.Drawing.Point(190, 315);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(197, 15);
       this.label4.TabIndex = 31;
@@ -119,16 +125,17 @@
       // 
       // numberOfImages
       // 
-      this.numberOfImages.Location = new System.Drawing.Point(242, 69);
+      this.numberOfImages.Location = new System.Drawing.Point(403, 314);
       this.numberOfImages.Name = "numberOfImages";
       this.numberOfImages.Size = new System.Drawing.Size(75, 23);
       this.numberOfImages.TabIndex = 1;
+      this.numberOfImages.ValueChanged += new System.EventHandler(this.NumberOfImages_ValueChanged);
       // 
       // label2
       // 
       this.label2.AutoSize = true;
       this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-      this.label2.Location = new System.Drawing.Point(336, 108);
+      this.label2.Location = new System.Drawing.Point(493, 363);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(84, 15);
       this.label2.TabIndex = 35;
@@ -138,7 +145,7 @@
       // 
       this.label3.AutoSize = true;
       this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label3.Location = new System.Drawing.Point(16, 209);
+      this.label3.Location = new System.Drawing.Point(16, 121);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(210, 15);
       this.label3.TabIndex = 36;
@@ -146,7 +153,7 @@
       // 
       // coolDownNumeric
       // 
-      this.coolDownNumeric.Location = new System.Drawing.Point(240, 209);
+      this.coolDownNumeric.Location = new System.Drawing.Point(240, 119);
       this.coolDownNumeric.Maximum = new decimal(new int[] {
             120,
             0,
@@ -165,13 +172,14 @@
             0,
             0,
             0});
+      this.coolDownNumeric.ValueChanged += new System.EventHandler(this.CoolDownNumeric_ValueChanged);
       // 
       // label5
       // 
       this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-      this.label5.Location = new System.Drawing.Point(327, 200);
+      this.label5.Location = new System.Drawing.Point(327, 115);
       this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(176, 49);
+      this.label5.Size = new System.Drawing.Size(310, 39);
       this.label5.TabIndex = 38;
       this.label5.Text = "In Minutes - This prevents you from being flooded with emails";
       // 
@@ -188,9 +196,9 @@
       this.panel1.Controls.Add(this.label10);
       this.panel1.Controls.Add(this.fromTime);
       this.panel1.Controls.Add(this.check247);
-      this.panel1.Location = new System.Drawing.Point(87, 396);
+      this.panel1.Location = new System.Drawing.Point(185, 451);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(374, 308);
+      this.panel1.Size = new System.Drawing.Size(374, 309);
       this.panel1.TabIndex = 39;
       // 
       // label12
@@ -216,7 +224,7 @@
             "Saturday"});
       this.daysOfWeekList.Location = new System.Drawing.Point(175, 169);
       this.daysOfWeekList.Name = "daysOfWeekList";
-      this.daysOfWeekList.Size = new System.Drawing.Size(120, 94);
+      this.daysOfWeekList.Size = new System.Drawing.Size(120, 130);
       this.daysOfWeekList.TabIndex = 3;
       // 
       // label9
@@ -303,7 +311,7 @@
       // 
       // okButton
       // 
-      this.okButton.Location = new System.Drawing.Point(192, 725);
+      this.okButton.Location = new System.Drawing.Point(290, 781);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 4;
@@ -314,7 +322,7 @@
       // cancelButton
       // 
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(281, 725);
+      this.cancelButton.Location = new System.Drawing.Point(379, 781);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 5;
@@ -334,28 +342,30 @@
       // 
       // label13
       // 
-      this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label13.Location = new System.Drawing.Point(10, 254);
+      this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+      this.label13.Location = new System.Drawing.Point(16, 204);
       this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
       this.label13.Name = "label13";
-      this.label13.Size = new System.Drawing.Size(518, 126);
+      this.label13.Size = new System.Drawing.Size(723, 98);
       this.label13.TabIndex = 41;
       this.label13.Text = resources.GetString("label13.Text");
+      this.label13.Click += new System.EventHandler(this.Label13_Click);
       // 
       // htmlFormatCheckbox
       // 
       this.htmlFormatCheckbox.AutoSize = true;
-      this.htmlFormatCheckbox.Location = new System.Drawing.Point(242, 151);
+      this.htmlFormatCheckbox.Location = new System.Drawing.Point(242, 79);
       this.htmlFormatCheckbox.Name = "htmlFormatCheckbox";
       this.htmlFormatCheckbox.Size = new System.Drawing.Size(15, 14);
       this.htmlFormatCheckbox.TabIndex = 42;
       this.htmlFormatCheckbox.UseVisualStyleBackColor = true;
+      this.htmlFormatCheckbox.CheckedChanged += new System.EventHandler(this.HtmlFormatCheckbox_CheckedChanged);
       // 
       // label14
       // 
       this.label14.AutoSize = true;
       this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label14.Location = new System.Drawing.Point(4, 149);
+      this.label14.Location = new System.Drawing.Point(4, 73);
       this.label14.Name = "label14";
       this.label14.Size = new System.Drawing.Size(222, 15);
       this.label14.TabIndex = 43;
@@ -364,12 +374,60 @@
       // label15
       // 
       this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-      this.label15.Location = new System.Drawing.Point(268, 141);
+      this.label15.Location = new System.Drawing.Point(327, 68);
       this.label15.Name = "label15";
-      this.label15.Size = new System.Drawing.Size(248, 49);
+      this.label15.Size = new System.Drawing.Size(389, 33);
       this.label15.TabIndex = 44;
       this.label15.Text = "Some email clients can\'t use HTML to show pictures attachments inline.  This incl" +
     "udes many MMS clients.";
+      // 
+      // label16
+      // 
+      this.label16.AutoSize = true;
+      this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.label16.Location = new System.Drawing.Point(167, 411);
+      this.label16.Name = "label16";
+      this.label16.Size = new System.Drawing.Size(220, 15);
+      this.label16.TabIndex = 46;
+      this.label16.Text = "Maximum Size of All Attachments";
+      // 
+      // MaximumAttachmentSizeNumeric
+      // 
+      this.MaximumAttachmentSizeNumeric.DecimalPlaces = 1;
+      this.MaximumAttachmentSizeNumeric.Location = new System.Drawing.Point(401, 410);
+      this.MaximumAttachmentSizeNumeric.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+      this.MaximumAttachmentSizeNumeric.Name = "MaximumAttachmentSizeNumeric";
+      this.MaximumAttachmentSizeNumeric.Size = new System.Drawing.Size(75, 23);
+      this.MaximumAttachmentSizeNumeric.TabIndex = 45;
+      this.MaximumAttachmentSizeNumeric.Value = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
+      // 
+      // label17
+      // 
+      this.label17.AutoSize = true;
+      this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+      this.label17.Location = new System.Drawing.Point(493, 412);
+      this.label17.Name = "label17";
+      this.label17.Size = new System.Drawing.Size(39, 15);
+      this.label17.TabIndex = 47;
+      this.label17.Text = "In MB";
+      // 
+      // label18
+      // 
+      this.label18.AutoSize = true;
+      this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.label18.Location = new System.Drawing.Point(312, 177);
+      this.label18.Name = "label18";
+      this.label18.Size = new System.Drawing.Size(121, 15);
+      this.label18.TabIndex = 48;
+      this.label18.Text = "Attachment Limits";
       // 
       // CreateEmailAddressDialog
       // 
@@ -378,7 +436,11 @@
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.AutoScroll = true;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(547, 758);
+      this.ClientSize = new System.Drawing.Size(744, 820);
+      this.Controls.Add(this.label18);
+      this.Controls.Add(this.label17);
+      this.Controls.Add(this.label16);
+      this.Controls.Add(this.MaximumAttachmentSizeNumeric);
       this.Controls.Add(this.label15);
       this.Controls.Add(this.label14);
       this.Controls.Add(this.htmlFormatCheckbox);
@@ -404,6 +466,7 @@
       ((System.ComponentModel.ISupportInitialize)(this.coolDownNumeric)).EndInit();
       this.panel1.ResumeLayout(false);
       this.panel1.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.MaximumAttachmentSizeNumeric)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -439,5 +502,9 @@
     private System.Windows.Forms.CheckBox htmlFormatCheckbox;
     private System.Windows.Forms.Label label14;
     private System.Windows.Forms.Label label15;
+    private System.Windows.Forms.Label label16;
+    private System.Windows.Forms.NumericUpDown MaximumAttachmentSizeNumeric;
+    private System.Windows.Forms.Label label17;
+    private System.Windows.Forms.Label label18;
   }
 }

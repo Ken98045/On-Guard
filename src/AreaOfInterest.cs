@@ -55,7 +55,8 @@ namespace OnGuardCore
     public Rectangle AreaRect;      // The area for the AOI, in original bitmap pixels, not screen pixels
     public int OriginalXResolution { get; set; }    // Because if the camera images change resolution we need to adjust the virtual area
     public int OriginalYResolution { get; set; }    // ""
-    public Point ZoneFocus { get; set; }  // The point in the area used to determine motion to/from the MovementType - Always relative to the area
+    Point _zoneFocus;
+    
     public AreaNotificationOption Notifications { get; set; } // URL and Email notifications, maybe others in the future
 
     public Guid ID { get; set; }   // a unique id for the area
@@ -76,6 +77,7 @@ namespace OnGuardCore
       Rectangle areaRect,
       int originalXResolution,
       int originalYResolution,
+      Point Focus,
       MovementType movementType,
       AreaNotificationOption notifications,
       List<ObjectCharacteristics> searchCritera
@@ -88,6 +90,7 @@ namespace OnGuardCore
       AreaRect = areaRect;
       OriginalXResolution = originalXResolution;
       OriginalYResolution = originalYResolution;
+      ZoneFocus = Focus;
       MovementType = movementType;
       Notifications = notifications;
       SearchCriteria = searchCritera;
@@ -107,6 +110,7 @@ namespace OnGuardCore
         OriginalXResolution = src.OriginalXResolution;
         OriginalYResolution = src.OriginalYResolution;
         MovementType = src.MovementType;
+        _zoneFocus = src._zoneFocus;
         Notifications = new AreaNotificationOption(src.Notifications);
         SearchCriteria = new List<ObjectCharacteristics>(src.SearchCriteria);
       }
@@ -125,6 +129,22 @@ namespace OnGuardCore
 
       return adjRect;
     }
+
+    public Point ZoneFocus 
+    {
+      get
+      {
+        Point pt = new Point();
+        pt.X = (int)((double)_zoneFocus.X * ((double)(BitmapResolution.XResolution) / (double)(OriginalXResolution)));
+        pt.Y = (int)((double)_zoneFocus.Y * ((double)(BitmapResolution.YResolution) / (double)(OriginalYResolution)));
+        return pt;
+      }
+
+      set
+      {
+        _zoneFocus = value;
+      }
+    }  // The point in the area used to determine motion to/from the MovementType - Always relative to the area
 
 
     public void AdjustRect(int xOffset, int yOffset)

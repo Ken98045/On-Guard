@@ -20,9 +20,18 @@ namespace OnGuardCore
   public class EmailAccumulator : FrameAccumulator
   {
 
+    static AwaitableQueue<EmailInfo> _emailQueue = new AwaitableQueue<EmailInfo>(0);
+
     public EmailAccumulator(int timeToAccumulate)
     {
       Init(timeToAccumulate);
+      EmailInit();
+    }
+
+
+    public async Task EmailInit()
+    {
+      Task.Run(() => SendEmailFromQueue());
     }
 
 
@@ -38,10 +47,11 @@ namespace OnGuardCore
     // Note type frames list is in sorted order since it was copied from a SortedList
     public override async Task ProcessAccumulatedFrames(List<Frame> frames)
     {
-
       // The priority and interesting list contain indexes into the frames list
       List<int> priority = new List<int>();     // door events have high priority, everything else, not
       List<int> interesting = new List<int>();  // frames with objects but not "priority
+
+      Dbg.Trace("EmailAccumulator - Done accumulating email frames with: " + frames.Count.ToString());
 
       // The collection of area descriptions does not depend on the number of outgoing pictures.
       // It depends on all the pictures.  Each picture may have zero or more than, each object may
@@ -139,6 +149,7 @@ namespace OnGuardCore
 
       } while (emailAddresses.Count > 0 && removedOne);
 
+      Dbg.Trace("EmailAccumulator - Email address count before cooldown check: " + emailAddresses.Count.ToString());
 
       // ok, we know that we MAY want to notify some email address, but each
       // address may have a different cool down time, so we cull the list further (yes we could do it differently)
@@ -164,6 +175,8 @@ namespace OnGuardCore
 
       } while (emailAddresses.Count > 0 && removedOne);
 
+      Dbg.Trace("EmailAccumulator - Email address count after cooldown check: " + emailAddresses.Count.ToString());
+
       // OK, we have FINALLY culled the list of email addreses to send to.
       // Now, we need to go through email recipients and then select the frames we want to send and then
       // send them.
@@ -171,6 +184,7 @@ namespace OnGuardCore
 
       foreach (string addr in emailAddresses.Values)
       {
+        Dbg.Trace("EmailAccumulator - ProcessAccumlatedFrames - Getting frames for email address: " + addr);
         outgoing.Clear();
 
         EmailOptions opt = EmailAddresses.GetEmailOptions(addr);
@@ -214,7 +228,7 @@ namespace OnGuardCore
             // over pictures of them leaving.  You are more likely to get faces for one.
             for (i = 0; i < frames.Count && outgoing.Count < maxPic; i++)
             {
-              if (!(priority.Contains(i)) && !(interesting.Contains(i)))  // No duplication of the ones we added6
+              if (!(priority.Contains(i)) && !(interesting.Contains(i)))  // No duplication of the ones we added
               {
                 outgoing.Add(frames[i].Timestamp, frames[i]);
               }
@@ -245,21 +259,34 @@ namespace OnGuardCore
         // address since photos going to a phone should be smaller than those going to a PC, etc.
 
         count = 0;
+        double totalSize = 0;
+        List<string> outputFiles = new List<string>();
+
         foreach (string file in theFiles)
         {
+          string outFile = theFiles[count];
           if (opt.SizeDownToPercent != 100)
           {
-            string resizedName = ResizeImage(theFiles[count], opt.SizeDownToPercent);
-            if (!string.IsNullOrEmpty(resizedName))
-            {
-              theFiles[count] = resizedName;
-              ++count;
-            }
+            outFile = ResizeImage(theFiles[count], opt.SizeDownToPercent);
+          }
+
+          FileInfo fi = new FileInfo(outFile);
+          totalSize += fi.Length;
+
+          if (totalSize < (double)opt.MaximumAttachmentSize * 1000.0 * 1000.0)
+          {
+            outputFiles.Add(outFile);
+            ++count;
+          }
+          else
+          {
+            Dbg.Write("EmailAccumulator - ProcessAccumulatedFrames - Email attachement size limit reached" + outFile + " " + count.ToString());
+            break;
           }
         }
 
         // theFiles has both resized and not resized files
-        SendEmail(addr, theFiles, theDescriptions);
+        SendEmail(addr, outputFiles.ToArray(), theDescriptions);
       }
     }
 
@@ -373,65 +400,30 @@ namespace OnGuardCore
     // Thanks Comcast!  (They say you can have 25 open requests, but more than 3 results in an error).
     private static async Task SendEmail(string emailRecipient, string[] frames, string[] activityDesc)
     {
+
+      MailMessage mail = null;
+
       EmailOptions option = EmailAddresses.GetEmailOptions(emailRecipient);
 
-      try
+      // There area 2 different email formats we use.  
+      if (option.InlinePictures)
       {
-        MailMessage mail = null;
-
-        // There area 2 different email formats we use.  
-        if (option.InlinePictures)
-        {
-          // This format puts the pictures in the body of the email using an HTML format.
-          // Most email clients can display these
-          mail = BuildInlineMessage(frames, activityDesc);
-        }
-        else
-        {
-          // MMS clients (and others) may not be able to handle HTML fomattted mail message.
-          // For these we just attach the images and hope for the best.
-          mail = BuildAttachmentMessage(frames, activityDesc);
-        }
-
-        using (SmtpClient SmtpServer = new SmtpClient(Storage.Instance.GetGlobalString("EmailServer")))
-        {
-          string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
-          string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
-
-          mail.From = new MailAddress(emailUserName);
-          string rec = emailRecipient.TrimEnd(new char[] { ';', ' ' });
-          mail.To.Add(rec);
-          mail.Subject = "Security Camera Alert";   // todo get via ui
-          SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
-
-          if (!string.IsNullOrEmpty(emailUserName))
-          {
-            SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
-          }
-
-          SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
-
-          SmtpServer.Send(mail);
-          mail.Dispose();
-          Dbg.Write("Email sent to: " + rec);
-        }
-
-        foreach (var file in frames)
-        {
-          try
-          {
-            File.Delete(file);  // get rid of the temporary files
-          }
-          catch (Exception ex)
-          {
-            Dbg.Write("Error deleting file: " + file);
-          }
-        }
+        // This format puts the pictures in the body of the email using an HTML format.
+        // Most email clients can display these
+        mail = BuildInlineMessage(frames, activityDesc);
       }
-      catch (SmtpException ex)
+      else
       {
-        Dbg.Write("Email exception: " + ex.ToString());
+        // MMS clients (and others) may not be able to handle HTML fomattted mail message.
+        // For these we just attach the images and hope for the best.
+        mail = BuildAttachmentMessage(frames, activityDesc);
       }
+
+      mail.To.Add(emailRecipient);
+
+      EmailInfo emailInfo = new EmailInfo(mail, frames);
+      Dbg.Trace("Enqueued for sending email to: " + emailRecipient);
+      _emailQueue.Add(emailInfo);
     }
 
     static MailMessage BuildAttachmentMessage(string[] frames, string[] activityDesc)
@@ -479,8 +471,6 @@ namespace OnGuardCore
       foreach (var frame in frames)
       {
         attachment = new System.Net.Mail.Attachment(frame);
-        mail.Attachments.Add(attachment);
-
         attachment.ContentDisposition.DispositionType = DispositionTypeNames.Attachment;
         attachment.ContentType.Name = Path.GetFileName(frame);
         attachment.ContentDisposition.FileName = Path.GetFileName(frame);
@@ -502,5 +492,79 @@ namespace OnGuardCore
       mail.AlternateViews.Add(alternate);
       return mail;
     }
+
+    private static async Task SendEmailFromQueue()
+    {
+      string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
+      string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
+
+      while (true)
+      {
+        EmailInfo emailInfo = await _emailQueue.GetAsync();
+        MailMessage mail = emailInfo.Mail;
+        if (mail == null)
+        {
+          break;
+        }
+
+        try
+        {
+          EmailOptions option = EmailAddresses.GetEmailOptions(mail.To[0].Address);
+
+          Dbg.Trace("EmailAccumulator - Starting email send to: " + mail.To[0].Address);
+
+          using (SmtpClient SmtpServer = new SmtpClient(Storage.Instance.GetGlobalString("EmailServer")))
+          {
+
+            mail.From = new MailAddress(emailUserName);
+            mail.Subject = "Security Camera Alert";   // todo get via ui
+            SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
+
+            if (!string.IsNullOrEmpty(emailUserName))
+            {
+              SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
+            }
+
+            SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
+            SmtpServer.Timeout = 120 * 1000;
+            SmtpServer.Send(mail);
+            Dbg.Write("Email sent to: " + mail.To[0].Address);
+          }
+        }
+        catch (SmtpException ex)
+        {
+          Dbg.Write("Email exception: " + ex.ToString());
+        }
+
+        mail.Dispose();
+
+        foreach (var file in emailInfo.Frames)
+        {
+          try
+          {
+            File.Delete(file);  // get rid of the temporary files
+          }
+          catch (Exception ex)
+          {
+            Dbg.Write("EmailAccumulator - Error deleting email temporary file: " + file);
+          }
+        }
+
+      }
+    }
   }
+
+  internal class EmailInfo
+  {
+    public EmailInfo(MailMessage mail, string[] frames)
+    {
+      Mail = mail;
+      Frames = frames;
+    }
+
+    public MailMessage Mail { get; }
+    public string[] Frames { get; }
+  }
+
 }
+

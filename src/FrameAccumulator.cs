@@ -22,7 +22,7 @@ namespace OnGuardCore
     private bool disposedValue = false; // To detect redundant calls
 
 
-    public void Init(int timeToAccumulate)
+    public async void Init(int timeToAccumulate)
     {
       TimeToAccumulate = timeToAccumulate;
       Frames = new SortedList<DateTime, Frame>();

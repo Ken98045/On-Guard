@@ -1023,12 +1023,14 @@ namespace OnGuardCore
 
     private void OnMouseUp(object sender, MouseEventArgs e)
     {
-
-      if (CurrentCam.RegistrationX == 0 || CurrentCam.RegistrationY == 0)
+      if (null != CurrentCam)
       {
-        if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
+        if (CurrentCam.RegistrationX == 0 || CurrentCam.RegistrationY == 0)
         {
-          MessageBox.Show("You can create areas of interest by using a mouse click down and drag.  However, before you can do this you must set a camera registration point so that you can ensure that your camera is always position correctly.  You do this by holding the control key and then clicking in the desired position for the registration point.  That point should be on a spot that is easily recoginzed when viewing the camera.", "Set Camera Registration Point First!");
+          if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
+          {
+            MessageBox.Show("You can create areas of interest by using a mouse click down and drag.  However, before you can do this you must set a camera registration point so that you can ensure that your camera is always position correctly.  You do this by holding the control key and then clicking in the desired position for the registration point.  That point should be on a spot that is easily recoginzed when viewing the camera.", "Set Camera Registration Point First!");
+          }
         }
       }
 
@@ -2664,6 +2666,7 @@ namespace OnGuardCore
           // We can't check that until after the accumulation time is up, so we can't do it here
           lock (frame.Item.CamData.AccumulateLock)
           {
+            Dbg.Trace("MainWindow - ProcessAccumulation - Starting Email Accumulation");
             frame.Item.CamData.Accumulating = true;
             frame.Item.CamData.CameraEmailAccumulator.Add(frame);
           }
@@ -2711,7 +2714,9 @@ namespace OnGuardCore
         DialogResult result = dlg.ShowDialog();
         if (result == DialogResult.OK)
         {
-          await Task.Run(() => CleanupAsync(dlg.ExpiredFiles, dlg.ExcludeMotion)).ConfigureAwait(false);
+          await Task.Run(() => CleanupAsync(dlg.ExpiredFiles, dlg.ExcludeMotion)).ConfigureAwait(true);
+          Refresh_Click(null, null);
+          MessageBox.Show(this, "The working set has been refreshed after cleanup", "Cleanup Done!");
         }
       }
     }

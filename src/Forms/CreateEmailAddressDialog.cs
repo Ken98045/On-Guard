@@ -35,6 +35,7 @@ namespace OnGuardCore
         check247.Checked = Email.AllTheTime;
         fromTime.Value = Email.StartTime;
         toTime.Value = Email.EndTime;
+        MaximumAttachmentSizeNumeric.Value = Email.MaximumAttachmentSize;
 
         for (int i = 0; i < 7; i++)
         {
@@ -54,6 +55,7 @@ namespace OnGuardCore
       Email.EmailAddress = this.emailText.Text;
       Email.NumberOfImages = (int)this.numberOfImages.Value;
       Email.SizeDownToPercent = (int)this.sizeImageToNumeric.Value;
+      Email.MaximumAttachmentSize = MaximumAttachmentSizeNumeric.Value;
       Email.InlinePictures = htmlFormatCheckbox.Checked;
       Email.CoolDown.CooldownTime = (int)this.coolDownNumeric.Value;
       Email.AllTheTime = check247.Checked;
@@ -96,6 +98,31 @@ namespace OnGuardCore
           emailText.Text = dlg.SelectedMMS;
         }
       }
+    }
+
+    private void NumberOfImages_ValueChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void HtmlFormatCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void CoolDownNumeric_ValueChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void EmailText_TextChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void Label13_Click(object sender, EventArgs e)
+    {
+
     }
   }
 }

@@ -294,6 +294,23 @@ namespace OnGuardCore
         area.AreaRect.Height = int.Parse(GetAttribute(areaNode, "Height"));
         area.OriginalXResolution = int.Parse(GetAttribute(areaNode, "OriginalXRes"));
         area.OriginalYResolution = int.Parse(GetAttribute(areaNode, "OriginalYRes"));
+
+        string focusXStr = GetAttribute(areaNode, "FocusX");
+        if (string.IsNullOrEmpty(focusXStr))
+        {
+          focusXStr = area.AreaRect.X.ToString();
+        }
+
+        string focusYStr = GetAttribute(areaNode, "FocusY");
+        if (string.IsNullOrEmpty(focusYStr))
+        {
+          focusYStr = area.AreaRect.Y.ToString();
+        }
+
+        int focusX = int.Parse(focusXStr);
+        int focusY = int.Parse(focusYStr);
+        area.ZoneFocus = new Point(focusX, focusY);
+
         area.ID = Guid.Parse(GetAttribute(areaNode, "ID"));
         area.MovementType = (MovementType)Enum.Parse(typeof(MovementType), GetAttribute(areaNode, "Movement"));
         area.AOIType = (AOIType)Enum.Parse(typeof(AOIType), GetAttribute(areaNode, "AOIType"));
@@ -525,6 +542,17 @@ namespace OnGuardCore
           emailOptions.StartTime = DateTime.Parse(GetAttribute(element, "StartTime"));
           emailOptions.EndTime = DateTime.Parse(GetAttribute(element, "EndTime"));
           emailOptions.SizeDownToPercent = int.Parse(GetAttribute(element, "SizeDownPercent"));
+
+          string maxAttachmentSize = GetAttribute(element, "MaximumAttachmentSize");
+          if (string.IsNullOrEmpty(maxAttachmentSize))
+          {
+            emailOptions.MaximumAttachmentSize = (decimal)5.0;
+          }
+          else
+          {
+            emailOptions.MaximumAttachmentSize = decimal.Parse(maxAttachmentSize);
+          }
+
           string inlinePictures = GetAttribute(element, "InlinePictures");
           if (string.IsNullOrEmpty(inlinePictures))
           {
@@ -640,6 +668,7 @@ namespace OnGuardCore
         AddUpdateAttribute(element, "StartTime", address.StartTime.ToString());
         AddUpdateAttribute(element, "EndTime", address.EndTime.ToString());
         AddUpdateAttribute(element, "SizeDownPercent", address.SizeDownToPercent.ToString());
+        AddUpdateAttribute(element, "MaximumAttachmentSize", address.MaximumAttachmentSize.ToString());
         AddUpdateAttribute(element, "InlinePictures", address.InlinePictures.ToString());
         AddUpdateAttribute(element, "CooldownTime", address.CoolDown.CooldownTime.ToString());
         AddUpdateAttribute(element, "Sunday", address.DaysOfWeek[0].ToString());
@@ -745,6 +774,8 @@ namespace OnGuardCore
         AddUpdateAttribute(areaNode, "Height", area.AreaRect.Height.ToString());
         AddUpdateAttribute(areaNode, "OriginalXRes", area.OriginalXResolution.ToString());
         AddUpdateAttribute(areaNode, "OriginalYRes", area.OriginalYResolution.ToString());
+        AddUpdateAttribute(areaNode, "FocusX", area.ZoneFocus.X.ToString());
+        AddUpdateAttribute(areaNode, "FocusY", area.ZoneFocus.Y.ToString());
         AddUpdateAttribute(areaNode, "Movement", area.MovementType.ToString());
         AddUpdateAttribute(areaNode, "AOIType", area.AOIType.ToString());
 
