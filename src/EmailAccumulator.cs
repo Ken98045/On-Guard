@@ -184,7 +184,7 @@ namespace OnGuardCore
 
       foreach (string addr in emailAddresses.Values)
       {
-        Dbg.Trace("EmailAccumulator - ProcessAccumlatedFrames - Getting frames for email address: " + addr);
+        Dbg.Trace("EmailAccumulator - ProcessAccumlatedFrames - Getting frames for email address: " + addr + " -- total frames: " + frames.Count.ToString());
         outgoing.Clear();
 
         EmailOptions opt = EmailAddresses.GetEmailOptions(addr);
@@ -235,10 +235,9 @@ namespace OnGuardCore
 
             }
           } // end else
-
-
         } // end we do have an option (which we should)
 
+        Dbg.Trace("EmailAccumulator - ProcessAccumlatedFrames - Number of frames to send: " + outgoing.Count.ToString());
 
         // We copy off the list of files and the list of descriptions because we are
         // going to clear these lists for the next email address
@@ -257,6 +256,7 @@ namespace OnGuardCore
         // OK, here we have collected all the frames for this email address.
         // It is time to resize the pictures if necessary.  Resizing is based on the email
         // address since photos going to a phone should be smaller than those going to a PC, etc.
+        Dbg.Trace("EmailAccumulator - ProcessAccumulatedFrames - Before resizing");
 
         count = 0;
         double totalSize = 0;
@@ -284,6 +284,8 @@ namespace OnGuardCore
             break;
           }
         }
+
+        Dbg.Trace("EmailAccumulator - ProcessAccumulatedFrames - Before SendEmail - address: " + addr + " output files: " + outputFiles.Count.ToString());
 
         // theFiles has both resized and not resized files
         SendEmail(addr, outputFiles.ToArray(), theDescriptions);
@@ -348,6 +350,8 @@ namespace OnGuardCore
           }
         }
       }
+
+      Dbg.Trace("EmailAccumulator - CheckEmailTODDOW - EmailAddress: " + emailAddress + " Result: " + result.ToString());
 
       return result;
     }
