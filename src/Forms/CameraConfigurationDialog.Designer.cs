@@ -34,8 +34,8 @@
       this.imagesTab = new System.Windows.Forms.TabPage();
       this.label18 = new System.Windows.Forms.Label();
       this.availableCamerasList = new System.Windows.Forms.ListView();
-      this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-      this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+      this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
       this.removeCameraButton = new System.Windows.Forms.Button();
       this.addCameraButton = new System.Windows.Forms.Button();
       this.label22 = new System.Windows.Forms.Label();
@@ -69,8 +69,8 @@
       this.label17 = new System.Windows.Forms.Label();
       this.label16 = new System.Windows.Forms.Label();
       this.monitorListView = new System.Windows.Forms.ListView();
-      this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-      this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+      this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
       this.motionPage = new System.Windows.Forms.TabPage();
       this.label24 = new System.Windows.Forms.Label();
       this.MotionTimeoutNumeric = new System.Windows.Forms.NumericUpDown();
@@ -112,10 +112,10 @@
       this.imagesTab.Controls.Add(this.label22);
       this.imagesTab.Controls.Add(this.label19);
       this.imagesTab.Controls.Add(this.label21);
-      this.imagesTab.Location = new System.Drawing.Point(4, 22);
+      this.imagesTab.Location = new System.Drawing.Point(4, 24);
       this.imagesTab.Name = "imagesTab";
       this.imagesTab.Padding = new System.Windows.Forms.Padding(3);
-      this.imagesTab.Size = new System.Drawing.Size(726, 428);
+      this.imagesTab.Size = new System.Drawing.Size(726, 426);
       this.imagesTab.TabIndex = 1;
       this.imagesTab.Text = "Select Current Camera";
       this.imagesTab.UseVisualStyleBackColor = true;
@@ -123,7 +123,7 @@
       // label18
       // 
       this.label18.AutoSize = true;
-      this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label18.Location = new System.Drawing.Point(96, 260);
       this.label18.Name = "label18";
       this.label18.Size = new System.Drawing.Size(126, 15);
@@ -183,10 +183,10 @@
       // label22
       // 
       this.label22.AutoSize = true;
-      this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label22.Location = new System.Drawing.Point(268, 14);
       this.label22.Name = "label22";
-      this.label22.Size = new System.Drawing.Size(188, 16);
+      this.label22.Size = new System.Drawing.Size(187, 16);
       this.label22.TabIndex = 15;
       this.label22.Text = "Select the Current Camera";
       // 
@@ -231,9 +231,9 @@
       this.liveCameraTab.Controls.Add(this.label3);
       this.liveCameraTab.Controls.Add(this.label2);
       this.liveCameraTab.Controls.Add(this.label1);
-      this.liveCameraTab.Location = new System.Drawing.Point(4, 22);
+      this.liveCameraTab.Location = new System.Drawing.Point(4, 24);
       this.liveCameraTab.Name = "liveCameraTab";
-      this.liveCameraTab.Size = new System.Drawing.Size(726, 428);
+      this.liveCameraTab.Size = new System.Drawing.Size(726, 426);
       this.liveCameraTab.TabIndex = 2;
       this.liveCameraTab.Text = "Live Camera";
       this.liveCameraTab.UseVisualStyleBackColor = true;
@@ -242,10 +242,10 @@
       // currentCameraLabel
       // 
       this.currentCameraLabel.AutoSize = true;
-      this.currentCameraLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.currentCameraLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.currentCameraLabel.Location = new System.Drawing.Point(95, 51);
       this.currentCameraLabel.Name = "currentCameraLabel";
-      this.currentCameraLabel.Size = new System.Drawing.Size(170, 16);
+      this.currentCameraLabel.Size = new System.Drawing.Size(169, 16);
       this.currentCameraLabel.TabIndex = 42;
       this.currentCameraLabel.Text = "The Current Camera is: ";
       // 
@@ -254,7 +254,7 @@
       this.label10.AutoSize = true;
       this.label10.Location = new System.Drawing.Point(332, 296);
       this.label10.Name = "label10";
-      this.label10.Size = new System.Drawing.Size(255, 13);
+      this.label10.Size = new System.Drawing.Size(286, 15);
       this.label10.TabIndex = 41;
       this.label10.Text = "Zero for Not Se/Defaultt.  From your camera manual.";
       // 
@@ -263,7 +263,7 @@
       this.label15.AutoSize = true;
       this.label15.Location = new System.Drawing.Point(332, 226);
       this.label15.Name = "label15";
-      this.label15.Size = new System.Drawing.Size(283, 13);
+      this.label15.Size = new System.Drawing.Size(320, 15);
       this.label15.TabIndex = 40;
       this.label15.Text = "This is from the Blue Iris main settings (not camera specific)";
       // 
@@ -272,7 +272,7 @@
       this.label14.AutoSize = true;
       this.label14.Location = new System.Drawing.Point(332, 191);
       this.label14.Name = "label14";
-      this.label14.Size = new System.Drawing.Size(283, 13);
+      this.label14.Size = new System.Drawing.Size(320, 15);
       this.label14.TabIndex = 39;
       this.label14.Text = "This is from the Blue Iris main settings (not camera specific)";
       // 
@@ -281,7 +281,7 @@
       this.label13.AutoSize = true;
       this.label13.Location = new System.Drawing.Point(332, 156);
       this.label13.Name = "label13";
-      this.label13.Size = new System.Drawing.Size(218, 13);
+      this.label13.Size = new System.Drawing.Size(247, 15);
       this.label13.TabIndex = 38;
       this.label13.Text = "Obtain this from the Blue Iris Camera Settings";
       // 
@@ -290,7 +290,7 @@
       this.label12.AutoSize = true;
       this.label12.Location = new System.Drawing.Point(332, 121);
       this.label12.Name = "label12";
-      this.label12.Size = new System.Drawing.Size(300, 13);
+      this.label12.Size = new System.Drawing.Size(335, 15);
       this.label12.TabIndex = 37;
       this.label12.Text = "This is often 80.  However port 80 may conflict with the AI port";
       // 
@@ -299,7 +299,7 @@
       this.label11.AutoSize = true;
       this.label11.Location = new System.Drawing.Point(332, 86);
       this.label11.Name = "label11";
-      this.label11.Size = new System.Drawing.Size(161, 13);
+      this.label11.Size = new System.Drawing.Size(180, 15);
       this.label11.TabIndex = 36;
       this.label11.Text = "This is often/typically \"localhost\"";
       // 
@@ -308,7 +308,7 @@
       this.label9.AutoSize = true;
       this.label9.Location = new System.Drawing.Point(332, 261);
       this.label9.Name = "label9";
-      this.label9.Size = new System.Drawing.Size(255, 13);
+      this.label9.Size = new System.Drawing.Size(286, 15);
       this.label9.TabIndex = 34;
       this.label9.Text = "Zero for Not Se/Defaultt.  From your camera manual.";
       // 
@@ -321,7 +321,7 @@
             0,
             0});
       this.cameraYResolutionNumeric.Name = "cameraYResolutionNumeric";
-      this.cameraYResolutionNumeric.Size = new System.Drawing.Size(58, 20);
+      this.cameraYResolutionNumeric.Size = new System.Drawing.Size(58, 23);
       this.cameraYResolutionNumeric.TabIndex = 33;
       this.cameraYResolutionNumeric.Value = new decimal(new int[] {
             1920,
@@ -334,7 +334,7 @@
       this.label8.AutoSize = true;
       this.label8.Location = new System.Drawing.Point(97, 296);
       this.label8.Name = "label8";
-      this.label8.Size = new System.Drawing.Size(106, 13);
+      this.label8.Size = new System.Drawing.Size(117, 15);
       this.label8.TabIndex = 32;
       this.label8.Text = "Camera Y Resolution";
       // 
@@ -347,7 +347,7 @@
             0,
             0});
       this.cameraXResolutionNumeric.Name = "cameraXResolutionNumeric";
-      this.cameraXResolutionNumeric.Size = new System.Drawing.Size(58, 20);
+      this.cameraXResolutionNumeric.Size = new System.Drawing.Size(58, 23);
       this.cameraXResolutionNumeric.TabIndex = 31;
       this.cameraXResolutionNumeric.Value = new decimal(new int[] {
             2560,
@@ -360,7 +360,7 @@
       this.label7.AutoSize = true;
       this.label7.Location = new System.Drawing.Point(97, 261);
       this.label7.Name = "label7";
-      this.label7.Size = new System.Drawing.Size(106, 13);
+      this.label7.Size = new System.Drawing.Size(117, 15);
       this.label7.TabIndex = 30;
       this.label7.Text = "Camera X Resolution";
       // 
@@ -368,7 +368,7 @@
       // 
       this.cameraPasswordText.Location = new System.Drawing.Point(231, 223);
       this.cameraPasswordText.Name = "cameraPasswordText";
-      this.cameraPasswordText.Size = new System.Drawing.Size(87, 20);
+      this.cameraPasswordText.Size = new System.Drawing.Size(87, 23);
       this.cameraPasswordText.TabIndex = 29;
       this.cameraPasswordText.UseSystemPasswordChar = true;
       // 
@@ -376,14 +376,14 @@
       // 
       this.cameraUserText.Location = new System.Drawing.Point(231, 188);
       this.cameraUserText.Name = "cameraUserText";
-      this.cameraUserText.Size = new System.Drawing.Size(87, 20);
+      this.cameraUserText.Size = new System.Drawing.Size(87, 23);
       this.cameraUserText.TabIndex = 28;
       // 
       // cameraNameText
       // 
       this.cameraNameText.Location = new System.Drawing.Point(231, 153);
       this.cameraNameText.Name = "cameraNameText";
-      this.cameraNameText.Size = new System.Drawing.Size(87, 20);
+      this.cameraNameText.Size = new System.Drawing.Size(87, 23);
       this.cameraNameText.TabIndex = 27;
       // 
       // portNumeric
@@ -400,7 +400,7 @@
             0,
             0});
       this.portNumeric.Name = "portNumeric";
-      this.portNumeric.Size = new System.Drawing.Size(58, 20);
+      this.portNumeric.Size = new System.Drawing.Size(58, 23);
       this.portNumeric.TabIndex = 26;
       this.portNumeric.Value = new decimal(new int[] {
             80,
@@ -412,26 +412,26 @@
       // 
       this.cameraIPAddressText.Location = new System.Drawing.Point(231, 83);
       this.cameraIPAddressText.Name = "cameraIPAddressText";
-      this.cameraIPAddressText.Size = new System.Drawing.Size(87, 20);
+      this.cameraIPAddressText.Size = new System.Drawing.Size(87, 23);
       this.cameraIPAddressText.TabIndex = 25;
       this.cameraIPAddressText.Text = "localhost";
       // 
       // label6
       // 
       this.label6.AutoSize = true;
-      this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label6.Location = new System.Drawing.Point(108, 25);
       this.label6.Name = "label6";
-      this.label6.Size = new System.Drawing.Size(510, 16);
+      this.label6.Size = new System.Drawing.Size(514, 16);
       this.label6.TabIndex = 24;
-      this.label6.Text = "Enter the Data to Contact the CURRENT Blue Iris Camera for Live Images";
+      this.label6.Text = "Enter the Data to Contact the SELECTED Blue Iris Camera for Live Images";
       // 
       // label5
       // 
       this.label5.AutoSize = true;
       this.label5.Location = new System.Drawing.Point(110, 226);
       this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(93, 13);
+      this.label5.Size = new System.Drawing.Size(101, 15);
       this.label5.TabIndex = 23;
       this.label5.Text = "Blue Iris Password";
       // 
@@ -440,7 +440,7 @@
       this.label4.AutoSize = true;
       this.label4.Location = new System.Drawing.Point(103, 191);
       this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(100, 13);
+      this.label4.Size = new System.Drawing.Size(109, 15);
       this.label4.TabIndex = 22;
       this.label4.Text = "Blue Iris User Name";
       // 
@@ -449,7 +449,7 @@
       this.label3.AutoSize = true;
       this.label3.Location = new System.Drawing.Point(95, 156);
       this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(108, 13);
+      this.label3.Size = new System.Drawing.Size(120, 15);
       this.label3.TabIndex = 21;
       this.label3.Text = "Short Camera Name: ";
       // 
@@ -458,7 +458,7 @@
       this.label2.AutoSize = true;
       this.label2.Location = new System.Drawing.Point(121, 121);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(82, 13);
+      this.label2.Size = new System.Drawing.Size(91, 15);
       this.label2.TabIndex = 20;
       this.label2.Text = "Port (Often 80): ";
       // 
@@ -467,7 +467,7 @@
       this.label1.AutoSize = true;
       this.label1.Location = new System.Drawing.Point(19, 86);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(184, 13);
+      this.label1.Size = new System.Drawing.Size(206, 15);
       this.label1.TabIndex = 19;
       this.label1.Text = "Camera IP Address/Computer Name: ";
       // 
@@ -476,9 +476,9 @@
       this.monitorTab.Controls.Add(this.label17);
       this.monitorTab.Controls.Add(this.label16);
       this.monitorTab.Controls.Add(this.monitorListView);
-      this.monitorTab.Location = new System.Drawing.Point(4, 22);
+      this.monitorTab.Location = new System.Drawing.Point(4, 24);
       this.monitorTab.Name = "monitorTab";
-      this.monitorTab.Size = new System.Drawing.Size(726, 428);
+      this.monitorTab.Size = new System.Drawing.Size(726, 426);
       this.monitorTab.TabIndex = 3;
       this.monitorTab.Text = "Monitor Camera(s)";
       this.monitorTab.UseVisualStyleBackColor = true;
@@ -486,20 +486,20 @@
       // label17
       // 
       this.label17.AutoSize = true;
-      this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label17.Location = new System.Drawing.Point(3, 51);
       this.label17.Name = "label17";
-      this.label17.Size = new System.Drawing.Size(486, 16);
+      this.label17.Size = new System.Drawing.Size(485, 16);
       this.label17.TabIndex = 6;
       this.label17.Text = "You can select Any camera.  This is not specific to the current camera";
       // 
       // label16
       // 
       this.label16.AutoSize = true;
-      this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label16.Location = new System.Drawing.Point(35, 32);
       this.label16.Name = "label16";
-      this.label16.Size = new System.Drawing.Size(392, 16);
+      this.label16.Size = new System.Drawing.Size(391, 16);
       this.label16.TabIndex = 5;
       this.label16.Text = "Check cameras in the list to start monitoring the camera.";
       // 
@@ -535,10 +535,10 @@
       this.motionPage.Controls.Add(this.MotionTimeoutNumeric);
       this.motionPage.Controls.Add(this.label23);
       this.motionPage.Controls.Add(this.label20);
-      this.motionPage.Location = new System.Drawing.Point(4, 22);
+      this.motionPage.Location = new System.Drawing.Point(4, 24);
       this.motionPage.Name = "motionPage";
       this.motionPage.Padding = new System.Windows.Forms.Padding(3);
-      this.motionPage.Size = new System.Drawing.Size(726, 428);
+      this.motionPage.Size = new System.Drawing.Size(726, 426);
       this.motionPage.TabIndex = 4;
       this.motionPage.Text = "Motion Timeout";
       this.motionPage.UseVisualStyleBackColor = true;
@@ -546,7 +546,7 @@
       // label24
       // 
       this.label24.AutoSize = true;
-      this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label24.Location = new System.Drawing.Point(265, 144);
       this.label24.Name = "label24";
       this.label24.Size = new System.Drawing.Size(431, 15);
@@ -567,7 +567,7 @@
             0,
             0});
       this.MotionTimeoutNumeric.Name = "MotionTimeoutNumeric";
-      this.MotionTimeoutNumeric.Size = new System.Drawing.Size(77, 20);
+      this.MotionTimeoutNumeric.Size = new System.Drawing.Size(77, 23);
       this.MotionTimeoutNumeric.TabIndex = 2;
       this.MotionTimeoutNumeric.Value = new decimal(new int[] {
             90,
@@ -579,7 +579,7 @@
       // label23
       // 
       this.label23.AutoSize = true;
-      this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label23.Location = new System.Drawing.Point(18, 144);
       this.label23.Name = "label23";
       this.label23.Size = new System.Drawing.Size(145, 15);
@@ -588,7 +588,7 @@
       // 
       // label20
       // 
-      this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label20.Location = new System.Drawing.Point(16, 28);
       this.label20.Name = "label20";
       this.label20.Size = new System.Drawing.Size(704, 79);

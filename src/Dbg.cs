@@ -21,12 +21,16 @@ namespace OnGuardCore
     static TextWriter s_LogWriter;
     public static int LogLevel { get; set; }
     static string s_path;
+    static bool s_logIsClosed;
+    static DateTime s_lastWrite;
 
     // DebugWriter.Write
     static Dbg()
     {
       LogLevel = 0;
       s_path = Storage.GetFilePath("OnGuard.txt");
+      s_LogWriter = new StreamWriter(s_path, true);
+      s_lastWrite = DateTime.Now;
       processThread.Start();
     }
 
@@ -50,26 +54,28 @@ namespace OnGuardCore
       bool result = false;
       int tryCount = 0;
 
+      s_logIsClosed = true;
+
       while (tryCount < 5)
       {
         try
         {
-          if (null == s_LogWriter)
-          {
-            File.Delete(s_path);
-            s_LogWriter = null;
-          }
-
+          s_LogWriter.Close();
+          File.Delete(s_path);
           result = true;
           break;
         }
-        catch (IOException)
+        catch (Exception)
         {
-          Thread.Sleep(100);
+          Thread.Sleep(200);
           ++tryCount;
         }
       }
 
+      s_LogWriter = new StreamWriter(s_path, true);
+      s_LogWriter.WriteLine("The log file was reset at: " + DateTime.Now.ToString());
+      s_LogWriter.Flush();
+      s_logIsClosed = false;
       return result;
     }
 
@@ -87,41 +93,51 @@ namespace OnGuardCore
           {
 
             Debug.WriteLine(output);
-            if (s_LogWriter == null)
-            {
-              s_LogWriter = new StreamWriter(s_path, true);
-            }
-
             try
             {
+              WaitForFile();
               s_LogWriter.WriteLine(output);
-              s_LogWriter.Flush();
+              TimeSpan diff = DateTime.Now - s_lastWrite;
+
+              if (diff.TotalSeconds > 30)
+              {
+                s_LogWriter.Flush();
+                s_lastWrite = DateTime.Now;
+              }
             }
             catch { }
           }
           else
           {
             activity.Reset();
-            if (s_LogWriter != null)
-            {
-              try
-              {
-                s_LogWriter.Close();
-              }
-              catch { }
-            }
-            s_LogWriter = null;
           }
         }
       }
+    }
 
-      if (s_LogWriter != null)
+
+    static void WaitForFile()
+    {
+      while (s_logIsClosed)
       {
-        try
+        if (Stop.WaitOne(200))
         {
-          s_LogWriter.Close();
+          break;
         }
-        catch { }
+      }
+    }
+
+    public static void PauseLogFile(bool pauseIt)
+    {
+      if (pauseIt)
+      {
+        s_logIsClosed = true;
+        s_LogWriter.Close();
+      }
+      else
+      {
+        s_LogWriter = new StreamWriter(s_path, true);
+        s_logIsClosed = false;
       }
     }
   }

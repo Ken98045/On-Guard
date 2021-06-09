@@ -87,7 +87,7 @@ namespace OnGuardCore
               MessageBox.Show(this, "The AI Test FAILED!. DeepStack was found, but the image was not processed successfully.  Check your DeepStack startup to make sure --VISION-DETECTION True is set!", "Test Failure!");
             }
           }
-          catch (AiNotFoundException ex)
+          catch (Exception ex)
           {
             MessageBox.Show(this, "The AI Test FAILED!. Check the IP Address and port.  Make sure DeepStack is running.", "Test Failed!");
           }

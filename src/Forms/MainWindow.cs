@@ -34,6 +34,7 @@ using System.Globalization;
 using System.Drawing.Drawing2D;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace OnGuardCore
 {
@@ -76,7 +77,7 @@ namespace OnGuardCore
     System.Windows.Forms.Timer _liveTimer;
     bool _continueLiveVideo = false;
     bool _directionUp = false;  // direction is down because we start up at the last (most recent) picture
-    long _lastMotionTime = long.MaxValue; // so we can go "down in the time for motion
+    string _lastMotionTime = string.Format("{0:00000000000000000000000}", decimal.MaxValue.ToString()); // so we can go "down in the time for motion
 
 
     readonly ConcurrentDictionary<string, string> _filesPendingProcessing = new ConcurrentDictionary<string, string>(); // very short period of time where the file has been removed from the queue yet still hasn't been opened
@@ -580,7 +581,7 @@ namespace OnGuardCore
 
             result = await ProcessImage(file, xResolution, yResolution).ConfigureAwait(true);
             FileInfo fi = new FileInfo(file);
-            _lastMotionTime = fi.CreationTime.ToFileTime();
+            _lastMotionTime = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
 
             if (!motionOnlyCheckbox.Checked)  // If the box is checked and we are loading the image then we know it is in the DB
             {
@@ -700,7 +701,7 @@ namespace OnGuardCore
               if (CurrentCam.IsItemOfCameraInterest(obj.Label))
               {
                 subItems[0] = obj.Label;
-                subItems[1] = obj.Confidence.ToString();
+                subItems[1] = (100.0 * obj.Confidence).ToString();
                 subItems[2] = obj.ObjectRectangle.X.ToString();
                 subItems[3] = obj.ObjectRectangle.Y.ToString();
                 subItems[4] = obj.ObjectRectangle.Width.ToString();
@@ -710,6 +711,33 @@ namespace OnGuardCore
 
                 Rectangle rect = obj.ObjectRectangle;
                 graphics.DrawRectangle(redPen, rect);
+
+                Label label = new Label();
+                label.AutoSize = true;
+                label.BackColor = Color.White;
+                label.ForeColor = Color.Black;
+                label.Height = 70;
+                label.Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold);
+                label.AutoSize = false;
+                string confidence = string.Format("{0:0.##}", 100.0 * obj.Confidence);
+
+                label.Text = obj.Label + Environment.NewLine + confidence + Environment.NewLine;
+                var textSize = graphics.MeasureString(label.Text, label.Font);
+
+
+                Rectangle labelRect = new Rectangle(rect.X + 10, rect.Top - (label.Height - 5), label.Width, (int)textSize.Height + 5);
+                if (labelRect.Y < 0)
+                {
+                  labelRect.Y = 0;
+                }
+
+                if (labelRect.X < 0)
+                {
+                  labelRect.X = 0;
+                }
+
+                label.DrawToBitmap(_screenBitmap, labelRect);
+
               }
             }
           }
@@ -2299,7 +2327,44 @@ namespace OnGuardCore
       return connectionString;
     }
 
-    async void AddToMotionFramesTable(PendingItem pending)
+    string GetMotionAdjusted(string fileName, long fileTime)
+    {
+      string adjustedStr = string.Format("{0:0000000000000000000}", fileTime);
+
+      // This is a bit of overkill, but....
+      uint hash = 0;
+      using (SHA256 sha = SHA256.Create())
+      {
+        byte[] buffer = Encoding.ASCII.GetBytes(fileName);
+        byte[] hashBuffer = sha.ComputeHash(buffer, 0, buffer.Length);
+        int shiftValue = 0;
+        foreach (var b in hashBuffer)
+        {
+          uint bb = (uint)b << shiftValue;
+          hash += bb;
+          ++shiftValue;
+          if (shiftValue > 7)
+          {
+            shiftValue = 0;
+          }
+        }
+      }
+
+      ushort fileHash = (ushort) (hash & 0xffff);
+      string hashAddition = string.Format("{0:00000}", fileHash);
+      adjustedStr += hashAddition;
+      return adjustedStr;
+    }
+
+    decimal GetMotionTime(string str)
+    {
+      decimal result = 0;
+      result = decimal.Parse(str);
+      return result;
+    }
+
+
+    async Task AddToMotionFramesTable(PendingItem pending)
     {
       FileInfo fi = new FileInfo(pending.PendingFile);
 
@@ -2311,9 +2376,10 @@ namespace OnGuardCore
 
           try
           {
-            using (SqlCommand cmd = new SqlCommand("INSERT into tblMotionFiles (CreationTime, FileName, Path, Camera) VALUES (@creationTime, @fileName, @path, @camera)", con))
+            using (SqlCommand cmd = new SqlCommand("INSERT into NewMotionTable (CreationTime, FileName, Path, Camera) VALUES (@creationTime, @fileName, @path, @camera)", con))
             {
-              cmd.Parameters.AddWithValue("@creationTime", fi.CreationTime.ToFileTime());
+              string adjustedStr = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
+              cmd.Parameters.AddWithValue("@creationTime", adjustedStr);
               cmd.Parameters.AddWithValue("@fileName", fi.Name);
               cmd.Parameters.AddWithValue("@path", pending.CamData.Path);
               cmd.Parameters.AddWithValue("@camera", pending.CamData.CameraPrefix);
@@ -2333,11 +2399,11 @@ namespace OnGuardCore
       }
       catch (SqlException ex)
       {
-        Dbg.Write("MainWindow - SQL Exception opeinging connection for adding motion file to database: " + ex.Message);
+        Dbg.Write("MainWindow - SQL Exception opening connection for adding motion file to database: " + ex.Message);
       }
       catch (InvalidOperationException ex)
       {
-        Dbg.Write("MainWindow - InvalidOperation Exception opeinging connection for adding motion file to database: " + ex.Message);
+        Dbg.Write("MainWindow - InvalidOperation Exception opening connection for adding motion file to database: " + ex.Message);
       }
     }
 
@@ -2345,7 +2411,7 @@ namespace OnGuardCore
     {
       string result = string.Empty;
       string q;
-      long fileTime = _lastMotionTime;
+      string fileTime = _lastMotionTime;
       bool readSuccess = false;
       string path;
       string file = string.Empty;
@@ -2353,11 +2419,11 @@ namespace OnGuardCore
 
       if (directionUp)
       {
-        q = "SELECT TOP 1 * FROM tblMotionFiles WHERE CreationTime > @lastTime AND Path = @path AND Camera = @camera ORDER BY CreationTime ASC";
+        q = "SELECT TOP 1 * FROM NewMotionTable WHERE CreationTime > @lastTime AND Path = @path AND Camera = @camera ORDER BY CreationTime ASC";
       }
       else
       {
-        q = "SELECT TOP 1  * FROM tblMotionFiles WHERE CreationTime < @lastTime AND Path = @path AND Camera = @camera";
+        q = "SELECT TOP 1 * FROM NewMotionTable WHERE CreationTime < @lastTime AND Path = @path AND Camera = @camera ORDER BY CreationTime DESC";
       }
 
       try
@@ -2372,18 +2438,7 @@ namespace OnGuardCore
 
             using (SqlCommand cmd = new SqlCommand(q, con))
             {
-
               cmd.Parameters.AddWithValue("@lastTime", fileTime);
-              DateTime lastReadable;
-              try
-              {
-                lastReadable = DateTime.FromFileTime(fileTime);  // debug only
-              }
-              catch (ArgumentOutOfRangeException)
-              {
-                lastReadable = DateTime.Now - TimeSpan.FromDays(10000);
-              }
-
               cmd.Parameters.AddWithValue("@path", CurrentCam.Path);
               cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
 
@@ -2395,11 +2450,10 @@ namespace OnGuardCore
                   if (reader.HasRows)
                   {
                     reader.Read();
-                    fileTime = reader.GetInt64(1);
-                    DateTime dt = DateTime.FromFileTime(fileTime);  // debug only
-                    path = reader.GetString(3);
+                    fileTime = reader.GetString(0);
+                    path = reader.GetString(2);
                     path = path.Trim();
-                    file = reader.GetString(2);
+                    file = reader.GetString(1);
                     file = file.Trim();
                     result = Path.Combine(path, file);
                     readSuccess = true;
@@ -2466,8 +2520,8 @@ namespace OnGuardCore
     /// <returns></returns>
     async Task InsertMotionIfNecessary(string fileName)
     {
-      string q = "IF NOT EXISTS(SELECT CreationTime FROM tblMotionFiles WHERE CreationTime = @creationTime AND FileName = @fileName)" +
-        "INSERT INTO tblMotionFiles(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
+      string q = "IF NOT EXISTS(SELECT CreationTime FROM NewMotionTable WHERE CreationTime = @creationTime AND FileName = @fileName)" +
+        "INSERT INTO NewMotionTable(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
 
       using (SqlConnection con = new SqlConnection(_connectionString))
       {
@@ -2493,7 +2547,8 @@ namespace OnGuardCore
 
           try
           {
-            cmd.Parameters.AddWithValue("@creationTime", fi.CreationTime.ToFileTime());
+            string adjustedStr = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
+            cmd.Parameters.AddWithValue("@creationTime", adjustedStr);
             cmd.Parameters.AddWithValue("@fileName", fi.Name);
             cmd.Parameters.AddWithValue("@path", CurrentCam.Path);
             cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
@@ -2530,7 +2585,7 @@ namespace OnGuardCore
 
           try
           {
-            string q = "DELETE FROM tblMotionFiles WHERE Path = @path AND Camera = @camera AND FileName = @fileName";
+            string q = "DELETE FROM NewMotionTable WHERE Path = @path AND Camera = @camera AND FileName = @fileName";
 
 
             using (SqlCommand cmd = new SqlCommand(q, con))
@@ -2727,7 +2782,7 @@ namespace OnGuardCore
       bool result = false;
       string q;
 
-      q = "SELECT FileName FROM tblMotionFiles WHERE FileName = @fileName and @Path = @path";
+      q = "SELECT FileName FROM NewMotionTable WHERE FileName = @fileName and @Path = @path";
 
       using (SqlCommand cmd = new SqlCommand(q, con))
       {
@@ -2837,6 +2892,8 @@ namespace OnGuardCore
         logViewer = "notepad.exe";
       }
 
+      Dbg.PauseLogFile(true);
+
       if (File.Exists(path))
       {
         try
@@ -2853,6 +2910,8 @@ namespace OnGuardCore
       {
         MessageBox.Show("The log file does not exist.  Did you delete it?", "No Log File!");
       }
+
+      Dbg.PauseLogFile(false);
     }
 
 

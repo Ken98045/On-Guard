@@ -43,7 +43,7 @@ namespace OnGuardCore
           {
             Dbg.Write("The AI List Is Empty!");
             AiNotFoundException aiException = new AiNotFoundException("No AI Available in AIProcessFromUI");
-            throw aiException;
+            // throw aiException;
           }
 
           try
@@ -165,85 +165,89 @@ namespace OnGuardCore
     {
       List<ImageObject> objects = null;
 
-      using (HttpClient client = new HttpClient())
+      if (aiLocation != null)
       {
-        client.Timeout = TimeSpan.FromSeconds(20);
 
-        using (StreamContent content = new StreamContent(stream))
+        using (HttpClient client = new HttpClient())
         {
-          using (var request = new MultipartFormDataContent
+          client.Timeout = TimeSpan.FromSeconds(20);
+
+          using (StreamContent content = new StreamContent(stream))
+          {
+            using (var request = new MultipartFormDataContent
         {
           { content, "image", imageName }
         })
-          {
-            string url = string.Format("http://{0}:{1}/v1/vision/detection", aiLocation.IPAddress, aiLocation.Port);
-
-            HttpResponseMessage output = null;
-            try
             {
-              if (doAsync)
+              string url = string.Format("http://{0}:{1}/v1/vision/detection", aiLocation.IPAddress, aiLocation.Port);
+
+              HttpResponseMessage output = null;
+              try
               {
-                output = await client.PostAsync(new Uri(url), request).ConfigureAwait(false);
-              }
-              else
-              {
-                output = client.PostAsync(new Uri(url), request).Result;
-              }
-            }
-            catch (HttpRequestException)
-            {
-              throw new AiNotFoundException(url);
-            }
-            catch (AggregateException ex)
-            {
-              throw new AiNotFoundException(url);
-            }
-            catch (Exception ex)
-            {
-              throw new AiNotFoundException(url);
-            }
-
-            if (!output.IsSuccessStatusCode)
-            {
-              throw new AiNotFoundException(url);
-            }
-
-
-            var jsonString = /*await*/ output.Content.ReadAsStringAsync().Result;
-            output.Dispose();
-
-            JsonSerializerOptions opt = new JsonSerializerOptions();
-            opt.PropertyNameCaseInsensitive = true;
-
-            Response response = null;
-
-            try
-            {
-              response = (Response)JsonSerializer.Deserialize(jsonString, typeof(Response), opt);
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            if (response.Predictions != null && response.Predictions.Length > 0)
-            {
-
-              foreach (var result in response.Predictions)
-              {
-                if (objects == null)
+                if (doAsync)
                 {
-                  objects = new List<ImageObject>();
+                  output = await client.PostAsync(new Uri(url), request).ConfigureAwait(false);
                 }
+                else
+                {
+                  output = client.PostAsync(new Uri(url), request).Result;
+                }
+              }
+              catch (HttpRequestException)
+              {
+                throw new AiNotFoundException(url);
+              }
+              catch (AggregateException ex)
+              {
+                throw new AiNotFoundException(url);
+              }
+              catch (Exception ex)
+              {
+                throw new AiNotFoundException(url);
+              }
 
-                result.Success = true;
+              if (!output.IsSuccessStatusCode)
+              {
+                throw new AiNotFoundException(url);
+              }
 
-                // Windows likes Rectangles, so it is easier to create one now
-                result.ObjectRectangle = Rectangle.FromLTRB(result.X_min, result.Y_min, result.X_max, result.Y_max);
-                result.ID = Guid.NewGuid(); // Keep an ID around for the life of the object
 
-                objects.Add(result);
+              var jsonString = /*await*/ output.Content.ReadAsStringAsync().Result;
+              output.Dispose();
 
+              JsonSerializerOptions opt = new JsonSerializerOptions();
+              opt.PropertyNameCaseInsensitive = true;
+
+              Response response = null;
+
+              try
+              {
+                response = (Response)JsonSerializer.Deserialize(jsonString, typeof(Response), opt);
+              }
+              catch (Exception ex)
+              {
+
+              }
+
+              if (response.Predictions != null && response.Predictions.Length > 0)
+              {
+
+                foreach (var result in response.Predictions)
+                {
+                  if (objects == null)
+                  {
+                    objects = new List<ImageObject>();
+                  }
+
+                  result.Success = true;
+
+                  // Windows likes Rectangles, so it is easier to create one now
+                  result.ObjectRectangle = Rectangle.FromLTRB(result.X_min, result.Y_min, result.X_max, result.Y_max);
+                  result.ID = Guid.NewGuid(); // Keep an ID around for the life of the object
+
+                  objects.Add(result);
+
+                }
               }
             }
           }

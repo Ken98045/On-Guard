@@ -10,6 +10,8 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
+using System.Collections;
 
 namespace OnGuardCore
 {
@@ -257,7 +259,6 @@ namespace OnGuardCore
         // OK, here we have collected all the frames for this email address.
         // It is time to resize the pictures if necessary.  Resizing is based on the email
         // address since photos going to a phone should be smaller than those going to a PC, etc.
-        Dbg.Trace("EmailAccumulator - ProcessAccumulatedFrames - Before resizing");
 
         count = 0;
         double totalSize = 0;
@@ -271,22 +272,27 @@ namespace OnGuardCore
             outFile = ResizeImage(theFiles[count], opt.SizeDownToPercent);
           }
 
-          FileInfo fi = new FileInfo(outFile);
-          totalSize += fi.Length;
-
-          if (totalSize < (double)opt.MaximumAttachmentSize * 1000.0 * 1000.0)
+          if (null != outFile)
           {
-            outputFiles.Add(outFile);
-            ++count;
+            FileInfo fi = new FileInfo(outFile);
+            totalSize += fi.Length;
+
+            if (totalSize < (double)opt.MaximumAttachmentSize * 1000.0 * 1000.0)
+            {
+              outputFiles.Add(outFile);
+              ++count;
+            }
+            else
+            {
+              Dbg.Write("EmailAccumulator - ProcessAccumulatedFrames - Email attachement size limit reached" + outFile + " " + count.ToString());
+              break;
+            }
           }
           else
           {
-            Dbg.Write("EmailAccumulator - ProcessAccumulatedFrames - Email attachement size limit reached" + outFile + " " + count.ToString());
-            break;
+            Dbg.Write("EmailAccumulator - ProcessAccumulatedFrames - Unable to create resized picture for: " + file);
           }
         }
-
-        Dbg.Trace("EmailAccumulator - ProcessAccumulatedFrames - Before SendEmail - address: " + addr + " output files: " + outputFiles.Count.ToString());
 
         // theFiles has both resized and not resized files
         SendEmail(addr, outputFiles.ToArray(), theDescriptions);
@@ -357,6 +363,49 @@ namespace OnGuardCore
       return result;
     }
 
+
+    // The picture may not have been closed yet.  So, get the bitmap if possible, if not, wait a bit and try again
+    private static Bitmap GetBitmap(string fileName)
+    {
+      bool continueTrying;
+      const int maxTries = 200;
+      int tryCount = 0;
+
+      Bitmap bitmap = null;
+
+      do
+      {
+        continueTrying = true;
+
+        try
+        {
+          // We need to open the file anyway, sow we might as well make a bitmap and get the resolution of the underlying file
+          bitmap = new Bitmap(fileName); // May fail if the file is still open.  There is no other (good) way to tell if the file is still being written to
+          continueTrying = false;
+        }
+        catch (IOException)
+        {
+          continueTrying = true;
+          Thread.Sleep(50);
+
+          tryCount++;
+          if (tryCount > maxTries)
+          {
+            continueTrying = false;
+          }
+
+        }
+        catch (Exception ex)
+        {
+          Dbg.Write("EmailAccumulator - GetBitmap Unexpected Exception: " + ex.Message);
+          continueTrying = false;
+        }
+      } while (continueTrying);
+
+      return bitmap;
+    }
+
+
     public static string ResizeImage(string fileName, int scaleFactor)
     {
       string destFile = string.Empty;
@@ -366,41 +415,45 @@ namespace OnGuardCore
         {
 
           destFile = Path.GetDirectoryName(fileName) + "\\Resized-" + DateTime.Now.Ticks.ToString() + ".jpg"; ;
-          using (Image image = Bitmap.FromFile(fileName))
+          using (Image image = GetBitmap(fileName))
           {
-
-            int width = (int)(image.Width * (double)scaleFactor / 100.0);
-            int height = (int)(image.Height * (double)scaleFactor / 100.0);
-
-            var destRect = new Rectangle(0, 0, width, height);
-            using (var destImage = new Bitmap(width, height))
+            if (null != image)
             {
 
-              destImage.SetResolution(width, height);
+              int width = (int)(image.Width * (double)scaleFactor / 100.0);
+              int height = (int)(image.Height * (double)scaleFactor / 100.0);
 
-              using (var graphics = Graphics.FromImage(destImage))
+              var destRect = new Rectangle(0, 0, width, height);
+              using (var destImage = new Bitmap(width, height))
               {
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                using (var wrapMode = new ImageAttributes())
+                destImage.SetResolution(width, height);
+
+                using (var graphics = Graphics.FromImage(destImage))
                 {
-                  wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                  graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-                }
-              }
+                  graphics.CompositingMode = CompositingMode.SourceCopy;
+                  graphics.CompositingQuality = CompositingQuality.HighQuality;
+                  graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                  graphics.SmoothingMode = SmoothingMode.HighQuality;
+                  graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-              destImage.Save(destFile);
+                  using (var wrapMode = new ImageAttributes())
+                  {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                  }
+                }
+
+                destImage.Save(destFile);
+              }
             }
           }
         }
       }
       catch (Exception ex)
       {
-        MessageBox.Show("EmailAccumulator - There was an error attempting to create a resized image for file: " + fileName + " at scale factor: " + scaleFactor.ToString() + Environment.NewLine + ex.Message, "Error Resizing Picture!"); 
+        string err = "EmailAccumulator - There was an error attempting to create a resized image for file: " + fileName + " at scale factor: " + scaleFactor.ToString() + Environment.NewLine + ex.Message;
+        Dbg.Write(err);
       }
 
       return destFile;
@@ -522,6 +575,7 @@ namespace OnGuardCore
 
         try
         {
+
           EmailOptions option = EmailAddresses.GetEmailOptions(mail.To[0].Address);
 
           Dbg.Trace("EmailAccumulator - Starting email send to: " + mail.To[0].Address);

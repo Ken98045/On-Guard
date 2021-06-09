@@ -323,8 +323,6 @@ namespace OnGuardCore
           }
         }
 
-        Dbg.Trace("non-vehicle objects before parking check: " + nonVehicleObjects.ToString());
-
         List<ImageObject> allFoundVehicles = new List<ImageObject>(vehicles);
 
         int i = 0;

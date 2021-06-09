@@ -28,7 +28,7 @@ namespace OnGuardCore
     {
       s_lock = new object();
       List<AILocation> result = new List<AILocation>();
-      aiList = new AwaitableQueue<AILocation>(30);
+      aiList = new AwaitableQueue<AILocation>(120);
       Refresh();
     }
 
