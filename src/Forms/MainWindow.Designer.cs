@@ -96,6 +96,7 @@
       this.buttonRight = new System.Windows.Forms.Button();
       this.buttonLeft = new System.Windows.Forms.Button();
       this.mainPanel = new System.Windows.Forms.Panel();
+      this.locationTrackBar = new System.Windows.Forms.TrackBar();
       this.StatusPanel = new System.Windows.Forms.Panel();
       this.numberOfImagesLabel = new System.Windows.Forms.Label();
       this.YResLabel = new System.Windows.Forms.Label();
@@ -125,6 +126,7 @@
       this.UseXMLDataSourceCheckedMenu = new System.Windows.Forms.ToolStripMenuItem();
       this.aiAlertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.syncMotionToDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.logFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -136,6 +138,7 @@
       this.LiveOnDemandGroup.SuspendLayout();
       this.ToolsPanel.SuspendLayout();
       this.mainPanel.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.locationTrackBar)).BeginInit();
       this.StatusPanel.SuspendLayout();
       this.picturePanel.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureImage)).BeginInit();
@@ -155,7 +158,7 @@
       this.objectListView.FullRowSelect = true;
       this.objectListView.GridLines = true;
       this.objectListView.HideSelection = false;
-      this.objectListView.Location = new System.Drawing.Point(3, 12);
+      this.objectListView.Location = new System.Drawing.Point(3, 8);
       this.objectListView.MultiSelect = false;
       this.objectListView.Name = "objectListView";
       this.objectListView.Size = new System.Drawing.Size(409, 128);
@@ -204,7 +207,7 @@
       this.label1.AutoSize = true;
       this.label1.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label1.Location = new System.Drawing.Point(742, 3);
+      this.label1.Location = new System.Drawing.Point(669, 3);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(131, 13);
       this.label1.TabIndex = 4;
@@ -215,7 +218,7 @@
       this.numberOfFilesTextBox.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.numberOfFilesTextBox.Enabled = false;
       this.numberOfFilesTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.numberOfFilesTextBox.Location = new System.Drawing.Point(879, 1);
+      this.numberOfFilesTextBox.Location = new System.Drawing.Point(807, 1);
       this.numberOfFilesTextBox.Name = "numberOfFilesTextBox";
       this.numberOfFilesTextBox.Size = new System.Drawing.Size(69, 21);
       this.numberOfFilesTextBox.TabIndex = 5;
@@ -224,7 +227,7 @@
       // 
       this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(511, 86);
+      this.label2.Location = new System.Drawing.Point(511, 82);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(74, 15);
       this.label2.TabIndex = 6;
@@ -233,7 +236,7 @@
       // fileNumberUpDown
       // 
       this.fileNumberUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.fileNumberUpDown.Location = new System.Drawing.Point(605, 84);
+      this.fileNumberUpDown.Location = new System.Drawing.Point(605, 80);
       this.fileNumberUpDown.Name = "fileNumberUpDown";
       this.fileNumberUpDown.Size = new System.Drawing.Size(57, 23);
       this.fileNumberUpDown.TabIndex = 7;
@@ -241,7 +244,7 @@
       // goToFileButton
       // 
       this.goToFileButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.goToFileButton.Location = new System.Drawing.Point(677, 81);
+      this.goToFileButton.Location = new System.Drawing.Point(677, 77);
       this.goToFileButton.Name = "goToFileButton";
       this.goToFileButton.Size = new System.Drawing.Size(58, 23);
       this.goToFileButton.TabIndex = 8;
@@ -253,7 +256,7 @@
       // 
       this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(418, 87);
+      this.label3.Location = new System.Drawing.Point(418, 83);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(54, 15);
       this.label3.TabIndex = 9;
@@ -262,7 +265,7 @@
       // currentNumberTextBox
       // 
       this.currentNumberTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.currentNumberTextBox.Location = new System.Drawing.Point(471, 82);
+      this.currentNumberTextBox.Location = new System.Drawing.Point(471, 78);
       this.currentNumberTextBox.Name = "currentNumberTextBox";
       this.currentNumberTextBox.ReadOnly = true;
       this.currentNumberTextBox.Size = new System.Drawing.Size(40, 23);
@@ -272,7 +275,7 @@
       // 
       this.label4.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label4.AutoSize = true;
-      this.label4.Location = new System.Drawing.Point(439, 27);
+      this.label4.Location = new System.Drawing.Point(439, 23);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(28, 15);
       this.label4.TabIndex = 11;
@@ -281,7 +284,7 @@
       // fileNameTextBox
       // 
       this.fileNameTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.fileNameTextBox.Location = new System.Drawing.Point(471, 24);
+      this.fileNameTextBox.Location = new System.Drawing.Point(471, 20);
       this.fileNameTextBox.Name = "fileNameTextBox";
       this.fileNameTextBox.ReadOnly = true;
       this.fileNameTextBox.Size = new System.Drawing.Size(264, 23);
@@ -291,7 +294,7 @@
       // 
       this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label5.AutoSize = true;
-      this.label5.Location = new System.Drawing.Point(425, 55);
+      this.label5.Location = new System.Drawing.Point(425, 51);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(40, 15);
       this.label5.TabIndex = 13;
@@ -300,7 +303,7 @@
       // goToFileTextBox
       // 
       this.goToFileTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.goToFileTextBox.Location = new System.Drawing.Point(471, 53);
+      this.goToFileTextBox.Location = new System.Drawing.Point(471, 49);
       this.goToFileTextBox.Name = "goToFileTextBox";
       this.goToFileTextBox.Size = new System.Drawing.Size(264, 23);
       this.goToFileTextBox.TabIndex = 14;
@@ -308,7 +311,7 @@
       // goToFileNameButton
       // 
       this.goToFileNameButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.goToFileNameButton.Location = new System.Drawing.Point(752, 50);
+      this.goToFileNameButton.Location = new System.Drawing.Point(752, 46);
       this.goToFileNameButton.Name = "goToFileNameButton";
       this.goToFileNameButton.Size = new System.Drawing.Size(58, 23);
       this.goToFileNameButton.TabIndex = 15;
@@ -321,7 +324,7 @@
       this.label6.AutoSize = true;
       this.label6.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label6.Location = new System.Drawing.Point(515, 3);
+      this.label6.Location = new System.Drawing.Point(406, 3);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(24, 15);
       this.label6.TabIndex = 16;
@@ -332,7 +335,7 @@
       this.label7.AutoSize = true;
       this.label7.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label7.Location = new System.Drawing.Point(589, 3);
+      this.label7.Location = new System.Drawing.Point(480, 3);
       this.label7.Name = "label7";
       this.label7.Size = new System.Drawing.Size(23, 15);
       this.label7.TabIndex = 17;
@@ -343,7 +346,7 @@
       this.xPosLabel.AutoSize = true;
       this.xPosLabel.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.xPosLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.xPosLabel.Location = new System.Drawing.Point(543, 3);
+      this.xPosLabel.Location = new System.Drawing.Point(434, 3);
       this.xPosLabel.Name = "xPosLabel";
       this.xPosLabel.Size = new System.Drawing.Size(35, 15);
       this.xPosLabel.TabIndex = 18;
@@ -354,7 +357,7 @@
       this.yPosLabel.AutoSize = true;
       this.yPosLabel.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.yPosLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.yPosLabel.Location = new System.Drawing.Point(616, 3);
+      this.yPosLabel.Location = new System.Drawing.Point(507, 3);
       this.yPosLabel.Name = "yPosLabel";
       this.yPosLabel.Size = new System.Drawing.Size(35, 15);
       this.yPosLabel.TabIndex = 19;
@@ -363,7 +366,7 @@
       // reverseListButton
       // 
       this.reverseListButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.reverseListButton.Location = new System.Drawing.Point(752, 22);
+      this.reverseListButton.Location = new System.Drawing.Point(752, 18);
       this.reverseListButton.Name = "reverseListButton";
       this.reverseListButton.Size = new System.Drawing.Size(58, 23);
       this.reverseListButton.TabIndex = 20;
@@ -375,7 +378,7 @@
       // 
       this.showAreasOfInterestCheck.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.showAreasOfInterestCheck.AutoSize = true;
-      this.showAreasOfInterestCheck.Location = new System.Drawing.Point(421, 111);
+      this.showAreasOfInterestCheck.Location = new System.Drawing.Point(421, 107);
       this.showAreasOfInterestCheck.Name = "showAreasOfInterestCheck";
       this.showAreasOfInterestCheck.Size = new System.Drawing.Size(143, 19);
       this.showAreasOfInterestCheck.TabIndex = 22;
@@ -386,7 +389,7 @@
       // analyzeButton
       // 
       this.analyzeButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.analyzeButton.Location = new System.Drawing.Point(752, 110);
+      this.analyzeButton.Location = new System.Drawing.Point(752, 106);
       this.analyzeButton.Name = "analyzeButton";
       this.analyzeButton.Size = new System.Drawing.Size(58, 23);
       this.analyzeButton.TabIndex = 23;
@@ -450,7 +453,7 @@
       this.LiveOnDemandGroup.Controls.Add(this.liveCameraButton);
       this.LiveOnDemandGroup.Controls.Add(this.camLeftButton);
       this.LiveOnDemandGroup.Controls.Add(this.camUpButton);
-      this.LiveOnDemandGroup.Location = new System.Drawing.Point(995, 16);
+      this.LiveOnDemandGroup.Location = new System.Drawing.Point(989, 12);
       this.LiveOnDemandGroup.Name = "LiveOnDemandGroup";
       this.LiveOnDemandGroup.Size = new System.Drawing.Size(279, 112);
       this.LiveOnDemandGroup.TabIndex = 33;
@@ -535,7 +538,7 @@
       // refreshButton
       // 
       this.refreshButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.refreshButton.Location = new System.Drawing.Point(752, 80);
+      this.refreshButton.Location = new System.Drawing.Point(752, 76);
       this.refreshButton.Name = "refreshButton";
       this.refreshButton.Size = new System.Drawing.Size(58, 23);
       this.refreshButton.TabIndex = 33;
@@ -547,7 +550,7 @@
       // 
       this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label8.AutoSize = true;
-      this.label8.Location = new System.Drawing.Point(841, 86);
+      this.label8.Location = new System.Drawing.Point(841, 82);
       this.label8.Name = "label8";
       this.label8.Size = new System.Drawing.Size(59, 15);
       this.label8.TabIndex = 35;
@@ -557,7 +560,7 @@
       // 
       this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label9.AutoSize = true;
-      this.label9.Location = new System.Drawing.Point(865, 8);
+      this.label9.Location = new System.Drawing.Point(865, 4);
       this.label9.Name = "label9";
       this.label9.Size = new System.Drawing.Size(82, 15);
       this.label9.TabIndex = 36;
@@ -568,7 +571,7 @@
       this.cameraCombo.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.cameraCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.cameraCombo.FormattingEnabled = true;
-      this.cameraCombo.Location = new System.Drawing.Point(844, 28);
+      this.cameraCombo.Location = new System.Drawing.Point(844, 24);
       this.cameraCombo.Name = "cameraCombo";
       this.cameraCombo.Size = new System.Drawing.Size(132, 21);
       this.cameraCombo.TabIndex = 37;
@@ -606,9 +609,9 @@
       this.ToolsPanel.Controls.Add(this.buttonRight);
       this.ToolsPanel.Controls.Add(this.goToFileNameButton);
       this.ToolsPanel.Controls.Add(this.buttonLeft);
-      this.ToolsPanel.Location = new System.Drawing.Point(2, 1006);
+      this.ToolsPanel.Location = new System.Drawing.Point(2, 1009);
       this.ToolsPanel.Name = "ToolsPanel";
-      this.ToolsPanel.Size = new System.Drawing.Size(1289, 155);
+      this.ToolsPanel.Size = new System.Drawing.Size(1283, 163);
       this.ToolsPanel.TabIndex = 38;
       // 
       // cpuProgress
@@ -632,7 +635,7 @@
       // 
       this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label13.AutoSize = true;
-      this.label13.Location = new System.Drawing.Point(835, 60);
+      this.label13.Location = new System.Drawing.Point(835, 56);
       this.label13.Name = "label13";
       this.label13.Size = new System.Drawing.Size(69, 15);
       this.label13.TabIndex = 41;
@@ -643,7 +646,7 @@
       this.motionOnlyCheckbox.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.motionOnlyCheckbox.Appearance = System.Windows.Forms.Appearance.Button;
       this.motionOnlyCheckbox.AutoSize = true;
-      this.motionOnlyCheckbox.Location = new System.Drawing.Point(572, 110);
+      this.motionOnlyCheckbox.Location = new System.Drawing.Point(572, 106);
       this.motionOnlyCheckbox.Name = "motionOnlyCheckbox";
       this.motionOnlyCheckbox.Size = new System.Drawing.Size(87, 25);
       this.motionOnlyCheckbox.TabIndex = 39;
@@ -668,7 +671,7 @@
       this.buttonRight.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
       this.buttonRight.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.buttonRight.Image = ((System.Drawing.Image)(resources.GetObject("buttonRight.Image")));
-      this.buttonRight.Location = new System.Drawing.Point(696, 110);
+      this.buttonRight.Location = new System.Drawing.Point(696, 106);
       this.buttonRight.Name = "buttonRight";
       this.buttonRight.Size = new System.Drawing.Size(31, 23);
       this.buttonRight.TabIndex = 1;
@@ -681,7 +684,7 @@
       this.buttonLeft.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
       this.buttonLeft.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.buttonLeft.Image = ((System.Drawing.Image)(resources.GetObject("buttonLeft.Image")));
-      this.buttonLeft.Location = new System.Drawing.Point(660, 110);
+      this.buttonLeft.Location = new System.Drawing.Point(660, 106);
       this.buttonLeft.Name = "buttonLeft";
       this.buttonLeft.Size = new System.Drawing.Size(31, 23);
       this.buttonLeft.TabIndex = 2;
@@ -690,24 +693,39 @@
       // 
       // mainPanel
       // 
-      this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+      this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.mainPanel.AutoScroll = true;
       this.mainPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
       this.mainPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.mainPanel.Controls.Add(this.locationTrackBar);
       this.mainPanel.Controls.Add(this.StatusPanel);
       this.mainPanel.Controls.Add(this.picturePanel);
       this.mainPanel.Controls.Add(this.ToolsPanel);
       this.mainPanel.Location = new System.Drawing.Point(2, 25);
       this.mainPanel.Name = "mainPanel";
-      this.mainPanel.Size = new System.Drawing.Size(1303, 1171);
+      this.mainPanel.Size = new System.Drawing.Size(1344, 1183);
       this.mainPanel.TabIndex = 39;
+      // 
+      // locationTrackBar
+      // 
+      this.locationTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+      this.locationTrackBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+      this.locationTrackBar.Location = new System.Drawing.Point(1293, 29);
+      this.locationTrackBar.Maximum = 1000000;
+      this.locationTrackBar.Name = "locationTrackBar";
+      this.locationTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
+      this.locationTrackBar.Size = new System.Drawing.Size(45, 963);
+      this.locationTrackBar.TabIndex = 41;
+      this.locationTrackBar.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+      this.locationTrackBar.ValueChanged += new System.EventHandler(this.LocationTrackBar_ValueChanged);
+      this.locationTrackBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LocationBarMouseDown);
+      this.locationTrackBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.locationBarMouseMove);
+      this.locationTrackBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.LocationBarMouseUp);
       // 
       // StatusPanel
       // 
-      this.StatusPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
       this.StatusPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.StatusPanel.Controls.Add(this.numberOfImagesLabel);
       this.StatusPanel.Controls.Add(this.YResLabel);
@@ -725,7 +743,7 @@
       this.StatusPanel.Controls.Add(this.label11);
       this.StatusPanel.Location = new System.Drawing.Point(2, 2);
       this.StatusPanel.Name = "StatusPanel";
-      this.StatusPanel.Size = new System.Drawing.Size(1283, 24);
+      this.StatusPanel.Size = new System.Drawing.Size(1286, 24);
       this.StatusPanel.TabIndex = 40;
       // 
       // numberOfImagesLabel
@@ -733,7 +751,7 @@
       this.numberOfImagesLabel.AutoSize = true;
       this.numberOfImagesLabel.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.numberOfImagesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.numberOfImagesLabel.Location = new System.Drawing.Point(1185, 3);
+      this.numberOfImagesLabel.Location = new System.Drawing.Point(1080, 3);
       this.numberOfImagesLabel.Name = "numberOfImagesLabel";
       this.numberOfImagesLabel.Size = new System.Drawing.Size(35, 15);
       this.numberOfImagesLabel.TabIndex = 40;
@@ -744,7 +762,7 @@
       this.YResLabel.AutoSize = true;
       this.YResLabel.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.YResLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.YResLabel.Location = new System.Drawing.Point(410, 3);
+      this.YResLabel.Location = new System.Drawing.Point(348, 3);
       this.YResLabel.Name = "YResLabel";
       this.YResLabel.Size = new System.Drawing.Size(39, 15);
       this.YResLabel.TabIndex = 6;
@@ -755,7 +773,7 @@
       // 
       this.label10.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label10.Location = new System.Drawing.Point(999, 3);
+      this.label10.Location = new System.Drawing.Point(891, 3);
       this.label10.Name = "label10";
       this.label10.Size = new System.Drawing.Size(180, 15);
       this.label10.TabIndex = 39;
@@ -767,7 +785,7 @@
       this.AIStatus.BackColor = System.Drawing.Color.LightGreen;
       this.AIStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.AIStatus.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-      this.AIStatus.Location = new System.Drawing.Point(93, 3);
+      this.AIStatus.Location = new System.Drawing.Point(78, 3);
       this.AIStatus.Name = "AIStatus";
       this.AIStatus.Size = new System.Drawing.Size(75, 15);
       this.AIStatus.TabIndex = 6;
@@ -778,7 +796,7 @@
       this.label12.AutoSize = true;
       this.label12.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label12.Location = new System.Drawing.Point(360, 3);
+      this.label12.Location = new System.Drawing.Point(298, 3);
       this.label12.Name = "label12";
       this.label12.Size = new System.Drawing.Size(44, 15);
       this.label12.TabIndex = 6;
@@ -789,7 +807,7 @@
       this.XResLabel.AutoSize = true;
       this.XResLabel.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.XResLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.XResLabel.Location = new System.Drawing.Point(305, 3);
+      this.XResLabel.Location = new System.Drawing.Point(247, 3);
       this.XResLabel.Name = "XResLabel";
       this.XResLabel.Size = new System.Drawing.Size(39, 15);
       this.XResLabel.TabIndex = 6;
@@ -800,7 +818,7 @@
       this.label14.AutoSize = true;
       this.label14.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label14.Location = new System.Drawing.Point(24, 3);
+      this.label14.Location = new System.Drawing.Point(9, 3);
       this.label14.Name = "label14";
       this.label14.Size = new System.Drawing.Size(63, 15);
       this.label14.TabIndex = 42;
@@ -811,7 +829,7 @@
       this.label11.AutoSize = true;
       this.label11.BackColor = System.Drawing.SystemColors.InactiveCaption;
       this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label11.Location = new System.Drawing.Point(254, 3);
+      this.label11.Location = new System.Drawing.Point(196, 3);
       this.label11.Name = "label11";
       this.label11.Size = new System.Drawing.Size(45, 15);
       this.label11.TabIndex = 5;
@@ -827,7 +845,7 @@
       this.picturePanel.Controls.Add(this.pictureImage);
       this.picturePanel.Location = new System.Drawing.Point(2, 29);
       this.picturePanel.Name = "picturePanel";
-      this.picturePanel.Size = new System.Drawing.Size(1284, 964);
+      this.picturePanel.Size = new System.Drawing.Size(1286, 971);
       this.picturePanel.TabIndex = 39;
       // 
       // pictureImage
@@ -861,7 +879,7 @@
             this.helpToolStripMenuItem1});
       this.menuStrip2.Location = new System.Drawing.Point(0, 0);
       this.menuStrip2.Name = "menuStrip2";
-      this.menuStrip2.Size = new System.Drawing.Size(1317, 24);
+      this.menuStrip2.Size = new System.Drawing.Size(1346, 24);
       this.menuStrip2.TabIndex = 41;
       this.menuStrip2.Text = "menuStrip2";
       this.menuStrip2.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip2_ItemClicked);
@@ -928,7 +946,8 @@
             this.analysisSettingsToolStripMenuItem,
             this.UseXMLDataSourceCheckedMenu,
             this.aiAlertMenuItem,
-            this.testImagesToolStripMenuItem});
+            this.testImagesToolStripMenuItem,
+            this.syncMotionToDatabaseToolStripMenuItem});
       this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
       this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(46, 20);
       this.toolsToolStripMenuItem1.Text = "&Tools";
@@ -997,6 +1016,14 @@
       this.testImagesToolStripMenuItem.Text = "Test Images";
       this.testImagesToolStripMenuItem.Click += new System.EventHandler(this.TestImagesToolStripMenuItem_Click);
       // 
+      // syncMotionToDatabaseToolStripMenuItem
+      // 
+      this.syncMotionToDatabaseToolStripMenuItem.CheckOnClick = true;
+      this.syncMotionToDatabaseToolStripMenuItem.Name = "syncMotionToDatabaseToolStripMenuItem";
+      this.syncMotionToDatabaseToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.syncMotionToDatabaseToolStripMenuItem.Text = "Sync Motion to Database";
+      this.syncMotionToDatabaseToolStripMenuItem.Click += new System.EventHandler(this.SyncToDatabase);
+      // 
       // helpToolStripMenuItem1
       // 
       this.helpToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1050,7 +1077,7 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.ClientSize = new System.Drawing.Size(1317, 1208);
+      this.ClientSize = new System.Drawing.Size(1346, 1208);
       this.Controls.Add(this.mainPanel);
       this.Controls.Add(this.menuStrip2);
       this.DoubleBuffered = true;
@@ -1068,6 +1095,8 @@
       this.ToolsPanel.ResumeLayout(false);
       this.ToolsPanel.PerformLayout();
       this.mainPanel.ResumeLayout(false);
+      this.mainPanel.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.locationTrackBar)).EndInit();
       this.StatusPanel.ResumeLayout(false);
       this.StatusPanel.PerformLayout();
       this.picturePanel.ResumeLayout(false);
@@ -1166,6 +1195,8 @@
     private System.Windows.Forms.Label label14;
     private System.Windows.Forms.Label AIStatus;
     private System.Windows.Forms.Panel StatusPanel;
+    private System.Windows.Forms.ToolStripMenuItem syncMotionToDatabaseToolStripMenuItem;
+    private System.Windows.Forms.TrackBar locationTrackBar;
   }
 }
 

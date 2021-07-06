@@ -118,7 +118,7 @@ namespace OnGuardCore
             pending.TimeToDispatch();
             objectsFound = await AIFindObjects(ai, stream, pending.PendingFile, true).ConfigureAwait(false);  // throws if ai not available
             pending.SetTimeProcessingByAI();
-            string dbg = "AIDetection - DetectObjectsAsync ending analysis of : " + pending.PendingFile;
+            string dbg = "AIDetection - DetectObjectsAsync ending analysis of : " + pending.PendingFile + " Time: " + pending.TotalProcessingTime().TotalSeconds.ToString();
             if (null != objectsFound)
             {
               dbg += " with: " + objectsFound.Count.ToString() + " objects";

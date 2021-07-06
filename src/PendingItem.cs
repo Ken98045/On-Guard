@@ -51,7 +51,12 @@ namespace OnGuardCore
     {
       TimeSpan result = TimeCompleted - TimeEnqueued;
       return result;
+    }
 
+    public TimeSpan AIProcessingTime()
+    {
+      TimeSpan result = TimeCompleted - TimeDispatched;
+      return result;
     }
   }
 

@@ -21,7 +21,6 @@ namespace OnGuardCore
   }
 
 
-
   /// <summary>
   /// AIAnalyzer is the class that contacts the AI to analyze the picture.
   /// 

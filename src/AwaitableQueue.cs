@@ -48,10 +48,14 @@ namespace OnGuardCore
             source.CancelAfter(_waitTime * 1000);
           }
 
+          DateTime startAIWaitTime = DateTime.Now;
+
           CancellationToken token = source.Token;
           await _available.WaitAsync(token).ConfigureAwait(false);
           if (token.IsCancellationRequested)
           {
+            TimeSpan span = DateTime.Now - startAIWaitTime;
+            Dbg.Trace("AIDetection - Timeout trying to get an AI instance with time: " + span.TotalSeconds.ToString());
             break;
           }
         }

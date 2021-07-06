@@ -53,6 +53,8 @@ namespace OnGuardCore
     int _numberOfImagesProcessed;
     string _connectionString;
 
+    bool _pauseLocationBarUpdate;
+
     readonly MostRecentCollection _recentTimes = new MostRecentCollection(10);
     readonly object _fileLock = new object();
     readonly object _aiNotFoundLock = new object();
@@ -67,16 +69,20 @@ namespace OnGuardCore
     ZoneBox _modifyBox;
     Guid _modifyingAreaID = Guid.Empty;
 
+    ToolTip _locationTip;
+    int _locationPosition;
+    
     List<ImageObject> _frameObjects = new List<ImageObject>();
     readonly Color aoiColor = Color.FromArgb(80, Color.DarkOrange);
     readonly Color aoiRegistrationColor = Color.FromArgb(120, Color.Purple);
     readonly ConcurrentQueue<PendingItem> _fileQueue = new ConcurrentQueue<PendingItem>();
     readonly AutoResetEvent _wakeFileQueue = new AutoResetEvent(false);
     readonly Thread _monitorQueueThread;
-    readonly double _timePerFrame = 1.0;
+    double _timePerFrame = 1.0;
     System.Windows.Forms.Timer _liveTimer;
     bool _continueLiveVideo = false;
     bool _directionUp = false;  // direction is down because we start up at the last (most recent) picture
+    bool _stopSync = false;
     string _lastMotionTime = string.Format("{0:00000000000000000000000}", decimal.MaxValue.ToString()); // so we can go "down in the time for motion
 
 
@@ -115,6 +121,8 @@ namespace OnGuardCore
 
       Focus();
       Dbg.Write("On Guard started at: " + DateTime.Now.ToString());
+
+      _locationTip = new ToolTip();
 
     }
 
@@ -197,6 +205,8 @@ namespace OnGuardCore
         Storage.Instance.SetGlobalString("CurrentCameraPrefix", CurrentCam.CameraPrefix);
         Storage.Instance.Update();
         await InitAnalyzer(CurrentCam.CameraPrefix, CurrentCam.Path).ConfigureAwait(true);
+        UpdateLocationBarLimits();
+
       }
 
       foreach (var cam in _allCameras.CameraDictionary.Values)
@@ -444,7 +454,7 @@ namespace OnGuardCore
             }
             else
             {
-              ++_current;
+              SetCurrent(++_current);
             }
 
             if (_fileNames != null && _current < _fileNames.Count - 1)
@@ -463,8 +473,7 @@ namespace OnGuardCore
             else
             {
               SystemSounds.Beep.Play();
-
-              --_current;
+              SetCurrent(-- _current);
               if (_current < 0)
               {
                 _current = 0;
@@ -505,7 +514,7 @@ namespace OnGuardCore
               if (_current > 0)
               {
 
-                --_current;
+                SetCurrent(--_current);
               }
               else
               {
@@ -530,6 +539,7 @@ namespace OnGuardCore
               {
                 _fileNames.RemoveAt(_current);
                 numberOfFilesTextBox.Text = _fileNames.Count.ToString();
+                UpdateLocationBarLimits();
               }
             }
             else
@@ -582,20 +592,6 @@ namespace OnGuardCore
             result = await ProcessImage(file, xResolution, yResolution).ConfigureAwait(true);
             FileInfo fi = new FileInfo(file);
             _lastMotionTime = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
-
-            if (!motionOnlyCheckbox.Checked)  // If the box is checked and we are loading the image then we know it is in the DB
-            {
-              if (result != null && result.Count > 0)
-              {
-
-                FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, result, xResolution, yResolution);
-                AnalysisResult analysisResult = analyzer.AnalyzeFrame();
-                if (analysisResult.InterestingObjects.Count > 0)
-                {
-                  InsertMotionIfNecessary(file);
-                }
-              }
-            }
 
             currentNumberTextBox.Text = (_fileNames.Values.IndexOf(file) + 1).ToString();
             fileNameTextBox.Text = file;
@@ -778,7 +774,7 @@ namespace OnGuardCore
             if (_fileNames.Count > (int)(fileNumberUpDown.Value))
             {
               LoadImage(_fileNames.Values[(int)fileNumberUpDown.Value - 1]);
-              _current = (int)fileNumberUpDown.Value - 1;
+              SetCurrent((int)fileNumberUpDown.Value - 1);
             }
           }
         }
@@ -822,7 +818,7 @@ namespace OnGuardCore
           comp.Reverse();
           _fileNames = new SortedList<DateTime, string>(_fileNames, comp);
 
-          _current = 0;
+          SetCurrent(0);
           LoadImage(_fileNames.Values[0]);
           _directionUp = !_directionUp;
         }
@@ -1796,7 +1792,7 @@ namespace OnGuardCore
       Storage.Instance.SetGlobalString("CurrentCameraPrefix", cam.CameraPrefix);
       Storage.Instance.Update();
       InitAnalyzer(cam.CameraPrefix, cam.Path);
-
+      UpdateLocationBarLimits();
     }
 
     private void OutgoingEmailServerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1807,6 +1803,159 @@ namespace OnGuardCore
       }
     }
 
+    private async void SyncToDatabase(object sender, EventArgs e)
+    {
+      if (!syncMotionToDatabaseToolStripMenuItem.Checked)
+      {
+        _stopSync = true;
+      }
+      else
+      {
+        _stopSync = false;
+        using (SyncToDatabaseDialog dlg = new SyncToDatabaseDialog())
+        {
+          DialogResult result = dlg.ShowDialog();
+          if (result == DialogResult.OK)
+          {
+            await Task.Run(() => PerformMotionSync()).ConfigureAwait(true);
+            syncMotionToDatabaseToolStripMenuItem.Checked = false;
+            _stopSync = false;
+
+          }
+          else
+          {
+            syncMotionToDatabaseToolStripMenuItem.Checked = false;
+          }
+        }
+      }
+    }
+
+
+    async Task PerformMotionSync()
+    {
+
+      AIAnalyzer analyzer = new AIAnalyzer();
+      SortedList<DateTime, string> fileList = analyzer.Init(CurrentCam.CameraPrefix, CurrentCam.Path);
+      CameraData cam = CurrentCam;
+
+      List<string> syncFiles = fileList.Values.Reverse().ToList<string>();
+
+      double snapshot = Storage.Instance.GetGlobalDouble("FrameInterval");  // get the desired interval for pictures
+
+      string path = cam.Path;
+      string camera = cam.CameraPrefix;
+
+      double snapshotInterval = Storage.Instance.GetGlobalDouble("FrameInterval");
+
+      using (SqlConnection con = new SqlConnection(_connectionString))
+      {
+        try
+        {
+          await con.OpenAsync().ConfigureAwait(false);
+        }
+        catch (SqlException ex)
+        {
+          Dbg.Write("MainWindow -  PerformMotionSync - Sql Exception on opening database connection: " + ex.Message);
+          return;
+        }
+        catch (InvalidOperationException ex)
+        {
+          Dbg.Write("MainWindow -  PerformMotionSync - InvalidOperation Exception on opening database connection: " + ex.Message);
+          return;
+
+        }
+
+        Dbg.Write("Starting Sync to Motion Database");
+
+        double lastAITime = (double)0.0;
+        double multiplier = 2.0;
+
+        foreach (string fileName in syncFiles)
+        {
+          if (_stopSync)
+          {
+            break;
+          }
+
+          if (!_stopEvent.WaitOne(0))
+          {
+            string file = Path.GetFileName(fileName);
+
+            // First, delay if necessary.
+            if (lastAITime > multiplier * snapshotInterval)
+            {
+              // Wait for a while to avoid overloading the AI
+              if (_stopEvent.WaitOne((int)(1000.0 * multiplier * snapshotInterval)))
+              {
+                break;
+              }
+
+              // and bump the multiplier for the delay, but don't let it get TOO large
+              multiplier *= 1.5;
+              if (multiplier > 300.0)
+              {
+                multiplier = 300.0; // for now
+              }
+            }
+            else if (multiplier >= 2.5)
+            {
+              multiplier /= 2.0;
+            }
+
+            // OK, not in the database, check for motion
+            DateTime start = DateTime.Now;
+            List<ImageObject> imageList = await AIDetection.AIProcessFromUI(fileName, true).ConfigureAwait(false);
+            TimeSpan elapsed = DateTime.Now - start;
+            UpdateFrameProgressBar(elapsed);
+            lastAITime = elapsed.TotalSeconds;
+
+            if (null != imageList)
+            {
+              analyzer.RemoveInvalidObjects(cam, imageList);
+              if (imageList.Count > 0)
+              {
+                int xRes, yRes; //need the x,y res for frame analyzer
+                using (Bitmap bitmap = new Bitmap(fileName))
+                {
+                  xRes = bitmap.Width;
+                  yRes = bitmap.Height;
+                }
+
+                FrameAnalyzer frameAnalyzer = new FrameAnalyzer(CurrentCam.AOI, imageList, xRes, yRes);
+                List<InterestingObject> interesting = frameAnalyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
+                if (interesting.Count > 0)
+                {
+                  int result = await InsertMotionIfNecessary(cam, fileName);
+                  if (result > 0)
+                  {
+                    Dbg.Trace("PerformMotionSync - Inserted file into motion database: " + fileName);
+                  }
+
+                }
+                else
+                {
+                  int removed = await DeleteMissingMotion(fileName).ConfigureAwait(false);
+                  if (removed > 0)
+                  {
+                    Dbg.Trace("PerformMotionSync - Removed file from motion list: " + fileName);
+                  }
+                }
+              }
+            }
+
+          }
+
+          if (_stopEvent.WaitOne(0))
+          {
+            break;
+          }
+        }
+
+        Dbg.Write("Ending Sync to Motion Database");
+      }
+    }
+
+
     delegate void RefreshDelegate(object sender, EventArgs e);
     private void Refresh_Click(object sender, EventArgs e)
     {
@@ -1816,8 +1965,9 @@ namespace OnGuardCore
         {
           lock (_fileLock)
           {
-            _current = 0;
             InitAnalyzer(CurrentCam.CameraPrefix, CurrentCam.Path);
+            UpdateLocationBarLimits();
+            SetCurrent(0);
           }
         }
       }
@@ -1879,6 +2029,9 @@ namespace OnGuardCore
       bool keepgoing = false;
       int yieldCount = 0;
       DateTime lastCPUUpdate = DateTime.Now;
+      double snapshotInterval = Storage.Instance.GetGlobalDouble("FrameInterval");
+      const int tryInterval = 200;  // time in ms to wait for the next try
+      const int maxYield = 0 * 1000 / tryInterval;
 
       List<Task> taskList = new List<Task>();
 
@@ -1891,7 +2044,8 @@ namespace OnGuardCore
         theCPUCounter.NextValue();
         if (!keepgoing) // Only wait if there was nothing in the queue
         {
-          var waitResult = WaitHandle.WaitAny(waitFor, 200);  // Monitor the queue 5 times per second
+          var waitResult = WaitHandle.WaitAny(waitFor, tryInterval);  // Monitor the queue 5 times per second
+
           if (waitResult == 0)
           {
             stopIt = true;
@@ -1934,7 +2088,8 @@ namespace OnGuardCore
           // Note that in many cases processing a new saved frame instantly may not be too important because
           // other frames may give us the photo we want and/or you can tell Blue Iris to start recording a few seconds
           // (or more) ahead of the trigger we send it.
-          if (currentCPU < 95 || (_recentTimes.Avg() < (1250.0 * _timePerFrame)))
+          double recent = _recentTimes.Avg();   // so we can see it debugging
+          if (yieldCount > maxYield || (recent < (10.0 * snapshotInterval)))
           {
 
             yieldCount = 0;
@@ -2078,7 +2233,7 @@ namespace OnGuardCore
 
       Interlocked.Increment(ref _numberOfImagesProcessed);
       UpdateNumberProcessed(_numberOfImagesProcessed);
-      _recentTimes.AddValue(result.Item.TotalProcessingTime().TotalMilliseconds);
+      _recentTimes.AddValue(result.Item.AIProcessingTime().TotalMilliseconds);
       Interlocked.Decrement(ref _imagesBeingProcessed);
       List<InterestingObject> interesting = null;
       Frame frame = new Frame(pendingItem, interesting);
@@ -2350,7 +2505,7 @@ namespace OnGuardCore
         }
       }
 
-      ushort fileHash = (ushort) (hash & 0xffff);
+      ushort fileHash = (ushort)(hash & 0xffff);
       string hashAddition = string.Format("{0:00000}", fileHash);
       adjustedStr += hashAddition;
       return adjustedStr;
@@ -2372,7 +2527,7 @@ namespace OnGuardCore
       {
         using (SqlConnection con = new SqlConnection(_connectionString))
         {
-          con.Open();
+          await con.OpenAsync();
 
           try
           {
@@ -2479,7 +2634,7 @@ namespace OnGuardCore
                 int index = _fileNames.Values.IndexOf(result);
                 if (index > -1)
                 {
-                  _current = _fileNames.Values.IndexOf(result);
+                  SetCurrent( _fileNames.Values.IndexOf(result));
                   break;  // done
                 }
                 else
@@ -2518,52 +2673,78 @@ namespace OnGuardCore
     /// </summary>
     /// <param name="directionUp"></param>
     /// <returns></returns>
-    async Task InsertMotionIfNecessary(string fileName)
+    async Task<int> InsertMotionIfNecessary(CameraData cam, string fileName)
     {
-      string q = "IF NOT EXISTS(SELECT CreationTime FROM NewMotionTable WHERE CreationTime = @creationTime AND FileName = @fileName)" +
-        "INSERT INTO NewMotionTable(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
+      int result = 1;
+      FileInfo fi = new FileInfo(fileName);
 
-      using (SqlConnection con = new SqlConnection(_connectionString))
+
+      try
       {
-        try
-        {
-          await con.OpenAsync().ConfigureAwait(false);
-        }
-        catch (SqlException ex)
-        {
-          Dbg.Write("MainWindow -  InsertMotionIfNecessary - Sql Exception on opening database connection: " + ex.Message);
-          return;
-        }
-        catch (InvalidOperationException ex)
-        {
-          Dbg.Write("MainWindow -  InsertMotionIfNecessary - InvalidOperation Exception on opening database connection: " + ex.Message);
-          return;
 
-        }
-
-        using (SqlCommand cmd = new SqlCommand(q, con))
+        string q = "SELECT CreationTime FROM NewMotionTable WHERE CreationTime = @creationTime AND FileName = @fileName";
+        using (SqlConnection con = new SqlConnection(_connectionString))
         {
-          FileInfo fi = new FileInfo(fileName);
-
           try
           {
+            await con.OpenAsync().ConfigureAwait(false);
+          }
+          catch (SqlException ex)
+          {
+            Dbg.Write("MainWindow -  InsertMotionIfNecessary - Sql Exception on opening database connection: " + ex.Message);
+            return result;
+          }
+          catch (InvalidOperationException ex)
+          {
+            Dbg.Write("MainWindow -  InsertMotionIfNecessary - InvalidOperation Exception on opening database connection: " + ex.Message);
+            return result;
+
+          }
+
+          using (SqlCommand cmd = new SqlCommand(q, con))
+          {
+
             string adjustedStr = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
             cmd.Parameters.AddWithValue("@creationTime", adjustedStr);
             cmd.Parameters.AddWithValue("@fileName", fi.Name);
-            cmd.Parameters.AddWithValue("@path", CurrentCam.Path);
-            cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
-            await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+
+            using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+            {
+              if (reader.HasRows)
+              {
+                result = 0;
+              }
+            }
           }
-          catch (DbException ex)
+
+          if (result != 0)
           {
-            Dbg.Write("MainWindow - InsertMotionIfNecessary - DbException: " + ex.Message);
-          }
-          catch (Exception ex)
-          {
-            Dbg.Write("MainWindow - InsertMotionIfNecessary - Exception: " + ex.Message);
+            q = "INSERT INTO NewMotionTable(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
+            // It didn't exist, insert it.
+            // Yes, I could do that with one action, but I want the result
+            using (SqlCommand insertCmd = new SqlCommand(q, con))
+            {
+              string adjustedStr = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
+              insertCmd.Parameters.AddWithValue("@creationTime", adjustedStr);
+              insertCmd.Parameters.AddWithValue("fileName", fi.Name);
+              insertCmd.Parameters.AddWithValue("@path", cam.Path);
+              insertCmd.Parameters.AddWithValue("@camera", cam.CameraPrefix);
+              result = await insertCmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
           }
         }
+
       }
+      catch (DbException ex)
+      {
+        Dbg.Write("MainWindow - InsertMotionIfNecessary - DbException: " + ex.Message);
+      }
+      catch (Exception ex)
+      {
+        Dbg.Write("MainWindow - InsertMotionIfNecessary - Exception: " + ex.Message);
+      }
+
+      return result;
     }
 
 
@@ -2573,9 +2754,9 @@ namespace OnGuardCore
     /// This happens frequently when BlueIris or the user deletes the picture.
     /// </summary>
     /// <param name="fileName"></param>
-    async Task DeleteMissingMotion(string fileName)
+    async Task<int> DeleteMissingMotion(string fileName)
     {
-
+      int result = 0;
       try
       {
         using (SqlConnection con = new SqlConnection(_connectionString))
@@ -2585,16 +2766,18 @@ namespace OnGuardCore
 
           try
           {
-            string q = "DELETE FROM NewMotionTable WHERE Path = @path AND Camera = @camera AND FileName = @fileName";
+            string q = "DELETE FROM NewMotionTable WHERE FileName = @fileName";
 
 
             using (SqlCommand cmd = new SqlCommand(q, con))
             {
-              cmd.Parameters.AddWithValue("@path", CurrentCam.Path);
-              cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
               cmd.Parameters.AddWithValue("@fileName", fileName);
-              Dbg.Trace("Removing motion from table - file missing: " + fileName);
-              await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+              Dbg.Trace("Removing motion from table - file: " + fileName);
+              result = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+              if (result > 0)
+              {
+                Dbg.Trace("Removing motion from table - file: " + fileName);
+              }
             }
           }
           catch (DbException ex)
@@ -2611,7 +2794,45 @@ namespace OnGuardCore
       {
         Dbg.Write("MainWindow - DeleteMissingMotion - InvaidOperation exception opening connection: " + ex.Message);
       }
+
+      return result;
     }
+
+    async Task<bool> IsFileInDatabaseAsync(SqlConnection con, string path, string camera, string fileName)
+    {
+      bool result = false;
+
+      try
+      {
+        string q = "select * FROM NewMotionTable WHERE Path = @path AND Camera = @camera AND FileName = @fileName";
+
+        using (SqlCommand cmd = new SqlCommand(q, con))
+        {
+          cmd.Parameters.AddWithValue("@path", path);
+          cmd.Parameters.AddWithValue("@fileName", fileName);
+          cmd.Parameters.AddWithValue("@camera", camera);
+          using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+          {
+            if (reader.HasRows)
+            {
+              result = true;
+            }
+          }
+
+        }
+      }
+      catch (DbException ex)
+      {
+        Dbg.Write("MainWindow - DeleteMissingMotion - DbException: " + ex.Message);
+      }
+      catch (InvalidOperationException ex)
+      {
+        Dbg.Write("MainWindow - IsFileInDatabase - InvaidOperation exception opening connection: " + ex.Message);
+      }
+
+      return result;
+    }
+
 
     #endregion SqlStuff
 
@@ -2835,9 +3056,8 @@ namespace OnGuardCore
             if (deleteIt)
             {
               File.Delete(info.FullName);
+              await DeleteMissingMotion(info.Name);
             }
-
-            Thread.Sleep(0);  // avoid choking the UI
           }
           catch (UnauthorizedAccessException ex)
           {
@@ -3061,6 +3281,76 @@ namespace OnGuardCore
     {
 
     }
+
+    private void LocationTrackBar_ValueChanged(object sender, EventArgs e)
+    {
+      _locationPosition = locationTrackBar.Value;
+
+      if (!_pauseLocationBarUpdate)
+      {
+        _current = _locationPosition;
+        LoadImage(_fileNames.Values[_current]);
+        fileNumberUpDown.Value = _current + 1;
+      }
+    }
+
+    private void LocationBarMouseDown(object sender, MouseEventArgs e)
+    {
+      _pauseLocationBarUpdate = true; // pause updating value
+    }
+
+    private void LocationBarMouseUp(object sender, MouseEventArgs e)
+    {
+      _pauseLocationBarUpdate = false;  // resume updating value
+      LocationTrackBar_ValueChanged(null, null);
+      _locationTip.Hide(locationTrackBar);
+    }
+
+    private void locationBarMouseMove(object sender, MouseEventArgs e)
+    {
+      if (_pauseLocationBarUpdate)
+      {
+        ShowLocationToolTip(_fileNames.Keys[_locationPosition].ToString(), e.Location);
+      }
+      
+    }
+
+    private void ShowLocationToolTip(string str, Point point)
+    {
+      Size strSize = TextRenderer.MeasureText(str, System.Drawing.SystemFonts.SmallCaptionFont);
+      _locationTip.Show(str, locationTrackBar, -1 * (strSize.Width) - 5, point.Y - strSize.Height/2);
+
+    }
+
+    private void UpdateLocationBarLimits()
+    {
+      locationTrackBar.Maximum = _fileNames.Count - 1;
+      locationTrackBar.Value = 0;
+      locationTrackBar.LargeChange = locationTrackBar.Maximum / 20;
+      if (locationTrackBar.LargeChange < 1)
+      {
+        locationTrackBar.LargeChange = 1;
+      }
+
+      locationTrackBar.SmallChange = locationTrackBar.Maximum / 100;
+      if (locationTrackBar.SmallChange < 1)
+      {
+        locationTrackBar.SmallChange = 1;
+      }
+    }
+
+    private void SetCurrent(int current)
+    {
+      if (current < _fileNames.Count && current >= 0)
+      {
+        _current = current;
+        bool previousPause = _pauseLocationBarUpdate;
+        _pauseLocationBarUpdate = true;
+        locationTrackBar.Value = _current;
+        _pauseLocationBarUpdate = previousPause;
+      }
+    }
+
   }
 
 }
