@@ -1,40 +1,26 @@
 ﻿using OnGuardCore.Src.Properties;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
-using System.Linq;
+using System.Media;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
+using System.Resources;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
-using System.Data;
-using System.Data.SqlClient;
-using System.Data.Common;
-using System.Media;
-using MQTTnet.Client;
-using MQTTnet.Client.Connecting;
-using MQTTnet.Client.Disconnecting;
-using MQTTnet.Client.Publishing;
-using MQTTnet.Client.Options;
-using MQTTnet.Client.Receiving;
-using MQTTnet.Client.Subscribing;
-using MQTTnet.Client.Unsubscribing;
-using System.Drawing.Imaging;
-using System.Resources;
-using System.Collections;
-using System.Globalization;
-using System.Drawing.Drawing2D;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
+
 
 namespace OnGuardCore
 {
@@ -42,22 +28,23 @@ namespace OnGuardCore
   public partial class MainWindow : Form
   {
     AIAnalyzer _analyzer;
-    SortedList<DateTime, string> _fileNames;
+    SortedList<string, PictureInfo> _fileNames;
 
     int _current = 0;
     bool _showObjects = true;
-    Bitmap _screenBitmap;
-    Bitmap _areaBackgroundBitmap;
-    bool _showingLiveView;
+    volatile Picture _displayedPicture;
+
     int _imagesBeingProcessed;
     int _numberOfImagesProcessed;
-    string _connectionString;
 
-    bool _pauseLocationBarUpdate;
+    readonly MostRecentCollection _recentTimes = new(10);
+    readonly object _fileLock = new();
+    readonly object _aiNotFoundLock = new();
 
-    readonly MostRecentCollection _recentTimes = new MostRecentCollection(10);
-    readonly object _fileLock = new object();
-    readonly object _aiNotFoundLock = new object();
+    const int _originalImageWidth = 1280;
+    const int _originalImageHeight = 960;
+    int _originalPicturePanelWidth = 0;
+    int _originalPicturePanelHeight = 0;
 
     private delegate void SetProgressDelegate(int cpuLoad);
 
@@ -66,28 +53,34 @@ namespace OnGuardCore
     CameraCollection _allCameras;
 
     bool _modifyingArea = false;    // Flag that we are modifying an area
-    ZoneBox _modifyBox;
-    Guid _modifyingAreaID = Guid.Empty;
+    bool _definingFace = false;   // flag that we are doing a face definition
+    bool _loading = false;    // set during the startup/load process
+    DefinitionType _definitionType;
 
-    ToolTip _locationTip;
-    int _locationPosition;
-    
-    List<ImageObject> _frameObjects = new List<ImageObject>();
-    readonly Color aoiColor = Color.FromArgb(80, Color.DarkOrange);
-    readonly Color aoiRegistrationColor = Color.FromArgb(120, Color.Purple);
-    readonly ConcurrentQueue<PendingItem> _fileQueue = new ConcurrentQueue<PendingItem>();
-    readonly AutoResetEvent _wakeFileQueue = new AutoResetEvent(false);
+    ZoneBox _modifyBox;
+    GridDefinition _areaDefinition = new(GlobalData.AreaGridX, GlobalData.AreaGridY);
+    int _defineBrushSize = 1;
+    Guid _modifyingAreaID = Guid.Empty;
+    MainWindow _main;
+    DisplayOption DisplayType = DisplayOption.FilledHorizontally;
+
+    MovementDirection _moveDirection = MovementDirection.Still; // So we know what direction the user intended if a file goes missing (it happens)
+
+    List<InterestingObject> _frameObjects = new();
+    readonly ConcurrentQueue<PendingItem> _fileQueue = new();
+    readonly AutoResetEvent _wakeFileQueue = new(false);
     readonly Thread _monitorQueueThread;
-    double _timePerFrame = 1.0;
     System.Windows.Forms.Timer _liveTimer;
     bool _continueLiveVideo = false;
     bool _directionUp = false;  // direction is down because we start up at the last (most recent) picture
-    bool _stopSync = false;
-    string _lastMotionTime = string.Format("{0:00000000000000000000000}", decimal.MaxValue.ToString()); // so we can go "down in the time for motion
+    string _lastPictureRequested = string.Empty;  // When moving up/down we need the last one we requested, which may be well behind what is displayed
+    ModelessMessageWindow _startMsg;
+    ConcurrentDictionary<Guid, Picture> _pendingPictures = new();
+    readonly Guid NextPicture = new("B684676E-094E-4ED1-8949-97125AC7D330");
+    Guid _cancelAfterPicture = Guid.Empty;  // When empty we don't cancel. When NextPicture we cancel on after the next is processed.  When a specific GUID, only cancel when we hit that specific one
 
-
-    readonly ConcurrentDictionary<string, string> _filesPendingProcessing = new ConcurrentDictionary<string, string>(); // very short period of time where the file has been removed from the queue yet still hasn't been opened
-    readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);  // set to shut down the MonitorQueue thread (and anything else)
+    readonly ConcurrentDictionary<string, string> _filesPendingProcessing = new(); // very short period of time where the file has been removed from the queue yet still hasn't been opened
+    readonly ManualResetEvent _stopEvent = new(false);  // set to shut down the MonitorQueue thread (and anything else)
 
     CameraData CurrentCam
     {
@@ -104,26 +97,53 @@ namespace OnGuardCore
       }
     }
 
-    readonly private PerformanceCounter theCPUCounter =
-       new PerformanceCounter("Processor", "% Processor Time", "_Total");
+
+    readonly private PerformanceCounter theCPUCounter = new("Processor", "% Processor Time", "_Total");
 
     public MainWindow()
     {
 
-      if (!Debugger.IsAttached)
-      {
-        Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
-        AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-      }
+      _main = this;
+
+      //if (!Debugger.IsAttached)
+      //{
+
+      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+      //}
+
+      _loading = true;
 
       InitializeComponent();
+      _originalPicturePanelWidth = picturePanel.Width;
+      _originalPicturePanelHeight = picturePanel.Height;
+
+      _startMsg = new ModelessMessageWindow(this, "Starting Up", "Please wait while On Guard starts!", true);
       _monitorQueueThread = new Thread(MonitorQueue);
 
       Focus();
-      Dbg.Write("On Guard started at: " + DateTime.Now.ToString());
 
-      _locationTip = new ToolTip();
 
+    }
+
+    private void AIStateChanged(bool aiState)
+    {
+      if (this.InvokeRequired)
+      {
+        BeginInvoke(new BoolDelegate(AIStateChanged), new object[] { aiState });
+        return;
+      }
+
+      if (aiState)
+      {
+        AIStatus.Text = "Connected";
+        AIStatus.BackColor = Color.LightGreen;
+      }
+      else
+      {
+        AIStatus.Text = "Disconnected";
+        AIStatus.BackColor = Color.Red;
+      }
     }
 
     static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
@@ -142,44 +162,83 @@ namespace OnGuardCore
       MessageBox.Show("There was an unexpected error.  Please report it: " + ex.Message + Environment.NewLine + Environment.NewLine + ex.StackTrace, "Unexpected Error (2)");
     }
 
-    private void Form1_Load(object sender, EventArgs e)
+    private async void Form1_Load(object sender, EventArgs e)
     {
       this.Focus();
-      pictureImage.Image = pictureImage.ErrorImage;
-      Task.Run(() => Startup());
+      CreateErrorPicture();
+      await InitAsync();
     }
 
-    private delegate void NoParmDelegate();
-    async void Startup()
+    private async Task InitAsync()
     {
+      this.menuStrip2.Enabled = false;
+      this.ToolsPanel.Enabled = false;
+      timeLine.Enabled = false;
+
+      await StartupAsync().ConfigureAwait(true);
+      this.menuStrip2.Enabled = true;
+      this.ToolsPanel.Enabled = true;
+      timeLine.Enabled = true;
+    }
+
+    private delegate Task NoParmDelegate();
+    async Task StartupAsync()
+    {
+
       if (this.InvokeRequired)
       {
-        await Task.Delay(TimeSpan.FromSeconds(2));  // Give things a chance to startup
-        this.BeginInvoke(new NoParmDelegate(Startup));
+        this.BeginInvoke(new NoParmDelegate(StartupAsync));
         return;
       }
 
-      Storage.UseRegistry = false;  // temporarily force use of xml
-      bool useXML = Storage.Instance.GetGlobalBool("UseXML", false);
-
-      if (!useXML && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+      AppDomain domain = AppDomain.CurrentDomain;
+      string dataDirectory = (string)domain.GetData("DataDirectory"); // might be set by the installer
+      if (!string.IsNullOrEmpty(dataDirectory))
       {
-        Storage.UseRegistry = true;
-        UseXMLDataSourceCheckedMenu.Checked = false;
+        Dbg.Write("MainWindow - Startup - The DataDirectory value was found as: " + dataDirectory);
+        DBConnection.SetDatabasePath(dataDirectory);
       }
-      else
+
+      if (!Storage.DoesDataDirectoryExist() || !Storage.Instance.GetGlobalBool("SetupComplete"))
       {
-        Storage.UseRegistry = false;
-        this.UseXMLDataSourceCheckedMenu.Checked = true;
+        _startMsg.Hide();
+        await InitialSetupAsync().ConfigureAwait(true);
+      }
+
+
+      if (!AI.IsAIRunning())
+      {
+        if (Storage.Instance.GetGlobalBool("AutoStartDeepStack"))
+        {
+          if (!AI.RestartAI(false))
+          {
+            MessageBox.Show("(1) The DeepStack AI is NOT Running (2) You have requested that the AI start automatically (3) An attempt to start the AI FAILED", "DeepStack AI");
+          }
+        }
+        else
+        {
+          string deepStackParameters = Storage.Instance.GetGlobalString("DeepStackParameters");
+          if (!string.IsNullOrEmpty(deepStackParameters)) // Indicates whether ApplicationSetting has been run
+          {
+            MessageBox.Show("(1) The DeepStack AI is NOT Running (2) You have requested that the AI NOT start automatically (3) You MUST manually start the DeepStack AI (4) On Guard will now stop");
+            Application.Exit();
+          }
+        }
       }
 
       bool logDetail = Storage.Instance.GetGlobalBool("LogDetailedInformation");
       if (logDetail)
       {
         Dbg.LogLevel = 1;
-        logDetailedInformationToolStripMenuItem.Checked = true;
+        UpdateMenuItem(logDetailedInformationToolStripMenuItem, string.Empty, 1);
       }
 
+
+      AI.OnAIStateChange += AIStateChanged;
+      Picture.OnPictureAvailable += PictureAvailable;
+      Picture.OnObjectsDetected += OnObjectsDetected;
+      AITimeUpdater.OnFrameTimeUpdate += UpdateFrameProgressBar;
+      AITimeUpdater.OnAITimeUpdate += UpdateAIProgressBar;
 
       int currentCPU = (int)theCPUCounter.NextValue();
       currentCPU = (int)theCPUCounter.NextValue();
@@ -188,25 +247,19 @@ namespace OnGuardCore
       Settings.Default.SettingsKey = "OnGuard";
       Settings.Default.Reload();
 
-      GetConnectionString();
-
-
-      if (!Storage.Instance.GetGlobalBool("SetupComplete"))
-      {
-        InitialSetup();
-      }
-
       _analyzer = new AIAnalyzer();
-      _allCameras = CameraCollection.Load();    // which also inits the camera
+      _allCameras = CameraCollection.Load();
+      await _allCameras.InitAsync();
 
       if (CurrentCam != null)
       {
-        Storage.Instance.SetGlobalString("CurrentCameraPath", CurrentCam.Path);            // TODO: Eliminate?
+        Storage.Instance.SetGlobalString("CurrentCameraPath", CurrentCam.CameraPath);
         Storage.Instance.SetGlobalString("CurrentCameraPrefix", CurrentCam.CameraPrefix);
         Storage.Instance.Update();
-        await InitAnalyzer(CurrentCam.CameraPrefix, CurrentCam.Path).ConfigureAwait(true);
-        UpdateLocationBarLimits();
 
+        await InitAnalyzerAsync(CurrentCam.CameraPrefix, CurrentCam.CameraPath, CurrentCam.MonitorSubdirectories).ConfigureAwait(true);
+        SetPresetList();
+        EnablePTZ();
       }
 
       foreach (var cam in _allCameras.CameraDictionary.Values)
@@ -230,8 +283,12 @@ namespace OnGuardCore
         cameraCombo.SelectedItem = CurrentCam;
       }
 
-
       KeyPreview = true;
+
+      await FaceDetection.RegisterAllFacesAsync();
+      _loading = false;
+
+      Dbg.Write("On Guard started at: " + DateTime.Now.ToString());
 
     }
 
@@ -240,7 +297,7 @@ namespace OnGuardCore
     /// Called only once when they first start the application.
     /// It does all the required setup steps, one after the other.
     /// </summary>
-    void InitialSetup()
+    async Task InitialSetupAsync()
     {
 
       MessageBox.Show("In order to use the application you must first go through some steps to setup the application.  This is a one time only requirement.");
@@ -250,7 +307,7 @@ namespace OnGuardCore
 
       while (result == DialogResult.Cancel)
       {
-        using (SettingsDialog dlg = new SettingsDialog())
+        using (SettingsDialog dlg = new())
         {
           result = dlg.ShowDialog();   // AI and other application settings
           if (result == DialogResult.OK)
@@ -275,9 +332,8 @@ namespace OnGuardCore
 
       while (result == DialogResult.Cancel)
       {
-        using (CameraConfigurationDialog cameraDialog = new CameraConfigurationDialog(_allCameras))
+        using (CameraConfigurationDialog cameraDialog = new(_allCameras))
         {
-
           result = cameraDialog.ShowDialog();
           _allCameras = cameraDialog.AllCameraData;  // regardless of the OK/Cancel in the dialog we just copy the reference
 
@@ -288,7 +344,7 @@ namespace OnGuardCore
 
             if (null == cameraDialog.SelectedCamera)
             {
-              Storage.Instance.SetGlobalString("CurrentCameraPath", string.Empty);   // TODO: Remove?
+              Storage.Instance.SetGlobalString("CurrentCameraPath", string.Empty);
               Storage.Instance.SetGlobalString("CurrentCameraPrefix", string.Empty);
               Storage.Instance.Update();
             }
@@ -310,7 +366,7 @@ namespace OnGuardCore
 
       while (result == DialogResult.Cancel)
       {
-        using (OutgoingEmailDialog outgoingDlg = new OutgoingEmailDialog())
+        using (OutgoingEmailDialog outgoingDlg = new())
         {
           result = outgoingDlg.ShowDialog();
         }
@@ -329,7 +385,7 @@ namespace OnGuardCore
 
       while (result == DialogResult.Cancel)
       {
-        using (EmailAddressesDialog dlg = new EmailAddressesDialog(EmailAddresses.EmailAddressList))
+        using (EmailAddressesDialog dlg = new(EmailAddresses.EmailAddressList))
         {
           result = dlg.ShowDialog();
           if (result == DialogResult.OK)
@@ -356,427 +412,615 @@ namespace OnGuardCore
 
     }
 
-
-    async Task InitAnalyzer(string cameraNamePrefix, string path)
+    // If the file name is in fact new the we start the load of desired file.
+    // Once it loads it becomes the _displayedPicutre
+    private Picture CreatePicture(string fileName)
     {
+      Picture picture = null;
+      if (!string.IsNullOrEmpty(fileName))
+      {
+        picture = new(fileName);
+        Dbg.Trace("Creating new picture: " + picture.ID.ToString() + " File: " + fileName);
+        _pendingPictures.TryAdd(picture.ID, picture);
+        picture.AnalyzeIt = _showObjects;
+        picture.PictureType = PictureTypes.File;
+        Task.Run(() => Picture.LoadAsync(picture)).ConfigureAwait(false);
+      }
+      else
+      {
+        Dbg.Write("MainWindow - CreateDesiredPicture - the file name was null or empty!");
+      }
+
+      return picture;
+    }
+
+    private void CancelAllPendingPictures()
+    {
+      _moveDirection = MovementDirection.Still;
+      foreach (var p in _pendingPictures.Values)
+      {
+        try
+        {
+          p.Cancel();
+        }
+        catch { }
+      }
+    }
+
+    void CreateErrorPicture()
+    {
+      Picture p = new((Bitmap)pictureImage.ErrorImage, PictureTypes.Error); // will cause the to be created and will cause the callback into the UI thread
+      Picture.LoadComplete(p);
+    }
+
+
+    private void CreatePictureFromBitmap(Bitmap bitmap, PictureTypes pictureType)
+    {
+      Picture p = new(bitmap);
+      p.PictureType = pictureType;
+      _pendingPictures.TryAdd(p.ID, p);
+      Picture.LoadComplete(p);  // tell Picture to trigger the PictureAvailable event
+    }
+
+    public void UpdateLastPictureRequested(Picture picture)
+    {
+      if (null != picture && picture.State == PictureState.PictureLoaded)
+      {
+        string key = picture.GetKey();
+        UpdateRequestedKey(key);
+      }
+    }
+
+    public void UpdateRequestedKey(string fileKey)
+    {
+      if (!string.IsNullOrEmpty(fileKey))
+      {
+        _lastPictureRequested = fileKey;
+      }
+    }
+
+    public void UpdateRequestedPictureFromFile(string fileName)
+    {
+      if (!string.IsNullOrEmpty(fileName))
+      {
+        string key = GlobalFunctions.GetUniqueFileName(fileName);
+        _lastPictureRequested = key;
+      }
+    }
+
+    private delegate void PictureAvailableDelegate(Picture p);
+    private async void PictureAvailable(Picture picture)
+    {
+      if (this.InvokeRequired)
+      {
+        this.BeginInvoke(new PictureAvailableDelegate(PictureAvailable), new object[] { picture });
+        return;
+      }
+
+      Picture pictureToDispose = null;
+
+      int index = 0;
+      objectListView.Items.Clear();
+
+      if (!string.IsNullOrEmpty(picture.FileName))
+      {
+        index = PictureIndex(picture);
+      }
+
+
+      // Display ANY picture that has been loaded AND not canceled
+
+      if (!picture.WasCanceled())
+      {
+        if (picture.State == PictureState.PictureLoaded)
+        {
+          BitmapResolution.XResolution = picture.PictureBitmap.Width;
+          BitmapResolution.YResolution = picture.PictureBitmap.Height;
+          XResLabel.Text = BitmapResolution.XResolution.ToString();
+          YResLabel.Text = BitmapResolution.YResolution.ToString();
+          BitmapResolution.XScale = (double)picture.PictureBitmap.Width / (double)pictureImage.Width;
+          BitmapResolution.YScale = (double)picture.PictureBitmap.Height / (double)pictureImage.Height;
+          AdjustPictureImageSize(picture);
+          DrawRegistrationMark(picture);
+          DrawAreasOfInterest(picture);
+
+          pictureImage.SetImage(picture.PictureBitmap);
+
+          if (picture.AnalyzeIt && picture.State == PictureState.PictureLoaded)
+          {
+            if (CurrentCam != null && picture.InterestingObjects != null && picture.InterestingObjects.Count > 0 && picture.PictureType != PictureTypes.Error)
+            {
+              _analyzer.RemoveInvalidObjects(CurrentCam, picture.InterestingObjects);
+              await AnalyzePictureAsync(picture);
+              UpdateObjectList(picture);
+              picture.DrawObjectRectangles();
+              pictureImage.SetImage(picture.PictureBitmap); // the second set, but rather than lag the picture/reg mark draw...
+
+            }
+          }
+
+          pictureToDispose = _displayedPicture;
+          _displayedPicture = picture;  // At this point it really is displayed, but maybe move it up.
+
+          pictureImage.Refresh();
+          if (picture.PictureType == PictureTypes.Error)
+          {
+            UpdateNumericValue(fileNumberUpDown, 1);
+            UpdateControlText(goToFileTextBox, string.Empty);
+          }
+          else
+          {
+            UpdateNumericValue(fileNumberUpDown, index + 1);
+            UpdateControlText(goToFileTextBox, picture.FileName);
+            if (index >= 0)
+            {
+              timeLine.SetCurrentPosition(index);
+            }
+          }
+        }
+        else if (picture.State == PictureState.AINotFound)
+        {
+          Task.Run(() => NotifyAIGone()).ConfigureAwait(false);
+          return;
+        }
+        else if (picture.State == PictureState.FileDoesNotExist)
+        {
+          await HandleMissingPictureAsync(picture);
+        }
+      }
+      else
+      {
+        pictureToDispose = picture;  // it was canceled, we don't need it.
+      }
+
+      Picture removed;
+      if (_pendingPictures.Count > 0 && !_pendingPictures.TryRemove(picture.ID, out removed))
+      {
+        Dbg.Trace("MainWindow - PictureAvailable - Could not remove picture: " + picture.ID.ToString());
+      }
+
+      // The _cancelAfterNextPiture is (1) empty, do nothing (2) the special next picture guid (3) we are looking for a partictular picture
+      if (_cancelAfterPicture == NextPicture || picture.ID == _cancelAfterPicture)
+      {
+        CancelAllPendingPictures(); // clear the list since we got the one we wanted
+        UpdateNumericValue(fileNumberUpDown, index + 1);
+        UpdateControlText(goToFileTextBox, picture.FileName);
+        UpdateLastPictureRequested(picture);  // because we are canceling everything where we are is where we want to be
+        _cancelAfterPicture = Guid.Empty;
+      }
+
+      pictureToDispose?.Dispose();  // either the old displayed picture or one that has been canceled
+
+    }
+
+    // In cases using high resolution cameras the actual camera image is larger than the available space available to display it.
+    // There are basically 3 scenarios here depending on user preferences
+    // 1.  The width/height of the picture is fixed - if necessary use the scroll bars for vertical AND horizontal as necessary.
+    // 2.  The aspect ratio is fixed using the picture width to height ratio.  The width always has priority over the height.  This avoids picture distortion. Vertical scroll bar is frequently required, never horizontal
+    // 3.  The picture is always adjusted to fit within the borders - the picture may be visually distorted depending on the width to height ratio of the image and the window.  No picture scroll bars ever required
+    private void AdjustPictureImageSize(Picture picture)
+    {
+      double ratio = (double)picture.PictureBitmap.Height / (double)picture.PictureBitmap.Width;  // the aspect ratio
+      int pictureToPanelHeight = _originalPicturePanelHeight - _originalImageHeight;
+      int pictureToPanelWidth = _originalPicturePanelWidth - _originalImageWidth;
+
+      int y = 0;
+      int x = 0;
+
+      switch (DisplayType)
+      {
+        case DisplayOption.Fixed:
+          x = _originalImageWidth;
+          y = Convert.ToInt32((double)x * ratio);
+          break;
+
+        case DisplayOption.FilledHorizontally:
+
+          x = picturePanel.Width - pictureToPanelWidth;
+          x -= SystemInformation.VerticalScrollBarWidth;
+          y = Convert.ToInt32((double)x * ratio);
+          break;
+
+        case DisplayOption.FilledBoth:
+          x = picturePanel.Width - pictureToPanelWidth;
+          y = picturePanel.Height - pictureToPanelHeight;
+          break;
+
+        case DisplayOption.FilledVertically:
+          y = picturePanel.Height - pictureToPanelHeight;
+          y -= SystemInformation.HorizontalScrollBarHeight;
+          x = Convert.ToInt32((double)y / ratio);
+          break;
+      }
+
+      SuspendLayout();
+      pictureImage.Width = x;
+      pictureImage.Height = y;
+      ResumeLayout();
+    }
+
+    private void DrawRegistrationMark(Picture picture)
+    {
+      if (picture.PictureType != PictureTypes.Error)
+      {
+        if (CurrentCam != null && !(CurrentCam.RegistrationX == 0 && CurrentCam.RegistrationY == 0))
+        {
+          int x = (int)((((double)BitmapResolution.XResolution / (double)CurrentCam.RegistrationXResolution)) * (double)CurrentCam.RegistrationX);
+          int y = (int)((((double)BitmapResolution.YResolution / (double)CurrentCam.RegistrationYResolution)) * (double)CurrentCam.RegistrationY);
+          picture.DrawRegistrationMark(x, y);
+        }
+      }
+    }
+
+    // Ideally we'd like to do this in the picture, and maybe in the future.  We'd need to pass the AOI, and maybe that doesn't belong there?
+    private async Task AnalyzePictureAsync(Picture picture)
+    {
+      FrameAnalyzer analyzer = new(CurrentCam.AOI, picture.InterestingObjects, picture.PictureBitmap.Width, picture.PictureBitmap.Height);
+      AnalysisResult ar = await analyzer.AnalyzeFrameAsync(picture.PictureBitmap);
+      picture.InterestingObjects = ar.InterestingObjects;
+    }
+
+    private void UpdateObjectList(Picture picture)
+    {
+      if (null != picture.InterestingObjects && picture.InterestingObjects.Count > 0)
+      {
+        objectListView.Items.Clear();
+
+        string[] subItems = new string[6];
+        foreach (InterestingObject io in picture.InterestingObjects)
+        {
+          subItems[0] = io.Label;
+          subItems[1] = (100.0 * io.Confidence).ToString();
+          subItems[2] = io.ObjectRectangle.X.ToString();
+          subItems[3] = io.ObjectRectangle.Y.ToString();
+          subItems[4] = io.ObjectRectangle.Width.ToString();
+          subItems[5] = io.ObjectRectangle.Height.ToString();
+          ListViewItem item = new(subItems);
+          objectListView.Items.Add(item);
+        }
+      }
+    }
+
+
+    private async Task HandleMissingPictureAsync(Picture picture)
+    {
+
+      if (!string.IsNullOrEmpty(picture.FileName))
+      {
+        Dbg.Write("MainWindows -- PictureAvailable - The file does not exist or could not be loaded in time: " + picture.FileName);
+
+        // 
+        string key = GlobalFunctions.GetUniqueFileName(picture.FileName);
+        if (_fileNames.Remove(key))
+        {
+          ControlTextUpdate(numberOfFilesTextBox, _fileNames.Count.ToString()); // the ONLY time this happens
+        }
+      }
+
+      // Note that the current pictures still has the filename to use as the basis for the next/previous
+      if (_fileNames.Count > 0)
+      {
+        string nextPicture = await GetPostionAsync(true);
+        if (!string.IsNullOrEmpty(nextPicture))
+        {
+          CreatePicture(nextPicture);
+        }
+        else
+        {
+          CreateErrorPicture();
+        }
+      }
+
+    }
+
+
+    void DisplayMessage(string msg, string title)
+    {
+      if (this.InvokeRequired)
+      {
+        this.BeginInvoke(new Action(() =>
+        {
+          MessageBox.Show(msg, title);  // This may be changed in the future
+        }));
+      }
+      else
+      {
+        MessageBox.Show(msg, title);  // This may be changed in the future
+      }
+    }
+
+    private async void OnObjectsDetected(Picture picture)
+    {
+
+      if (!picture.WasCanceled())
+      {
+        if (picture.State == PictureState.AINotFound)
+        {
+          DisplayMessage("The DeepStack AI was not found. Either start the DeepStack AI or change the location and port of that application.", "Setup Error!");
+          return;
+        }
+        else
+        {
+          AIAnalyzer.RemoveItemsOfNoInterest(CurrentCam, picture.InterestingObjects);
+          FrameAnalyzer analyzer = new(CurrentCam.AOI, picture.InterestingObjects, picture.PictureBitmap.Width, picture.PictureBitmap.Height);
+          AnalysisResult ar = await analyzer.AnalyzeFrameAsync(picture.PictureBitmap).ConfigureAwait(true); // This does face detection that can be relatively slow
+
+
+          CameraData data = CurrentCam;
+          for (int i = 0; i < ar.InterestingObjects.Count; i++)
+          {
+            InterestingObject io = ar.InterestingObjects[i];
+            io.IsOfCameraInterest = data.IsItemOfCameraInterest(ar.InterestingObjects[i].Label);
+          }
+
+        }
+      }
+
+    }
+
+
+    private void PictureFromScanner(Bitmap bitmap)
+    {
+      CreatePictureFromBitmap(bitmap, PictureTypes.Scanned);
+    }
+
+    /// <summary>
+    /// This happens just when we are startinng a new camera (startup or switch)
+    /// </summary>
+    /// <param name="cameraNamePrefix"></param>
+    /// <param name="path"></param>
+    /// <param name="subDirectories"></param>
+    /// <returns></returns>
+    async Task InitAnalyzerAsync(string cameraNamePrefix, string path, bool subDirectories)
+    {
+      _displayedPicture?.Dispose();
+      CreateErrorPicture();
+
       if (null != _fileNames)
       {
         _fileNames.Clear();
       }
 
       _current = 0;
-
-      // pictureImage.Image = null;
       _showObjects = true;
-      showAreasOfInterestCheck.Checked = false;
-
-      if (null != _screenBitmap)
-      {
-        _screenBitmap.Dispose();
-        _screenBitmap = null;
-      }
-
-      if (null != _areaBackgroundBitmap)
-      {
-        _areaBackgroundBitmap.Dispose();
-        _areaBackgroundBitmap = null;
-      }
+      UpdateMenuItem(showAreasOfInterestToolStripMenuItem, string.Empty, 0);
 
       if (null != _fileNames)
       {
         _fileNames.Clear();
       }
-      _fileNames = _analyzer.Init(cameraNamePrefix, path);
+
+      _startMsg.SetLabel("Please Wait", "Loading Working Set Picture Names");
+      _fileNames = _analyzer.Init(cameraNamePrefix, path, subDirectories);
+      timeLine.Init(_fileNames);
       numberOfFilesTextBox.Text = _fileNames.Count.ToString();
       if (_fileNames.Count > 0)
       {
-        await LoadImage(_fileNames.Values[_current]).ConfigureAwait(true);
-      }
-      else
-      {
-        pictureImage.Image = pictureImage.ErrorImage;
+        _moveDirection = MovementDirection.Still;
+        CreatePicture(_fileNames.Values[0].FileName);
       }
 
       fileNumberUpDown.Maximum = _fileNames.Count;
       fileNumberUpDown.Minimum = (int)1;
+      _startMsg.Hide();
     }
 
-    private void GetConnectionString()
+
+    private void GetPictureAtPosition(int index)
     {
-      _connectionString = Storage.Instance.GetGlobalString("CustomDatabaseConnectionString");
-      string tmp = _connectionString;
-      if (string.IsNullOrEmpty(_connectionString))
+
+      if (index > 0)
       {
-        _connectionString = Storage.Instance.GetGlobalString("DBConnectionString");
-        tmp = _connectionString;
-        _connectionString = _connectionString.Replace(";Asynchronous Processing=True", "");
-
-        if (tmp != _connectionString)
+        if (_fileNames != null && index >= 0 && index < _fileNames.Count)
         {
-          Storage.Instance.SetGlobalString("DBConnectionString", _connectionString);
-          Storage.Instance.Update();
-        }
-        else if (string.IsNullOrEmpty(_connectionString))
-        {
-          _connectionString = GetDefaultConnectionString();
-          _connectionString = _connectionString.Replace(";Asynchronous Processing=True", "");
-          Storage.Instance.SetGlobalString("DBConnectionString", _connectionString);
-          Storage.Instance.Update();
-        }
-      }
 
-    }
-
-    /// <summary>
-    /// Move to the next picture in sequence or next motion
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void ButtonRight_Click(object sender, EventArgs e)
-    {
-      int lastPosition = _current;
-
-      using (WaitCursor _ = new WaitCursor())
-      {
-        lock (_fileLock)
-        {
-          while (true)  // handle the case where the "next" item was deleted external to the UI (Blue Iris, etc)
-          {
-
-            if (motionOnlyCheckbox.Checked)
-            {
-              GetNextMotion(_directionUp); // sets _current;
-              if (lastPosition == _current)
-              {
-                SystemSounds.Beep.Play();
-              }
-
-            }
-            else
-            {
-              SetCurrent(++_current);
-            }
-
-            if (_fileNames != null && _current < _fileNames.Count - 1)
-            {
-              try
-              {
-                LoadImage(_fileNames.Values[_current]);
-                break;
-              }
-              catch (FileNotFoundException)
-              {
-                _fileNames.RemoveAt(_current);
-                numberOfFilesTextBox.Text = _fileNames.Count.ToString();
-              }
-            }
-            else
-            {
-              SystemSounds.Beep.Play();
-              SetCurrent(-- _current);
-              if (_current < 0)
-              {
-                _current = 0;
-              }
-              break;
-            }
-          }
-        }
-      }
-
-
-    }
-
-    /// <summary>
-    /// Move to the previous picture in sequence or in motion.
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void ButtonLeft_Click(object sender, EventArgs e)
-    {
-      int lastPosition = _current;
-      using (WaitCursor _ = new WaitCursor())
-      {
-        lock (_fileLock)
-        {
-          while (true)
-          {
-            if (motionOnlyCheckbox.Checked)
-            {
-              GetNextMotion(!_directionUp); // sets _current;
-              if (lastPosition == _current)
-              {
-                SystemSounds.Beep.Play();
-              }
-            }
-            else
-            {
-              if (_current > 0)
-              {
-
-                SetCurrent(--_current);
-              }
-              else
-              {
-                SystemSounds.Beep.Play();
-              }
-            }
-
-            if (_current >= 0)
-            {
-              try
-              {
-                if (_fileNames != null && _current >= 0)
-                {
-                  if (_fileNames.Count > 0)
-                  {
-                    LoadImage(_fileNames.Values[_current]);
-                  }
-                  break;
-                }
-              }
-              catch (FileNotFoundException)
-              {
-                _fileNames.RemoveAt(_current);
-                numberOfFilesTextBox.Text = _fileNames.Count.ToString();
-                UpdateLocationBarLimits();
-              }
-            }
-            else
-            {
-              SystemSounds.Beep.Play();
-            }
-          }
+          CreatePicture(_fileNames.Values[index].FileName);
         }
       }
     }
 
-    private async Task<List<ImageObject>> LoadImage(string file)
+    Picture PictureFromFileName(string fileName)
     {
-      List<ImageObject> result = new List<ImageObject>();
-
-      bool continueTrying;
-      int count = 0;
-      int xResolution;
-      int yResolution;
-
-      using (Bitmap tmp = new Bitmap(file))
+      Picture result = null;
+      if (!string.IsNullOrEmpty(fileName))
       {
-        xResolution = tmp.Width;
-        yResolution = tmp.Height;
-        _screenBitmap = new Bitmap(tmp);  // The bitmap from the disk is 24bpp,the copy is 32bpp (and, yes, it matters)
-      }
-
-      BitmapResolution.XResolution = _screenBitmap.Width;
-      BitmapResolution.YResolution = _screenBitmap.Height;
-      if (null == pictureImage)
-      {
-        BitmapResolution.XScale = 1.0;
-        BitmapResolution.YScale = 1.0;
-      }
-      else
-      {
-        BitmapResolution.XScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
-        BitmapResolution.YScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
-      }
-
-
-      do
-      {
-        try
+        string key = GlobalFunctions.GetUniqueFileName(fileName);
+        if (_fileNames.Keys.Contains(key))
         {
-          continueTrying = false;
-          if (File.Exists(file))
-          {
-
-            result = await ProcessImage(file, xResolution, yResolution).ConfigureAwait(true);
-            FileInfo fi = new FileInfo(file);
-            _lastMotionTime = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
-
-            currentNumberTextBox.Text = (_fileNames.Values.IndexOf(file) + 1).ToString();
-            fileNameTextBox.Text = file;
-            _showingLiveView = false;
-          }
-          else
-          {
-            pictureImage.Image = pictureImage.ErrorImage;
-            currentNumberTextBox.Text = string.Empty;
-            fileNameTextBox.Text = string.Empty;
-            throw new FileNotFoundException("The image file was not found!", file);
-          }
+          result = CreatePicture(fileName);
         }
-        catch (FileNotFoundException ex)
+        else
         {
-          continueTrying = false;
-          throw ex;
+          MessageBox.Show(@"The picture file path\name must exist in the working set!", "Invalid Picture Name");
         }
-        catch (IOException)
-        {
-          continueTrying = true;
-          ++count;
-          Task.Delay(100);
-        }
-      } while (continueTrying && count < 3); // primarily to avoid a file in use. There are much more elegant (and correct) ways to do this, but I'm tired of this
+      }
 
       return result;
     }
 
 
-    private async Task<List<ImageObject>> ProcessImage(string imageName, int xResolution, int yResolution)
+    int PictureIndex(string fileName)
     {
-
-      if (_frameObjects != null)
+      int index = -1;
+      if (!string.IsNullOrEmpty(fileName))
       {
-        _frameObjects.Clear();
+        string key = GlobalFunctions.GetUniqueFileName(fileName);
+        index = _fileNames.IndexOfKey(key);
       }
 
-      objectListView.Items.Clear();
-      // pictureImage.Image = null;
-
-
-      if (_showObjects)
+      if (index == -1)
       {
-        try
-        {
-          DateTime start = DateTime.Now;
-          _frameObjects = await AIDetection.AIProcessFromUI(imageName, true).ConfigureAwait(true);
-          TimeSpan elapsed = DateTime.Now - start;
-          UpdateFrameProgressBar(elapsed);
-        }
-        catch (AggregateException ex)
-        {
-          if (ex.InnerException is AiNotFoundException) // This we know how to handle.
-          {
-            MessageBox.Show(ex.InnerException.Message + Environment.NewLine + "Either start the DeepStack AI or change the location and port of that application.", "Setup Error!");
-            using (SettingsDialog dlg = new SettingsDialog())
-            {
-              if (dlg.ShowDialog() == DialogResult.OK)
-              {
-                _frameObjects = null;
-              }
-            }
-          }
-          return null;
-        }
-
-        if (null != _frameObjects)
-        {
-          AIAnalyzer.RemoveItemsOfNoInterest(CurrentCam, _frameObjects);
-        }
-
-        DrawObjectRectangles(_frameObjects);
+        Dbg.Write("PictureIndex =- -1");
       }
 
-      goToFileTextBox.Text = "";
-
-      if (showAreasOfInterestCheck.Checked)
-      {
-        ShowAreasOfInterest();
-      }
-
-      DrawRegistrationMark();
-
-      pictureImage.Image = _screenBitmap;
-      XResLabel.Text = BitmapResolution.XResolution.ToString();
-      YResLabel.Text = BitmapResolution.YResolution.ToString();
-
-      return _frameObjects;
+      return index;
     }
 
-    private void DrawObjectRectangles(List<ImageObject> imageObjects)
+    int PictureIndex(Picture picture)
     {
-      if (imageObjects != null)
+      return PictureIndex(picture.FileName);
+    }
+
+    string FileNameFromIndex(int index)
+    {
+      string pic = string.Empty;
+
+      if (index != -1)
       {
-        using (var graphics = Graphics.FromImage(_screenBitmap))
+        if (index < _fileNames.Count)
         {
-          using (Pen redPen = new Pen(Color.Red, 2))
+          string key = _fileNames.Keys[index];
+          pic = _fileNames[key].FileName;
+        }
+      }
+
+      return pic;
+    }
+
+
+
+    // all this does is get the correct index into the file list when moving next.
+    // this depends on whether we are looking for motion only or not.
+    // This can take a while, particularly if a lot of files have been deleted that are in the working set
+
+    private async Task<string> GetPostionAsync(bool next) // next is page up, right click
+    {
+      string fileName = string.Empty;
+      int lastRequestedPosition = 0;
+      int currentlyRequestedPosition = 0;
+
+      if (!string.IsNullOrEmpty(_lastPictureRequested))
+      {
+        lastRequestedPosition = _fileNames.IndexOfKey(_lastPictureRequested);
+      }
+
+      using (WaitCursor _ = new())
+      {
+        if (motionOnlyCheckbox.Checked)
+        {
+          if (string.IsNullOrEmpty(_lastPictureRequested))
           {
-            string[] subItems = new string[6];
-            foreach (ImageObject obj in imageObjects)
+            if (_displayedPicture != null && _displayedPicture.PictureType != PictureTypes.Error)
             {
-              if (CurrentCam.IsItemOfCameraInterest(obj.Label))
-              {
-                subItems[0] = obj.Label;
-                subItems[1] = (100.0 * obj.Confidence).ToString();
-                subItems[2] = obj.ObjectRectangle.X.ToString();
-                subItems[3] = obj.ObjectRectangle.Y.ToString();
-                subItems[4] = obj.ObjectRectangle.Width.ToString();
-                subItems[5] = obj.ObjectRectangle.Height.ToString();
-                ListViewItem item = new ListViewItem(subItems);
-                objectListView.Items.Add(item);
-
-                Rectangle rect = obj.ObjectRectangle;
-                graphics.DrawRectangle(redPen, rect);
-
-                Label label = new Label();
-                label.AutoSize = true;
-                label.BackColor = Color.White;
-                label.ForeColor = Color.Black;
-                label.Height = 70;
-                label.Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold);
-                label.AutoSize = false;
-                string confidence = string.Format("{0:0.##}", 100.0 * obj.Confidence);
-
-                label.Text = obj.Label + Environment.NewLine + confidence + Environment.NewLine;
-                var textSize = graphics.MeasureString(label.Text, label.Font);
-
-
-                Rectangle labelRect = new Rectangle(rect.X + 10, rect.Top - (label.Height - 5), label.Width, (int)textSize.Height + 5);
-                if (labelRect.Y < 0)
-                {
-                  labelRect.Y = 0;
-                }
-
-                if (labelRect.X < 0)
-                {
-                  labelRect.X = 0;
-                }
-
-                label.DrawToBitmap(_screenBitmap, labelRect);
-
-              }
+              Dbg.Trace("MainWindow - GetPositionAsync - _lastPictureRequested is empty - Defaulting to displayed picture: " + _displayedPicture.FileName);
+              UpdateLastPictureRequested(_displayedPicture);
             }
+            else
+            {
+              return string.Empty;
+            }
+          }
+
+          string nextKey = await GetNextMotionAsync(_lastPictureRequested, next);
+          if (!string.IsNullOrEmpty(nextKey))
+          {
+            UpdateRequestedKey(nextKey);     // the key, not the file name itself.
+            currentlyRequestedPosition = _fileNames.IndexOfKey(nextKey);
+            fileName = _fileNames[nextKey].FileName;
+          }
+          else
+          {
+            fileName = string.Empty;
+          }
+        }
+        else
+        {
+
+          if (next)
+          {
+            currentlyRequestedPosition = lastRequestedPosition + 1;
+          }
+          else
+          {
+            currentlyRequestedPosition = lastRequestedPosition - 1;
+          }
+
+          if (currentlyRequestedPosition < 0)
+          {
+            currentlyRequestedPosition = 0;
+          }
+          else if (currentlyRequestedPosition >= _fileNames.Count)
+          {
+            currentlyRequestedPosition = _fileNames.Count - 1; // which can go negative if there are no pictues
+          }
+
+          if (currentlyRequestedPosition >= 0)
+          {
+            fileName = FileNameFromIndex(currentlyRequestedPosition);
+            UpdateRequestedPictureFromFile(fileName);
           }
         }
       }
+
+      return fileName;
     }
 
-    private void DrawRegistrationMark()
+
+    // Either with the page-up/down or the right left arrow keys we
+    // would like to move in the direction indicated
+    private async Task<Picture> MoveInDirectionAsync(bool right)
     {
-      if (!(CurrentCam.RegistrationX == 0 && CurrentCam.RegistrationY == 0))
+      Picture nextPicture = null;
+
+      if (_pendingPictures.Count > 5)
       {
-        using (SolidBrush registrationBrush = new SolidBrush(aoiRegistrationColor))
+        // If there is a backlog of pending pictures it does no good to add another request.
+        // Note that we allow 5 because the AI (time consuming operation) can handle about 4 or 5
+        // pictures at once (GPU version) with relative ease.
+        return null;
+      }
+
+      string nextPictureName = await GetPostionAsync(right);
+      if (!string.IsNullOrEmpty(nextPictureName))
+      {
+        if (right)
         {
-          using (var graphics = Graphics.FromImage(_screenBitmap))
-          {
-            int x = (int)((((double)BitmapResolution.XResolution / (double)CurrentCam.RegistrationXResolution)) * (double)CurrentCam.RegistrationX);
-            int y = (int)((((double)BitmapResolution.YResolution / (double)CurrentCam.RegistrationYResolution)) * (double)CurrentCam.RegistrationY);
-            Rectangle rect = Rectangle.FromLTRB(x - 10, y - 10,
-                                              x + 10, y + 10);
-
-            graphics.FillRectangle(registrationBrush, rect);
-
-          }
+          _moveDirection = MovementDirection.Right;
         }
+        else
+        {
+          _moveDirection = MovementDirection.Left;
+        }
+
+        nextPicture = CreatePicture(nextPictureName);
+      }
+
+      return nextPicture;
+    }
+
+    private async void ButtonLeft_Click(object sender, EventArgs e)
+    {
+      Picture p = await MoveInDirectionAsync(false).ConfigureAwait(true);
+      if (null != p)
+      {
+        _cancelAfterPicture = NextPicture; // allow the requested to complete, but only one
+      }
+    }
+
+    private async void ButtonRight_Click(object sender, EventArgs e)
+    {
+      Picture p = await MoveInDirectionAsync(true).ConfigureAwait(true);
+      if (null != p)
+      {
+        _cancelAfterPicture = NextPicture;// allow the requested to complete, but only one
       }
     }
 
 
     private void GoToFileButton_Click(object sender, EventArgs e)
     {
-      using (WaitCursor _ = new WaitCursor())
+      using WaitCursor _ = new();
+      _moveDirection = MovementDirection.Still;
+      motionOnlyCheckbox.Checked = false;
+      if (_fileNames.Count > 0)
       {
-        lock (_fileLock)
+        if (_fileNames.Count > (int)((fileNumberUpDown.Value) - 1))
         {
-          motionOnlyCheckbox.Checked = false;
-          if (_fileNames.Count > 0)
-          {
-            if (_fileNames.Count > (int)(fileNumberUpDown.Value))
-            {
-              LoadImage(_fileNames.Values[(int)fileNumberUpDown.Value - 1]);
-              SetCurrent((int)fileNumberUpDown.Value - 1);
-            }
-          }
+          CancelAllPendingPictures(); // get rid of ALL pending pictures
+          string key = _fileNames.Keys[(int)fileNumberUpDown.Value - 1];
+          PictureInfo pi = _fileNames[key];
+          CreatePicture(pi.FileName);
+          UpdateRequestedKey(pi.PictureKey);
         }
       }
     }
@@ -789,40 +1033,39 @@ namespace OnGuardCore
     /// <param name="e"></param>
     private void GoToFileNameButton_Click(object sender, EventArgs e)
     {
-      using (WaitCursor _ = new WaitCursor())
+      using WaitCursor _ = new();
+      _moveDirection = MovementDirection.Still;
+      motionOnlyCheckbox.Checked = false;
+
+      if (!string.IsNullOrEmpty(goToFileTextBox.Text) && PictureIndex(goToFileTextBox.Text) != -1)
       {
-        motionOnlyCheckbox.Checked = false;
-        lock (_fileLock)
-        {
-          if (!string.IsNullOrEmpty(goToFileTextBox.Text) && File.Exists(goToFileTextBox.Text))
-          {
-            LoadImage(goToFileTextBox.Text);
-          }
-          else
-          {
-            MessageBox.Show(this, "You must enter the complete file name/path of a valid picture to view/go to it", "Entry Required!");
-          }
-        }
+        CreatePicture(goToFileTextBox.Text);
+        UpdateRequestedPictureFromFile(goToFileTextBox.Text);
+      }
+      else
+      {
+        MessageBox.Show(this, @"You must enter the complete file path\name of a valid picture to view/go to it", "Valid Entry Required!");
       }
     }
 
 
     private void OnReverseListButton(object sender, EventArgs e)
     {
-      using (WaitCursor _ = new WaitCursor())
-      {
-        lock (_fileLock)
-        {
-          motionOnlyCheckbox.Checked = false;
-          FileTimeComparer comp = (FileTimeComparer)_fileNames.Comparer;
-          comp.Reverse();
-          _fileNames = new SortedList<DateTime, string>(_fileNames, comp);
+      CancelAllPendingPictures();
 
-          SetCurrent(0);
-          LoadImage(_fileNames.Values[0]);
-          _directionUp = !_directionUp;
-        }
+      using WaitCursor _ = new();
+      motionOnlyCheckbox.Checked = false;
+      PictureComparer comp = (PictureComparer)_fileNames.Comparer;
+      comp.Reverse();
+      _fileNames = new SortedList<string, PictureInfo>(_fileNames, comp);
+
+      SetCurrent(0);
+      if (_fileNames.Count > 0)
+      {
+        CreatePicture(_fileNames.Values[0].FileName);
+        UpdateRequestedPictureFromFile(_fileNames.Values[0].FileName);
       }
+      _directionUp = !_directionUp;
     }
 
     private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -834,113 +1077,203 @@ namespace OnGuardCore
     {
       if (!_modifyingArea)
       {
-        lock (_fileLock)
+        ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
+        if (_fileNames != null && _fileNames.Count > 0 && _showObjects != menuItem.Checked)
         {
-          ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
-          if (_fileNames != null && _fileNames.Count > 0 && _showObjects != menuItem.Checked)
+          _showObjects = menuItem.Checked;
+          if (_displayedPicture.PictureType == PictureTypes.File && !string.IsNullOrEmpty(_displayedPicture.FileName))
           {
-            _showObjects = menuItem.Checked;
-            LoadImage(_fileNames.Values[_current]);
+            CreatePicture(_displayedPicture.FileName);
           }
         }
       }
     }
 
-    private void OnKeyDown(object sender, KeyEventArgs e)
+    private async void OnKeyDown(object sender, KeyEventArgs e)
     {
-      switch (e.KeyCode)
+      if (!_loading)
       {
-        case Keys.PageUp:
-          if (!_modifyingArea)
-          {
-            e.Handled = true;
-            ButtonRight_Click(sender, e);
-          }
-          break;
-        case Keys.PageDown:
-          if (!_modifyingArea)
-          {
-            e.Handled = true;
-            ButtonLeft_Click(sender, e);
-          }
-          break;
+        switch (e.KeyCode)
+        {
+          case Keys.PageUp:
+            if (!_modifyingArea)
+            {
+              e.Handled = true;
+              await MoveInDirectionAsync(true);
+            }
+            break;
+          case Keys.PageDown:
+            if (!_modifyingArea)
+            {
+              e.Handled = true;
+              await MoveInDirectionAsync(false);
+            }
+            break;
 
-        case Keys.Escape:
-          if (null != _modifyBox)
-          {
-            _modifyingArea = false;
-            ControlMoverOrResizer.Stop(_modifyBox);
-            _modifyBox.Dispose();
-            _modifyBox = null;
-            StopEditingEnvironment();
-          }
-          break;
+          case Keys.Escape:
+            e.Handled = true;
 
-        case Keys.F1:
-          if (null != _modifyBox)
-          {
-            AcceptAreaOfInterest();
-          }
-          break;
+            _areaDefinition.Clear();
+            SetScreenAreaDefinition(_areaDefinition);
+            if (_modifyingArea)
+            {
+              StopEditingEnvironment();
+            }
+
+            break;
+
+          case Keys.F1:
+
+            if (_definitionType == DefinitionType.Face)
+            {
+              if (_definingFace)
+              {
+                _definingFace = false;
+                await CreateFaceAsync().ConfigureAwait(true);
+              }
+            }
+            if (_definitionType == DefinitionType.AOI)
+            {
+              if (_modifyingArea)
+              {
+                AcceptAreaOfInterest();
+                // _areaDefinition.Clear();
+                // SetScreenAreaDefinition(_areaDefinition);
+              }
+            }
+            break;
+
+          case Keys.NumPad1:
+          case Keys.D1:
+            if (_modifyingArea)
+            {
+              _defineBrushSize = 1;
+            }
+            break;
+
+          case Keys.NumPad2:
+          case Keys.D2:
+            if (_modifyingArea)
+            {
+              _defineBrushSize = 2;
+            }
+            break;
+
+
+          case Keys.NumPad3:
+          case Keys.D3:
+            if (_modifyingArea)
+            {
+              _defineBrushSize = 4;
+            }
+            break;
+
+          case Keys.NumPad4:
+          case Keys.D4:
+            if (_modifyingArea)
+            {
+              _defineBrushSize = 8;
+            }
+            break;
+
+          case Keys.NumPad5:
+          case Keys.D5:
+            if (_modifyingArea)
+            {
+              _defineBrushSize = 16;
+            }
+            break;
+
+          case Keys.NumPad6:
+          case Keys.D6:
+            if (_modifyingArea)
+            {
+              _defineBrushSize = 32;
+            }
+            break;
+
+          case Keys.NumPad7:
+          case Keys.D7:
+            if (_modifyingArea)
+            {
+              _defineBrushSize = 64;
+            }
+            break;
+
+          case Keys.F7:
+            break;
+        }
+      }
+    }
+
+    // If the Key goes up and the background is moving to the next image (key held down)
+    // eat any remainging keys
+    private void OnKeyUp(object sender, KeyEventArgs e)
+    {
+      if (e.KeyCode == Keys.PageUp)
+      {
+        _moveDirection = MovementDirection.Still;
+        _cancelAfterPicture = NextPicture;   // still allow the "next" one to complete
+      }
+      else if (e.KeyCode == Keys.PageDown)
+      {
+        _moveDirection = MovementDirection.Still;
+        _cancelAfterPicture = NextPicture;
       }
     }
 
     void AcceptAreaOfInterest()
     {
-      Rectangle rect = new Rectangle(_modifyBox.Location.X, _modifyBox.Location.Y, _modifyBox.Width, _modifyBox.Height);
-      Point zoneFocus = _modifyBox.ZoneFocus;
-      Rectangle scaledRect = BitmapResolution.ScaleScreenToData(rect);
-
-      _modifyingArea = false;
-      ControlMoverOrResizer.Stop(_modifyBox);
-      StopEditingEnvironment();
-      _modifyBox.Dispose();
-      _modifyBox = null;
 
       if (_modifyingAreaID == Guid.Empty)
       {
+        StopEditingEnvironment();
 
-        using (CreateAOI dlg = new CreateAOI(scaledRect, zoneFocus, BitmapResolution.XResolution, BitmapResolution.YResolution))
+        using CreateAOI dlg = new(_areaDefinition);
+        DialogResult result = dlg.ShowDialog(pictureImage);
+
+        switch (result)
         {
-          DialogResult result = dlg.ShowDialog(pictureImage);
+          case DialogResult.OK:
+            _areaDefinition.Clear();
+            SetScreenAreaDefinition(_areaDefinition);
 
-          switch (result)
-          {
-            case DialogResult.OK:
-              if (_modifyingAreaID == Guid.Empty)
-              {
-                CurrentCam.AOI.AddArea(dlg.Area);
-                CurrentCam.AOI.Save();
-              }
-              else
-              {
-                CurrentCam.AOI[_modifyingAreaID].AreaRect = scaledRect; // just update the area (does not need to be adjusted)
-                CurrentCam.AOI.Save();
-                MessageBox.Show(pictureImage, "The Area of Interest was saved with new boundaries!", "Area Saved");
-                _modifyingAreaID = Guid.Empty;
-              }
-              break;
+            if (_modifyingAreaID == Guid.Empty)
+            {
+              CurrentCam.AOI.AddArea(dlg.Area);
+              CurrentCam.AOI.Save();
+            }
+            else
+            {
+              CurrentCam.AOI.Save();
+              MessageBox.Show(pictureImage, "The Area of Interest was saved with a new definition!", "Area Saved");
+              _modifyingAreaID = Guid.Empty;
+            }
+            break;
 
-            case DialogResult.Yes:
-              // An artificial response saying "edit this area".  This only happen when the area
-              // there is a request to modify an area that has come from the initial area creation
-              // It does not happen here when the area is modified via the EditAreasOfInterest box
-              CurrentCam.AOI.AddArea(dlg.Area); // Even if we are modifying an area bounds we still save it
-              StartEditingArea(dlg.Area.ID);
-              break;
-          }
+          case DialogResult.Yes:
+            // An artificial response saying "edit this area".  This only happens when
+            // there is a request to modify an area that has come from the initial area creation
+            // It does not happen here when the area is modified via the EditAreasOfInterest box
+            CurrentCam.AOI.AddArea(dlg.Area); // Even if we are modifying an area bounds we still save it
+            CurrentCam.AOI.Save();
+            StartEditingArea(dlg.Area.ID);
+            break;
         }
       }
       else
       {
-        // If we are already modifying an area all we do is update the rectangle
-        CurrentCam.AOI[_modifyingAreaID].AreaRect = scaledRect; // does not need to be adjusted
-        CurrentCam.AOI[_modifyingAreaID].ZoneFocus = zoneFocus;
+        // If we are already modifying an area all we do is update the area
+        CurrentCam.AOI[_modifyingAreaID].Grid = new GridDefinition(_areaDefinition);
+        _areaDefinition.Clear();
+        SetScreenAreaDefinition(_areaDefinition);
         CurrentCam.AOI.Save();
-        MessageBox.Show(pictureImage, "The boundaries of the current Area of Interest have been modified", "Area of Interest Changed!");
+        MessageBox.Show(pictureImage, "The Area of Interest was saved with a new definition!", "Area Changed!");
+        StopEditingEnvironment();
       }
 
     }
+
 
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
@@ -948,8 +1281,40 @@ namespace OnGuardCore
       int mouseY = (int)Math.Round(e.Location.Y * BitmapResolution.YScale);
       xPosLabel.Text = mouseX.ToString();
       yPosLabel.Text = mouseY.ToString();
+
+      if (_modifyingArea)
+      {
+        if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
+        {
+          DefineArea(e.Location, MouseButtons.Left == e.Button);
+        }
+      }
     }
 
+    void DefineArea(Point mousePoint, bool setArea)
+    {
+      Point pt = ScreenToArea(mousePoint);
+
+      for (int row = 0; row < _defineBrushSize; row++)
+      {
+        if (pt.Y + row >= _areaDefinition.YDim)
+        {
+          break;
+        }
+
+        for (int col = 0; col < _defineBrushSize; col++)
+        {
+          if (pt.X + col >= _areaDefinition.XDim)
+          {
+            break;
+          }
+
+          _areaDefinition.Set(pt.X + col, pt.Y + row, setArea);
+        }
+      }
+
+      SetScreenAreaDefinition(_areaDefinition);
+    }
 
 
 
@@ -970,59 +1335,26 @@ namespace OnGuardCore
       _allCameras.CameraDictionary[CameraData.PathAndPrefix(CurrentCam)].RegistrationX = CurrentCam.RegistrationX;
       _allCameras.CameraDictionary[CameraData.PathAndPrefix(CurrentCam)].RegistrationY = CurrentCam.RegistrationY;
 
-      DialogResult shiftResult = MessageBox.Show(this, "You have the option to shift your areas with respect to the registration mark shift.  Do you want to do this?", "Shift Areas?", MessageBoxButtons.YesNo);
-
-      if (shiftResult == DialogResult.Yes)
-      {
-        Dbg.Write("Adjusting Areas with respect to registration point");
-
-        // If this area is of type registration then adjust everybody's x & Y
-        // BUT, only if there was already a registration point
-        if (CurrentCam.RegistrationX > 0 && CurrentCam.RegistrationY > 0)
-        {
-          foreach (var area in CurrentCam.AOI)
-          {
-            area.AdjustRect(-offsetX, -offsetY);
-            if (area.AreaRect.X < 0)
-            {
-              area.AreaRect.X = 0;
-            }
-
-            if (area.AreaRect.Y < 0)
-            {
-              area.AreaRect.Y = 0;
-            }
-          }
-        }
-
-        CameraCollection.Save(_allCameras);
-      }
-
       CameraCollection.Save(_allCameras);
-
-      if (_showingLiveView)
-      {
-        LiveCameraButton_Click(null, null);
-      }
-      else
-      {
-        lock (_fileLock)
-        {
-          LoadImage(_fileNames.Values[_current]);
-        }
-      }
     }
 
     private void OnMouseDown(object sender, MouseEventArgs e)
     {
-      if (!_modifyingArea)
+
+      if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
       {
+
         if (e.Button == MouseButtons.Right)
         {
-          _modifyingArea = true;
+          // color = Color.FromArgb(80, Color.LightCyan);
+          string caption = "On Guard ****** Defining Face - Escape to Quit, F1 to Accept ******";
+          _displayedPicture.RestoreBitmap();
+          pictureImage.SetImage(_displayedPicture.PictureBitmap);
+          pictureImage.Refresh();
+          SetupEditingEnvironment(caption);
+          _definingFace = true;
           _modifyingAreaID = Guid.Empty;  // signal that this is a new area not a mods
-
-          _modifyBox = new ZoneBox()
+          _modifyBox = new ZoneBox(Color.FromArgb(80, Color.LightCyan))
           {
             Parent = pictureImage,
             Location = new Point(e.X, e.Y),
@@ -1030,17 +1362,25 @@ namespace OnGuardCore
           };
           _modifyBox.Show();
           ControlMoverOrResizer.Start(_modifyBox);
-          SetupEditingEnvironment();
+          _definitionType = DefinitionType.Face;
         }
-        else
+        else if (e.Button == MouseButtons.Left)
         {
-          if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+          if (MessageBox.Show("You are about to set the registration point for this camera.  This helps you ensure that your camera is in the right position. Are you sure you want to do this?", "Reset Camera Registration Point", MessageBoxButtons.YesNo) == DialogResult.Yes)
           {
-            if (MessageBox.Show("You are about to set the registration point for this camera.  This helps you ensure that your camera is in the right position.  If the registration point has already been set, then you have the option to adjust any existing areas of interest with respect to this shift.  Are you sure you want to do this?", "Reset Camera Registration Point", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            AdjustAreasOfInterest(e.X, e.Y);
+            if (null != _displayedPicture)
             {
-              AdjustAreasOfInterest(e.X, e.Y);
+              CreatePictureFromBitmap(_displayedPicture.OriginalBitmap, PictureTypes.Snapshot);
             }
           }
+        }
+      }
+      else if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
+      {
+        if (_modifyingArea)
+        {
+          DefineArea(e.Location, MouseButtons.Left == e.Button);
         }
       }
     }
@@ -1053,109 +1393,80 @@ namespace OnGuardCore
         {
           if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
           {
-            MessageBox.Show("You can create areas of interest by using a mouse click down and drag.  However, before you can do this you must set a camera registration point so that you can ensure that your camera is always position correctly.  You do this by holding the control key and then clicking in the desired position for the registration point.  That point should be on a spot that is easily recoginzed when viewing the camera.", "Set Camera Registration Point First!");
-          }
-        }
-      }
-
-    }
-
-
-    private void OnMouseLeave(object sender, EventArgs e)
-    {
-    }
-
-    private void OnMouseEnter(object sender, EventArgs e)
-    {
-    }
-
-    private void ShowAreasOfInterestCheckChanged(object sender, EventArgs e)
-    {
-      lock (_fileLock)
-      {
-        if (_fileNames != null && _fileNames.Count > 0)
-        {
-          if (showAreasOfInterestCheck.Checked)
-          {
-            ShowAreasOfInterest();
-          }
-          else
-          {
-            LoadImage(_fileNames.Values[_current]);
+            MessageBox.Show("You must set a camera registration point so that you can ensure that your camera is always position correctly.  You do this by holding the control key and then clicking in the desired position for the registration point.  That point should be on a spot that is easily recoginzed when viewing the camera.", "Set Camera Registration Point First!");
           }
         }
       }
     }
 
-    private void ShowAreasOfInterest()
+    private async void ShowAreasOfInterestCheckChanged(object sender, EventArgs e)
     {
-      if (!_modifyingArea)
+      if (_fileNames != null && _fileNames.Count > 0)
       {
-        using (var graphics = Graphics.FromImage(_screenBitmap))
+        CancelAllPendingPictures();
+        _moveDirection = MovementDirection.Still;
+
+        if (showAreasOfInterestToolStripMenuItem.Checked)
         {
-          using (SolidBrush brush = new SolidBrush(aoiColor))
+          if (null != _displayedPicture)
           {
-
-            foreach (AreaOfInterest area in CurrentCam.AOI)
-            {
-
-              Rectangle rect = area.GetRect();
-              graphics.FillRectangle(brush, rect);
-            }
+            DrawAreasOfInterest(_displayedPicture);
+            pictureImage.SetImage(_displayedPicture.PictureBitmap);
+            pictureImage.Refresh();
           }
         }
+        else
+        {
+          pictureImage.GridsSelected = null;
+          _displayedPicture.RestoreBitmap();
+          pictureImage.SetImage(_displayedPicture.PictureBitmap);
+          pictureImage.Refresh();
+        }
+      }
+    }
 
-        pictureImage.Invalidate();
+    // TODO: Just draw into the pictureImage? Move to Picture?
+    private void DrawAreasOfInterest(Picture picture)
+    {
+      if (picture.PictureType != PictureTypes.Error)
+      {
+        if (showAreasOfInterestToolStripMenuItem.Checked && CurrentCam.AOI.Count() > 0)
+        {
+          List<GridDefinition> definitionList = new();
+          foreach (AreaOfInterest area in CurrentCam.AOI)
+          {
+            definitionList.Add(area.Grid);
+          }
+
+          pictureImage.GridsSelected = definitionList;
+          pictureImage.Invalidate();
+        }
       }
     }
 
     private void EditAreasOfInterestToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      using (EditAreasOfInterest edit = new EditAreasOfInterest(CurrentCam.AOI)) // handles any changes in registration
-      {
-        DialogResult result = edit.ShowDialog();
-        if (result == DialogResult.Yes)
-        {
-          // An artificial response showing that we have an Area of Interest boundary to change
-          StartEditingArea(edit.EditAreaID);
-        }
-        else
-        {
-          lock (_fileLock)
-          {
-            if (_fileNames != null && _fileNames.Count > 0)
-            {
-              LoadImage(_fileNames.Values[_current]);
-            }
-          }
-        }
-      }
     }
 
     void StartEditingArea(Guid areaID)
     {
       _modifyingAreaID = areaID;
       _modifyingArea = true;
-      _modifyBox = new ZoneBox()
-      {
-        Parent = pictureImage
-      };
-      Rectangle screenRect = ScaleDataToScreen(CurrentCam.AOI[_modifyingAreaID].GetRect());
-      Point zoneFocus = CurrentCam.AOI[_modifyingAreaID].ZoneFocus;
-      _modifyBox.Location = new Point(screenRect.X, screenRect.Y);
-      _modifyBox.ZoneFocus = zoneFocus;
-      _modifyBox.Size = screenRect.Size;
-      SetupEditingEnvironment();
-      _modifyBox.Show();
-      ControlMoverOrResizer.Start(_modifyBox);
+      // _displayedPicture.DrawArea(CurrentCam.AOI[_modifyingAreaID].Area);
+      _areaDefinition = new GridDefinition(CurrentCam.AOI[_modifyingAreaID].Grid);
+      SetScreenAreaDefinition(_areaDefinition);
+      pictureImage.Refresh();
+      SetupEditingEnvironment("****** Creating/Modifying Area of Interest - Escape to Quit, F1 to Accept -  Number Keys (1-7) Control Brush Size ******");
     }
 
-    void SetupEditingEnvironment()
+    void SetupEditingEnvironment(string caption)
     {
+      _modifyingArea = true;
+      _defineBrushSize = 1;
       ToolsPanel.BackColor = SystemColors.ControlDarkDark;
       ToolsPanel.Enabled = false;
       menuStrip2.Enabled = false;
-      Text = "On Guard ****** Creating/Modifying Area of Interest - Escape to Quit, F1 to Accept ******";
+      Text = caption;
     }
 
     void StopEditingEnvironment()
@@ -1163,178 +1474,215 @@ namespace OnGuardCore
       ToolsPanel.BackColor = SystemColors.Control;
       ToolsPanel.Enabled = true;
       menuStrip2.Enabled = true;
+
+      _displayedPicture.RestoreBitmap();
+      pictureImage.SetImage(_displayedPicture.PictureBitmap);   // TODO:
+      pictureImage.Refresh();
+
       Text = "On Guard";
+      _modifyingArea = false;
+      _modifyingAreaID = Guid.Empty;
+
+      if (_definingFace)
+      {
+        _modifyBox.Dispose();
+        _definingFace = false;
+      }
+
 
     }
-
-
-
-    // Currently unused, but it may be in the future
-    int EqualPriorityOverlap(ImageObject imageObject, AreaOfInterest area)
-    {
-      int overlap;
-      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, area.GetRect());
-      var percentage = (((intersect.Width * intersect.Height) * 2) * 100f) / ((imageObject.ObjectRectangle.Width * imageObject.ObjectRectangle.Height) + (area.GetRect().Width * area.GetRect().Height));
-      overlap = (int)percentage;
-
-      return overlap;
-    }
-
-    // Currently unused, but it may be inthe future
-    int ObjectToAreaOverlap(ImageObject imageObject, AreaOfInterest area)
-    {
-      int objectArea = imageObject.ObjectRectangle.Width * imageObject.ObjectRectangle.Height;
-      int areaArea = area.GetRect().Width * area.GetRect().Height;
-      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, area.GetRect());
-      int intersectArea = intersect.Width * intersect.Height;
-
-      double percentage = (100.0 * intersectArea) / objectArea;
-      int overlap = (int)Math.Round(percentage);
-      return overlap;
-    }
-
 
 
     public static Rectangle ScaleDataToScreen(Rectangle rect)
     {
-      Rectangle result = new Rectangle((int)Math.Round(rect.X / BitmapResolution.XScale), (int)Math.Round(rect.Y / BitmapResolution.YScale), (int)Math.Round(rect.Width / BitmapResolution.XScale), (int)Math.Round(rect.Height / BitmapResolution.YScale));
+      Rectangle result = new((int)Math.Round(rect.X / BitmapResolution.XScale), (int)Math.Round(rect.Y / BitmapResolution.YScale), (int)Math.Round(rect.Width / BitmapResolution.XScale), (int)Math.Round(rect.Height / BitmapResolution.YScale));
       return result;
     }
 
     public static Point ScaleDataToScreen(Point point)
     {
-      Point result = new Point((int)Math.Round(point.X / BitmapResolution.XScale), (int)Math.Round(point.Y / BitmapResolution.YScale));
+      Point result = new((int)Math.Round(point.X / BitmapResolution.XScale), (int)Math.Round(point.Y / BitmapResolution.YScale));
       return result;
     }
 
-    private void AnalyzeButton_Click(object sender, EventArgs e)
+    private async void AnalyzeButton_Click(object sender, EventArgs e)
     {
-      if (!_showObjects)
+      try
       {
-        showObjectRectanglesToolStripMenuItem.Checked = true;
-        ShowObjectRectangelsToolStripMenuItem_Click(showObjectRectanglesToolStripMenuItem, null);
+        await Analyze(false);
+      }
+      catch (Exception ex)
+      { }
+    }
+
+    private async Task Analyze(bool showEverything)
+    {
+      if (_displayedPicture.PictureType != PictureTypes.File || string.IsNullOrEmpty(_displayedPicture.FileName))
+      {
+        SystemSounds.Beep.Play();
+        MessageBox.Show("The currently displayed picture is not a file based picture (snapshot/error)", "Invalid Picture");
+        return;
       }
 
-      if (null != _frameObjects)
+      CancelAllPendingPictures();
+
+      if (null != CurrentCam && null != _displayedPicture)
       {
-        List<ImageObject> frameObjects = LoadImage(_fileNames.Values[_current]).Result;
-        AIAnalyzer.RemoveDuplicateVehiclesInImage(frameObjects);
-        FrameAnalyzer analyzer = new FrameAnalyzer(CurrentCam.AOI, frameObjects, _screenBitmap.Width, _screenBitmap.Height);
-        AnalysisResult result = analyzer.AnalyzeFrame();
-        using (InterestingItemsDialog dlg = new InterestingItemsDialog(result))
+        if (!_showObjects)
         {
-          dlg.ShowDialog();
+          showObjectRectanglesToolStripMenuItem.Checked = true;
+          ShowObjectRectangelsToolStripMenuItem_Click(showObjectRectanglesToolStripMenuItem, null);
+        }
+
+        List<InterestingObject> result = await AIDetection.AIFindObjectsAsync(_displayedPicture.PictureBitmap, _displayedPicture.FileName);
+
+        if (null != result && result.Count > 0)
+        {
+          if (!showEverything)
+          {
+            AIAnalyzer.RemoveItemsOfNoInterest(CurrentCam, result);
+            AIAnalyzer.RemoveDuplicateVehiclesInImage(result);
+          }
+
+          _displayedPicture.InterestingObjects = result;
+          UpdateObjectList(_displayedPicture);
+          _displayedPicture.DrawObjectRectangles();
+          pictureImage.SetImage(_displayedPicture.PictureBitmap); // the second set, but rather than lag the picture/reg mark draw...
+
+
+          if (result.Count > 0) // we may have removed some
+          {
+            FrameAnalyzer frameAnalyzer = new(CurrentCam.AOI, result, _displayedPicture.PictureBitmap.Width, _displayedPicture.PictureBitmap.Height);
+            AnalysisResult frameResult = await frameAnalyzer.AnalyzeFrameAsync(_displayedPicture.PictureBitmap);
+            using InterestingItemsDialog dlg = new(frameResult);
+            dlg.ShowDialog();
+          }
+        }
+        else
+        {
+          MessageBox.Show(this, "There are no objects on this picture to analyze", "Nothing Here!");
         }
       }
-      else
+    }
+
+    private async void FullAnalysisButton_Click(object sender, EventArgs e)
+    {
+      try
       {
-        MessageBox.Show(this, "There are no objects on this picture to analyze", "Nothing Here!");
+        await Analyze(true);
+      }
+      catch (Exception ex)
+      {
       }
     }
 
 
-    private async Task GetLiveImage(bool fromVideo)
+    private async Task GetLiveImageAsync(bool fromVideo)
     {
       string urlString;
+      Bitmap bitmap = null;
 
       _continueLiveVideo = false; // dont't try again unless success
 
       motionOnlyCheckbox.Checked = false;
-      CameraContactData data = CurrentCam.LiveContactData;  // for clarity
-      if (data.CameraXResolution > 0 && data.CameraYResolution > 0)
+
+      if (CurrentCam == null)
       {
-        urlString = string.Format("http://{0}:{1}/image/{2}?q=100&w={3}&h={4}&user={5}&pw={6}",
-          data.CameraIPAddress, data.Port.ToString(), data.ShortCameraName,
-          data.CameraXResolution, data.CameraYResolution, data.CameraUserName, data.CameraPassword);
+        Dbg.Write("The Current Camera was not set when getting the snapshot image");
       }
       else
       {
-        urlString = string.Format("http://{0}:{1}/image/{2}?q=100&user={3}&pw={4}",
-          data.CameraIPAddress, data.Port.ToString(), data.ShortCameraName,
-          data.CameraUserName, data.CameraPassword);
-      }
+        CameraContactData data = CurrentCam.Contact;  // for clarity
+        urlString = data.JPGSnapshotURL;
 
-      try
-      {
-        Uri uri = new Uri(urlString);
-        System.Net.HttpWebRequest webRequest = (System.Net.HttpWebRequest)HttpWebRequest.Create(uri);
-        webRequest.AllowWriteStreamBuffering = true;
-        webRequest.Timeout = 3000;
-
-        using (WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true))
+        try
         {
-          _continueLiveVideo = true;  // allow live video to proceed since we succeeded
-          using (var stream = webResponse.GetResponseStream())
+          urlString = CurrentCam.Contact.ReplaceParmeters(CurrentCam.Contact.JPGSnapshotURL);
+          Uri uri = new(urlString);
+
+          System.Net.HttpWebRequest webRequest = (System.Net.HttpWebRequest)HttpWebRequest.Create(uri);
+
+          if (CurrentCam.Contact.JpgContactMethod != PTZMethod.BlueIris)
           {
-            using (MemoryStream memStream = new MemoryStream())
+            webRequest.Credentials = new System.Net.NetworkCredential(data.CameraUserName, data.CameraPassword);
+          }
+
+          webRequest.AllowWriteStreamBuffering = true;
+          webRequest.Timeout = 10000;
+
+          using (WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true))
+          {
+            _continueLiveVideo = true;  // allow live video to proceed since we succeeded
+            using var stream = webResponse.GetResponseStream();
+            using MemoryStream memStream = new();
+            await stream.CopyToAsync(memStream);
+
+            bitmap = new Bitmap(memStream);
+            CreatePictureFromBitmap(bitmap, PictureTypes.Snapshot);
+
+
+            if (null == bitmap)
             {
-              stream.CopyTo(memStream);
-
-              _screenBitmap = new Bitmap(memStream);
-
-              if (null == _screenBitmap)
-              {
-                MessageBox.Show(this, "There was an error obtaining the snapshot/video.  Please check your Live Camera settings", "Error Contacting the Camera");
-              }
-              else
-              {
-                pictureImage.Image = _screenBitmap;
-
-                BitmapResolution.XResolution = _screenBitmap.Width;
-                BitmapResolution.YResolution = _screenBitmap.Height;
-                BitmapResolution.XScale = (double)_screenBitmap.Width / (double)pictureImage.Width;
-                BitmapResolution.YScale = (double)_screenBitmap.Height / (double)pictureImage.Height;
-              }
+              MessageBox.Show(this, "There was an error obtaining the snapshot/video.  Please check your Live Camera settings", "Error Contacting the Camera");
+              CancelAllPendingPictures();
             }
           }
-        }
 
-      }
-      catch (HttpRequestException ex)
-      {
-        Dbg.Write("MainWindow - LiveCameraButton_Click = Error  snapshot/live image: " + ex.Message);
-        MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot");
-      }
-      catch (WebException ex)
-      {
-        if (null != _liveTimer)
-        {
-          _liveTimer.Stop();
-          _liveTimer.Dispose();
-          _liveTimer = null;
-          liveCheck.Checked = false;
+
+          // DrawRegistrationMark();
+
+          goToFileTextBox.Text = "Live Image";
+          XResLabel.Text = bitmap.Width.ToString();
+          YResLabel.Text = bitmap.Height.ToString();
+
+
         }
-        Dbg.Write("MainWindow - There was an error attempting to get a snapshot or continuous video.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message);
-        if (fromVideo)
+        catch (HttpRequestException ex)
         {
-          MessageBox.Show("There was an error attempting to access your camera for continuous video.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error Getting Video");
-        }
-        else
-        {
+          Dbg.Write("MainWindow - LiveCameraButton_Click = Error  snapshot/live image: " + ex.Message);
           MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot");
         }
+        catch (WebException ex)
+        {
+          if (null != _liveTimer)
+          {
+            _liveTimer.Stop();
+            _liveTimer.Dispose();
+            _liveTimer = null;
+            liveCheck.Checked = false;
+          }
+          Dbg.Write("MainWindow - There was an error attempting to get a snapshot or continuous video.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message);
+          if (fromVideo)
+          {
+            MessageBox.Show("There was an error attempting to access your camera for continuous video.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error Getting Video");
+          }
+          else
+          {
+            MessageBox.Show("There was an error attempting to get a snapshot.  Please check your camera Live Camera tab and make sure the settings for your camera are correct: " + ex.Message, "Error obtaining snapshot");
+          }
+        }
       }
-
-      DrawRegistrationMark();
-
-      fileNameTextBox.Text = "Live Image";
-      _showingLiveView = true;
-      XResLabel.Text = _screenBitmap.Width.ToString();
-      YResLabel.Text = _screenBitmap.Height.ToString();
     }
 
 
 
     private async void LiveCameraButton_Click(object sender, EventArgs e)
     {
-      GetLiveImage(false);
+      await GetLiveImageAsync(false);
     }
 
-    private void OnLiveImageTimer(Object o, EventArgs e)
+    private async void OnLiveImageTimer(Object o, EventArgs e)
     {
       if (_continueLiveVideo)
       {
-        GetLiveImage(true);
+        try
+        {
+          await GetLiveImageAsync(true);
+        }
+        catch (IOException ex)
+        {
+          // Just do nothing.  Sometimes the camera does this
+        }
       }
     }
 
@@ -1344,7 +1692,7 @@ namespace OnGuardCore
       if (liveCheck.Checked)
       {
         showObjectRectanglesToolStripMenuItem.Checked = false;
-        showAreasOfInterestCheck.Checked = false;
+        showAreasOfInterestToolStripMenuItem.Checked = false;
         _showObjects = false;
         _liveTimer = new System.Windows.Forms.Timer
         {
@@ -1356,6 +1704,7 @@ namespace OnGuardCore
       }
       else
       {
+        CancelAllPendingPictures();
         _continueLiveVideo = false;
         _liveTimer?.Dispose();
         _liveTimer = null;
@@ -1363,93 +1712,234 @@ namespace OnGuardCore
     }
 
 
-    // /cam/{cam-short-name}/pos=x Performs a PTZ command on the specified camera, where x= 0=left, 1=right, 2=up, 3=down, 4=home, 5=zoom in, 6=zoom out
 
-    enum CameraDirections
+    async Task CameraDirectionButtonAsync(CameraDirections direction)
     {
-      left = 0,
-      right = 1,
-      up = 2,
-      down = 3,
-      home = 4,
-      zoomIn = 5,
-      zoomOut = 6
-    }
+      bool success = false;
+      int stopDelay = 0;
+      string urlString = string.Empty;
 
-
-
-    async Task CameraDirectionButton(CameraDirections direction)
-    {
-      motionOnlyCheckbox.Checked = false;
-      string urlString = string.Format("http://{0}:{1}/cam/{2}/pos={3}&user={4}&pw={5}", CurrentCam.LiveContactData.CameraIPAddress,
-         CurrentCam.LiveContactData.Port.ToString(),
-        CurrentCam.LiveContactData.ShortCameraName, (int)direction,
-        CurrentCam.LiveContactData.CameraUserName,
-        CurrentCam.LiveContactData.CameraPassword);
-      try
+      if (null != CurrentCam)
       {
-        System.Net.HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(new Uri(urlString));
-        webRequest.AllowWriteStreamBuffering = true;
-        webRequest.Timeout = 30000;
+        CameraContactData data = CurrentCam.Contact;
 
-        System.Net.WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true);
 
-        var stream = webResponse.GetResponseStream();
-        using (MemoryStream memStream = new MemoryStream())
+        motionOnlyCheckbox.Checked = false;
+
+        if (data.PTZContactMethod == PTZMethod.OnVIF)
         {
-          stream.CopyTo(memStream);
-          //bitmap = new Bitmap(stream);
+          try
+          {
+            Mictlanix.DotNet.Onvif.Common.PTZSpeed speed = new();
+            Mictlanix.DotNet.Onvif.Common.Vector2D vector = new();
+            Mictlanix.DotNet.Onvif.Common.Vector1D zoomVector = new();
+            int t = 0;
+
+            switch (direction)
+            {
+              case CameraDirections.left:
+
+                vector.x = (float)(-1.0 * data.PanSpeed);
+                t = (int)(1000 * data.PanTime);
+                break;
+
+              case CameraDirections.right:
+                vector.x = (float)(data.PanSpeed);
+                t = (int)(1000 * data.PanTime);
+                break;
+
+              case CameraDirections.up:
+                vector.y = (float)(data.TiltSpeed);
+                t = (int)(1000.0 * data.TiltTime);
+                break;
+
+              case CameraDirections.down:
+                vector.y = (float)(-1 * data.TiltSpeed);
+                t = (int)(1000 * data.TiltTime);
+                break;
+
+              case CameraDirections.zoomIn:
+                zoomVector.x = (float)(data.ZoomSpeed);
+                break;
+
+              case CameraDirections.zoomOut:
+                zoomVector.x = (float)(-1.0 * data.ZoomSpeed);
+                t = (int)(1000 * data.ZoomTime);
+                break;
+            }
+
+            speed.PanTilt = vector;
+            speed.Zoom = zoomVector;
+
+            await data.ONVIF.Ptz.ContinuousMoveAsync(data.ONVIF.SelectedProfile, speed, 3000.ToString());
+            await Task.Delay(t).ConfigureAwait(true);
+            await data.ONVIF.Ptz.StopAsync(data.ONVIF.SelectedProfile, true, true);
+            LiveCameraButton_Click(null, null);
+          }
+          catch (Exception ex)
+          {
+            Dbg.Write("CameraDirectionButton - OnVIF - Exception: " + ex.Message);
+          }
+        }
+        else
+        {
+
+          if (data.PTZContactMethod == PTZMethod.BlueIris)
+          {
+            string pw = data.CameraPassword;
+            pw = HttpUtility.UrlEncode(pw);
+
+
+            urlString = string.Format("http://{0}:{1}/cam/{2}/pos={3}&user={4}&pw={5}", data.CameraIPAddress,
+                     data.Port.ToString(),
+                    HttpUtility.UrlEncode(data.CameraShortName), (int)direction,
+                    data.CameraUserName,
+                    pw);
+
+          }
+          else
+          {
+            // Both iSpy and HTTP methods use http directions
+            switch (direction)
+            {
+              case CameraDirections.left:
+                urlString = data.HTTPPanLeft;
+                stopDelay = (int)(data.PanTime * 1000.0);
+                break;
+
+              case CameraDirections.right:
+                urlString = data.HTTPPanRight;
+                stopDelay = (int)(data.PanTime * 1000.0);
+                break;
+
+              case CameraDirections.up:
+                urlString = data.HTTPPanUp;
+                stopDelay = (int)(data.TiltTime * 1000.0);
+                break;
+
+              case CameraDirections.down:
+                urlString = data.HTTPPanDown;
+                stopDelay = (int)(data.TiltTime * 1000.0);
+                break;
+
+              case CameraDirections.zoomIn:
+                urlString = data.HTTPZoomIn;
+                stopDelay = (int)(data.ZoomTime * 1000.0);
+                break;
+
+              case CameraDirections.zoomOut:
+                urlString = data.HTTPZoomOut;
+                stopDelay = (int)(data.ZoomTime * 1000.0);
+                break;
+            }
+
+            urlString = data.ReplaceParmeters(urlString);
+          }
         }
 
-        webResponse.Close();
+        try
+        {
+          System.Net.HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(new Uri(urlString));
+
+          if (data.JpgContactMethod != PTZMethod.BlueIris)
+          {
+            // Blue Iris uses the Blue Iris user/password, which is not the same as the blue iris machine user/pawword
+            webRequest.Credentials = new System.Net.NetworkCredential(data.CameraUserName, data.CameraPassword);
+          }
+
+          webRequest.AllowWriteStreamBuffering = true;
+          webRequest.Timeout = 5000;
+
+          System.Net.WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true);
+
+          var stream = webResponse.GetResponseStream();
+          webResponse.Close();
+          success = true;
+
+        }
+        catch (HttpRequestException ex)
+        {
+          Dbg.Write("MainWindow - CameraDirectionButton - HttpRequestException: " + ex.Message);
+        }
+        catch (Exception ex)
+        {
+          Dbg.Write("MainWindow - CameraDirectionButton - Unexpected Exception: " + ex.Message);
+        }
+
+        if (success)
+        {
+          // PTZ was started.  However, we may need to stop it after the set time
+          if (data.PTZContactMethod == PTZMethod.OnVIF)
+          {
+            await Task.Delay(stopDelay).ConfigureAwait(true);
+          }
+          else if (data.PTZContactMethod == PTZMethod.HTTP || data.PTZContactMethod == PTZMethod.iSpy)
+          {
+            if (!string.IsNullOrEmpty(data.HTTPStop))
+            {
+              await Task.Delay(stopDelay).ConfigureAwait(true);
+
+              System.Net.HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(new Uri(urlString));
+
+              if (data.JpgContactMethod != PTZMethod.BlueIris)
+              {
+                webRequest.Credentials = new System.Net.NetworkCredential(data.CameraUserName, data.CameraPassword);
+              }
+
+              webRequest.AllowWriteStreamBuffering = true;
+              webRequest.Timeout = 30000;
+
+              System.Net.WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true);
+
+              var stream = webResponse.GetResponseStream();
+              webResponse.Close();
+            }
+
+          }
+
+          // Now, display the image (which may or may not have been fully updated)
+          await Task.Delay(1000 * 2).ConfigureAwait(true);
+          LiveCameraButton_Click(null, null);
+        }
       }
-      catch (HttpRequestException ex)
-      {
-        Dbg.Write("MainWindow - CameraDirectionButton - HttpRequestException: " + ex.Message);
-      }
-
-      await Task.Delay(1000 * 1).ConfigureAwait(true);
-      LiveCameraButton_Click(null, null);
     }
 
-    private void CamZoomOut_Click(object sender, EventArgs e)
+    private async void CamZoomOut_Click(object sender, EventArgs e)
     {
-      CameraDirectionButton(CameraDirections.zoomOut);
+      await CameraDirectionButtonAsync(CameraDirections.zoomOut).ConfigureAwait(true);
     }
 
-    private void CamDownButton_Click(object sender, EventArgs e)
+    private async void CamDownButton_Click(object sender, EventArgs e)
     {
-      CameraDirectionButton(CameraDirections.down);
+      await CameraDirectionButtonAsync(CameraDirections.down).ConfigureAwait(true);
     }
 
-    private void ZoomInButton_Click(object sender, EventArgs e)
+    private async void ZoomInButton_Click(object sender, EventArgs e)
     {
-      CameraDirectionButton(CameraDirections.zoomIn);
+      await CameraDirectionButtonAsync(CameraDirections.zoomIn).ConfigureAwait(true);
     }
 
-    private void CamUpButton_Click(object sender, EventArgs e)
+    private async void CamUpButton_Click(object sender, EventArgs e)
     {
-      CameraDirectionButton(CameraDirections.up);
+      await CameraDirectionButtonAsync(CameraDirections.up).ConfigureAwait(true);
     }
 
-    private void CamLeftButton_Click(object sender, EventArgs e)
+    private async void CamLeftButton_Click(object sender, EventArgs e)
     {
-      CameraDirectionButton(CameraDirections.left);
+      await CameraDirectionButtonAsync(CameraDirections.left).ConfigureAwait(true);
     }
 
-    private void CamRightButton_Click(object sender, EventArgs e)
+    private async void CamRightButton_Click(object sender, EventArgs e)
     {
-      CameraDirectionButton(CameraDirections.right);
+      await CameraDirectionButtonAsync(CameraDirections.right).ConfigureAwait(true);
     }
 
 
     private void SettingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      using (SettingsDialog dlg = new SettingsDialog())
+      using SettingsDialog dlg = new();
+      if (dlg.ShowDialog() == DialogResult.OK)
       {
-        if (dlg.ShowDialog() == DialogResult.OK)
-        {
-        }
       }
     }
 
@@ -1458,21 +1948,22 @@ namespace OnGuardCore
     /// Events for all cameras come in here as a file is changed in the directory we are watching
     /// Just put it in the queue and we will process it in a different thread 
     /// </summary>
-    /// <param name="camData"></param>
+    /// <param name="camera"></param>
     /// <param name="fileName"></param>
-    void OnCameraImage(CameraData camData, string fileName)
+    void OnCameraImage(CameraData camera, string fileName)
     {
       if (_filesPendingProcessing.TryAdd(fileName, fileName))
       {
-        _fileQueue.Enqueue(new PendingItem(camData, fileName));
+        _fileQueue.Enqueue(new PendingItem(camera, fileName));
         _wakeFileQueue.Set(); // Wake up the queue monitoring thread.  Maybe it can process it right now
       }
+
     }
 
     // Here we passed all of the tests from the AI and have compared the objects to the AOIs.
     // Now, we need to figure out who to notify and notify them
 
-    static async Task Notify(Frame frame)
+    async Task NotifyAsync(Frame frame)
     {
       // Url notification is (right now)  oriented toward notifying BlueIris cameras to record.
       // So, there is no sense notifying it multiple times.  However, different areas
@@ -1481,7 +1972,7 @@ namespace OnGuardCore
       // The hashset will not accept duplicates.
       string fileName = frame.Item.PendingFile;
 
-      List<UrlOptions> urlsToNotify = new List<UrlOptions>();
+      List<UrlOptions> urlsToNotify = new();
       string objectsFound = string.Empty;
 
       bool first = true;
@@ -1500,19 +1991,22 @@ namespace OnGuardCore
         {
           /*if (ooi.Area.Notifications.mqttCooldown.CooldownExpired())
           {*/
-          await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame, ooi).ConfigureAwait(false);
+          await MQTTPublish.Publish(frame.Item.CamData.CameraPrefix, ooi.Area, frame, ooi).ConfigureAwait(true);
           /*}*/
         }
 
-        foreach (var notifyUrl in ooi.Area.Notifications.Urls)
+        if (null != ooi.Area.Notifications)
         {
-          if (notifyUrl.CoolDown.CooldownExpired())
+          foreach (var notifyUrl in ooi.Area.Notifications.Urls)
           {
-            urlsToNotify.Add(notifyUrl);
-          }
-          else
-          {
-            Dbg.Trace("In cooldown: " + ooi.Area.AOIName + " - " + frame.Item.PendingFile);
+            if (notifyUrl.CoolDown.CooldownExpired())
+            {
+              urlsToNotify.Add(notifyUrl);
+            }
+            else
+            {
+              Dbg.Trace("In cooldown: " + ooi.Area.AOIName + " - " + frame.Item.PendingFile);
+            }
           }
         }
       }
@@ -1526,11 +2020,11 @@ namespace OnGuardCore
         {
           // "http://jasdfsafjifia.com/jasf";
           urlStr = string.Format("http://{0}:{1}/admin?trigger&camera={2}&user={3}&pw={4}&jpeg={5}&memo={6}",
-            frame.Item.CamData.LiveContactData.CameraIPAddress,
-            frame.Item.CamData.LiveContactData.Port,
-            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.ShortCameraName),
-            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.CameraUserName),
-            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.CameraPassword),
+            frame.Item.CamData.Contact.CameraIPAddress,
+            frame.Item.CamData.Contact.Port,
+            HttpUtility.UrlEncode(frame.Item.CamData.Contact.CameraShortName),
+            HttpUtility.UrlEncode(frame.Item.CamData.Contact.CameraUserName),
+            HttpUtility.UrlEncode(frame.Item.CamData.Contact.CameraPassword),
             HttpUtility.UrlEncode(fileName),
             objectsFound);
 
@@ -1544,11 +2038,11 @@ namespace OnGuardCore
             }
 
             confirmStr = string.Format("http://{0}:{1}/admin?camera={2}&user={3}&pw={4}&flagalert={5}&jpeg={6}&flagclip",
-            frame.Item.CamData.LiveContactData.CameraIPAddress,
-            frame.Item.CamData.LiveContactData.Port,
-            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.ShortCameraName),
-            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.CameraUserName),
-            HttpUtility.UrlEncode(frame.Item.CamData.LiveContactData.CameraPassword),
+            frame.Item.CamData.Contact.CameraIPAddress,
+            frame.Item.CamData.Contact.Port,
+            HttpUtility.UrlEncode(frame.Item.CamData.Contact.CameraShortName),
+            HttpUtility.UrlEncode(frame.Item.CamData.Contact.CameraUserName),
+            HttpUtility.UrlEncode(frame.Item.CamData.Contact.CameraPassword),
             flags,
             HttpUtility.UrlEncode(fileName));
 
@@ -1559,21 +2053,22 @@ namespace OnGuardCore
           urlStr = notify.Url;
         }
 
+
         _test = frame;
 
         if (notify.WaitTime > 0)
         {
           Dbg.Trace("Delaying: " + notify.WaitTime.ToString() + " before sending url " + urlStr);
-          await Task.Delay(1000 * notify.WaitTime).ConfigureAwait(false);
+          await Task.Delay(1000 * notify.WaitTime).ConfigureAwait(true);
         }
 
         // Do the standard notify
-        await NotifyUrl(urlStr).ConfigureAwait(false);
+        await NotifyUrlAsync(urlStr).ConfigureAwait(true);
         Dbg.Trace("Sent URL Notification: " + urlStr);
 
         if (!string.IsNullOrEmpty(confirmStr))
         {
-          await NotifyUrl(confirmStr).ConfigureAwait(false);
+          await NotifyUrlAsync(confirmStr).ConfigureAwait(true);
           Dbg.Trace("Sent BI Notification: " + confirmStr);
         }
       }
@@ -1581,81 +2076,74 @@ namespace OnGuardCore
     }
 
 
-    static async Task NotifyUrl(string urlStr)
+    static async Task NotifyUrlAsync(string urlStr)
     {
-      using (HttpClient client = new HttpClient())
+      using HttpClient client = new();
+      try
       {
-        try
+        client.Timeout = TimeSpan.FromSeconds(20.0);
+        Uri url = new(urlStr);
+        HttpResponseMessage response = await client.GetAsync(url).ConfigureAwait(true);
+        if (response.IsSuccessStatusCode)
         {
-          client.Timeout = TimeSpan.FromSeconds(20.0);
-          Uri url = new Uri(urlStr);
-          HttpResponseMessage response = await client.GetAsync(url).ConfigureAwait(false);
-          if (response.IsSuccessStatusCode)
-          {
-            Dbg.Write("Successfully notified URL: " + urlStr);
-          }
-          else
-          {
-            Dbg.Write("Error notifying URL: " + urlStr + " -- Reponse Code: " + response.StatusCode.ToString());
-          }
-
-          response.Dispose();
+          Dbg.Trace("Successfully notified URL: " + urlStr);
         }
-        catch (HttpRequestException ex)
+        else
         {
-          Dbg.Write("MainWindow - NotifyUrl - Exception caught in NotifyUrl: " + ex.Message);
-        }
-        catch (Exception ex)
-        {
-          Dbg.Write("MainWindow - NotifyUrl - Unknown Exception caught in NotifyUrl: " + ex.Message);
+          Dbg.Write("Error notifying URL: " + urlStr + " -- Reponse Code: " + response.StatusCode.ToString());
         }
 
+        response.Dispose();
+      }
+      catch (HttpRequestException ex)
+      {
+        Dbg.Write("MainWindow - NotifyUrl - Exception caught in NotifyUrl: " + ex.Message);
+      }
+      catch (Exception ex)
+      {
+        Dbg.Write("MainWindow - NotifyUrl - Unknown Exception caught in NotifyUrl: " + ex.Message);
       }
     }
 
     // Currently unused, but it may be in the future
-    static async Task NotifyViaEmail(string emailRecipients, HashSet<string> acvityDesc, string fileName)
+    static async Task NotifyViaEmailAsync(string emailRecipients, HashSet<string> acvityDesc, string fileName)
     {
 
       try
       {
-        using (MailMessage mail = new MailMessage())
+        using MailMessage mail = new();
+        using SmtpClient SmtpServer = new(Storage.Instance.GetGlobalString("EmailServer"));
+        mail.BodyEncoding = Encoding.UTF8;
+        mail.IsBodyHtml = true;
+        mail.From = new MailAddress(Storage.Instance.GetGlobalString("EmailUser"));
+        string rec = emailRecipients.TrimEnd(new char[] { ';', ' ' });
+        mail.To.Add(rec);
+        mail.Subject = "Security Camera Alert";   // todo get via ui
+        mail.Body = "Your security camera noticed the following activity:<br />";
+
+        foreach (var desc in acvityDesc)
         {
-          using (SmtpClient SmtpServer = new SmtpClient(Storage.Instance.GetGlobalString("EmailServer")))
-          {
-            mail.BodyEncoding = Encoding.UTF8;
-            mail.IsBodyHtml = true;
-            mail.From = new MailAddress(Storage.Instance.GetGlobalString("EmailUser"));
-            string rec = emailRecipients.TrimEnd(new char[] { ';', ' ' });
-            mail.To.Add(rec);
-            mail.Subject = "Security Camera Alert";   // todo get via ui
-            mail.Body = "Your security camera noticed the following activity:<br />";
-
-            foreach (var desc in acvityDesc)
-            {
-              mail.Body += desc + "<br/>";
-            }
-
-            System.Net.Mail.Attachment attachment;
-            attachment = new System.Net.Mail.Attachment(fileName);
-            mail.Attachments.Add(attachment);
-
-            SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
-
-            SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
-            string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
-            string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
-
-            if (!string.IsNullOrEmpty(emailUserName))
-            {
-              SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
-            }
-
-            SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
-
-            await SmtpServer.SendMailAsync(mail).ConfigureAwait(false);
-          }
+          mail.Body += desc + "<br/>";
         }
+
+        System.Net.Mail.Attachment attachment;
+        attachment = new System.Net.Mail.Attachment(fileName);
+        mail.Attachments.Add(attachment);
+
+        SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
+
+        SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
+        string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
+        string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
+
+        if (!string.IsNullOrEmpty(emailUserName))
+        {
+          SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
+        }
+
+        SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
+
+        await SmtpServer.SendMailAsync(mail).ConfigureAwait(true);
       }
       catch (SmtpException ex)
       {
@@ -1666,44 +2154,76 @@ namespace OnGuardCore
 
     private async void PresetButton_Click(object sender, EventArgs e)
     {
-      using (WaitCursor _ = new WaitCursor())
+      if (null != CurrentCam)
       {
-        motionOnlyCheckbox.Checked = false;
-        string urlString = string.Format("http://{0}:{1}/admin?camera={2}&preset={3}&user={4}&pw={5}",
-        CurrentCam.LiveContactData.CameraIPAddress,
-        CurrentCam.LiveContactData.Port.ToString(),
-        CurrentCam.LiveContactData.ShortCameraName,
-        (int)presetNumeric.Value,
-        CurrentCam.LiveContactData.CameraUserName,
-        CurrentCam.LiveContactData.CameraPassword);
+        CameraContactData data = new(CurrentCam.Contact);
 
-        try
+        if (PresetsCombo.Items.Count > 0)
         {
-          System.Net.HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(new Uri(urlString));
-          webRequest.AllowWriteStreamBuffering = true;
-          webRequest.Timeout = 30000;
+          string urlString = string.Empty;
+          int preset = PresetsCombo.SelectedIndex;
 
-          using (System.Net.WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true))
+          using WaitCursor _ = new();
+          motionOnlyCheckbox.Checked = false;
+
+          if (CurrentCam.Contact.PresetSettings.PresetMethod == PTZMethod.OnVIF)
           {
-            var stream = webResponse.GetResponseStream();
-            using (MemoryStream memStream = new MemoryStream())
-            {
-              stream.CopyTo(memStream);
-              //bitmap = new Bitmap(stream);
-            }
-          }
-        }
-        catch (HttpRequestException ex)
-        {
-          Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
-        }
-        catch (Exception ex)
-        {
-          Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
-        }
+            await data.ONVIF.Ptz.GotoPresetAsync(
+              data.ONVIF.SelectedProfile,
+              data.PresetSettings.PresetList[preset].Command,
+              null);
 
-        await Task.Delay(1000 * 5).ConfigureAwait(true);
-        LiveCameraButton_Click(null, null);
+            await Task.Delay(1000 * 5).ConfigureAwait(true);
+            LiveCameraButton_Click(null, null);
+
+          }
+          else
+          {
+            if (CurrentCam.Contact.PresetSettings.PresetMethod == PTZMethod.BlueIris)
+            {
+
+              urlString = string.Format("http://[ADDRESS]/admin?camera=[SHORTNAME]&preset={0}&user=[USERNAME]&pw=[PASSWORD]",
+                CurrentCam.Contact.PresetSettings.PresetList[preset].Command);
+
+              urlString = CurrentCam.Contact.ReplaceParmeters(urlString);
+            }
+            else if (CurrentCam.Contact.PresetSettings.PresetMethod == PTZMethod.HTTP)
+            {
+              urlString = CurrentCam.Contact.PresetSettings.PresetList[0].Command;  // always use the first preset because we sub in the preset;
+              urlString = CameraData.GetHttpParam(urlString, preset);
+            }
+            else
+            {
+              urlString = CurrentCam.Contact.PresetSettings.PresetList[preset].Command;
+            }
+
+            try
+            {
+              urlString = CurrentCam.Contact.ReplaceParmeters(urlString);
+              System.Net.HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(new Uri(urlString));
+
+              if (CurrentCam.Contact.JpgContactMethod != PTZMethod.BlueIris)
+              {
+                webRequest.Credentials = new System.Net.NetworkCredential(CurrentCam.Contact.CameraUserName, CurrentCam.Contact.CameraPassword);
+              }
+
+              webRequest.Timeout = 30000;
+
+              using System.Net.WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true);
+            }
+            catch (HttpRequestException ex)
+            {
+              Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+              Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
+            }
+
+          }
+          await Task.Delay(1000 * 5).ConfigureAwait(true);
+          LiveCameraButton_Click(null, null);
+        }
       }
     }
 
@@ -1713,7 +2233,7 @@ namespace OnGuardCore
       //DialogResult result = dlg.ShowDialog();
     }
 
-    private void CameraSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+    private async void CameraSettingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
       // Disconnect the monitoring from all monitoring cameras.
       foreach (var cam in _allCameras.CameraDictionary.Values)
@@ -1725,251 +2245,133 @@ namespace OnGuardCore
             cam.Monitor.OnNewImage -= OnCameraImage;
           }
         }
+
+        switch (cam.CameraInputMethod)
+        {
+          case CameraMethod.OnGuard:
+            cam.Scanner.Dispose();
+            cam.Scanner = null;
+            break;
+
+          case CameraMethod.CameraTriggered:
+            cam.CameraTrigger?.Dispose();
+            cam.CameraTrigger = null;
+            break;
+        }
+
       }
 
-      using (CameraCollection tmp = new CameraCollection(_allCameras))
+      using CameraCollection tmp = CameraCollection.CopyFactory(_allCameras);
+      tmp.StopMonitoring();
+
+      _allCameras.Dispose();  // This cleans up the directory monitoring, and a lot of other stuff
+      _allCameras = null;
+      cameraCombo.Items.Clear();
+
+      using (CameraConfigurationDialog dlg = new(tmp))  // This makes a deep copy of the cameras collection
       {
-        tmp.StopMonitoring();
+        DialogResult result = dlg.ShowDialog();
 
-        _allCameras.Dispose();  // This cleans up the directory monitoring, and a lot of other stuff
-        _allCameras = null;
-        cameraCombo.Items.Clear();
-
-        using (CameraConfigurationDialog dlg = new CameraConfigurationDialog(tmp))  // This makes a deep copy of the cameras collection
+        if (result == DialogResult.OK)
         {
-          DialogResult result = dlg.ShowDialog();
+          _allCameras = dlg.AllCameraData;  // a reference, not a copy (since the dialog does a deep copy, and we want the altered one)
+          Storage.Instance.SaveCameras(_allCameras);
 
-          if (result == DialogResult.OK)
+          if (null == dlg.SelectedCamera)
           {
-            _allCameras = dlg.AllCameraData;  // a reference, not a copy (since the dialog does a deep copy, and we want the altered one)
-            Storage.Instance.SaveCameras(_allCameras);
-
-            if (null == dlg.SelectedCamera)
-            {
-              Storage.Instance.SetGlobalString("CurrentCameraPath", string.Empty);    // we don't need to do this if we canceled the dlg
-              Storage.Instance.SetGlobalString("CurrentCameraPrefix", string.Empty);
-              Storage.Instance.Update();
-            }
-            else
-            {
-              SetCurrentCamera(dlg.SelectedCamera);   // The one set by the dialog
-            }
+            Storage.Instance.SetGlobalString("CurrentCameraPath", string.Empty);    // we don't need to do this if we canceled the dlg
+            Storage.Instance.SetGlobalString("CurrentCameraPrefix", string.Empty);
+            Storage.Instance.Update();
           }
           else
           {
-            _allCameras = new CameraCollection(tmp);
+            await SetCurrentCameraAsync(dlg.SelectedCamera);   // The one set by the dialog
           }
         }
-
-        // Restore the camera selection dropdown
-        foreach (var cam in _allCameras.CameraDictionary.Values)
+        else
         {
-          cameraCombo.Items.Add(cam);
+          _allCameras = CameraCollection.CopyFactory(tmp);
         }
+      }
 
-        if (null != CurrentCam && !string.IsNullOrEmpty(CurrentCam.CameraPrefix))
+      // Restore the camera selection dropdown
+      foreach (var cam in _allCameras.CameraDictionary.Values)
+      {
+        cameraCombo.Items.Add(cam);
+      }
+
+      if (null != CurrentCam && !string.IsNullOrEmpty(CurrentCam.CameraPrefix))
+      {
+        cameraCombo.SelectedItem = CurrentCam;
+      }
+
+      await _allCameras.InitAsync();
+
+      // And reconnnect all cameras to this form for new images
+      foreach (var cam in _allCameras.CameraDictionary.Values)
+      {
+        if (cam.Monitoring)
         {
-          cameraCombo.SelectedItem = CurrentCam;
-        }
-
-        _allCameras.StartMonitoring();
-
-        // And reconnnect all cameras to this form for new images
-        foreach (var cam in _allCameras.CameraDictionary.Values)
-        {
-          if (cam.Monitoring)
-          {
-            cam.Monitor.OnNewImage += OnCameraImage;
-          }
+          cam.Monitor.OnNewImage += OnCameraImage;
         }
       }
     }
 
-    private void SetCurrentCamera(CameraData cam)
+    private async Task SetCurrentCameraAsync(CameraData cam)
     {
       _allCameras.CurrentCameraPath = CameraData.PathAndPrefix(cam);    // which sets the current camera in _allCameras
-      Storage.Instance.SetGlobalString("CurrentCameraPath", cam.Path);
+      Storage.Instance.SetGlobalString("CurrentCameraPath", cam.CameraPath);
       Storage.Instance.SetGlobalString("CurrentCameraPrefix", cam.CameraPrefix);
       Storage.Instance.Update();
-      InitAnalyzer(cam.CameraPrefix, cam.Path);
-      UpdateLocationBarLimits();
+      await InitAnalyzerAsync(cam.CameraPrefix, cam.CameraPath, cam.MonitorSubdirectories).ConfigureAwait(true);
+      SetPresetList();
+      timeLine.Init(_fileNames);
+      EnablePTZ();
+
     }
 
     private void OutgoingEmailServerToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      using (OutgoingEmailDialog dlg = new OutgoingEmailDialog())
-      {
-        dlg.ShowDialog();
-      }
+      using OutgoingEmailDialog dlg = new();
+      dlg.ShowDialog();
     }
 
     private async void SyncToDatabase(object sender, EventArgs e)
     {
-      if (!syncMotionToDatabaseToolStripMenuItem.Checked)
+      if (!syncToDatabaseToolStripMenuItem.Checked)
       {
-        _stopSync = true;
+        syncToDatabaseToolStripMenuItem.Text = "Sync Motion to Database";
+        SyncToDB.StopSync();
       }
       else
       {
-        _stopSync = false;
-        using (SyncToDatabaseDialog dlg = new SyncToDatabaseDialog())
+        using SyncToDatabaseDialog dlg = new();
+        DialogResult result = dlg.ShowDialog();
+        if (result == DialogResult.OK)
         {
-          DialogResult result = dlg.ShowDialog();
-          if (result == DialogResult.OK)
-          {
-            await Task.Run(() => PerformMotionSync()).ConfigureAwait(true);
-            syncMotionToDatabaseToolStripMenuItem.Checked = false;
-            _stopSync = false;
-
-          }
-          else
-          {
-            syncMotionToDatabaseToolStripMenuItem.Checked = false;
-          }
+          syncToDatabaseToolStripMenuItem.Text = "Stop Sync to Database";
+          await Task.Run(() => SyncToDB.PerformSyncDBAsync(CurrentCam, dlg.Interval, _directionUp, DBConnection.GetConnectionString(), _stopEvent)).ConfigureAwait(false);
+          UpdateMenuItem(syncToDatabaseToolStripMenuItem, "Sync Motion to Database", 0);
+        }
+        else
+        {
+          syncToDatabaseToolStripMenuItem.Checked = false;
         }
       }
     }
-
-
-    async Task PerformMotionSync()
-    {
-
-      AIAnalyzer analyzer = new AIAnalyzer();
-      SortedList<DateTime, string> fileList = analyzer.Init(CurrentCam.CameraPrefix, CurrentCam.Path);
-      CameraData cam = CurrentCam;
-
-      List<string> syncFiles = fileList.Values.Reverse().ToList<string>();
-
-      double snapshot = Storage.Instance.GetGlobalDouble("FrameInterval");  // get the desired interval for pictures
-
-      string path = cam.Path;
-      string camera = cam.CameraPrefix;
-
-      double snapshotInterval = Storage.Instance.GetGlobalDouble("FrameInterval");
-
-      using (SqlConnection con = new SqlConnection(_connectionString))
-      {
-        try
-        {
-          await con.OpenAsync().ConfigureAwait(false);
-        }
-        catch (SqlException ex)
-        {
-          Dbg.Write("MainWindow -  PerformMotionSync - Sql Exception on opening database connection: " + ex.Message);
-          return;
-        }
-        catch (InvalidOperationException ex)
-        {
-          Dbg.Write("MainWindow -  PerformMotionSync - InvalidOperation Exception on opening database connection: " + ex.Message);
-          return;
-
-        }
-
-        Dbg.Write("Starting Sync to Motion Database");
-
-        double lastAITime = (double)0.0;
-        double multiplier = 2.0;
-
-        foreach (string fileName in syncFiles)
-        {
-          if (_stopSync)
-          {
-            break;
-          }
-
-          if (!_stopEvent.WaitOne(0))
-          {
-            string file = Path.GetFileName(fileName);
-
-            // First, delay if necessary.
-            if (lastAITime > multiplier * snapshotInterval)
-            {
-              // Wait for a while to avoid overloading the AI
-              if (_stopEvent.WaitOne((int)(1000.0 * multiplier * snapshotInterval)))
-              {
-                break;
-              }
-
-              // and bump the multiplier for the delay, but don't let it get TOO large
-              multiplier *= 1.5;
-              if (multiplier > 300.0)
-              {
-                multiplier = 300.0; // for now
-              }
-            }
-            else if (multiplier >= 2.5)
-            {
-              multiplier /= 2.0;
-            }
-
-            // OK, not in the database, check for motion
-            DateTime start = DateTime.Now;
-            List<ImageObject> imageList = await AIDetection.AIProcessFromUI(fileName, true).ConfigureAwait(false);
-            TimeSpan elapsed = DateTime.Now - start;
-            UpdateFrameProgressBar(elapsed);
-            lastAITime = elapsed.TotalSeconds;
-
-            if (null != imageList)
-            {
-              analyzer.RemoveInvalidObjects(cam, imageList);
-              if (imageList.Count > 0)
-              {
-                int xRes, yRes; //need the x,y res for frame analyzer
-                using (Bitmap bitmap = new Bitmap(fileName))
-                {
-                  xRes = bitmap.Width;
-                  yRes = bitmap.Height;
-                }
-
-                FrameAnalyzer frameAnalyzer = new FrameAnalyzer(CurrentCam.AOI, imageList, xRes, yRes);
-                List<InterestingObject> interesting = frameAnalyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
-                if (interesting.Count > 0)
-                {
-                  int result = await InsertMotionIfNecessary(cam, fileName);
-                  if (result > 0)
-                  {
-                    Dbg.Trace("PerformMotionSync - Inserted file into motion database: " + fileName);
-                  }
-
-                }
-                else
-                {
-                  int removed = await DeleteMissingMotion(fileName).ConfigureAwait(false);
-                  if (removed > 0)
-                  {
-                    Dbg.Trace("PerformMotionSync - Removed file from motion list: " + fileName);
-                  }
-                }
-              }
-            }
-
-          }
-
-          if (_stopEvent.WaitOne(0))
-          {
-            break;
-          }
-        }
-
-        Dbg.Write("Ending Sync to Motion Database");
-      }
-    }
-
 
     delegate void RefreshDelegate(object sender, EventArgs e);
-    private void Refresh_Click(object sender, EventArgs e)
+    private async void Refresh_Click(object sender, EventArgs e)
     {
+      _moveDirection = MovementDirection.Still;
       if (!this.InvokeRequired)
       {
-        using (WaitCursor _ = new WaitCursor())
-        {
-          lock (_fileLock)
-          {
-            InitAnalyzer(CurrentCam.CameraPrefix, CurrentCam.Path);
-            UpdateLocationBarLimits();
-            SetCurrent(0);
-          }
-        }
+        using WaitCursor _ = new();
+        _loading = true;
+        await InitAnalyzerAsync(CurrentCam.CameraPrefix, CurrentCam.CameraPath, CurrentCam.MonitorSubdirectories).ConfigureAwait(true);
+        timeLine.Init(_fileNames);
+        SetCurrent(0);
+        _loading = false;
       }
       else
       {
@@ -1979,10 +2381,8 @@ namespace OnGuardCore
 
     private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      using (AboutDialog dlg = new AboutDialog())
-      {
-        dlg.ShowDialog();
-      }
+      using AboutDialog dlg = new();
+      dlg.ShowDialog();
     }
 
 
@@ -2033,7 +2433,7 @@ namespace OnGuardCore
       const int tryInterval = 200;  // time in ms to wait for the next try
       const int maxYield = 0 * 1000 / tryInterval;
 
-      List<Task> taskList = new List<Task>();
+      List<Task> taskList = new();
 
       while (!stopIt)
       {
@@ -2103,7 +2503,7 @@ namespace OnGuardCore
 
               if (null != _allCameras)  // If we are going into camera setup we do not process more files
               {
-                var myTask = Task.Run(() => StartAIAnalysis(pendingItem));
+                var myTask = Task.Run(() => StartAIAnalysisAsync(pendingItem)).ConfigureAwait(true);
               }
             }
           }
@@ -2136,7 +2536,7 @@ namespace OnGuardCore
 
 
     // The FileWatcher stuff gives us a file name, but the file may not have completed writing
-    private async Task<Tuple<int, int>> WaitForFileReady(string fileName)
+    private async Task<Tuple<int, int>> WaitForFileReadyAsync(PendingItem pending)
     {
       bool continueTrying;
       Tuple<int, int> result = null;
@@ -2147,22 +2547,19 @@ namespace OnGuardCore
 
         try
         {
-          // We need to open the file anyway, sow we might as well make a bitmap and get the resolution of the underlying file
-          using (Bitmap bitmap = new Bitmap(fileName)) // May fail if the file is still open.  There is no other (good) way to tell if the file is still being written to
-          {
-            result = new Tuple<int, int>(bitmap.Width, bitmap.Height);
-            continueTrying = false;
-          }
+          pending.PictureImage = new Bitmap(pending.PendingFile);
+          result = new Tuple<int, int>(pending.PictureImage.Width, pending.PictureImage.Height);
+          continueTrying = false;
         }
         catch (IOException)
         {
           continueTrying = true;
-          await Task.Delay(20).ConfigureAwait(false);
+          await Task.Delay(10).ConfigureAwait(true);
         }
         catch (ArgumentException ex)
         {
           continueTrying = true;
-          await Task.Delay(20).ConfigureAwait(false);
+          await Task.Delay(10).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
@@ -2174,16 +2571,21 @@ namespace OnGuardCore
       return result;
     }
 
-    async Task StartAIAnalysis(PendingItem pendingItem)
+    async Task StartAIAnalysisAsync(PendingItem pendingItem)
     {
       int xRes = 0;
       int yRes = 0;
+
+      if (await HandleTriggerFilesAsync(pendingItem))
+      {
+        return;
+      }
 
       if (_filesPendingProcessing.ContainsKey(pendingItem.PendingFile))
       {
         // By definition it should be in this list, but ....
         Dbg.Trace("StartAIAnalysis - Starting ready check for file: " + pendingItem.PendingFile);
-        Tuple<int, int> waitResult = await WaitForFileReady(pendingItem.PendingFile).ConfigureAwait(false);
+        Tuple<int, int> waitResult = await WaitForFileReadyAsync(pendingItem).ConfigureAwait(true);
         xRes = waitResult.Item1;
         yRes = waitResult.Item2;
       }
@@ -2201,7 +2603,7 @@ namespace OnGuardCore
       AIResult result;
       try
       {
-        result = await AIDetection.DetectObjectsAsync(pendingItem).ConfigureAwait(false); //really do it async
+        result = await AIDetection.DetectObjectsAsync(pendingItem).ConfigureAwait(true);
         lock (_aiNotFoundLock)
         {
           if (Storage.Instance.GetGlobalBool("SentAIGoneEmail"))
@@ -2219,10 +2621,15 @@ namespace OnGuardCore
       }
       catch (AiNotFoundException ex)
       {
-        Task.Run(() => NotifyAIGone());
+        Task.Run(() => NotifyAIGone()).ConfigureAwait(false); ;
         return;
       }
       UpdateFrameProgressBar(DateTime.Now - pendingItem.TimeDispatched);
+
+      if (null == result)
+      {
+        return;
+      }
 
 
       if (null == _allCameras)
@@ -2234,10 +2641,10 @@ namespace OnGuardCore
       Interlocked.Increment(ref _numberOfImagesProcessed);
       UpdateNumberProcessed(_numberOfImagesProcessed);
       _recentTimes.AddValue(result.Item.AIProcessingTime().TotalMilliseconds);
+
       Interlocked.Decrement(ref _imagesBeingProcessed);
       List<InterestingObject> interesting = null;
-      Frame frame = new Frame(pendingItem, interesting);
-
+      Frame frame = new(pendingItem, interesting);
 
       if (null != result.ObjectsFound)  // Did we find any objects the AI could recognize?
       {
@@ -2254,8 +2661,9 @@ namespace OnGuardCore
           {
             Dbg.Trace("Starting FRAME analysis of file: " + pendingItem.PendingFile + " with: " + result.ObjectsFound.Count.ToString() + " objects");
 
-            FrameAnalyzer frameAnalyzer = new FrameAnalyzer(pendingItem.CamData.AOI, result.ObjectsFound, xRes, yRes);
-            interesting = frameAnalyzer.AnalyzeFrame().InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
+            FrameAnalyzer frameAnalyzer = new(pendingItem.CamData.AOI, result.ObjectsFound, xRes, yRes);
+            AnalysisResult analysisResult = await frameAnalyzer.AnalyzeFrameAsync(pendingItem.PictureImage);
+            interesting = analysisResult.InterestingObjects;  // find if the objects we did find are interesting (relatively fast)
 
             frame.Interesting = interesting;
             Dbg.Write(interesting.Count.ToString() + " interesting objects found in file: " + pendingItem.PendingFile);
@@ -2266,18 +2674,96 @@ namespace OnGuardCore
               StartMotionTimeout(pendingItem);
             }
 
-            frame.Item.CamData.FrameHistory.Add(frame);
             if (frame.Interesting.Count > 0)
             {
-              var myTask = Task.Run(() => AddToMotionFramesTable(pendingItem));
+              var myTask = Task.Run(() => AddToMotionFramesTableAsync(pendingItem)).ConfigureAwait(true);
             }
 
-            Notify(frame);
+            await NotifyAsync(frame);
           }
         }
       }
 
+      pendingItem.PictureImage.Dispose();
+      pendingItem.PictureImage = null;
+
       ProcessAccumulation(frame);
+    }
+
+    private async Task<bool> HandleTriggerFilesAsync(PendingItem pending)
+    {
+      bool isTriggerImage = false;
+      bool usedAsTrigger = false;
+      try
+      {
+        if (pending.CamData.CameraInputMethod == CameraMethod.CameraTriggered)
+        {
+          string pictureName = Path.GetFileName(pending.PendingFile);
+          if (pictureName.Length > pending.CamData.TriggerPrefix.Length)
+          {
+            if (pictureName[..pending.CamData.TriggerPrefix.Length] == pending.CamData.TriggerPrefix)
+            {
+              isTriggerImage = true;
+            }
+          }
+
+          if (isTriggerImage)
+          {
+            if (null != pending.CamData.CameraTrigger)
+            {
+              isTriggerImage = true;
+              // This picture is on a trigger type camera and the file name is the type we are interested in.
+              PendingItem item = new(pending.CamData, pending.PendingFile);
+              await WaitForFileReadyAsync(item); // just wait for the file to be done downloading from the camera
+              item.PictureImage.Dispose();  // we created a bitmap we don't need (now) TODO: some other wait that doesn't create a bitmap may be worth it
+              if (pending.CamData.CameraTrigger.CanTrigger())
+              {
+                // so we pickup the picture the camera sent us, we rename it to the prefix we use;
+                pictureName = pictureName.Replace(pending.CamData.TriggerPrefix, pending.CamData.CameraPrefix);  // change prefixes
+                string outputPath = Path.Combine(pending.CamData.CameraPath, pictureName);
+                try
+                {
+                  File.Move(pending.PendingFile, outputPath);  // rename (and maybe really move) the file so that we can pick it up as a normal camera file.
+                }
+                catch (Exception ex)
+                {
+                  Dbg.Write("MainWindow - OnCameraImage - Exception renaming trigger file: " + ex.Message);
+                }
+
+                usedAsTrigger = true;
+                pending.CamData.CameraTrigger.Trigger();
+              }
+              else
+              {
+                File.Delete(pending.PendingFile);  // TODO: really delete the camera download
+              }
+            }
+          }
+        }
+
+        if (!usedAsTrigger)
+        {
+        }
+      }
+      catch (Exception ex)
+      {
+        Dbg.Write("MainWindow - OnCameraImage - Exception: " + ex.Message);
+      }
+
+      return usedAsTrigger;
+
+    }
+
+    private delegate void UpdateNumericDelgate(NumericUpDown control, int value);
+    private void UpdateNumericValue(NumericUpDown control, int value)
+    {
+      if (this.InvokeRequired)
+      {
+        BeginInvoke(new UpdateNumericDelgate(UpdateNumericValue), new object[] { control, value });
+        return;
+      }
+
+      control.Value = value;
     }
 
 
@@ -2305,16 +2791,17 @@ namespace OnGuardCore
       control.BackColor = color;
     }
 
-
-
     private delegate Task TaskDelegate();
     private async Task NotifyAIGone()
     {
       if (this.InvokeRequired)
       {
-        this.BeginInvoke(new TaskDelegate(NotifyAIGone), new object[] { });
+        this.BeginInvoke(new TaskDelegate(NotifyAIGone));
         return;
       }
+
+      AIStatus.Text = "Disconnected";
+      AIStatus.BackColor = Color.Red;
 
       string emailRecipient = Storage.Instance.GetGlobalString("NotifyAIGoneEmail");
       bool sentEmailGone;
@@ -2331,46 +2818,39 @@ namespace OnGuardCore
 
       if (!sentEmailGone)
       {
-        AIStatus.Text = "Disconnected";
-        AIStatus.BackColor = Color.Red;
         if (!string.IsNullOrEmpty(emailRecipient))
         {
           try
           {
-            using (MailMessage mail = new MailMessage())
+            using MailMessage mail = new();
+            using SmtpClient SmtpServer = new(Storage.Instance.GetGlobalString("EmailServer"));
+            mail.BodyEncoding = Encoding.UTF8;
+            mail.IsBodyHtml = true;
+            mail.From = new MailAddress(Storage.Instance.GetGlobalString("EmailUser"));
+            mail.To.Add(emailRecipient);
+            mail.Subject = "Security Camera AI Gone!";   // todo get via ui
+            mail.Body = "Your security camera AI Servers are Dead!";
+
+            SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
+            string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
+            string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
+
+            if (!string.IsNullOrEmpty(emailUserName))
             {
-              using (SmtpClient SmtpServer = new SmtpClient(Storage.Instance.GetGlobalString("EmailServer")))
-              {
-                mail.BodyEncoding = Encoding.UTF8;
-                mail.IsBodyHtml = true;
-                mail.From = new MailAddress(Storage.Instance.GetGlobalString("EmailUser"));
-                mail.To.Add(emailRecipient);
-                mail.Subject = "Security Camera AI Gone!";   // todo get via ui
-                mail.Body = "Your security camera AI Servers are Dead!";
+              SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
+            }
 
-                SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
-                string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
-                string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
+            SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
+            await SmtpServer.SendMailAsync(mail).ConfigureAwait(true);
+            Dbg.Write("MainWindow - NotifyAIGone - Email Sent!");
 
-                if (!string.IsNullOrEmpty(emailUserName))
-                {
-                  SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
-                }
-
-                SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
-                await SmtpServer.SendMailAsync(mail).ConfigureAwait(false);
-                Dbg.Write("MainWindow - NotifyAIGone - Email Sent!");
-
-                bool mqttSendAIDied = Storage.Instance.GetGlobalBool("MQTTSendAIDied");
-                if (mqttSendAIDied)
-                {
-                  string mqttAIDiedTopic = Storage.Instance.GetGlobalString("MQTTaiDiedTopic");
-                  string mqttAIDiedPayload = Storage.Instance.GetGlobalString("MQTTaiDiedPayload");
-                  await MQTTPublish.SendToServer(mqttAIDiedTopic, mqttAIDiedPayload).ConfigureAwait(false);
-                  Dbg.Write("AI Died MQTT message sent");
-                }
-
-              }
+            bool mqttSendAIDied = Storage.Instance.GetGlobalBool("MQTTSendAIDied");
+            if (mqttSendAIDied)
+            {
+              string mqttAIDiedTopic = Storage.Instance.GetGlobalString("MQTTaiDiedTopic");
+              string mqttAIDiedPayload = Storage.Instance.GetGlobalString("MQTTaiDiedPayload");
+              await MQTTPublish.SendToServer(mqttAIDiedTopic, mqttAIDiedPayload).ConfigureAwait(false);
+              Dbg.Write("AI Died MQTT message sent");
             }
           }
           catch (SmtpException ex)
@@ -2437,6 +2917,38 @@ namespace OnGuardCore
       FPSProgress.SetContents(barColor, percent, timeStr);
     }
 
+    void UpdateAIProgressBar(TimeSpan span)
+    {
+      if (this.InvokeRequired)
+      {
+        BeginInvoke(new SetProgressSpanDelegate(UpdateAIProgressBar), new object[] { span });
+        return;
+      }
+
+      int percent = (int)(span.TotalSeconds * 100.0);
+      if (percent > 100)
+      {
+        percent = 100;
+      }
+
+      string timeStr = string.Format("{0:0.000}", span.TotalSeconds);
+      Color barColor;
+      if (percent <= 40)
+      {
+        barColor = Color.LightGreen;
+      }
+      else if (percent < 75)
+      {
+        barColor = Color.DarkOrange;
+      }
+      else
+      {
+        barColor = Color.Red;
+      }
+      AIProgressBar.SetContents(barColor, percent, timeStr);
+    }
+
+
     async void MotionStoppedNotify(object camObj)
     {
       CameraData camera = (CameraData)camObj;
@@ -2458,13 +2970,13 @@ namespace OnGuardCore
 
           string payload = Storage.Instance.GetGlobalString("MQTTStoppedPayload");
           payload = payload.Replace("{Motion}", "off");
-          await MQTTPublish.SendToServer(topic, payload).ConfigureAwait(false);
+          await MQTTPublish.SendToServer(topic, payload).ConfigureAwait(true);
         }
 
         if (!string.IsNullOrEmpty(area.Notifications.NoMotionUrlNotify))
         {
           Dbg.Write("Motion Stopped HTTP - " + camera.CameraPrefix + " - " + area.AOIName);
-          await NotifyUrl(area.Notifications.NoMotionUrlNotify).ConfigureAwait(false);
+          await NotifyUrlAsync(area.Notifications.NoMotionUrlNotify).ConfigureAwait(true);
         }
       }
     }
@@ -2472,84 +2984,34 @@ namespace OnGuardCore
 
     #region SqlStuff
 
-    public static string GetDefaultConnectionString()
+
+    async Task AddToMotionFramesTableAsync(PendingItem pending)
     {
-      // Since we are getting the value we need to format it
-      string baseConnectionString = Settings.Default.DBMotionFramesConnectionString;  // the base string with {0} in place of the file location
-      string dbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); // where we are putting it
-      dbLocation = Path.Combine(dbLocation, "OnGuardDatabase");
-      string connectionString = string.Format(baseConnectionString, dbLocation);   // insert the localdb path
-      return connectionString;
-    }
-
-    string GetMotionAdjusted(string fileName, long fileTime)
-    {
-      string adjustedStr = string.Format("{0:0000000000000000000}", fileTime);
-
-      // This is a bit of overkill, but....
-      uint hash = 0;
-      using (SHA256 sha = SHA256.Create())
-      {
-        byte[] buffer = Encoding.ASCII.GetBytes(fileName);
-        byte[] hashBuffer = sha.ComputeHash(buffer, 0, buffer.Length);
-        int shiftValue = 0;
-        foreach (var b in hashBuffer)
-        {
-          uint bb = (uint)b << shiftValue;
-          hash += bb;
-          ++shiftValue;
-          if (shiftValue > 7)
-          {
-            shiftValue = 0;
-          }
-        }
-      }
-
-      ushort fileHash = (ushort)(hash & 0xffff);
-      string hashAddition = string.Format("{0:00000}", fileHash);
-      adjustedStr += hashAddition;
-      return adjustedStr;
-    }
-
-    decimal GetMotionTime(string str)
-    {
-      decimal result = 0;
-      result = decimal.Parse(str);
-      return result;
-    }
-
-
-    async Task AddToMotionFramesTable(PendingItem pending)
-    {
-      FileInfo fi = new FileInfo(pending.PendingFile);
-
       try
       {
-        using (SqlConnection con = new SqlConnection(_connectionString))
-        {
-          await con.OpenAsync();
+        using SqlConnection con = new(DBConnection.GetConnectionString());
+        await con.OpenAsync();
 
-          try
-          {
-            using (SqlCommand cmd = new SqlCommand("INSERT into NewMotionTable (CreationTime, FileName, Path, Camera) VALUES (@creationTime, @fileName, @path, @camera)", con))
-            {
-              string adjustedStr = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
-              cmd.Parameters.AddWithValue("@creationTime", adjustedStr);
-              cmd.Parameters.AddWithValue("@fileName", fi.Name);
-              cmd.Parameters.AddWithValue("@path", pending.CamData.Path);
-              cmd.Parameters.AddWithValue("@camera", pending.CamData.CameraPrefix);
-              Dbg.Trace("Adding to Motion table: " + fi.Name);
-              int rowsAdded = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-            }
-          }
-          catch (SqlException ex)
-          {
-            Dbg.Write("MainWindow - AddMotionFramesTable SQL Exception - " + ex.Message);
-          }
-          catch (InvalidOperationException ex)
-          {
-            Dbg.Write("MainWindow - AddMotionFramesTable Invalid Operation Exception - " + ex.Message);
-          }
+        try
+        {
+          using SqlCommand cmd = new("INSERT into NewMotionTable (CreationTime, FileName, Path, Camera, pictureTime) VALUES (@creationTime, @fileName, @path, @camera, @pictureTime)", con);
+          string adjustedStr = GlobalFunctions.GetUniqueFileName(pending.PendingFile);
+
+          cmd.Parameters.AddWithValue("@creationTime", adjustedStr);
+          cmd.Parameters.AddWithValue("@fileName", Path.GetFileName(pending.PendingFile));
+          cmd.Parameters.AddWithValue("@path", pending.CamData.CameraPath);
+          cmd.Parameters.AddWithValue("@camera", pending.CamData.CameraPrefix);
+          FileInfo fi = new(pending.PendingFile);
+          cmd.Parameters.AddWithValue("@pictureTime", fi.CreationTime);
+          int rowsAdded = await cmd.ExecuteNonQueryAsync().ConfigureAwait(true);
+        }
+        catch (SqlException ex)
+        {
+          Dbg.Write("MainWindow - AddMotionFramesTable SQL Exception - " + ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+          Dbg.Write("MainWindow - AddMotionFramesTable Invalid Operation Exception - " + ex.Message);
         }
       }
       catch (SqlException ex)
@@ -2562,17 +3024,19 @@ namespace OnGuardCore
       }
     }
 
-    string GetNextMotion(bool directionUp)
+    // based on the passed picture we get the next/previous picture name. 
+    // note that is it remotely possible that the "current" picture changes out from under us, but this is OK (probably)
+    // Note that his function returns the key to the next picture, not the picture name.
+    async Task<string> GetNextMotionAsync(string lastFile, bool nextDirection)
     {
-      string result = string.Empty;
       string q;
-      string fileTime = _lastMotionTime;
       bool readSuccess = false;
-      string path;
-      string file = string.Empty;
+      string key = string.Empty;
 
+      // TODO: string keyOfCurrentPicture = Gl
+      bool direction = nextDirection == _directionUp; // what is next depends on the order of the sorted list of file names (asscending/descending)
 
-      if (directionUp)
+      if (direction)
       {
         q = "SELECT TOP 1 * FROM NewMotionTable WHERE CreationTime > @lastTime AND Path = @path AND Camera = @camera ORDER BY CreationTime ASC";
       }
@@ -2583,73 +3047,60 @@ namespace OnGuardCore
 
       try
       {
-        using (SqlConnection con = new SqlConnection(_connectionString))
+        string conStr = DBConnection.GetConnectionString();
+        using SqlConnection con = new(conStr);
+        await con.OpenAsync();
+
+        while (true)  // If a file has been deleted we may need to look for the next file multiple times
         {
-          con.Open();
+          key = string.Empty;
+          using SqlCommand cmd = new(q, con);
+          cmd.Parameters.AddWithValue("@lastTime", lastFile);
+          cmd.Parameters.AddWithValue("@path", CurrentCam.CameraPath);
+          cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
 
-          while (true)  // If a file has been deleted we may need to look for the next file multiple times
+          try
           {
-            result = string.Empty;
-
-            using (SqlCommand cmd = new SqlCommand(q, con))
+            using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+            if (reader.HasRows)
             {
-              cmd.Parameters.AddWithValue("@lastTime", fileTime);
-              cmd.Parameters.AddWithValue("@path", CurrentCam.Path);
-              cmd.Parameters.AddWithValue("@camera", CurrentCam.CameraPrefix);
-
-              try
-              {
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                  if (reader.HasRows)
-                  {
-                    reader.Read();
-                    fileTime = reader.GetString(0);
-                    path = reader.GetString(2);
-                    path = path.Trim();
-                    file = reader.GetString(1);
-                    file = file.Trim();
-                    result = Path.Combine(path, file);
-                    readSuccess = true;
-                  }
-                  else
-                  {
-                    break;
-                  }
-                }
-              }
-              catch (SqlException ex)
-              {
-                Dbg.Write("MainWindow - GetNextMotion - SQL Exception: " + ex.Message);
-              }
-              catch (InvalidOperationException ex)
-              {
-                Dbg.Write("MainWindow - GetNextMotion - InvalidOperation Exception: " + ex.Message);
-              }
-
-              if (readSuccess)
-              {
-                // OK, here we have the file name, now get the "current" picture index -- it may not exist
-                int index = _fileNames.Values.IndexOf(result);
-                if (index > -1)
-                {
-                  SetCurrent( _fileNames.Values.IndexOf(result));
-                  break;  // done
-                }
-                else
-                {
-                  // The file does not exist in the working set
-                  DeleteMissingMotion(file);  // and we will repeat the process until we find another or none exist
-                }
-              }
-              else
-              {
-                result = string.Empty;
-                break;  // done, but with no file result
-              }
-
+              await reader.ReadAsync();
+              key = reader.GetString(0);
+              key = key.Trim();
+              readSuccess = true;
             }
+            else
+            {
+              break;
+            }
+          }
+          catch (SqlException ex)
+          {
+            Dbg.Write("MainWindow - GetNextMotion - SQL Exception: " + ex.Message);
+          }
+          catch (InvalidOperationException ex)
+          {
+            Dbg.Write("MainWindow - GetNextMotion - InvalidOperation Exception: " + ex.Message);
+          }
+
+          if (readSuccess)
+          {
+            // OK, here we have the file name, now get the "current" picture index -- it may not exist
+            int index = _fileNames.Keys.IndexOf(key);
+            if (index > -1)
+            {
+              break;  // done
+            }
+            else
+            {
+              // The file does not exist in the working set (index -1)
+              await DeleteMissingMotionAsync(key);  // and we will repeat the process until we find another or none exist
+            }
+          }
+          else
+          {
+            key = string.Empty;
+            break;  // done, but with no file result
           }
         }
       }
@@ -2661,8 +3112,13 @@ namespace OnGuardCore
       {
         Dbg.Write("MainWindow - InvalidOperationException - GetNextMotion - Opening Connection: " + ex.Message);
       }
+      catch (Exception ex)
+      {
+        Dbg.Write("MainWindow - Unexpected Exception - GetNextMotion - Opening Connection: " + ex.Message);
+      }
 
-      return result;
+
+      return key;
     }
 
 
@@ -2673,67 +3129,58 @@ namespace OnGuardCore
     /// </summary>
     /// <param name="directionUp"></param>
     /// <returns></returns>
-    async Task<int> InsertMotionIfNecessary(CameraData cam, string fileName)
+    public static async Task<int> InsertMotionIfNecessaryAsync(CameraData cam, string fileName)
     {
       int result = 1;
-      FileInfo fi = new FileInfo(fileName);
-
-
       try
       {
-
         string q = "SELECT CreationTime FROM NewMotionTable WHERE CreationTime = @creationTime AND FileName = @fileName";
-        using (SqlConnection con = new SqlConnection(_connectionString))
+        using SqlConnection con = new(DBConnection.GetConnectionString());
+        try
         {
-          try
-          {
-            await con.OpenAsync().ConfigureAwait(false);
-          }
-          catch (SqlException ex)
-          {
-            Dbg.Write("MainWindow -  InsertMotionIfNecessary - Sql Exception on opening database connection: " + ex.Message);
-            return result;
-          }
-          catch (InvalidOperationException ex)
-          {
-            Dbg.Write("MainWindow -  InsertMotionIfNecessary - InvalidOperation Exception on opening database connection: " + ex.Message);
-            return result;
+          await con.OpenAsync().ConfigureAwait(true);
+        }
+        catch (SqlException ex)
+        {
+          Dbg.Write("MainWindow -  InsertMotionIfNecessary - Sql Exception on opening database connection: " + ex.Message);
+          return result;
+        }
+        catch (InvalidOperationException ex)
+        {
+          Dbg.Write("MainWindow -  InsertMotionIfNecessary - InvalidOperation Exception on opening database connection: " + ex.Message);
+          return result;
 
-          }
+        }
 
-          using (SqlCommand cmd = new SqlCommand(q, con))
+        using (SqlCommand cmd = new(q, con))
+        {
+
+          string adjustedStr = GlobalFunctions.GetUniqueFileName(fileName);
+          cmd.Parameters.AddWithValue("@creationTime", adjustedStr);
+          cmd.Parameters.AddWithValue("@fileName", Path.GetFileName(fileName.ToLower()));
+
+          using SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(true);
+          if (reader.HasRows)
           {
-
-            string adjustedStr = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
-            cmd.Parameters.AddWithValue("@creationTime", adjustedStr);
-            cmd.Parameters.AddWithValue("@fileName", fi.Name);
-
-            using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
-            {
-              if (reader.HasRows)
-              {
-                result = 0;
-              }
-            }
-          }
-
-          if (result != 0)
-          {
-            q = "INSERT INTO NewMotionTable(CreationTime, FileName, Path, Camera) VALUES(@creationTime, @fileName, @path, @camera)";
-            // It didn't exist, insert it.
-            // Yes, I could do that with one action, but I want the result
-            using (SqlCommand insertCmd = new SqlCommand(q, con))
-            {
-              string adjustedStr = GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
-              insertCmd.Parameters.AddWithValue("@creationTime", adjustedStr);
-              insertCmd.Parameters.AddWithValue("fileName", fi.Name);
-              insertCmd.Parameters.AddWithValue("@path", cam.Path);
-              insertCmd.Parameters.AddWithValue("@camera", cam.CameraPrefix);
-              result = await insertCmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-            }
+            result = 0;
           }
         }
 
+        if (result != 0)
+        {
+          q = "INSERT INTO NewMotionTable(CreationTime, FileName, Path, Camera, pictureTime) VALUES(@creationTime, @fileName, @path, @camera, @pictureTime)";
+          // It didn't exist, insert it.
+          // Yes, I could do that with one action, but I want the result
+          using SqlCommand insertCmd = new(q, con);
+          string adjustedStr = GlobalFunctions.GetUniqueFileName(fileName); //  GetMotionAdjusted(fi.FullName, fi.CreationTime.ToFileTime());
+          insertCmd.Parameters.AddWithValue("@creationTime", adjustedStr);
+          insertCmd.Parameters.AddWithValue("fileName", Path.GetFileName(fileName.ToLower()));
+          insertCmd.Parameters.AddWithValue("@path", cam.CameraPath);
+          insertCmd.Parameters.AddWithValue("@camera", cam.CameraPrefix);
+          FileInfo fi = new(fileName);
+          insertCmd.Parameters.AddWithValue("@pictureTime", fi.CreationTime);
+          result = await insertCmd.ExecuteNonQueryAsync().ConfigureAwait(true);
+        }
       }
       catch (DbException ex)
       {
@@ -2754,36 +3201,28 @@ namespace OnGuardCore
     /// This happens frequently when BlueIris or the user deletes the picture.
     /// </summary>
     /// <param name="fileName"></param>
-    async Task<int> DeleteMissingMotion(string fileName)
+    public static async Task<int> DeleteMissingMotionAsync(string fileName)
     {
       int result = 0;
+      string fileKey = GlobalFunctions.GetUniqueFileName(fileName);
       try
       {
-        using (SqlConnection con = new SqlConnection(_connectionString))
+        using SqlConnection con = new(DBConnection.GetConnectionString());
+        await con.OpenAsync().ConfigureAwait(true);
+        try
         {
-          await con.OpenAsync().ConfigureAwait(false);
-
-
-          try
+          string q = "DELETE FROM NewMotionTable WHERE creationTime = @creationTime";
+          using SqlCommand cmd = new(q, con);
+          cmd.Parameters.AddWithValue("@creationTime", fileKey);
+          result = await cmd.ExecuteNonQueryAsync().ConfigureAwait(true);
+          if (result > 0)
           {
-            string q = "DELETE FROM NewMotionTable WHERE FileName = @fileName";
-
-
-            using (SqlCommand cmd = new SqlCommand(q, con))
-            {
-              cmd.Parameters.AddWithValue("@fileName", fileName);
-              Dbg.Trace("Removing motion from table - file: " + fileName);
-              result = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-              if (result > 0)
-              {
-                Dbg.Trace("Removing motion from table - file: " + fileName);
-              }
-            }
+            Dbg.Trace("MainWindow-DeleteMissingMotionAsync-Deleted File: " + fileName);
           }
-          catch (DbException ex)
-          {
-            Dbg.Write("MainWindow - DeleteMissingMotion - DbException: " + ex.Message);
-          }
+        }
+        catch (DbException ex)
+        {
+          Dbg.Write("MainWindow - DeleteMissingMotion - DbException: " + ex.Message);
         }
       }
       catch (SqlException ex)
@@ -2797,42 +3236,6 @@ namespace OnGuardCore
 
       return result;
     }
-
-    async Task<bool> IsFileInDatabaseAsync(SqlConnection con, string path, string camera, string fileName)
-    {
-      bool result = false;
-
-      try
-      {
-        string q = "select * FROM NewMotionTable WHERE Path = @path AND Camera = @camera AND FileName = @fileName";
-
-        using (SqlCommand cmd = new SqlCommand(q, con))
-        {
-          cmd.Parameters.AddWithValue("@path", path);
-          cmd.Parameters.AddWithValue("@fileName", fileName);
-          cmd.Parameters.AddWithValue("@camera", camera);
-          using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
-          {
-            if (reader.HasRows)
-            {
-              result = true;
-            }
-          }
-
-        }
-      }
-      catch (DbException ex)
-      {
-        Dbg.Write("MainWindow - DeleteMissingMotion - DbException: " + ex.Message);
-      }
-      catch (InvalidOperationException ex)
-      {
-        Dbg.Write("MainWindow - IsFileInDatabase - InvaidOperation exception opening connection: " + ex.Message);
-      }
-
-      return result;
-    }
-
 
     #endregion SqlStuff
 
@@ -2957,12 +3360,10 @@ namespace OnGuardCore
 
     private void AddEditEmailAddressesToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      using (EmailAddressesDialog dlg = new EmailAddressesDialog(EmailAddresses.EmailAddressList))
+      using EmailAddressesDialog dlg = new(EmailAddresses.EmailAddressList);
+      if (dlg.ShowDialog() == DialogResult.OK)
       {
-        if (dlg.ShowDialog() == DialogResult.OK)
-        {
-          EmailAddresses.Save();
-        }
+        EmailAddresses.Save();
       }
     }
 
@@ -2970,8 +3371,9 @@ namespace OnGuardCore
     {
       if (cameraCombo.SelectedItem != CurrentCam)
       {
+        CancelAllPendingPictures();
         motionOnlyCheckbox.Checked = false;
-        SetCurrentCamera((CameraData)cameraCombo.SelectedItem);
+        SetCurrentCameraAsync((CameraData)cameraCombo.SelectedItem);
       }
     }
 
@@ -2985,15 +3387,13 @@ namespace OnGuardCore
 
     private async void CleanupButton_Click(object sender, EventArgs e)
     {
-      using (CleanupDialog dlg = new CleanupDialog(_allCameras, CurrentCam.Path, CurrentCam.CameraPrefix))
+      using CleanupDialog dlg = new(_allCameras, CurrentCam.CameraPath, CurrentCam.CameraPrefix);
+      DialogResult result = dlg.ShowDialog();
+      if (result == DialogResult.OK)
       {
-        DialogResult result = dlg.ShowDialog();
-        if (result == DialogResult.OK)
-        {
-          await Task.Run(() => CleanupAsync(dlg.ExpiredFiles, dlg.ExcludeMotion)).ConfigureAwait(true);
-          Refresh_Click(null, null);
-          MessageBox.Show(this, "The working set has been refreshed after cleanup", "Cleanup Done!");
-        }
+        await Task.Run(() => CleanupAsync(dlg.ExpiredFiles, dlg.ExcludeMotion)).ConfigureAwait(true);
+        Refresh_Click(null, null);
+        MessageBox.Show(this, "The working set has been refreshed after cleanup", "Cleanup Done!");
       }
     }
 
@@ -3005,18 +3405,16 @@ namespace OnGuardCore
 
       q = "SELECT FileName FROM NewMotionTable WHERE FileName = @fileName and @Path = @path";
 
-      using (SqlCommand cmd = new SqlCommand(q, con))
+      using (SqlCommand cmd = new(q, con))
       {
         cmd.Parameters.AddWithValue("@fileName", Path.GetFileName(fileName));
         cmd.Parameters.AddWithValue("@path", Path.GetDirectoryName(fileName));
         try
         {
-          using (SqlDataReader reader = cmd.ExecuteReader())
+          using SqlDataReader reader = cmd.ExecuteReader();
+          if (reader.HasRows)
           {
-            if (reader.HasRows)
-            {
-              result = true;
-            }
+            result = true;
           }
         }
         catch (SqlException ex)
@@ -3036,39 +3434,38 @@ namespace OnGuardCore
 
     private async Task CleanupAsync(List<FileInfo> expiredFiles, bool keepMotionFiles)
     {
-      using (SqlConnection con = new SqlConnection(_connectionString))
+      using SqlConnection con = new(DBConnection.GetConnectionString());
+      await con.OpenAsync();
+      foreach (var info in expiredFiles)
       {
-        await con.OpenAsync();
-        foreach (var info in expiredFiles)
+        try
         {
-          try
+          bool deleteIt = true;
+
+          if (keepMotionFiles)
           {
-            bool deleteIt = true;
-
-            if (keepMotionFiles)
+            if (IsMotionFile(con, info.FullName))
             {
-              if (IsMotionFile(con, info.FullName))
-              {
-                deleteIt = false;
-              }
-            }
-
-            if (deleteIt)
-            {
-              File.Delete(info.FullName);
-              await DeleteMissingMotion(info.Name);
+              deleteIt = false;
             }
           }
-          catch (UnauthorizedAccessException ex)
+
+          if (deleteIt)
           {
-            MessageBox.Show("Unable to delete file: " + info.FullName + Environment.NewLine + "This is probably due to your anti-virus software." +
-              Environment.NewLine + "Exiting Cleanup!");
-            break;
+            string key = GlobalFunctions.GetUniqueFileName(info.FullName);
+            File.Delete(info.FullName);
+            await DeleteMissingMotionAsync(key);
           }
-          catch (IOException)
-          {
-            Dbg.Write("Unable to find file: " + info.FullName + " when attempting deletion.");
-          }
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+          MessageBox.Show("Unable to delete file: " + info.FullName + Environment.NewLine + "This is probably due to your anti-virus software." +
+            Environment.NewLine + "Exiting Cleanup!");
+          break;
+        }
+        catch (IOException)
+        {
+          Dbg.Write("Unable to find file: " + info.FullName + " when attempting deletion.");
         }
       }
 
@@ -3079,8 +3476,7 @@ namespace OnGuardCore
       if (!_modifyingArea)
       {
         ToolStripMenuItem menuItem = (ToolStripMenuItem)sender;
-        showAreasOfInterestCheck.Checked = menuItem.Checked;
-        ShowAreasOfInterestCheckChanged(null, null);
+        showAreasOfInterestToolStripMenuItem.Checked = menuItem.Checked;
       }
 
     }
@@ -3093,15 +3489,6 @@ namespace OnGuardCore
       notifyIcon.Visible = false;
     }
 
-    private void OnResize(object sender, EventArgs e)
-    {
-      if (this.WindowState == FormWindowState.Minimized)
-      {
-        Hide();
-        notifyIcon.Visible = true;
-        notifyIcon.ShowBalloonTip(1200);
-      }
-    }
 
     private void LogFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -3164,22 +3551,21 @@ namespace OnGuardCore
     private void MQTTSettingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
 
-      using (MQTTSettings mqttSettings = new MQTTSettings())
+      using MQTTSettings mqttSettings = new();
+      DialogResult result = mqttSettings.ShowDialog();
+      if (result == DialogResult.OK)
       {
-        DialogResult result = mqttSettings.ShowDialog();
-        if (result == DialogResult.OK)
-        {
-          Dbg.Write("MQTT Settings Saved");
-        }
+        Dbg.Write("MQTT Settings Saved");
       }
     }
 
 
     private void Button1_Click(object sender, EventArgs e)
     {
-      _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Before);
+      /*_test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Before);
       _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.After);
       _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Both);
+      */
     }
 
     private async void TestImagesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3191,20 +3577,17 @@ namespace OnGuardCore
 
         foreach (var cam in _allCameras.CameraDictionary)
         {
-          string path = cam.Value.Path;
-
+          string path = cam.Value.CameraPath;
           IDictionaryEnumerator dict = allPics.GetEnumerator();
 
           while (dict.MoveNext())
           {
             Bitmap bm = (Bitmap)dict.Value;
-            using (MemoryStream mem = new MemoryStream())
-            {
-              string fullPath = Path.Combine(path, cam.Value.CameraPrefix);
-              fullPath += dict.Key;
-              fullPath += DateTime.Now.Ticks.ToString() + ".jpg";
-              bm.Save(fullPath, ImageFormat.Jpeg);
-            }
+            using MemoryStream mem = new();
+            string fullPath = Path.Combine(path, cam.Value.CameraPrefix);
+            fullPath += dict.Key;
+            fullPath += DateTime.Now.Ticks.ToString() + ".jpg";
+            bm.Save(fullPath, ImageFormat.Jpeg);
           }
         }
       }
@@ -3249,108 +3632,384 @@ namespace OnGuardCore
 
     private void AnalysisSettingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      using (AnalysisSettingsDialog dlg = new AnalysisSettingsDialog())
-      {
-        dlg.ShowDialog();
-      }
+      using AnalysisSettingsDialog dlg = new();
+      dlg.ShowDialog();
     }
 
-    private void menuStrip2_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-    {
-
-    }
 
     private void AIAlertMenuItemClicked(object sender, EventArgs e)
     {
-      using (AIAlertDialog dlg = new AIAlertDialog())
-      {
-        dlg.ShowDialog();
-      }
+      using AIAlertDialog dlg = new();
+      dlg.ShowDialog();
     }
 
 
-    private void UseXMLCheckChanged(object sender, EventArgs eventArgs)
-    {
-      Storage.UseRegistry = false;  // temporarily force xml
-      Storage.Instance.SetGlobalBool("UseXML", UseXMLDataSourceCheckedMenu.Checked);
-      Storage.Instance.Update();
-      Storage.UseRegistry = !UseXMLDataSourceCheckedMenu.Checked;
-    }
 
     private void YResLabel_Click(object sender, EventArgs e)
     {
 
     }
 
+    // This should ONLY be called when the track bar is causing the change
+    // since we filter calls in the control.
     private void LocationTrackBar_ValueChanged(object sender, EventArgs e)
     {
-      _locationPosition = locationTrackBar.Value;
-
-      if (!_pauseLocationBarUpdate)
+      if (!_modifyingArea)
       {
-        _current = _locationPosition;
-        LoadImage(_fileNames.Values[_current]);
-        fileNumberUpDown.Value = _current + 1;
+        int location = timeLine.Value;
+        if (location < _fileNames.Count)
+        {
+          string key = _fileNames.Keys[location];
+
+          if (key != _lastPictureRequested)
+          {
+            CancelAllPendingPictures(); // we don't care about anything queued.
+            Picture p = CreatePicture(_fileNames[key].FileName);
+            UpdateRequestedKey(key);
+          }
+        }
       }
     }
 
-    private void LocationBarMouseDown(object sender, MouseEventArgs e)
-    {
-      _pauseLocationBarUpdate = true; // pause updating value
-    }
 
-    private void LocationBarMouseUp(object sender, MouseEventArgs e)
-    {
-      _pauseLocationBarUpdate = false;  // resume updating value
-      LocationTrackBar_ValueChanged(null, null);
-      _locationTip.Hide(locationTrackBar);
-    }
-
-    private void locationBarMouseMove(object sender, MouseEventArgs e)
-    {
-      if (_pauseLocationBarUpdate)
-      {
-        ShowLocationToolTip(_fileNames.Keys[_locationPosition].ToString(), e.Location);
-      }
-      
-    }
-
-    private void ShowLocationToolTip(string str, Point point)
-    {
-      Size strSize = TextRenderer.MeasureText(str, System.Drawing.SystemFonts.SmallCaptionFont);
-      _locationTip.Show(str, locationTrackBar, -1 * (strSize.Width) - 5, point.Y - strSize.Height/2);
-
-    }
-
-    private void UpdateLocationBarLimits()
-    {
-      locationTrackBar.Maximum = _fileNames.Count - 1;
-      locationTrackBar.Value = 0;
-      locationTrackBar.LargeChange = locationTrackBar.Maximum / 20;
-      if (locationTrackBar.LargeChange < 1)
-      {
-        locationTrackBar.LargeChange = 1;
-      }
-
-      locationTrackBar.SmallChange = locationTrackBar.Maximum / 100;
-      if (locationTrackBar.SmallChange < 1)
-      {
-        locationTrackBar.SmallChange = 1;
-      }
-    }
 
     private void SetCurrent(int current)
     {
       if (current < _fileNames.Count && current >= 0)
       {
+        timeLine.SetCurrentPosition(current);
         _current = current;
-        bool previousPause = _pauseLocationBarUpdate;
-        _pauseLocationBarUpdate = true;
-        locationTrackBar.Value = _current;
-        _pauseLocationBarUpdate = previousPause;
+        int pictureIndex = PictureIndex(_displayedPicture);
       }
     }
 
+    private void ImageCaptureMenuItem_Click(object sender, EventArgs e)
+    {
+      using ImageCaptureDialog dlg = new(CurrentCam);
+      dlg.ShowDialog();
+    }
+
+    void SetPresetList()
+    {
+      if (_allCameras != null && CurrentCam != null)
+      {
+        PresetsCombo.Items.Clear();
+
+        if (CurrentCam.Contact.PresetSettings.PresetMethod == PTZMethod.None)
+        {
+          presetButton.Enabled = false;
+          PresetsCombo.Enabled = false;
+        }
+        else
+        {
+          presetButton.Enabled = true;
+          PresetsCombo.Enabled = true;
+
+          foreach (var preset in CurrentCam.Contact.PresetSettings.PresetList)
+          {
+            PresetsCombo.Items.Add(preset.Name);
+          }
+
+          if (PresetsCombo.Items.Count > 0)
+          {
+            PresetsCombo.SelectedIndex = 0;
+          }
+        }
+      }
+    }
+
+    void EnablePTZ()
+    {
+      if (_allCameras != null)
+      {
+        if (CurrentCam != null)
+        {
+          bool usePTZ = (CurrentCam.Contact.PTZContactMethod != PTZMethod.None);
+          camRightButton.Enabled = usePTZ;
+          camLeftButton.Enabled = usePTZ;
+          camUpButton.Enabled = usePTZ;
+          camDownButton.Enabled = usePTZ;
+          camZoomOut.Enabled = usePTZ;
+          camZoomIn.Enabled = usePTZ;
+        }
+      }
+
+    }
+
+
+
+    private void cameraCombo_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    async Task CreateFaceAsync()
+    {
+      Rectangle rect = new(_modifyBox.Location.X, _modifyBox.Location.Y, _modifyBox.Width, _modifyBox.Height);
+      Rectangle scaledRect = BitmapResolution.ScaleScreenToData(rect);
+
+      _modifyingArea = false;
+      ControlMoverOrResizer.Stop(_modifyBox);
+      StopEditingEnvironment();
+      _modifyBox.Dispose();
+      _modifyBox = null;
+
+      PixelFormat format = _displayedPicture.PictureBitmap.PixelFormat;
+      using Bitmap faceBitmap = _displayedPicture.PictureBitmap.Clone(scaledRect, format);
+      using FaceName dlg = new();
+      DialogResult result = dlg.ShowDialog();
+      if (result == DialogResult.OK)
+      {
+        bool registerResult = await FaceDetection.RegisterFaceAsync(dlg.Person);
+        if (!registerResult)
+        {
+          MessageBox.Show("The AI was unable to detect this picture as a face.  Try another picture!", "Face Detection Error!");
+        }
+        else
+        {
+          faceBitmap.Save(dlg.NameOfPerson);
+        }
+      }
+    }
+
+    private void startRestartAIToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      using StartRestartAI dlg = new();
+      dlg.ShowDialog();
+    }
+
+    private void OnClosing(object sender, FormClosingEventArgs e)
+    {
+      if (Storage.Instance.GetGlobalBool("AutoStopDeepStack"))
+      {
+        AI.StopAI();
+      }
+    }
+
+    private Point ScreenToArea(Point pt)
+    {
+      Point result = new();
+      if (pt.Y >= pictureImage.Height)
+      {
+        pt.Y = pictureImage.Height - 1;
+      }
+
+      if (pt.X >= pictureImage.Width)
+      {
+        pt.X = pictureImage.Width - 1;
+      }
+
+      if (pt.Y < 0)
+      {
+        pt.Y = 0;
+      }
+
+      if (pt.X < 0)
+      {
+        pt.X = 0;
+      }
+
+      // Get the bitmap x and y based on the mouse x & y
+      int x = (int)Math.Round((double)pt.X * BitmapResolution.XScale);
+      int y = (int)Math.Round((double)pt.Y * BitmapResolution.YScale);
+
+      int pixelsPerX = BitmapResolution.XResolution / _areaDefinition.XDim;
+      int pixelsPerY = BitmapResolution.YResolution / _areaDefinition.YDim;
+
+      result.X = x / pixelsPerX;
+      result.Y = y / pixelsPerY;
+
+      /*result.Y = (int)Math.Round(((double)y / (double)_areaDefinition.YDim));
+      result.X = (int)Math.Round(((double)x / (double)_areaDefinition.XDim));
+      */
+
+      return result;
+    }
+
+    private void createAreaToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      string caption = "****** Creating/Modifying Area of Interest - Escape to Quit, F1 to Accept -  Number Keys (1 - 7) Control Rectangle Size ******";
+      _definitionType = DefinitionType.AOI;
+      _areaDefinition.Clear();
+      SetScreenAreaDefinition(_areaDefinition);
+      SetupEditingEnvironment(caption);
+    }
+
+    private async void editAreaToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      using EditAreasOfInterest edit = new(CurrentCam.AOI); // handles any changes in registration
+      DialogResult result = edit.ShowDialog();
+      if (result == DialogResult.Yes)
+      {
+        // An artificial response showing that we have an Area of Interest boundary to change
+        StartEditingArea(edit.EditAreaID);
+      }
+      else
+      {
+        if (_fileNames != null && _fileNames.Count > 0)
+        {
+          CreatePicture(_displayedPicture.FileName);
+        }
+      }
+    }
+
+    private void SetPictureBitmap(Bitmap bitmap)
+    {
+      if (this.InvokeRequired)
+      {
+        this.BeginInvoke(new Action(() =>
+          {
+            pictureImage.SetImage(bitmap);
+            pictureImage.Refresh();
+          }));
+      }
+      else
+      {
+        pictureImage.SetImage(bitmap);
+        pictureImage.Refresh();
+      }
+    }
+
+    private void SetScreenAreaDefinition(GridDefinition grid)
+    {
+      List<GridDefinition> grids = new();
+      grids.Add(grid);
+      pictureImage.GridsSelected = grids;
+      pictureImage.Refresh();
+    }
+
+
+    delegate void ControlTextUpdateDelgate(Control control, string text);
+    private void ControlTextUpdate(Control control, string text)
+    {
+      if (control.InvokeRequired)
+      {
+        control.BeginInvoke(new ControlTextUpdateDelgate(ControlTextUpdate), new object[] { control, text });
+        return;
+      }
+
+      control.Text = text;
+    }
+
+    delegate void NumericValueUpdateDelgate(NumericUpDown control, int val);
+    private void NumericValueUpdate(NumericUpDown control, int val)
+    {
+      if (control.InvokeRequired)
+      {
+        control.BeginInvoke(new NumericValueUpdateDelgate(NumericValueUpdate), new object[] { control, val });
+        return;
+      }
+
+      control.Value = val;
+    }
+
+    delegate void UpdateMenuItemDelegate(ToolStripMenuItem item, string text, int setChecked);
+    private void UpdateMenuItem(ToolStripMenuItem item, string text, int setChecked)
+    {
+      if (this.InvokeRequired)
+      {
+        this.BeginInvoke(new UpdateMenuItemDelegate(UpdateMenuItem), new object[] { item, text, setChecked });
+        return;
+      }
+
+      if (!string.IsNullOrEmpty(text))
+      {
+        item.Text = text;
+      }
+
+      if (setChecked >= 0)
+      {
+        item.Checked = Convert.ToBoolean(setChecked);
+      }
+    }
+
+    private void Button1_Click_1(object sender, EventArgs e)
+    {
+      GC.Collect();
+    }
+
+    private void OnTimelineKeyUp(object sender, KeyEventArgs e)
+    {
+      if (!_modifyingArea)
+      {
+        int position = timeLine.Value;
+        Dbg.Write("timeLine position when up: " + position.ToString());
+        CancelAllPendingPictures();
+        string key = _fileNames.Keys[position];
+        Picture p = CreatePicture(_fileNames[key].FileName);
+        _cancelAfterPicture = p.ID;
+      }
+    }
+
+    private void OnSizeToFrameChecked(object sender, EventArgs e)
+    {
+
+    }
+
+    private void OnResize(object sender, EventArgs e)
+    {
+      if (this.WindowState == FormWindowState.Minimized)
+      {
+        Hide();
+        notifyIcon.Visible = true;
+        notifyIcon.ShowBalloonTip(800);
+      }
+
+      if (!_loading && _displayedPicture != null)
+      {
+        AdjustPictureImageSize(_displayedPicture);
+      }
+
+    }
+
+
+    private void sizePictureToFrameMenuItem_Click(object sender, EventArgs e)
+    {
+      if (_displayedPicture != null)
+      {
+        AdjustPictureImageSize(_displayedPicture);
+      }
+    }
+
+    private void OnPictureDisplayOption(object sender, EventArgs e)
+    {
+      using (DisplayMode dlg = new DisplayMode(DisplayType))
+      {
+        DialogResult result = dlg.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          DisplayType = dlg.DisplayType;
+          if (_displayedPicture != null)
+          {
+            AdjustPictureImageSize(_displayedPicture);
+          }
+        }
+      }
+    }
+  }
+
+  public enum CameraDirections
+  {
+    left = 0,
+    right = 1,
+    up = 2,
+    down = 3,
+    home = 4,
+    zoomIn = 5,
+    zoomOut = 6
+  }
+
+  public enum MovementDirection
+  {
+    Still,
+    Right,
+    Left
+  }
+
+  public enum DefinitionType
+  {
+    AOI,
+    Face
   }
 
 }

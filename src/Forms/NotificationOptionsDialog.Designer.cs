@@ -30,11 +30,12 @@
     {
       this.components = new System.ComponentModel.Container();
       this.urlsList = new System.Windows.Forms.ListView();
-      this.columnHeader0 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-      this.coolDownHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.columnHeader0 = new System.Windows.Forms.ColumnHeader();
+      this.waitTimeHeader = new System.Windows.Forms.ColumnHeader();
+      this.coolDownHeader = new System.Windows.Forms.ColumnHeader();
       this.label2 = new System.Windows.Forms.Label();
       this.emailsList = new System.Windows.Forms.ListView();
-      this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
       this.label3 = new System.Windows.Forms.Label();
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
@@ -52,7 +53,6 @@
       this.NoMotionUrlNotify = new System.Windows.Forms.TextBox();
       this.NoMotionMQTTCheck = new System.Windows.Forms.CheckBox();
       this.label1 = new System.Windows.Forms.Label();
-      this.waitTimeHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.bs)).BeginInit();
@@ -67,12 +67,11 @@
             this.coolDownHeader});
       this.urlsList.FullRowSelect = true;
       this.urlsList.GridLines = true;
-      this.urlsList.HideSelection = false;
       this.urlsList.LabelEdit = true;
       this.urlsList.Location = new System.Drawing.Point(8, 16);
       this.urlsList.MultiSelect = false;
       this.urlsList.Name = "urlsList";
-      this.urlsList.Size = new System.Drawing.Size(420, 154);
+      this.urlsList.Size = new System.Drawing.Size(431, 154);
       this.urlsList.TabIndex = 2;
       this.urlsList.UseCompatibleStateImageBehavior = false;
       this.urlsList.View = System.Windows.Forms.View.Details;
@@ -81,27 +80,25 @@
       // columnHeader0
       // 
       this.columnHeader0.Text = "Urls to Notify";
-      this.columnHeader0.Width = 258;
+      this.columnHeader0.Width = 250;
       // 
       // waitTimeHeader
       // 
-      this.waitTimeHeader.DisplayIndex = 1;
       this.waitTimeHeader.Text = "Wait Time";
-      this.waitTimeHeader.Width = 74;
+      this.waitTimeHeader.Width = 84;
       // 
       // coolDownHeader
       // 
-      this.coolDownHeader.DisplayIndex = 2;
       this.coolDownHeader.Text = "Cool Down";
-      this.coolDownHeader.Width = 78;
+      this.coolDownHeader.Width = 88;
       // 
       // label2
       // 
       this.label2.AutoSize = true;
-      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label2.Location = new System.Drawing.Point(121, 9);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(132, 16);
+      this.label2.Size = new System.Drawing.Size(131, 16);
       this.label2.TabIndex = 3;
       this.label2.Text = "Notification URL s";
       // 
@@ -111,7 +108,6 @@
             this.columnHeader4});
       this.emailsList.FullRowSelect = true;
       this.emailsList.GridLines = true;
-      this.emailsList.HideSelection = false;
       this.emailsList.LabelEdit = true;
       this.emailsList.Location = new System.Drawing.Point(14, 16);
       this.emailsList.MultiSelect = false;
@@ -130,10 +126,10 @@
       // label3
       // 
       this.label3.AutoSize = true;
-      this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label3.Location = new System.Drawing.Point(517, 9);
       this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(253, 16);
+      this.label3.Size = new System.Drawing.Size(252, 16);
       this.label3.TabIndex = 6;
       this.label3.Text = "Email To (Check to include images)";
       // 
@@ -206,7 +202,7 @@
       this.panel1.Controls.Add(this.removeUrlButton);
       this.panel1.Location = new System.Drawing.Point(15, 37);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(447, 220);
+      this.panel1.Size = new System.Drawing.Size(474, 220);
       this.panel1.TabIndex = 29;
       // 
       // panel2
@@ -215,7 +211,7 @@
       this.panel2.Controls.Add(this.emailsList);
       this.panel2.Controls.Add(this.addEmailButton);
       this.panel2.Controls.Add(this.removeEmailButton);
-      this.panel2.Location = new System.Drawing.Point(483, 37);
+      this.panel2.Location = new System.Drawing.Point(512, 37);
       this.panel2.Name = "panel2";
       this.panel2.Size = new System.Drawing.Size(319, 220);
       this.panel2.TabIndex = 30;
@@ -227,10 +223,10 @@
       this.UseMQTTBox.BackColor = System.Drawing.SystemColors.Control;
       this.UseMQTTBox.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
       this.UseMQTTBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.UseMQTTBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.UseMQTTBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.UseMQTTBox.Location = new System.Drawing.Point(310, 433);
       this.UseMQTTBox.Name = "UseMQTTBox";
-      this.UseMQTTBox.Size = new System.Drawing.Size(197, 26);
+      this.UseMQTTBox.Size = new System.Drawing.Size(196, 26);
       this.UseMQTTBox.TabIndex = 0;
       this.UseMQTTBox.Text = "Notify Using MQTT On Activity";
       this.UseMQTTBox.UseVisualStyleBackColor = false;
@@ -251,7 +247,7 @@
       // label5
       // 
       this.label5.AutoSize = true;
-      this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label5.Location = new System.Drawing.Point(120, 20);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(547, 15);
@@ -262,7 +258,7 @@
       // label4
       // 
       this.label4.AutoSize = true;
-      this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label4.Location = new System.Drawing.Point(6, 58);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(91, 15);
@@ -273,7 +269,7 @@
       // 
       this.NoMotionUrlNotify.Location = new System.Drawing.Point(111, 57);
       this.NoMotionUrlNotify.Name = "NoMotionUrlNotify";
-      this.NoMotionUrlNotify.Size = new System.Drawing.Size(404, 20);
+      this.NoMotionUrlNotify.Size = new System.Drawing.Size(404, 23);
       this.NoMotionUrlNotify.TabIndex = 2;
       // 
       // NoMotionMQTTCheck
@@ -283,10 +279,10 @@
       this.NoMotionMQTTCheck.BackColor = System.Drawing.SystemColors.Control;
       this.NoMotionMQTTCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
       this.NoMotionMQTTCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.NoMotionMQTTCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.NoMotionMQTTCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.NoMotionMQTTCheck.Location = new System.Drawing.Point(537, 53);
       this.NoMotionMQTTCheck.Name = "NoMotionMQTTCheck";
-      this.NoMotionMQTTCheck.Size = new System.Drawing.Size(230, 26);
+      this.NoMotionMQTTCheck.Size = new System.Drawing.Size(229, 26);
       this.NoMotionMQTTCheck.TabIndex = 1;
       this.NoMotionMQTTCheck.Text = "Notify Using MQTT Motion Stopped";
       this.NoMotionMQTTCheck.UseVisualStyleBackColor = false;
@@ -294,10 +290,10 @@
       // label1
       // 
       this.label1.AutoSize = true;
-      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label1.Location = new System.Drawing.Point(305, 287);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(207, 16);
+      this.label1.Size = new System.Drawing.Size(206, 16);
       this.label1.TabIndex = 32;
       this.label1.Text = "Motion Stopped Notifications";
       // 
@@ -306,8 +302,9 @@
       this.AcceptButton = this.okButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+      this.AutoScroll = true;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(816, 517);
+      this.ClientSize = new System.Drawing.Size(839, 517);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.panel3);
       this.Controls.Add(this.UseMQTTBox);

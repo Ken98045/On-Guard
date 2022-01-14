@@ -8,7 +8,7 @@ namespace OnGuardCore
   {
     void CreateBaseTree();
     void DeleteArea(string cameraPath, string cameraPrefix, AreaOfInterest area);
-    List<AILocation> GetAILocations();
+    AILocation GetAILocation();
     SortedDictionary<Guid, AreaOfInterest> GetAllAreas(string cameraPath, string cameraPrefix);
     CameraCollection GetAllCameras();
     string GetAppVersion();
@@ -22,7 +22,6 @@ namespace OnGuardCore
     int GetGlobalIntExcept(string keyName);
     string GetGlobalString(string keyName);
     string GetGlobalStringNull(string keyName);
-    void RemoveAILocation(string id);
     void RemoveGlobalValue(string valueName);
     void SaveAllAreas(string cameraPath, string cameraPrefix, AreasOfInterestCollection areas);
     void SaveArea(AreaOfInterest area);
@@ -30,7 +29,7 @@ namespace OnGuardCore
     void SaveArea(string cameraPath, string cameraPrefix, AreaOfInterest area);
     void SaveCameras(CameraCollection allCameras);
     void SaveEmailAddresses(List<EmailOptions> addresses);
-    void SetAILocation(AILocation location);
+    void SetAILocation(string ipAddress, int port);
     void SetAppVersion(string version);
     void SetCameraInt(string cameraPath, string cameraPrefix, string keyName, int theValue);
     void SetGlobalBool(string keyName, bool value);

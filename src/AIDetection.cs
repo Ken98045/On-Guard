@@ -5,256 +5,200 @@ using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Drawing;
-
+using System.Drawing.Imaging;
 
 namespace OnGuardCore
 {
   public class AIDetection
   {
     // This is called by the UI connection test function directly.  It uses an AI not in the list
-    public static async Task<List<ImageObject>> ProcessTestImage(AILocation ai, Stream stream, string imageName)
+    public static async Task<bool> ProcessTestImageAsync(string ipAddress, int port, Bitmap pictureImage, string imageName)
     {
-      List<ImageObject> objectList;
+      bool result = false;
 
-      try
+      string url = string.Format("http://{0}:{1}/v1/vision/detection", ipAddress, port);
+
+      using (var request = new MultipartFormDataContent())
       {
-        objectList = AIFindObjects(ai, stream, imageName, false).Result;
-      }
-      catch (AiNotFoundException ex)
-      {
-        throw ex;
+        using MemoryStream memStream = new ();
+        pictureImage.Save(memStream, ImageFormat.Jpeg);
+        memStream.Position = 0;
+        request.Add(new StreamContent(memStream), "image", "test");
+
+        using HttpClient client = new();
+
+        try
+        {
+          HttpResponseMessage output = await client.PostAsync(url, request).ConfigureAwait(true);
+          if (output.IsSuccessStatusCode)
+          {
+            var jsonString = await output.Content.ReadAsStringAsync().ConfigureAwait(true);
+            output.Dispose();
+
+            JsonSerializerOptions opt = new();
+            opt.PropertyNameCaseInsensitive = true;
+
+            Response response = null;
+
+            try
+            {
+              response = (Response)JsonSerializer.Deserialize(jsonString, typeof(Response), opt);
+            }
+            catch (Exception)
+            {
+
+            }
+
+            if (response.Predictions != null && response.Predictions.Length > 0)
+            {
+              result = true;
+            }
+          }
+        }
+        catch (Exception ex)
+        {
+          Dbg.Write("AIDetection - ProcessTestImage - The AI could not be found - exception: " + ex.Message);
+        }
       }
 
-      return objectList;
+      return result;
     }
 
     // Called by the AI to navigate through the working set UI
-    public static async Task<List<ImageObject>> AIProcessFromUI(string imageName, bool doAsync)
+    public static async Task<List<InterestingObject>> AIProcessFromUIAsync(Bitmap pictureImage, string pictureName)
     {
-      List<ImageObject> result = null;
-      AILocation ai = null;
+      List<InterestingObject> result = null;
 
-      do
+      try
       {
-        using (FileStream stream = new FileStream(imageName, FileMode.Open))
-        {
-          ai = await AILocation.GetAI().ConfigureAwait(false);
-          if (null == ai)
-          {
-            Dbg.Write("The AI List Is Empty!");
-            AiNotFoundException aiException = new AiNotFoundException("No AI Available in AIProcessFromUI");
-            // throw aiException;
-          }
-
-          try
-          {
-            if (doAsync)
-            {
-              result = await AIFindObjects(ai, stream, imageName, false).ConfigureAwait(false);
-            }
-            else
-            {
-              result = AIFindObjects(ai, stream, imageName, false).Result;
-            }
-
-            await AILocation.ReturnToList(ai).ConfigureAwait(false);
-          }
-          catch (HttpRequestException)
-          {
-            AILocation.Decrement();
-            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + (AILocation.AICount - 1).ToString());
-            ai = null;
-          }
-          catch (AggregateException ex)
-          {
-            AILocation.Decrement();
-            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + (AILocation.AICount - 1).ToString());
-            ai = null;
-          }
-          catch (AiNotFoundException)
-          {
-            AILocation.Decrement();
-            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + (AILocation.AICount - 1).ToString());
-            ai = null;
-          }
-          catch (Exception ex)
-          {
-            AILocation.Decrement();
-            Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + (AILocation.AICount - 1).ToString());
-            ai = null;
-          }
-        }
-
-      } while (ai == null);
-
+        result = await AIFindObjectsAsync(pictureImage, pictureName).ConfigureAwait(true);
+      }
+      catch (HttpRequestException)
+      {
+        Dbg.Write("The AI Died Or Was Not Found ");
+      }
+      catch (AggregateException ex)
+      {
+        Dbg.Write("The AI Died Or Was Not Found");
+      }
+      catch (AiNotFoundException)
+      {
+        Dbg.Write("The AI Died Or Was Not Found");
+        throw;
+      }
+      catch (Exception ex)
+      {
+        Dbg.Write("The AI Died Or Was Not Found");
+      }
       return result;
     }
 
     // This function is used by the (semi) live data, not the UI
     public static async Task<AIResult> DetectObjectsAsync(PendingItem pending)
     {
-      List<ImageObject> objectsFound = null;
-      AILocation ai = null;
+      List<InterestingObject> objectsFound = null;
       AIResult aiResult = null;
 
       Dbg.Trace("AIDetection - DetectObjectsAsync starting analysis of: " + pending.PendingFile);
 
-      do
+      try
       {
-        // Get an available AI. If there are none it throws
-        ai = await AILocation.GetAI().ConfigureAwait(false);
-        if (null == ai)
+        pending.TimeToDispatch();
+        objectsFound = await AIFindObjectsAsync(pending.PictureImage, pending.PendingFile).ConfigureAwait(true);  // throws if ai not available
+        pending.SetTimeProcessingByAI();
+        string dbg = "AIDetection - DetectObjectsAsync ending analysis of : " + pending.PendingFile + " Time: " + pending.TotalProcessingTime().TotalSeconds.ToString();
+        if (null != objectsFound)
         {
-          Dbg.Write("The AI List Is Empty!");
-          AiNotFoundException aiNotFoundException = new AiNotFoundException("No AI Available in DetectObjectsAsync");
-          throw aiNotFoundException;
+          dbg += " with: " + objectsFound.Count.ToString() + " objects";
         }
+        Dbg.Trace(dbg);
 
-        // Do the AI Detection (async)
-        try
+        aiResult = new ();
+        aiResult.ObjectsFound = objectsFound;
+        aiResult.Item = pending;
+
+        if (aiResult.ObjectsFound != null)
         {
-          using (FileStream stream = File.OpenRead(pending.PendingFile))
+          foreach (var result in aiResult.ObjectsFound)
           {
-            pending.TimeToDispatch();
-            objectsFound = await AIFindObjects(ai, stream, pending.PendingFile, true).ConfigureAwait(false);  // throws if ai not available
-            pending.SetTimeProcessingByAI();
-            string dbg = "AIDetection - DetectObjectsAsync ending analysis of : " + pending.PendingFile + " Time: " + pending.TotalProcessingTime().TotalSeconds.ToString();
-            if (null != objectsFound)
-            {
-              dbg += " with: " + objectsFound.Count.ToString() + " objects";
-            }
-            Dbg.Trace(dbg);
-          }
-
-          await AILocation.ReturnToList(ai).ConfigureAwait(false);  // put it back for re-use
-
-          aiResult = new AIResult();
-          aiResult.ObjectsFound = objectsFound;
-          aiResult.Item = pending;
-
-          if (aiResult.ObjectsFound != null)
-          {
-            foreach (var result in aiResult.ObjectsFound)
-            {
-              string o = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", result.Label, result.Confidence, result.X_min, result.Y_min, result.X_max, result.Y_max);
-              Dbg.Trace(o);
-            }
+            string o = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", result.Label, result.Confidence, result.X_min, result.Y_min, result.X_max, result.Y_max);
+            Dbg.Trace(o);
           }
         }
-        catch (AggregateException ex)
-        {
-          Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
-          AILocation.Decrement();
-          ai = null;
-        }
-        catch (AiNotFoundException)
-        {
-          Dbg.Write("An AI at Port: " + ai.Port.ToString() + " Died Or Was Not Found - Remaining: " + AILocation.AICount.ToString());
-          AILocation.Decrement();
-          ai = null;
-        }
-
-      } while (ai == null);
+      }
+      catch (AggregateException ex)
+      {
+        Dbg.Write("An AI Died Or Was Not Found - Remaining: " + AI.AICount.ToString());
+      }
+      catch (AiNotFoundException ex)
+      {
+        Dbg.Write("The AI Died Or Was Not Found: " + ex.Message);
+        throw;
+      }
 
       return aiResult;
     }
 
 
     // Main processing of objects through the AI
-    public async static Task<List<ImageObject>> AIFindObjects(AILocation aiLocation, Stream stream, string imageName, bool doAsync)
+    public async static Task<List<InterestingObject>> AIFindObjectsAsync(Bitmap pictureImage, string imageName)
     {
-      List<ImageObject> objects = null;
+      List<InterestingObject> objects = null;
 
-      if (aiLocation != null)
+      using (MemoryStream stream = new())  // we have a bitmap, but we need a stream for the analysis
       {
+        pictureImage.Save(stream, ImageFormat.Jpeg);
+        stream.Position = 0;
 
-        using (HttpClient client = new HttpClient())
+
+        using HttpClient client = new();
+        client.Timeout = TimeSpan.FromSeconds(90);
+
+        using StreamContent content = new(stream);
+        using var request = new MultipartFormDataContent { { content, "image", imageName } };
+        HttpResponseMessage output = await AI.PostAIRequestAsync(client, "v1/vision/detection", request); // may throw!
+
+        var jsonString = await output.Content.ReadAsStringAsync();
+        output.Dispose();
+
+        JsonSerializerOptions opt = new();
+        opt.PropertyNameCaseInsensitive = true;
+
+        Response response = null;
+
+        try
         {
-          client.Timeout = TimeSpan.FromSeconds(20);
+          response = (Response)JsonSerializer.Deserialize(jsonString, typeof(Response), opt);
+        }
+        catch (Exception ex)
+        {
 
-          using (StreamContent content = new StreamContent(stream))
+        }
+
+        if (response.Predictions != null && response.Predictions.Length > 0)
+        {
+
+          foreach (var result in response.Predictions)
           {
-            using (var request = new MultipartFormDataContent
-        {
-          { content, "image", imageName }
-        })
+            if (objects == null)
             {
-              string url = string.Format("http://{0}:{1}/v1/vision/detection", aiLocation.IPAddress, aiLocation.Port);
-
-              HttpResponseMessage output = null;
-              try
-              {
-                if (doAsync)
-                {
-                  output = await client.PostAsync(new Uri(url), request).ConfigureAwait(false);
-                }
-                else
-                {
-                  output = client.PostAsync(new Uri(url), request).Result;
-                }
-              }
-              catch (HttpRequestException)
-              {
-                throw new AiNotFoundException(url);
-              }
-              catch (AggregateException ex)
-              {
-                throw new AiNotFoundException(url);
-              }
-              catch (Exception ex)
-              {
-                throw new AiNotFoundException(url);
-              }
-
-              if (!output.IsSuccessStatusCode)
-              {
-                throw new AiNotFoundException(url);
-              }
-
-
-              var jsonString = /*await*/ output.Content.ReadAsStringAsync().Result;
-              output.Dispose();
-
-              JsonSerializerOptions opt = new JsonSerializerOptions();
-              opt.PropertyNameCaseInsensitive = true;
-
-              Response response = null;
-
-              try
-              {
-                response = (Response)JsonSerializer.Deserialize(jsonString, typeof(Response), opt);
-              }
-              catch (Exception ex)
-              {
-
-              }
-
-              if (response.Predictions != null && response.Predictions.Length > 0)
-              {
-
-                foreach (var result in response.Predictions)
-                {
-                  if (objects == null)
-                  {
-                    objects = new List<ImageObject>();
-                  }
-
-                  result.Success = true;
-
-                  // Windows likes Rectangles, so it is easier to create one now
-                  result.ObjectRectangle = Rectangle.FromLTRB(result.X_min, result.Y_min, result.X_max, result.Y_max);
-                  result.ID = Guid.NewGuid(); // Keep an ID around for the life of the object
-
-                  objects.Add(result);
-
-                }
-              }
+              objects = new List<InterestingObject>();
             }
+
+            result.Success = true;
+
+            // Windows likes Rectangles, so it is easier to create one now
+            result.ObjectRectangle = Rectangle.FromLTRB(result.X_min, result.Y_min, result.X_max, result.Y_max);
+            result.ID = Guid.NewGuid(); // Keep an ID around for the life of the object
+            objects.Add(result);
+
           }
         }
       }
-      return objects;
-    }
 
+      return objects;
+
+    }
   }
+
 }

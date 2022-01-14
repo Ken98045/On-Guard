@@ -43,7 +43,7 @@ namespace OnGuardCore
           ExpiredFiles = new List<FileInfo>();
           foreach (var cam in _allCameras.CameraDictionary.Values)
           {
-            DirectoryInfo dir = new DirectoryInfo(cam.Path);
+            DirectoryInfo dir = new DirectoryInfo(cam.CameraPath);
             List<FileInfo> expiredForCamera = dir.EnumerateFiles(cam.CameraPrefix + "*.jpg", SearchOption.TopDirectoryOnly)
                 .Where(fi => fi.CreationTime + span < DateTime.Now).ToList();
 

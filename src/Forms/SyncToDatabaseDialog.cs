@@ -12,6 +12,9 @@ namespace OnGuardCore
 {
   public partial class SyncToDatabaseDialog : Form
   {
+    private double _interval;
+    public double Interval { get => _interval; }
+
     public SyncToDatabaseDialog()
     {
       InitializeComponent();
@@ -19,6 +22,7 @@ namespace OnGuardCore
 
     private void OkButton_Click(object sender, EventArgs e)
     {
+      _interval = (double)IntervalNumeric.Value;
       DialogResult = DialogResult.OK;
     }
 

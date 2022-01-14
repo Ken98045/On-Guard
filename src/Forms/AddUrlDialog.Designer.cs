@@ -37,23 +37,25 @@
       this.label3 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
       this.panel1 = new System.Windows.Forms.Panel();
-      this.label6 = new System.Windows.Forms.Label();
-      this.WaitTimeNumeric = new System.Windows.Forms.NumericUpDown();
-      this.label7 = new System.Windows.Forms.Label();
-      this.ResetCheckBox = new System.Windows.Forms.CheckBox();
-      this.FlagCheckBox = new System.Windows.Forms.CheckBox();
+      this.groupBox1 = new System.Windows.Forms.GroupBox();
       this.ConfirmCheckBox = new System.Windows.Forms.CheckBox();
       this.label5 = new System.Windows.Forms.Label();
       this.AutoFillButton = new System.Windows.Forms.Button();
+      this.ResetCheckBox = new System.Windows.Forms.CheckBox();
+      this.FlagCheckBox = new System.Windows.Forms.CheckBox();
+      this.label6 = new System.Windows.Forms.Label();
+      this.WaitTimeNumeric = new System.Windows.Forms.NumericUpDown();
+      this.label7 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.urlCoolDownNumeric)).BeginInit();
       this.panel1.SuspendLayout();
+      this.groupBox1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.WaitTimeNumeric)).BeginInit();
       this.SuspendLayout();
       // 
       // okButton
       // 
       this.okButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.okButton.Location = new System.Drawing.Point(186, 352);
+      this.okButton.Location = new System.Drawing.Point(186, 376);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 0;
@@ -63,7 +65,7 @@
       // 
       // cancelButton
       // 
-      this.cancelButton.Location = new System.Drawing.Point(282, 352);
+      this.cancelButton.Location = new System.Drawing.Point(282, 376);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 1;
@@ -75,11 +77,11 @@
       // 
       this.label1.AutoSize = true;
       this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label1.Location = new System.Drawing.Point(197, 10);
+      this.label1.Location = new System.Drawing.Point(172, 10);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(122, 15);
+      this.label1.Size = new System.Drawing.Size(172, 15);
       this.label1.TabIndex = 2;
-      this.label1.Text = "URL Sent Via Http";
+      this.label1.Text = "Trigger URL Sent Via Http";
       // 
       // urlText
       // 
@@ -90,7 +92,7 @@
       // 
       // urlCoolDownNumeric
       // 
-      this.urlCoolDownNumeric.Location = new System.Drawing.Point(181, 268);
+      this.urlCoolDownNumeric.Location = new System.Drawing.Point(181, 290);
       this.urlCoolDownNumeric.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -108,7 +110,7 @@
       // label2
       // 
       this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(276, 268);
+      this.label2.Location = new System.Drawing.Point(276, 290);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(268, 15);
       this.label2.TabIndex = 28;
@@ -117,7 +119,7 @@
       // label3
       // 
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(72, 270);
+      this.label3.Location = new System.Drawing.Point(72, 292);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(101, 15);
       this.label3.TabIndex = 29;
@@ -135,29 +137,93 @@
       // panel1
       // 
       this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.panel1.Controls.Add(this.groupBox1);
       this.panel1.Controls.Add(this.label6);
       this.panel1.Controls.Add(this.WaitTimeNumeric);
       this.panel1.Controls.Add(this.label7);
-      this.panel1.Controls.Add(this.ResetCheckBox);
-      this.panel1.Controls.Add(this.FlagCheckBox);
-      this.panel1.Controls.Add(this.ConfirmCheckBox);
-      this.panel1.Controls.Add(this.label5);
-      this.panel1.Controls.Add(this.AutoFillButton);
       this.panel1.Controls.Add(this.urlText);
       this.panel1.Controls.Add(this.label4);
       this.panel1.Controls.Add(this.label1);
       this.panel1.Controls.Add(this.label3);
       this.panel1.Controls.Add(this.urlCoolDownNumeric);
       this.panel1.Controls.Add(this.label2);
-      this.panel1.Location = new System.Drawing.Point(12, 26);
+      this.panel1.Location = new System.Drawing.Point(12, 24);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(519, 302);
+      this.panel1.Size = new System.Drawing.Size(519, 333);
       this.panel1.TabIndex = 31;
+      // 
+      // groupBox1
+      // 
+      this.groupBox1.BackColor = System.Drawing.Color.LightBlue;
+      this.groupBox1.Controls.Add(this.ConfirmCheckBox);
+      this.groupBox1.Controls.Add(this.label5);
+      this.groupBox1.Controls.Add(this.AutoFillButton);
+      this.groupBox1.Controls.Add(this.ResetCheckBox);
+      this.groupBox1.Controls.Add(this.FlagCheckBox);
+      this.groupBox1.Location = new System.Drawing.Point(16, 76);
+      this.groupBox1.Name = "groupBox1";
+      this.groupBox1.Size = new System.Drawing.Size(485, 142);
+      this.groupBox1.TabIndex = 41;
+      this.groupBox1.TabStop = false;
+      this.groupBox1.Text = "For Blue Iris ONLY!";
+      // 
+      // ConfirmCheckBox
+      // 
+      this.ConfirmCheckBox.AutoSize = true;
+      this.ConfirmCheckBox.Location = new System.Drawing.Point(6, 58);
+      this.ConfirmCheckBox.Name = "ConfirmCheckBox";
+      this.ConfirmCheckBox.Size = new System.Drawing.Size(173, 19);
+      this.ConfirmCheckBox.TabIndex = 32;
+      this.ConfirmCheckBox.Text = "Mark Confirmed by Blue Iris";
+      this.ConfirmCheckBox.UseVisualStyleBackColor = true;
+      this.ConfirmCheckBox.CheckedChanged += new System.EventHandler(this.ConfirmOnCheckChanged);
+      // 
+      // label5
+      // 
+      this.label5.AutoSize = true;
+      this.label5.Location = new System.Drawing.Point(87, 29);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(246, 15);
+      this.label5.TabIndex = 31;
+      this.label5.Text = "Automatically Fill From Camera Contact Data\r\n";
+      // 
+      // AutoFillButton
+      // 
+      this.AutoFillButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.AutoFillButton.Location = new System.Drawing.Point(6, 21);
+      this.AutoFillButton.Name = "AutoFillButton";
+      this.AutoFillButton.Size = new System.Drawing.Size(75, 26);
+      this.AutoFillButton.TabIndex = 0;
+      this.AutoFillButton.Text = "Auto Fill";
+      this.AutoFillButton.UseVisualStyleBackColor = true;
+      this.AutoFillButton.Click += new System.EventHandler(this.AutoFillButton_Click);
+      // 
+      // ResetCheckBox
+      // 
+      this.ResetCheckBox.AutoSize = true;
+      this.ResetCheckBox.Location = new System.Drawing.Point(6, 110);
+      this.ResetCheckBox.Name = "ResetCheckBox";
+      this.ResetCheckBox.Size = new System.Drawing.Size(271, 19);
+      this.ResetCheckBox.TabIndex = 35;
+      this.ResetCheckBox.Text = "Reset Confirmed and Flagged State by Blue Iris\r\n";
+      this.ResetCheckBox.UseVisualStyleBackColor = true;
+      this.ResetCheckBox.CheckedChanged += new System.EventHandler(this.ResetCheckBox_CheckedChanged);
+      // 
+      // FlagCheckBox
+      // 
+      this.FlagCheckBox.AutoSize = true;
+      this.FlagCheckBox.Location = new System.Drawing.Point(6, 84);
+      this.FlagCheckBox.Name = "FlagCheckBox";
+      this.FlagCheckBox.Size = new System.Drawing.Size(158, 19);
+      this.FlagCheckBox.TabIndex = 33;
+      this.FlagCheckBox.Text = "Mark Flagged by Blue Iris";
+      this.FlagCheckBox.UseVisualStyleBackColor = true;
+      this.FlagCheckBox.CheckedChanged += new System.EventHandler(this.FlagCheckChanged);
       // 
       // label6
       // 
       this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(12, 225);
+      this.label6.Location = new System.Drawing.Point(12, 247);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(161, 15);
       this.label6.TabIndex = 40;
@@ -165,7 +231,7 @@
       // 
       // WaitTimeNumeric
       // 
-      this.WaitTimeNumeric.Location = new System.Drawing.Point(181, 225);
+      this.WaitTimeNumeric.Location = new System.Drawing.Point(181, 247);
       this.WaitTimeNumeric.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -178,64 +244,11 @@
       // label7
       // 
       this.label7.AutoSize = true;
-      this.label7.Location = new System.Drawing.Point(276, 227);
+      this.label7.Location = new System.Drawing.Point(276, 249);
       this.label7.Name = "label7";
       this.label7.Size = new System.Drawing.Size(192, 15);
       this.label7.TabIndex = 39;
       this.label7.Text = "Always Sent  (Overrides Cooldown)";
-      // 
-      // ResetCheckBox
-      // 
-      this.ResetCheckBox.AutoSize = true;
-      this.ResetCheckBox.Location = new System.Drawing.Point(44, 180);
-      this.ResetCheckBox.Name = "ResetCheckBox";
-      this.ResetCheckBox.Size = new System.Drawing.Size(271, 19);
-      this.ResetCheckBox.TabIndex = 35;
-      this.ResetCheckBox.Text = "Reset Confirmed and Flagged State by Blue Iris\r\n";
-      this.ResetCheckBox.UseVisualStyleBackColor = true;
-      this.ResetCheckBox.CheckedChanged += new System.EventHandler(this.ResetCheckBox_CheckedChanged);
-      // 
-      // FlagCheckBox
-      // 
-      this.FlagCheckBox.AutoSize = true;
-      this.FlagCheckBox.Location = new System.Drawing.Point(44, 154);
-      this.FlagCheckBox.Name = "FlagCheckBox";
-      this.FlagCheckBox.Size = new System.Drawing.Size(158, 19);
-      this.FlagCheckBox.TabIndex = 33;
-      this.FlagCheckBox.Text = "Mark Flagged by Blue Iris";
-      this.FlagCheckBox.UseVisualStyleBackColor = true;
-      this.FlagCheckBox.CheckedChanged += new System.EventHandler(this.FlagCheckChanged);
-      // 
-      // ConfirmCheckBox
-      // 
-      this.ConfirmCheckBox.AutoSize = true;
-      this.ConfirmCheckBox.Location = new System.Drawing.Point(44, 128);
-      this.ConfirmCheckBox.Name = "ConfirmCheckBox";
-      this.ConfirmCheckBox.Size = new System.Drawing.Size(173, 19);
-      this.ConfirmCheckBox.TabIndex = 32;
-      this.ConfirmCheckBox.Text = "Mark Confirmed by Blue Iris";
-      this.ConfirmCheckBox.UseVisualStyleBackColor = true;
-      this.ConfirmCheckBox.CheckedChanged += new System.EventHandler(this.ConfirmOnCheckChanged);
-      // 
-      // label5
-      // 
-      this.label5.AutoSize = true;
-      this.label5.Location = new System.Drawing.Point(125, 83);
-      this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(369, 15);
-      this.label5.TabIndex = 31;
-      this.label5.Text = "Automatically Fill From Camera Contact Data (Usually you want this)";
-      // 
-      // AutoFillButton
-      // 
-      this.AutoFillButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.AutoFillButton.Location = new System.Drawing.Point(44, 75);
-      this.AutoFillButton.Name = "AutoFillButton";
-      this.AutoFillButton.Size = new System.Drawing.Size(75, 26);
-      this.AutoFillButton.TabIndex = 0;
-      this.AutoFillButton.Text = "Auto Fill";
-      this.AutoFillButton.UseVisualStyleBackColor = true;
-      this.AutoFillButton.Click += new System.EventHandler(this.AutoFillButton_Click);
       // 
       // AddUrlDialog
       // 
@@ -243,7 +256,7 @@
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.CancelButton = this.okButton;
-      this.ClientSize = new System.Drawing.Size(543, 389);
+      this.ClientSize = new System.Drawing.Size(543, 411);
       this.Controls.Add(this.panel1);
       this.Controls.Add(this.cancelButton);
       this.Controls.Add(this.okButton);
@@ -252,6 +265,8 @@
       ((System.ComponentModel.ISupportInitialize)(this.urlCoolDownNumeric)).EndInit();
       this.panel1.ResumeLayout(false);
       this.panel1.PerformLayout();
+      this.groupBox1.ResumeLayout(false);
+      this.groupBox1.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.WaitTimeNumeric)).EndInit();
       this.ResumeLayout(false);
 
@@ -276,5 +291,6 @@
     private System.Windows.Forms.Label label6;
     private System.Windows.Forms.NumericUpDown WaitTimeNumeric;
     private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.GroupBox groupBox1;
   }
 }

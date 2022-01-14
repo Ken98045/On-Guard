@@ -85,5 +85,13 @@ Page Plus: number@vtext.com
       DialogResult = DialogResult.Cancel;
       Close();
     }
+
+    private void HelpButton_Click(object sender, EventArgs e)
+    {
+      using (HelpBox dlg = new HelpBox("MMS Helper", new Size(500, 450), "MMSHelperHelp.rtf"))
+      {
+        dlg.ShowDialog();
+      }
+    }
   }
 }

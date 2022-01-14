@@ -154,13 +154,15 @@ namespace OnGuardCore
 
     private void RemoveUrlButton_Click(object sender, EventArgs e)
     {
-      if (!(urlsList.SelectedIndices.Count > 0))
+      if (urlsList.SelectedIndices.Count == 0)
       {
         MessageBox.Show("You must select a row in order to delete it");
       }
       else
       {
-        urlsList.Items.RemoveAt(urlsList.SelectedIndices[0]);
+        int index = urlsList.SelectedIndices[0];
+        addUrlButton.Focus();
+        urlsList.Items.RemoveAt(index);
       }
     }
 
@@ -209,13 +211,15 @@ namespace OnGuardCore
 
     private void RemoveEmailButton_Click(object sender, EventArgs e)
     {
-      if (!(emailsList.SelectedIndices.Count > 0))
+      if (emailsList.SelectedIndices.Count == 0)
       {
         MessageBox.Show("You must select a row in order to delete it");
       }
       else
       {
-        emailsList.Items.RemoveAt(emailsList.SelectedIndices[0]);
+        int index = emailsList.SelectedIndices[0];
+        addEmailButton.Focus();
+        emailsList.Items.RemoveAt(index);
       }
 
     }

@@ -71,7 +71,9 @@ namespace OnGuardCore
 
     private void DeleteButton_Click(object sender, EventArgs e)
     {
-      emailAddressList.Items.RemoveAt(emailAddressList.SelectedIndices[0]);
+      int index = emailAddressList.SelectedIndices[0];
+      AddButton.Focus();
+      emailAddressList.Items.RemoveAt(index);
     }
 
     private void OnSelectedIndexChanged(object sender, EventArgs e)

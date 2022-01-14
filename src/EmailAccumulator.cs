@@ -23,7 +23,7 @@ namespace OnGuardCore
   public class EmailAccumulator : FrameAccumulator
   {
 
-    static AwaitableQueue<EmailInfo> _emailQueue = new AwaitableQueue<EmailInfo>(0);
+    static AwaitableQueue<EmailInfo> _emailQueue = new (0);
 
     public EmailAccumulator(int timeToAccumulate)
     {
@@ -32,9 +32,9 @@ namespace OnGuardCore
     }
 
 
-    public async Task EmailInit()
+    public void EmailInit()
     {
-      Task.Run(() => SendEmailFromQueue());
+      Task.Run(() => SendEmailFromQueueAsync());
     }
 
 
@@ -48,18 +48,18 @@ namespace OnGuardCore
     // are included before others (in the limited email space).  From there we prefer interesting
     // pictures.  If we have room we include the others..
     // Note type frames list is in sorted order since it was copied from a SortedList
-    public override async Task ProcessAccumulatedFrames(List<Frame> frames)
+    public override void ProcessAccumulatedFrames(List<Frame> frames)
     {
       // The priority and interesting list contain indexes into the frames list
-      List<int> priority = new List<int>();     // door events have high priority, everything else, not
-      List<int> interesting = new List<int>();  // frames with objects but not "priority
+      List<int> priority = new ();     // door events have high priority, everything else, not
+      List<int> interesting = new ();  // frames with objects but not "priority
 
       Dbg.Trace("EmailAccumulator - Done accumulating email frames with: " + frames.Count.ToString());
 
       // The collection of area descriptions does not depend on the number of outgoing pictures.
       // It depends on all the pictures.  Each picture may have zero or more than, each object may
       // be in a different area. Only frames with Interesting Objects have areas, and therefore descriptions
-      HashSet<string> descriptions = new HashSet<string>();
+      HashSet<string> descriptions = new ();
 
       // First, let's get lists of priority and interesting indexes
       int i = 0;
@@ -69,7 +69,7 @@ namespace OnGuardCore
         {
           foreach (var io in frame.Interesting)
           {
-            descriptions.Add(io.Area.AOIName + ": " + io.FoundObject.Label);
+            descriptions.Add(io.Area.AOIName + ": " + io.Label);
             if (io.Area.AOIType == AOIType.Door)
             {
               priority.Add(i);
@@ -79,7 +79,7 @@ namespace OnGuardCore
             {
               if (!priority.Contains(i))  // a frame may have interesting and priority objects, but only add it to one list
               {
-                descriptions.Add(io.Area.AOIName + ": " + io.FoundObject.Label);
+                descriptions.Add(io.Area.AOIName + ": " + io.Label);
                 interesting.Add(i);
               }
             }
@@ -101,7 +101,7 @@ namespace OnGuardCore
       }
 
       // Now, let's get the list of email addresses to send to based on time of day, day of week, normally just 1 to a small number
-      Dictionary<string, string> emailAddresses = new Dictionary<string, string>();
+      Dictionary<string, string> emailAddresses = new ();
 
       // Yes, these could be combined, but for debugging we look at them separately
       // Go through the "priority"/door frames we already selected and add the related email addresses
@@ -183,7 +183,7 @@ namespace OnGuardCore
       // OK, we have FINALLY culled the list of email addreses to send to.
       // Now, we need to go through email recipients and then select the frames we want to send and then
       // send them.
-      SortedList<DateTime, Frame> outgoing = new SortedList<DateTime, Frame>();
+      SortedList<DateTime, Frame> outgoing = new ();
 
       foreach (string addr in emailAddresses.Values)
       {
@@ -195,7 +195,6 @@ namespace OnGuardCore
         {
 
           // The follwing is done the way it is done for debugging.  
-          // TODO: Reorganize
           int maxPic = opt.NumberOfImages;
           if (priority.Count >= maxPic)
           {
@@ -262,7 +261,7 @@ namespace OnGuardCore
 
         count = 0;
         double totalSize = 0;
-        List<string> outputFiles = new List<string>();
+        List<string> outputFiles = new ();
 
         foreach (string file in theFiles)
         {
@@ -274,7 +273,7 @@ namespace OnGuardCore
 
           if (null != outFile)
           {
-            FileInfo fi = new FileInfo(outFile);
+            FileInfo fi = new (outFile);
             totalSize += fi.Length;
 
             if (totalSize < (double)opt.MaximumAttachmentSize * 1000.0 * 1000.0)
@@ -294,8 +293,8 @@ namespace OnGuardCore
           }
         }
 
-        // theFiles has both resized and not resized files
-        SendEmail(addr, outputFiles.ToArray(), theDescriptions);
+        // the files has both resized and not resized files
+        Task.Run(() => SendEmail(addr, outputFiles.ToArray(), theDescriptions));
       }
     }
 
@@ -415,38 +414,32 @@ namespace OnGuardCore
         {
 
           destFile = Path.GetDirectoryName(fileName) + "\\Resized-" + DateTime.Now.Ticks.ToString() + ".jpg"; ;
-          using (Image image = GetBitmap(fileName))
+          using Image image = GetBitmap(fileName);
+          if (null != image)
           {
-            if (null != image)
+
+            int width = (int)(image.Width * (double)scaleFactor / 100.0);
+            int height = (int)(image.Height * (double)scaleFactor / 100.0);
+
+            var destRect = new Rectangle(0, 0, width, height);
+            using var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(width, height);
+
+            using (var graphics = Graphics.FromImage(destImage))
             {
+              graphics.CompositingMode = CompositingMode.SourceCopy;
+              graphics.CompositingQuality = CompositingQuality.HighQuality;
+              graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+              graphics.SmoothingMode = SmoothingMode.HighQuality;
+              graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-              int width = (int)(image.Width * (double)scaleFactor / 100.0);
-              int height = (int)(image.Height * (double)scaleFactor / 100.0);
-
-              var destRect = new Rectangle(0, 0, width, height);
-              using (var destImage = new Bitmap(width, height))
-              {
-
-                destImage.SetResolution(width, height);
-
-                using (var graphics = Graphics.FromImage(destImage))
-                {
-                  graphics.CompositingMode = CompositingMode.SourceCopy;
-                  graphics.CompositingQuality = CompositingQuality.HighQuality;
-                  graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                  graphics.SmoothingMode = SmoothingMode.HighQuality;
-                  graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                  using (var wrapMode = new ImageAttributes())
-                  {
-                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-                  }
-                }
-
-                destImage.Save(destFile);
-              }
+              using var wrapMode = new ImageAttributes();
+              wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+              graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
             }
+
+            destImage.Save(destFile);
           }
         }
       }
@@ -464,10 +457,10 @@ namespace OnGuardCore
     // Sends an email to a recipient with attached pictures & descriptions.
     // No longer sending async because some email servers choke when multiple requests are submitted.
     // Thanks Comcast!  (They say you can have 25 open requests, but more than 3 results in an error).
-    private static async Task SendEmail(string emailRecipient, string[] frames, string[] activityDesc)
+    private static void SendEmail(string emailRecipient, string[] frames, string[] activityDesc)
     {
 
-      MailMessage mail = null;
+      MailMessage mail;
 
       EmailOptions option = EmailAddresses.GetEmailOptions(emailRecipient);
 
@@ -487,14 +480,14 @@ namespace OnGuardCore
 
       mail.To.Add(emailRecipient);
 
-      EmailInfo emailInfo = new EmailInfo(mail, frames);
+      EmailInfo emailInfo = new (mail, frames);
       Dbg.Trace("Enqueued for sending email to: " + emailRecipient);
       _emailQueue.Add(emailInfo);
     }
 
     static MailMessage BuildAttachmentMessage(string[] frames, string[] activityDesc)
     {
-      MailMessage mail = new MailMessage();
+      MailMessage mail = new ();
       mail.BodyEncoding = Encoding.UTF8;
       mail.IsBodyHtml = true;
 
@@ -515,7 +508,7 @@ namespace OnGuardCore
 
     static MailMessage BuildInlineMessage(string[] frames, string[] activityDesc)
     {
-      MailMessage mail = new MailMessage();
+      MailMessage mail = new ();
       mail.BodyEncoding = Encoding.UTF8;
       mail.IsBodyHtml = true;
 
@@ -549,17 +542,17 @@ namespace OnGuardCore
       }
 
       byte[] buffer;
-      MemoryStream mem = null;
+      MemoryStream mem;
 
       buffer = Encoding.ASCII.GetBytes(htmlOut);
-      mem = new MemoryStream(buffer);
+      mem = new (buffer); // TODO: Dispose this?
       mem.Position = 0;
-      AlternateView alternate = new AlternateView(mem, MediaTypeNames.Text.Html);
+      AlternateView alternate = new (mem, MediaTypeNames.Text.Html);
       mail.AlternateViews.Add(alternate);
       return mail;
     }
 
-    private static async Task SendEmailFromQueue()
+    private static async Task SendEmailFromQueueAsync()
     {
       string emailUserName = Storage.Instance.GetGlobalString("EmailUser");
       string emailPassword = Storage.Instance.GetGlobalString("EmailPassword");
@@ -580,23 +573,21 @@ namespace OnGuardCore
 
           Dbg.Trace("EmailAccumulator - Starting email send to: " + mail.To[0].Address);
 
-          using (SmtpClient SmtpServer = new SmtpClient(Storage.Instance.GetGlobalString("EmailServer")))
+          using SmtpClient SmtpServer = new(Storage.Instance.GetGlobalString("EmailServer"));
+
+          mail.From = new MailAddress(emailUserName);
+          mail.Subject = "Security Camera Alert";   // todo get via ui
+          SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
+
+          if (!string.IsNullOrEmpty(emailUserName))
           {
-
-            mail.From = new MailAddress(emailUserName);
-            mail.Subject = "Security Camera Alert";   // todo get via ui
-            SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
-
-            if (!string.IsNullOrEmpty(emailUserName))
-            {
-              SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
-            }
-
-            SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
-            SmtpServer.Timeout = 120 * 1000;
-            SmtpServer.Send(mail);
-            Dbg.Write("Email sent to: " + mail.To[0].Address);
+            SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
           }
+
+          SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
+          SmtpServer.Timeout = 120 * 1000;
+          SmtpServer.Send(mail);
+          Dbg.Write("Email sent to: " + mail.To[0].Address);
         }
         catch (SmtpException ex)
         {

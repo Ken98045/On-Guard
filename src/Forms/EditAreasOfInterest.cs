@@ -21,14 +21,7 @@ namespace OnGuardCore
 
       foreach (var area in _areas)
       {
-        string[] row = new string[5] {area.AOIName,
-                                      area.GetRect().X.ToString(),
-                                      area.GetRect().Y.ToString(),
-                                      area.GetRect().Width.ToString(),
-                                      area.GetRect().Height.ToString()
-                                      };
-
-        ListViewItem item = new ListViewItem(row)
+        ListViewItem item = new ListViewItem(area.AOIName)
         {
           Tag = area
         };
@@ -39,7 +32,16 @@ namespace OnGuardCore
 
     private void AreasListView_SelectedIndexChanged(object sender, EventArgs e)
     {
-
+      if (areasListView.SelectedItems.Count > 0)
+      {
+        DeleteButton.Enabled = true;
+        EditButton.Enabled = true;
+      }
+      else
+      {
+        DeleteButton.Enabled = false;
+        EditButton.Enabled = false;
+      }
     }
 
     private void OnActivate(object sender, EventArgs e)
@@ -47,16 +49,6 @@ namespace OnGuardCore
       ListViewItem item = areasListView.SelectedItems[0];
       AreaOfInterest area = (AreaOfInterest)item.Tag;
       AreaOfInterest adjustedArea = new AreaOfInterest(area);
-
-      if (area.OriginalXResolution != BitmapResolution.XResolution || area.OriginalYResolution != BitmapResolution.YResolution)
-      {
-        // OK, we are editing an area at a resolution we did not create it at.  
-        // Therefore, we need to adjust the area so we can edit it.
-
-        adjustedArea.AreaRect = area.GetRect();
-        adjustedArea.OriginalXResolution = BitmapResolution.XResolution;
-        adjustedArea.OriginalYResolution = BitmapResolution.YResolution;
-      }
 
       using (CreateAOI dlg = new CreateAOI(adjustedArea))
       {
@@ -75,12 +67,6 @@ namespace OnGuardCore
           
           item.Text = adjustedArea.AOIName; // it may have changed.
           item.Tag = adjustedArea;
-          area.AreaRect = adjustedArea.GetRect();
-          item.SubItems[1].Text = adjustedArea.GetRect().X.ToString();
-          item.SubItems[2].Text = adjustedArea.GetRect().Y.ToString();
-          item.SubItems[3].Text = adjustedArea.GetRect().Width.ToString();
-          item.SubItems[4].Text = adjustedArea.GetRect().Height.ToString();
-
           _areas.UpdateArea(adjustedArea);
           area.Dispose();   // the original, unmodified one
           _areas.Save();
@@ -103,6 +89,35 @@ namespace OnGuardCore
     {
       DialogResult = DialogResult.OK;
       Close();
+    }
+
+    private void DeleteButton_Click(object sender, EventArgs e)
+    {
+      if (areasListView.SelectedItems.Count > 0)
+      {
+        int index = areasListView.SelectedIndices[0];
+        ListViewItem item = areasListView.Items[index];
+        AreaOfInterest area = (AreaOfInterest)item.Tag;
+        _areas.Remove(area.ID);
+        area.Dispose();
+        doneButton.Focus();
+        areasListView.Items.RemoveAt(index);
+
+        if (areasListView.SelectedItems.Count > 0)
+        {
+          areasListView.Items[0].Selected = true;
+        }
+        else
+        {
+          DeleteButton.Enabled = false; // redundent, but
+          EditButton.Enabled = false;
+        }
+      }
+    }
+
+    private void EditButton_Click(object sender, EventArgs e)
+    {
+      OnActivate(null, null);
     }
   }
 }

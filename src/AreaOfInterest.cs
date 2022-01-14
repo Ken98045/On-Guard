@@ -13,20 +13,12 @@ namespace OnGuardCore
     Door,
     GarageDoor,
     Driveway,
-    PeopleWalking
-  }
-
-
-  [Serializable]
-  public enum MovementType
-  {
-    AnyActivity = 1,
-    Arrival,
-    Departure
+    PeopleWalking,
+    FacialRecognition
   }
 
   [Serializable]
-  public enum ImageObjectType
+  public enum InterestingObjectType
   {
     Irrelevant,
     People = 1,
@@ -50,26 +42,44 @@ namespace OnGuardCore
   {
     public string AOIName { get; set; }             // The name to identify the area.  Also sent in any email notifications
     public AOIType AOIType { get; set; }            // Ignore, Door, Garage Door, Driveway.  Door has priority characteristincs
-    public MovementType MovementType { get; set; }  // Not yet implemented.  In the future you can optionally notify for objects moving to or away from the area
     public List<ObjectCharacteristics> SearchCriteria { get; set; }  // Defines the characteristic for each object type - confidence, overlap, minimum size, ...
-    public Rectangle AreaRect;      // The area for the AOI, in original bitmap pixels, not screen pixels
-    public int OriginalXResolution { get; set; }    // Because if the camera images change resolution we need to adjust the virtual area
-    public int OriginalYResolution { get; set; }    // ""
-    Point _zoneFocus;
-    
+
+    GridDefinition _areaDefinition;
+    public GridDefinition Grid
+    {
+      get
+      {
+        return _areaDefinition;
+      }
+      set
+      {
+        _areaDefinition = value;
+      }
+    }
+
     public AreaNotificationOption Notifications { get; set; } // URL and Email notifications, maybe others in the future
 
     public Guid ID { get; set; }   // a unique id for the area
 
     public AreaOfInterest()
     {
+      Grid = new GridDefinition(GlobalData.AreaGridX, GlobalData.AreaGridY);
       ID = Guid.NewGuid();
       SearchCriteria = new List<ObjectCharacteristics>();
       Notifications = new AreaNotificationOption();
     }
 
+    public AreaOfInterest(GridDefinition area)
+    {
+      Grid = new GridDefinition(area);
+      ID = Guid.NewGuid();
+      SearchCriteria = new List<ObjectCharacteristics>();
+      Notifications = new AreaNotificationOption();
+    }
+
+
     public AreaOfInterest
-    
+
     (
       Guid id,
       string name,
@@ -78,7 +88,6 @@ namespace OnGuardCore
       int originalXResolution,
       int originalYResolution,
       Point Focus,
-      MovementType movementType,
       AreaNotificationOption notifications,
       List<ObjectCharacteristics> searchCritera
       )
@@ -87,11 +96,6 @@ namespace OnGuardCore
       ID = id;
       AOIName = name;
       AOIType = areaType;
-      AreaRect = areaRect;
-      OriginalXResolution = originalXResolution;
-      OriginalYResolution = originalYResolution;
-      ZoneFocus = Focus;
-      MovementType = movementType;
       Notifications = notifications;
       SearchCriteria = searchCritera;
     }
@@ -106,53 +110,10 @@ namespace OnGuardCore
         ID = src.ID;              // 
         AOIName = src.AOIName;
         AOIType = src.AOIType;
-        AreaRect = src.AreaRect;
-        OriginalXResolution = src.OriginalXResolution;
-        OriginalYResolution = src.OriginalYResolution;
-        MovementType = src.MovementType;
-        _zoneFocus = src._zoneFocus;
         Notifications = new AreaNotificationOption(src.Notifications);
         SearchCriteria = new List<ObjectCharacteristics>(src.SearchCriteria);
-      }
-    }
-
-    // Get a rectangle that is adjusted according to the resolution when the area was created.
-    // The resolution of bitmaps actually processed may not be the same as the resolution when the area was created
-    public Rectangle GetRect()
-    {
-      Rectangle adjRect = new Rectangle(AreaRect.X, AreaRect.Y, AreaRect.Width, AreaRect.Height);
-
-      adjRect.X = (int)((double)AreaRect.X * ((double)(BitmapResolution.XResolution) / (double)(OriginalXResolution)));
-      adjRect.Y = (int)((double)AreaRect.Y * ((double)(BitmapResolution.YResolution) / (double)(OriginalYResolution)));
-      adjRect.Width = (int)((double)AreaRect.Width * ((double)(BitmapResolution.XResolution) / (double)OriginalXResolution));
-      adjRect.Height = (int)((double)AreaRect.Height * ((double)(BitmapResolution.YResolution) / (double)OriginalYResolution));
-
-      return adjRect;
-    }
-
-    public Point ZoneFocus 
-    {
-      get
-      {
-        Point pt = new Point();
-        pt.X = (int)((double)_zoneFocus.X * ((double)(BitmapResolution.XResolution) / (double)(OriginalXResolution)));
-        pt.Y = (int)((double)_zoneFocus.Y * ((double)(BitmapResolution.YResolution) / (double)(OriginalYResolution)));
-        return pt;
-      }
-
-      set
-      {
-        _zoneFocus = value;
-      }
-    }  // The point in the area used to determine motion to/from the MovementType - Always relative to the area
-
-
-    public void AdjustRect(int xOffset, int yOffset)
-    {
-      double xRatio = (double)BitmapResolution.XResolution / (double)OriginalXResolution;
-      double yRatio = (double)BitmapResolution.YResolution / (double)OriginalYResolution;
-      AreaRect.X = AreaRect.X - (int)(xRatio * (double)xOffset);
-      AreaRect.Y = AreaRect.Y - (int)(yRatio * (double)yOffset);
+        Grid = new GridDefinition(src.Grid);
+        }
     }
 
     public bool IsItemOfAreaInterest(string label)
@@ -163,6 +124,15 @@ namespace OnGuardCore
       {
         foreach (var searchCriteria in SearchCriteria)
         {
+          foreach (var face in searchCriteria.Faces)
+          {
+            if (face.Selected && face.Name == label)
+            {
+              result = true;
+              break;
+            }
+          }
+
           if (searchCriteria.ObjectType == label || FrameAnalyzer.MatchesSpecialTag(searchCriteria, label))
           {
             result = true;

@@ -14,10 +14,10 @@ namespace OnGuardCore
 
   public static class Dbg
   {
-    static readonly ConcurrentQueue<string> q = new ConcurrentQueue<string>();
-    static readonly ManualResetEvent activity = new ManualResetEvent(false);
-    static public ManualResetEvent Stop { get; } = new ManualResetEvent(false);
-    static readonly Thread processThread = new Thread(ProcessOutput);
+    static readonly ConcurrentQueue<string> q = new ();
+    static readonly ManualResetEvent activity = new (false);
+    static public ManualResetEvent Stop { get; } = new (false);
+    static readonly Thread processThread = new (ProcessOutput);
     static TextWriter s_LogWriter;
     public static int LogLevel { get; set; }
     static string s_path;

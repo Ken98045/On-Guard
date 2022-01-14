@@ -1,0 +1,85 @@
+﻿<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="label3.Text" xml:space="preserve">
+    <value>The URL must contain the URL of the preset request AND EITHER the special tag [PRESET] or [OFFSET=XXX] where XXX is the offset to add to the preset index.  
+
+On Guard will substitute the zero-based preset requested for the tag [PRESET] (0 is the first preset).  
+
+If you include [OFFSET=31] On Guard will add 31 to the preset.  Some cameras do not start numbering presets at zero (or even 1).   Instead, they use some magic number as the base for the preset numbering scheme.  Note: Please be careful entering your value exactly as shown, no spacing, etc..
+
+For example this preset command will go to a preset for some cameras: “/web/cgi-bin/hi3510/preset.cgi?-act=goto&amp;-number=[PRESET]”.  If you request preset 3 then the entire tag “[PRESET]” will be replaced with “2” (3 – 1 for the zero offset).
+
+An “[OFFSET=” example for another camera is: “/decoder_control.cgi/command=[OFFSET=31]”.  In this case preset 3 will end up replacing the entire tag “[OFFSET=31]” with “33”.
+
+DO NOT use both [PRESET] and [OFFSET= in your command.
+
+The (mandatory) “http:// [ADDRESS]” portion of the URL will be added for you.  Do NOT add them yourself. 
+
+Note that in the http preset format 256 presets are allowed (0 – 255) even if your camera does not support that many presets.  The reason for this (and a good reason for using http style presets) is that many cameras may use the higher number presets for special purposes.  
+
+For example, one camera may use preset 138 for turning on IR mode even though the camera will not support moving to a preset above 127.   If you were to use ONVIF for moving to a preset the camera would only report 128 presets as available, and might prevent using this special preset number.
+
+It is your responsibility to use only preset numbers supported by your camera.  
+
+
+
+</value>
+  </data>
+</root>

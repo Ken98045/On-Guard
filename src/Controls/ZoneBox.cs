@@ -8,7 +8,7 @@ namespace OnGuardCore
   public class ZoneBox : Panel
   {
     internal int WS_EX_TRANSPARENT = 0x00000020;
-    readonly Color _aoiColor = Color.FromArgb(80, Color.DarkOrange);
+    Color _color;
     readonly Color _focusColor = Color.FromArgb(200, Color.MediumAquamarine);
     Rectangle _focusRect = Rectangle.Empty;
     Point _focusPoint = Point.Empty;
@@ -26,8 +26,10 @@ namespace OnGuardCore
       }
     }
 
-    public ZoneBox() : base()
+    public ZoneBox(Color color) : base()
     {
+      _color = color;
+
       InitializeComponent();
       this.SetStyle(ControlStyles.Opaque |
                             ControlStyles.ResizeRedraw |
@@ -58,9 +60,9 @@ namespace OnGuardCore
     {
       //base.OnPaint(e);
       e.Graphics.SetClip(new Rectangle(0, 0, Width, Height));
-      using (SolidBrush brush = new SolidBrush(_aoiColor))
+      using (SolidBrush brush = new SolidBrush(_color))
       {
-        e.Graphics.FillRectangle(brush, 0, 0, this.Width, this.Height);
+        e.Graphics.FillRectangle(brush, 0, 0, this.Width + 1, this.Height + 1);
         if (_focusRect != Rectangle.Empty)
         {
           using (SolidBrush focusBrush = new SolidBrush(_focusColor))
@@ -74,9 +76,9 @@ namespace OnGuardCore
     protected override void OnPaintBackground(PaintEventArgs e)
     {
       e.Graphics.SetClip(new Rectangle(0, 0, Width, Height));
-      using (SolidBrush brush = new SolidBrush(_aoiColor))
+      using (SolidBrush brush = new SolidBrush(_color))
       {
-        e.Graphics.FillRectangle(brush, 0, 0, this.Width, this.Height);
+        e.Graphics.FillRectangle(brush, 0, 0, this.Width + 1, this.Height + 1);
       }
     }
 

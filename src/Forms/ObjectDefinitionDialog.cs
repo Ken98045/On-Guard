@@ -17,7 +17,6 @@ namespace OnGuardCore
     public int Overlap { get; set; }
     public int MinX { get; set; }
     public int MinY { get; set; }
-    public int History { get; set; }
 
     public ObjectDefinitionDialog()
     {
@@ -36,7 +35,6 @@ namespace OnGuardCore
         overlapNumeric.Value = src.MinPercentOverlap;
         minWidthNumeric.Value = src.MinimumXSize;
         minHeightNumeric.Value = src.MinimumYSize;
-        historyNumeric.Value = src.TimeFrame;
       }
 
     }
@@ -50,7 +48,6 @@ namespace OnGuardCore
         Overlap = (int)overlapNumeric.Value;
         MinX = (int)minWidthNumeric.Value;
         MinY = (int)minHeightNumeric.Value;
-        History = (int)historyNumeric.Value;
         DialogResult = DialogResult.OK;
       }
       else

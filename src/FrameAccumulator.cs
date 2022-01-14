@@ -14,7 +14,7 @@ namespace OnGuardCore
 
     SortedList<DateTime, Frame> Frames { get; set; }
 
-    protected readonly object _lock = new object();
+    protected readonly object _lock = new ();
     public int TimeToAccumulate { get; set; }
     protected bool DisposedValue { get => disposedValue; set => disposedValue = value; }
 
@@ -22,11 +22,10 @@ namespace OnGuardCore
     private bool disposedValue = false; // To detect redundant calls
 
 
-    public async void Init(int timeToAccumulate)
+    public void Init(int timeToAccumulate)
     {
       TimeToAccumulate = timeToAccumulate;
       Frames = new SortedList<DateTime, Frame>();
-
     }
 
     public void Add(Frame frame)
@@ -58,11 +57,11 @@ namespace OnGuardCore
           }
         }
 
-        List<Frame> aCopy = new List<Frame>();
+        List<Frame> aCopy = new ();
 
         foreach (Frame frame in Frames.Values)
         {
-          Frame cpy = new Frame(frame);
+          Frame cpy = new (frame);
           aCopy.Add(cpy);
         }
 
@@ -96,7 +95,7 @@ namespace OnGuardCore
       GC.SuppressFinalize(this);
     }
 
-    public abstract Task ProcessAccumulatedFrames(List<Frame> frames);
+    public abstract void ProcessAccumulatedFrames(List<Frame> frames);
 
   }
 

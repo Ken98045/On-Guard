@@ -24,7 +24,6 @@ namespace OnGuardCore
   {
     static MqttClient s_client;
     private bool disposedValue;
-    static private int _retryDelay = 0;
     static bool _loggedError = false;
     static bool _loggedNotConnected = false;
 
@@ -58,17 +57,17 @@ namespace OnGuardCore
         baseTopic = baseTopic.Replace("{Motion}", "on");
 
         string topic = baseTopic;
-        topic = topic.Replace("{Object}", io.FoundObject.Label);
+        topic = topic.Replace("{Object}", io.Label);
 
         string payload = Storage.Instance.GetGlobalString("MQTTMotionPayload");
-        payload = payload.Replace("{Confidence}", ((int)(io.FoundObject.Confidence * 100.0)).ToString());
+        payload = payload.Replace("{Confidence}", ((int)(io.Confidence * 100.0)).ToString());
 
         if (payload.Contains("{Image}"))
         {
           payload = payload.Replace("{Image}", LoadImage(frame.Item.PendingFile));
         }
 
-        payload = payload.Replace("{Object}", io.FoundObject.Label);
+        payload = payload.Replace("{Object}", io.Label);
         payload = payload.Replace("{Motion}", "on");
 
         string tmp = frame.Item.PendingFile;
@@ -80,7 +79,7 @@ namespace OnGuardCore
       
         payload = payload.Replace("{File}", tmp);
 
-        await SendToServer(topic, payload).ConfigureAwait(false);
+        await SendToServer(topic, payload).ConfigureAwait(true);
       }
     }
 
@@ -98,7 +97,7 @@ namespace OnGuardCore
           _loggedNotConnected = true;
         }
 
-        await Connect().ConfigureAwait(false);
+        await Connect().ConfigureAwait(true);
         connectTryCount++;
         if (!s_client.IsConnected)
         {
@@ -129,7 +128,7 @@ namespace OnGuardCore
 
         try
         {
-          await s_client.PublishAsync(message).ConfigureAwait(false);
+          await s_client.PublishAsync(message).ConfigureAwait(true);
           Dbg.Write("MQTT Message Sent");
         }
         catch (Exception ex)
@@ -181,7 +180,7 @@ namespace OnGuardCore
       {
         try
         {
-          MqttClientAuthenticateResult result = await s_client.ConnectAsync(options, CancellationToken.None).ConfigureAwait(false);
+          MqttClientAuthenticateResult result = await s_client.ConnectAsync(options, CancellationToken.None).ConfigureAwait(true);
           if (result.ResultCode == MqttClientConnectResultCode.Success)
           {
             Dbg.Write("MQTTPublish - Connected to server!");

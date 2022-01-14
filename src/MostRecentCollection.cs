@@ -11,19 +11,19 @@ namespace OnGuardCore
 /// </summary>
   public class MostRecentCollection : List<double>
   {
-    readonly int _numberOfItems;
+    public int MaxItems { get; }
     readonly object _lock = new object();
 
     public MostRecentCollection(int numberOfItems)
     {
-      _numberOfItems = numberOfItems;
+      MaxItems = numberOfItems;
     }
 
     public void AddValue(double v)
     {
       lock (_lock)
       {
-        if (Count == _numberOfItems)
+        if (Count == MaxItems)
         {
           RemoveAt(0);
         }

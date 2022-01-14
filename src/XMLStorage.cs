@@ -9,9 +9,6 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.Linq;
 
-
-using System;
-using System.Collections.Generic;
 using System.Xml.XPath;
 
 namespace OnGuardCore
@@ -23,7 +20,7 @@ namespace OnGuardCore
     XmlNode _base;
     XmlNode _cameras;
     XmlNode _root;
-    object _lock = new object();
+    object _lock = new ();
 
     public XMLStorage()
     {
@@ -50,6 +47,11 @@ namespace OnGuardCore
 
     public void AddUpdateAttribute(XmlNode node, string name, string val)
     {
+      if (string.IsNullOrEmpty(val))
+      {
+        val = string.Empty; // Even though there is no value, we still want the attribute
+      }
+
       if (node.Attributes[name] != null)
       {
         node.Attributes[name].Value = val;
@@ -168,40 +170,28 @@ namespace OnGuardCore
       return ((XmlElement)(_base)).GetAttribute(name);
     }
 
+    // defaults to zero, which may not always be desired
     public int GetGlobalInt(string name)
     {
-      int result = 0;
-
       string strResult = GetGlobal(name);
-      if (!string.IsNullOrEmpty(strResult))
-      {
-        result = int.Parse(strResult);
-      }
-
+      int result = (int)SafeParse.Parse(typeof(int), strResult);
       return result;
     }
 
     public double GetGlobalDouble(string name)
     {
-      double result = 0;
-
       string strResult = GetGlobal(name);
-      if (!string.IsNullOrEmpty(strResult))
-      {
-        result = double.Parse(strResult);
-      }
-
+      double result = (double)SafeParse.Parse(typeof(double), strResult);
       return result;
     }
 
     public bool GetGlobalBool(string name, bool useDefault)
     {
       bool result = useDefault;
-
       string strResult = GetGlobal(name);
       if (!string.IsNullOrEmpty(strResult))
       {
-        result = bool.Parse(strResult);
+        result = (bool)SafeParse.Parse(typeof(bool), strResult);
       }
 
       return result;
@@ -217,17 +207,7 @@ namespace OnGuardCore
     {
       int result = 0;
       string strResult = GetGlobal(keyName);
-
-
-      if (!string.IsNullOrEmpty(strResult))
-      {
-        result = int.Parse(strResult);
-      }
-      else
-      {
-        //TODO: throw
-      }
-
+      result = (int)SafeParse.Parse(typeof(int), strResult);
       return result;
     }
 
@@ -246,74 +226,51 @@ namespace OnGuardCore
       }
     }
 
-    public List<AILocation> GetAILocations()
+    public AILocation GetAILocation()
     {
-      List<AILocation> result = new List<AILocation>();
+      AILocation result = null;
 
-      XmlNode? aiLocations = _base.SelectSingleNode(FindElementNameDown("AILocations"));
-      if (aiLocations == null)
+      XmlNode? ai = _base.SelectSingleNode(FindElementNameDown("AILocation"));
+      if (ai == null)
       {
-        aiLocations = _doc.CreateElement("AILocations");
-        _base.AppendChild(aiLocations);
+        ai = _doc.CreateElement("AILocations");
+        _base.AppendChild(ai);
       }
 
-      if (null != aiLocations.ChildNodes)
+      string adddress = GetAttribute(ai, "IPAddress");
+      string portStr = GetAttribute(ai, "Port");
+
+
+      if (!string.IsNullOrEmpty(adddress) && !string.IsNullOrEmpty(portStr))
       {
-        foreach (XmlNode ai in aiLocations.ChildNodes)
-        {
-          AILocation aiLocation = new AILocation(Guid.Parse(GetAttribute(ai, "ID")), GetAttribute(ai, "IPAddress"), int.Parse(GetAttribute(ai, "Port")));
-          result.Add(aiLocation);
-        }
+        int port = (int)SafeParse.Parse(typeof(int), portStr);
+        result = new AILocation(adddress, port);
       }
 
       return result;
     }
 
-    public void SaveAILocations(List<AILocation> locations)
-    {
-      foreach (var ai in locations)
-      {
-        SetAILocation(ai);
-      }
-
-      Update();
-    }
 
     AreaOfInterest GetArea(XmlNode node, Guid areaID)
     {
-      AreaOfInterest area = new AreaOfInterest();
+      AreaOfInterest area = new ();
 
       XmlNode? areaNode = node.SelectSingleNode(SearchAttributeDown("Area", "ID", areaID.ToString()));
 
       if (null != areaNode)
       {
         area.AOIName = GetAttribute(areaNode, "AreaName");
-        area.AreaRect.X = int.Parse(GetAttribute(areaNode, "X"));
-        area.AreaRect.Y = int.Parse(GetAttribute(areaNode, "Y"));
-        area.AreaRect.Width = int.Parse(GetAttribute(areaNode, "Width"));
-        area.AreaRect.Height = int.Parse(GetAttribute(areaNode, "Height"));
-        area.OriginalXResolution = int.Parse(GetAttribute(areaNode, "OriginalXRes"));
-        area.OriginalYResolution = int.Parse(GetAttribute(areaNode, "OriginalYRes"));
-
-        string focusXStr = GetAttribute(areaNode, "FocusX");
-        if (string.IsNullOrEmpty(focusXStr))
+        if (!area.Grid.Load(area.AOIName))
         {
-          focusXStr = area.AreaRect.X.ToString();
+          area.Grid = new GridDefinition(GlobalData.AreaGridX, GlobalData.AreaGridY);
         }
 
-        string focusYStr = GetAttribute(areaNode, "FocusY");
-        if (string.IsNullOrEmpty(focusYStr))
+        area.ID = (Guid)SafeParse.Parse(typeof(Guid), GetAttribute(areaNode, "ID"));
+        string str = GetAttribute(areaNode, "AOIType");
+        if (!string.IsNullOrEmpty(str))
         {
-          focusYStr = area.AreaRect.Y.ToString();
+          area.AOIType = (AOIType)SafeParse.Parse(typeof(AOIType), str);
         }
-
-        int focusX = int.Parse(focusXStr);
-        int focusY = int.Parse(focusYStr);
-        area.ZoneFocus = new Point(focusX, focusY);
-
-        area.ID = Guid.Parse(GetAttribute(areaNode, "ID"));
-        area.MovementType = (MovementType)Enum.Parse(typeof(MovementType), GetAttribute(areaNode, "Movement"));
-        area.AOIType = (AOIType)Enum.Parse(typeof(AOIType), GetAttribute(areaNode, "AOIType"));
 
         area.Notifications = GetNotificationOption(areaNode);
         area.SearchCriteria = GetCharacteristics(areaNode);
@@ -325,7 +282,7 @@ namespace OnGuardCore
 
     List<ObjectCharacteristics> GetCharacteristics(XmlNode areaNode)
     {
-      List<ObjectCharacteristics> result = new List<ObjectCharacteristics>();
+      List<ObjectCharacteristics> result = new ();
 
       // Get the Search critera node parten
       XmlNode? searchCriteria = areaNode.SelectSingleNode(FindElementNameDown("SearchCriteria"));
@@ -339,14 +296,27 @@ namespace OnGuardCore
       {
         foreach (XmlNode objNode in searchCriteria.ChildNodes)
         {
-          ObjectCharacteristics obj = new ObjectCharacteristics();
-          obj.ID = Guid.Parse(GetAttribute(objNode, "ID"));
-          obj.ObjectType = GetAttribute(objNode, "ImageObjectType");
-          obj.Confidence = int.Parse(GetAttribute(objNode, "Confidence"));
-          obj.MinPercentOverlap = int.Parse(GetAttribute(objNode, "Overlap"));
-          obj.TimeFrame = int.Parse(GetAttribute(objNode, "TimeFrame"));
-          obj.MinimumXSize = int.Parse(GetAttribute(objNode, "MinimumXSize"));
-          obj.MinimumYSize = int.Parse(GetAttribute(objNode, "MinimumYSize"));
+          ObjectCharacteristics obj = new ();
+          obj.ID = (Guid)SafeParse.Parse(typeof(Guid), GetAttribute(objNode, "ID"));
+          obj.ObjectType = GetAttribute(objNode, "InterestingObjectType");
+          obj.Confidence = (int)SafeParse.Parse(typeof(int), GetAttribute(objNode, "Confidence"));
+          obj.MinPercentOverlap = (int)SafeParse.Parse(typeof(int), GetAttribute(objNode, "Overlap"));
+          obj.TimeFrame = (int)SafeParse.Parse(typeof(int), GetAttribute(objNode, "TimeFrame"));
+          obj.MinimumXSize = (int)SafeParse.Parse(typeof(int), GetAttribute(objNode, "MinimumXSize"));
+          obj.MinimumYSize = (int)SafeParse.Parse(typeof(int), GetAttribute(objNode, "MinimumYSize"));
+
+          XmlNode? faces = objNode.SelectSingleNode("Faces");
+          if (null != faces)
+          {
+            foreach (XmlNode faceNode in faces.ChildNodes)
+            {
+              FaceID face = new ();
+              face.Name = GetAttribute(faceNode, "Name");
+              face.Confidence = (int)SafeParse.Parse(typeof(int), GetAttribute(faceNode, "Confidence"));
+              face.Selected = (bool)SafeParse.Parse(typeof(bool), GetAttribute(faceNode, "Selected"));
+              obj.Faces.Add(face);
+            }
+          }
           result.Add(obj);
         }
       }
@@ -356,11 +326,11 @@ namespace OnGuardCore
 
     AreaNotificationOption GetNotificationOption(XmlNode node)
     {
-      AreaNotificationOption options = new AreaNotificationOption();
+      AreaNotificationOption options = new ();
 
-      options.UseMQTT = bool.Parse(GetAttribute(node, "UseMQTT"));
-      options.mqttCooldown.CooldownTime = int.Parse(GetAttribute(node, "MQTTCooldown"));
-      options.NoMotionMQTTNotify = bool.Parse(GetAttribute(node, "MQTTMotionStopped"));
+      options.UseMQTT = (bool)SafeParse.Parse(typeof(bool), GetAttribute(node, "UseMQTT"));
+      options.mqttCooldown.CooldownTime = (int)SafeParse.Parse(typeof(int), GetAttribute(node, "MQTTCooldown"));
+      options.NoMotionMQTTNotify = (bool)SafeParse.Parse(typeof(bool), GetAttribute(node, "MQTTMotionStopped"));
       options.NoMotionUrlNotify = GetAttribute(node, "MotionStoppedURL");
 
       XmlNode? urlsNode = node.SelectSingleNode(FindElementNameDown("Urls"));
@@ -374,11 +344,11 @@ namespace OnGuardCore
       {
         foreach (XmlNode urlNode in urlsNode.ChildNodes)
         {
-          UrlOptions urlOption = new UrlOptions(
+          UrlOptions urlOption = new (
             GetAttribute(urlNode, "URL"),
-            int.Parse(GetAttribute(urlNode, "WaitTime")),
-            int.Parse(GetAttribute(urlNode, "CoolDown")),
-            int.Parse(GetAttribute(urlNode, "BIFlags")));
+            (int)SafeParse.Parse(typeof(int), GetAttribute(urlNode, "WaitTime")),
+            (int)SafeParse.Parse(typeof(int), GetAttribute(urlNode, "CoolDown")),
+            (int)SafeParse.Parse(typeof(int), GetAttribute(urlNode, "BIFlags")));
 
           options.Urls.Add(urlOption);
         }
@@ -402,7 +372,7 @@ namespace OnGuardCore
 
     public SortedDictionary<Guid, AreaOfInterest> GetAllAreas(string cameraPath, string cameraPrefix)
     {
-      SortedDictionary<Guid, AreaOfInterest> result = new SortedDictionary<Guid, AreaOfInterest>();
+      SortedDictionary<Guid, AreaOfInterest> result = new ();
 
       XmlNode? cameraNode = FindCamera(cameraPath, cameraPrefix);
 
@@ -415,7 +385,7 @@ namespace OnGuardCore
           {
             foreach (XmlNode areaNode in areas.ChildNodes)
             {
-              Guid id = Guid.Parse(GetAttribute(areaNode, "ID"));
+              Guid id = (Guid)SafeParse.Parse(typeof(Guid), GetAttribute(areaNode, "ID"));
               AreaOfInterest aoi = GetArea(cameraNode, id);
               result[id] = aoi;
             }
@@ -434,15 +404,101 @@ namespace OnGuardCore
 
     private CameraContactData GetCameraContactData(XmlNode cameraNode)
     {
-      CameraContactData data = new CameraContactData();
+      CameraContactData data = new ();
 
       data.CameraIPAddress = GetAttribute(cameraNode, "IPAddress");
       data.CameraPassword = GetAttribute(cameraNode, "CameraPassword");
       data.CameraUserName = GetAttribute(cameraNode, "UserName");
-      data.CameraXResolution = int.Parse(GetAttribute(cameraNode, "XResolution"));
-      data.CameraYResolution = int.Parse(GetAttribute(cameraNode, "YResolution"));
-      data.Port = int.Parse(GetAttribute(cameraNode, "Port"));
-      data.ShortCameraName = GetAttribute(cameraNode, "CameraName");
+      data.CameraXResolution = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "XResolution"));
+      data.CameraYResolution = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "YResolution"));
+      data.CameraChannel = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "Channel"));
+      data.Port = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "Port"));
+      data.OnVIFPort = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "OnVIFPort"));
+      if (data.OnVIFPort == 0)
+      {
+        data.OnVIFPort = 8080;
+      }
+
+      data.JPGSnapshotURL = GetAttribute(cameraNode, "SnapshotURL");
+      data.CameraShortName = GetAttribute(cameraNode, "CameraName");
+
+      data.JpgContactMethod = (PTZMethod)SafeParse.Parse(typeof(PTZMethod), GetAttribute(cameraNode, "SnapshotMethod"));
+      data.JpgCameraMake = GetAttribute(cameraNode, "JpgCameraMake");
+      data.JpgCameraModel = GetAttribute(cameraNode, "JpgCameraModel");
+      data.PTZCameraMake = GetAttribute(cameraNode, "PTZCameraMake");
+      data.PTZCameraModel = GetAttribute(cameraNode, "PTZCameraModel");
+
+      // PTZ
+      data.PTZContactMethod = (PTZMethod)SafeParse.Parse(typeof(PTZMethod), GetAttribute(cameraNode, "PTZContactMethod"));
+      data.HTTPPanLeft = GetAttribute(cameraNode, "HttpLeft");
+      data.HTTPPanRight = GetAttribute(cameraNode, "HttpRight");
+      data.HTTPPanUp = GetAttribute(cameraNode, "HttpUp");
+      data.HTTPPanDown = GetAttribute(cameraNode, "HttpDown");
+      data.HTTPZoomIn = GetAttribute(cameraNode, "HttpZoomIn");
+      data.HTTPZoomOut = GetAttribute(cameraNode, "HttpZoomOut");
+      data.HTTPStop = GetAttribute(cameraNode, "HttpStop");
+
+      data.PanTime = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "PanXTime"));
+      if (data.PanTime == 0)
+      {
+        data.PanTime = 1;
+      }
+
+      data.TiltTime = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "PanYTime"));
+      if (data.TiltTime == 0)
+      {
+        data.TiltTime = 1;
+      }
+
+      data.ZoomTime = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "ZoomTime"));
+      if (data.ZoomTime == 0)
+      {
+        data.ZoomTime = 0.5;
+      }
+
+      data.PanSpeed = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "PanXSpeed"));
+      if (data.PanSpeed == 0.0)
+      {
+        data.PanSpeed = 0.1;
+      }
+
+      data.TiltSpeed = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "PanYSpeed"));
+      if (data.TiltSpeed == 0.0)
+      {
+        data.TiltSpeed = 0.1;
+      }
+
+      data.ZoomSpeed = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "ZoomSpeed"));
+      if (data.ZoomSpeed == 0.0)
+      {
+        data.ZoomSpeed = 0.1;
+      }
+
+      data.PresetSettings.PresetMethod = (PTZMethod)SafeParse.Parse(typeof(PTZMethod), GetAttribute(cameraNode, "PresetMethod"));
+      data.PresetSettings.CameraMake = GetAttribute(cameraNode, "PresetCameraMake");
+      data.PresetSettings.CameraModel = GetAttribute(cameraNode, "PresetCameraModel");
+
+      // And presets
+      XmlNodeList presetNodes = null;
+      XmlNode? presetsParent = cameraNode.SelectSingleNode(FindElementNameDown("Presets"));
+      if (null != presetsParent)
+      {
+        presetNodes = presetsParent.SelectNodes("*");
+      }
+
+
+      if (presetNodes != null)
+      {
+        foreach (XmlNode presetNode in presetNodes)
+        {
+          Preset preset = new ();
+          preset.Command = presetNode.InnerText;
+          preset.Name = GetAttribute(presetNode, "Name");
+          data.PresetSettings.PresetList.Add(preset);
+        }
+      }
+
+
       return data;
 
     }
@@ -458,19 +514,32 @@ namespace OnGuardCore
         string prefix = GetAttribute(cameraNode, "Prefix");
         Guid id = Guid.Parse(GetAttribute(cameraNode, "ID"));
         camera = new CameraData(id, prefix, path);
-        camera.NoMotionTimeout = int.Parse(GetAttribute(cameraNode, "MotionStoppedTimeout"));
-        camera.RegistrationX = int.Parse(GetAttribute(cameraNode, "RegistrationX"));
-        camera.RegistrationY = int.Parse(GetAttribute(cameraNode, "RegistrationY"));
-        camera.RegistrationXResolution = int.Parse(GetAttribute(cameraNode, "RegistrationXResolution"));
-        camera.RegistrationYResolution = int.Parse(GetAttribute(cameraNode, "RegistrationYResolution"));
-        camera.Monitoring = bool.Parse(GetAttribute(cameraNode, "Monitoring"));
+        camera.NoMotionTimeout = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "MotionStoppedTimeout"));
+        camera.MonitorSubdirectories = (bool)SafeParse.Parse(typeof(bool), GetAttribute(cameraNode, "MonitorSubdirectories"));
+        camera.RegistrationX = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "RegistrationX"));
+        camera.RegistrationY = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "RegistrationY"));
+        camera.RegistrationXResolution = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "RegistrationXResolution"));
+        camera.RegistrationYResolution = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "RegistrationYResolution"));
+        camera.Monitoring = (bool)SafeParse.Parse(typeof(bool), GetAttribute(cameraNode, "Monitoring"));
 
-        camera.LiveContactData = GetCameraContactData(cameraNode);
-        SortedDictionary<Guid, AreaOfInterest> areas = GetAllAreas(camera.Path, camera.CameraPrefix);
+        camera.CameraInputMethod = (CameraMethod)SafeParse.Parse(typeof(CameraMethod), GetAttribute(cameraNode, "CameraMethod"));
+        camera.OnGuardScanIterval = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "CheckInterval"));
+        camera.StorePicturesInAreaOnly = (bool)SafeParse.Parse(typeof(bool), GetAttribute(cameraNode, "StoreOnlyInArea"));
+        camera.TriggerInterval = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "RecordFrameInterval"));
+        camera.RecordTime = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "RecordTime"));
+        camera.RecordInterval = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "RecordInterval"));
+        camera.TriggerPrefix = GetAttribute(cameraNode, "TriggerPrefix");
+
+        camera.Contact = GetCameraContactData(cameraNode);
+        camera.Contact.ONVIF.SelectedProfile = GetAttribute(cameraNode, "OnVIFProfile");
+
+        SortedDictionary<Guid, AreaOfInterest> areas = GetAllAreas(camera.CameraPath, camera.CameraPrefix);
         foreach (var area in areas.Values)
         {
           camera.AOI.AddArea(area);
         }
+
+        LoadScheduledPresets(cameraNode, camera);
       }
 
       return camera;
@@ -478,7 +547,7 @@ namespace OnGuardCore
 
     public CameraCollection GetAllCameras()
     {
-      CameraCollection allCameras = new CameraCollection();
+      CameraCollection allCameras = new ();
 
       allCameras.CurrentCameraPath = GetAttribute(_cameras, "CurrentCamera");
 
@@ -528,7 +597,7 @@ namespace OnGuardCore
 
     public List<EmailOptions> GetEmailAddresses()
     {
-      List<EmailOptions> result = new List<EmailOptions>();
+      List<EmailOptions> result = new ();
 
       XmlNode? emailNode = _base.SelectSingleNode("EmailAddresses");
       if (null != emailNode)
@@ -563,7 +632,7 @@ namespace OnGuardCore
             emailOptions.InlinePictures = bool.Parse(inlinePictures);
           }
 
-          
+
           emailOptions.CoolDown.CooldownTime = int.Parse(GetAttribute(element, "CooldownTime"));
           emailOptions.DaysOfWeek[0] = bool.Parse(GetAttribute(element, "Sunday"));
           emailOptions.DaysOfWeek[1] = bool.Parse(GetAttribute(element, "Monday"));
@@ -683,58 +752,23 @@ namespace OnGuardCore
       Update();
     }
 
-    public void SetAILocation(AILocation location)
+    public void SetAILocation(string ipAddress, int port)
     {
       // First, search for and if necessary form the node for AILocations
-      string aiLocationQuery = FindElementNameDown("AILocations");
-      XmlNode? aiLocations = _base.SelectSingleNode(aiLocationQuery);
-      if (aiLocations == null)
+      string aiLocationQuery = FindElementNameDown("AILocation");
+      XmlNode? aiNode = _base.SelectSingleNode(aiLocationQuery);
+      if (aiNode == null)
       {
-        aiLocations = _doc.CreateElement("AILocations");
-        _base.AppendChild(aiLocations);
+        aiNode = _doc.CreateElement("AILocation");
+        _base.AppendChild(aiNode);
       }
 
-      // Now, look and see if this one exists
-      XmlNode? node;
-      string aiQuery = SearchAttributeDown("AI", "ID", location.ID.ToString());
-      node = aiLocations.SelectSingleNode(aiQuery);
-      if (node == null)
-      {
-        try
-        {
-          node = _doc.CreateElement("AI");
-          aiLocations.AppendChild(node);
-        }
-        catch (Exception ex)
-        {
-
-        }
-      }
-
-      AddUpdateAttribute(node, "ID", location.ID.ToString());
-      AddUpdateAttribute(node, "IPAddress", location.IPAddress);
-      AddUpdateAttribute(node, "Port", location.Port.ToString());
+      AddUpdateAttribute(aiNode, "IPAddress", ipAddress);
+      AddUpdateAttribute(aiNode, "Port", port.ToString());
       Update();
+
     }
 
-    public void RemoveAILocation(string id)
-    {
-      XmlNode? aiLocations = _base.SelectSingleNode("AILocations");
-      if (aiLocations == null)
-      {
-        XmlElement element = _doc.CreateElement("AILocations");
-        _base.AppendChild(element);
-      }
-      else
-      {
-        XmlNode? node = aiLocations.SelectSingleNode(SearchAttributeDown("AI", "ID", id));
-        if (node != null)
-        {
-          aiLocations.RemoveChild(node);
-          Update();
-        }
-      }
-    }
 
     public void SetCameraInt(string cameraPath, string cameraPrefix, string keyName, int theValue)
     {
@@ -768,19 +802,10 @@ namespace OnGuardCore
 
         AddUpdateAttribute(areaNode, "ID", area.ID.ToString());
         AddUpdateAttribute(areaNode, "AreaName", area.AOIName);
-        AddUpdateAttribute(areaNode, "X", area.AreaRect.X.ToString());
-        AddUpdateAttribute(areaNode, "Y", area.AreaRect.Y.ToString());
-        AddUpdateAttribute(areaNode, "Width", area.AreaRect.Width.ToString());
-        AddUpdateAttribute(areaNode, "Height", area.AreaRect.Height.ToString());
-        AddUpdateAttribute(areaNode, "OriginalXRes", area.OriginalXResolution.ToString());
-        AddUpdateAttribute(areaNode, "OriginalYRes", area.OriginalYResolution.ToString());
-        AddUpdateAttribute(areaNode, "FocusX", area.ZoneFocus.X.ToString());
-        AddUpdateAttribute(areaNode, "FocusY", area.ZoneFocus.Y.ToString());
-        AddUpdateAttribute(areaNode, "Movement", area.MovementType.ToString());
         AddUpdateAttribute(areaNode, "AOIType", area.AOIType.ToString());
-
         SaveNotificationOption(areaNode, area.Notifications);
         SaveCharacteristcs(areaNode, area.SearchCriteria);
+        area.Grid.Save(area.AOIName); // save the grid in a binary format (not XML!)
       }
 
     }
@@ -857,12 +882,28 @@ namespace OnGuardCore
       {
         XmlNode objNode = _doc.CreateElement("Criteria");
         AddUpdateAttribute(objNode, "ID", obj.ID.ToString());
-        AddUpdateAttribute(objNode, "ImageObjectType", obj.ObjectType);
+        AddUpdateAttribute(objNode, "InterestingObjectType", obj.ObjectType);
         AddUpdateAttribute(objNode, "Confidence", obj.Confidence.ToString());
         AddUpdateAttribute(objNode, "Overlap", obj.MinPercentOverlap.ToString());
         AddUpdateAttribute(objNode, "TimeFrame", obj.TimeFrame.ToString());
         AddUpdateAttribute(objNode, "MinimumXSize", obj.MinimumXSize.ToString());
         AddUpdateAttribute(objNode, "MinimumYSize", obj.MinimumYSize.ToString());
+
+        if (obj.Faces.Count > 0)
+        {
+          XmlNode faceNodes = _doc.CreateElement("Faces");
+          objNode.AppendChild(faceNodes);
+
+          foreach (FaceID face in obj.Faces)
+          {
+            XmlNode faceNode = _doc.CreateElement("Face");
+            AddUpdateAttribute(faceNode, "Name", face.Name);
+            AddUpdateAttribute(faceNode, "Confidence", face.Confidence.ToString());
+            AddUpdateAttribute(faceNode, "Selected", face.Selected.ToString());
+            faceNodes.AppendChild(faceNode);
+          }
+        }
+
         searchCriteria.AppendChild(objNode);
       }
     }
@@ -876,7 +917,7 @@ namespace OnGuardCore
 
     public void SaveArea(CameraData cam, AreaOfInterest area)
     {
-      SaveArea(cam.Path, cam.CameraPrefix, area);
+      SaveArea(cam.CameraPath, cam.CameraPrefix, area);
       Update();
 
     }
@@ -907,7 +948,7 @@ namespace OnGuardCore
 
     void SaveCamera(CameraData camera)
     {
-      XmlNode? cameraNode = FindCamera(camera.Path, camera.CameraPrefix);
+      XmlNode? cameraNode = FindCamera(camera.CameraPath, camera.CameraPrefix);
 
       if (null == cameraNode)
       {
@@ -917,22 +958,111 @@ namespace OnGuardCore
 
 
       AddUpdateAttribute(cameraNode, "ID", camera.ID.ToString());
-      string fullPath = Path.Combine(camera.Path, camera.CameraPrefix);
+      string fullPath = Path.Combine(camera.CameraPath, camera.CameraPrefix);
       AddUpdateAttribute(cameraNode, "FullPath", fullPath);
       AddUpdateAttribute(cameraNode, "Prefix", camera.CameraPrefix);
-      AddUpdateAttribute(cameraNode, "Path", camera.Path);
+      AddUpdateAttribute(cameraNode, "Path", camera.CameraPath);
       AddUpdateAttribute(cameraNode, "MotionStoppedTimeout", camera.NoMotionTimeout.ToString());
+      AddUpdateAttribute(cameraNode, "MonitorSubdirectories", camera.MonitorSubdirectories.ToString());
       AddUpdateAttribute(cameraNode, "RegistrationX", camera.RegistrationX.ToString());
       AddUpdateAttribute(cameraNode, "RegistrationY", camera.RegistrationY.ToString());
       AddUpdateAttribute(cameraNode, "RegistrationXResolution", camera.RegistrationXResolution.ToString());
       AddUpdateAttribute(cameraNode, "RegistrationYResolution", camera.RegistrationYResolution.ToString());
       AddUpdateAttribute(cameraNode, "Monitoring", camera.Monitoring.ToString());
+      AddUpdateAttribute(cameraNode, "CameraMethod", camera.CameraInputMethod.ToString());
+      AddUpdateAttribute(cameraNode, "StoreOnlyInArea", camera.StorePicturesInAreaOnly.ToString());
+      AddUpdateAttribute(cameraNode, "CheckInterval", camera.OnGuardScanIterval.ToString());
+      AddUpdateAttribute(cameraNode, "RecordFrameInterval", camera.TriggerInterval.ToString());
+      AddUpdateAttribute(cameraNode, "RecordTime", camera.RecordTime.ToString());
+      AddUpdateAttribute(cameraNode, "RecordInterval", camera.RecordInterval.ToString());
+      AddUpdateAttribute(cameraNode, "TriggerPrefix", camera.TriggerPrefix);
 
-      SetCameraContactData(cameraNode, camera.LiveContactData);
+      if (camera.Contact.ONVIF != null)
+      {
+        AddUpdateAttribute(cameraNode, "OnVIFProfile", camera.Contact.ONVIF.SelectedProfile);
+      }
+
+      SetCameraContactData(cameraNode, camera.Contact);
 
       foreach (AreaOfInterest area in camera.AOI)
       {
-        SaveArea(camera.Path, camera.CameraPrefix, area);
+        SaveArea(camera.CameraPath, camera.CameraPrefix, area);
+      }
+
+      SaveScheduledPresets(cameraNode, camera);
+    }
+
+    void SaveScheduledPresets(XmlNode cameraNode, CameraData camera)
+    {
+      // Long/lat doesn't really belong here, but since they are so closely related...
+      AddUpdateAttribute(cameraNode, "Longitude", camera.Longitude.ToString());
+      AddUpdateAttribute(cameraNode, "Latitude", camera.Latitude.ToString());
+
+      XmlNode? presetNodes = cameraNode.SelectSingleNode("SchedulePresets");
+      if (null == presetNodes)
+      {
+        presetNodes = _doc.CreateElement("SchedulePresets");
+        cameraNode.AppendChild(presetNodes);
+      }
+      else
+      {
+        presetNodes.RemoveAll();
+      }
+
+      int i = 1;
+      foreach (var preset in camera.ScheduledPresets)
+      {
+        XmlNode pNode = _doc.CreateElement("ScheduledPreset" + i.ToString());
+        presetNodes.AppendChild(pNode);
+        AddUpdateAttribute(pNode, "ID", preset.ID.ToString());
+        AddUpdateAttribute(pNode, "Name", preset.Name);
+        AddUpdateAttribute(pNode, "PresetNumber", preset.PresetNumber.ToString());
+        AddUpdateAttribute(pNode, "TriggerType", preset.TriggerType.ToString());
+        AddUpdateAttribute(pNode, "TriggerTime", preset.TriggerTime.ToString());
+        ++i;
+      }
+    }
+
+    void LoadScheduledPresets(XmlNode cameraNode, CameraData camera)
+    {
+      string str;
+      str = GetAttribute(cameraNode, "Longitude");
+      if (!string.IsNullOrEmpty(str))
+      {
+        camera.Longitude = (double)SafeParse.Parse(typeof(double), str);
+      }
+
+      str = GetAttribute(cameraNode, "Latitude");
+      if (!string.IsNullOrEmpty(str))
+      {
+        camera.Latitude = (double)SafeParse.Parse(typeof(double), str);
+      }
+
+
+      XmlNode? presetNodes = cameraNode.SelectSingleNode("SchedulePresets");
+      if (null != presetNodes)
+      {
+        var presets = presetNodes.SelectNodes("*");
+
+        foreach (XmlNode presetNode in presets)
+        {
+          PresetTrigger p = new ();
+          str = GetAttribute(presetNode, "ID");
+          if (string.IsNullOrEmpty(str))
+          {
+            str = Guid.NewGuid().ToString();
+          }
+
+          p.ID = (Guid)SafeParse.Parse(typeof(Guid), str);
+          p.Name = GetAttribute(presetNode, "Name");
+          str = GetAttribute(presetNode, "PresetNumber");
+          p.PresetNumber = (int)SafeParse.Parse(typeof(int), str);
+          str = GetAttribute(presetNode, "TriggerType");
+          p.TriggerType = (PresetTriggerType)SafeParse.Parse(typeof(PresetTriggerType), str);
+          str = GetAttribute(presetNode, "TriggerTime");
+          p.TriggerTime = DateTime.Parse(str);
+          camera.ScheduledPresets.Add(p);
+        }
       }
     }
 
@@ -943,8 +1073,64 @@ namespace OnGuardCore
       AddUpdateAttribute(cameraNode, "UserName", data.CameraUserName);
       AddUpdateAttribute(cameraNode, "XResolution", data.CameraXResolution.ToString());
       AddUpdateAttribute(cameraNode, "YResolution", data.CameraYResolution.ToString());
+      AddUpdateAttribute(cameraNode, "Channel", data.CameraChannel.ToString());
       AddUpdateAttribute(cameraNode, "Port", data.Port.ToString());
-      AddUpdateAttribute(cameraNode, "CameraName", data.ShortCameraName);
+      AddUpdateAttribute(cameraNode, "OnVIFPort", data.OnVIFPort.ToString());
+      AddUpdateAttribute(cameraNode, "CameraName", data.CameraShortName);
+      AddUpdateAttribute(cameraNode, "SnapshotURL", data.JPGSnapshotURL);
+
+      AddUpdateAttribute(cameraNode, "SnapshotMethod", data.JpgContactMethod.ToString());
+      AddUpdateAttribute(cameraNode, "JpgCameraMake", data.JpgCameraMake);
+      AddUpdateAttribute(cameraNode, "JpgCameraModel", data.JpgCameraModel);
+      AddUpdateAttribute(cameraNode, "PTZCameraMake", data.PTZCameraMake);
+      AddUpdateAttribute(cameraNode, "PTZCameraModel", data.PTZCameraModel);
+
+      // PTZ
+      AddUpdateAttribute(cameraNode, "PTZContactMethod", data.PTZContactMethod.ToString());
+
+      // Http, iSpy only
+      AddUpdateAttribute(cameraNode, "HttpLeft", data.HTTPPanLeft);
+      AddUpdateAttribute(cameraNode, "HttpRight", data.HTTPPanRight);
+      AddUpdateAttribute(cameraNode, "HttpUp", data.HTTPPanUp);
+      AddUpdateAttribute(cameraNode, "HttpDown", data.HTTPPanDown);
+      AddUpdateAttribute(cameraNode, "HttpZoomIn", data.HTTPZoomIn);
+      AddUpdateAttribute(cameraNode, "HttpZoomOut", data.HTTPZoomOut);
+      AddUpdateAttribute(cameraNode, "HttpStop", data.HTTPStop);
+
+      AddUpdateAttribute(cameraNode, "PanXTime", data.PanTime.ToString());
+      AddUpdateAttribute(cameraNode, "PanYTime", data.TiltTime.ToString());
+      AddUpdateAttribute(cameraNode, "ZoomTime", data.ZoomTime.ToString());
+      AddUpdateAttribute(cameraNode, "PanXSpeed", data.PanSpeed.ToString());
+      AddUpdateAttribute(cameraNode, "PanYSpeed", data.TiltSpeed.ToString());
+      AddUpdateAttribute(cameraNode, "ZoomSpeed", data.ZoomSpeed.ToString());
+      AddUpdateAttribute(cameraNode, "ZoomSpeed", data.ZoomSpeed.ToString());
+
+      AddUpdateAttribute(cameraNode, "PresetMethod", data.PresetSettings.PresetMethod.ToString());
+      AddUpdateAttribute(cameraNode, "PresetCameraMake", data.PresetSettings.CameraMake);
+      AddUpdateAttribute(cameraNode, "PresetCameraModel", data.PresetSettings.CameraModel);
+
+      XmlNode? presetsParent = cameraNode.SelectSingleNode(FindElementNameDown("Presets"));
+      if (null == presetsParent)
+      {
+        presetsParent = _doc.CreateElement("Presets");
+        cameraNode.AppendChild(presetsParent);
+      }
+      else
+      {
+        presetsParent.RemoveAll();    // Need to clear them out because if they changed....
+      }
+
+      int presetCount = 1;
+      foreach (var preset in data.PresetSettings.PresetList)
+      {
+        string name = "Preset" + presetCount.ToString();
+        XmlNode presetNode = _doc.CreateElement(name);
+        presetsParent.AppendChild(presetNode);
+        presetNode.InnerText = preset.Command;
+        AddUpdateAttribute(presetNode, "Name", preset.Name);
+        ++presetCount;
+      }
+
     }
 
 

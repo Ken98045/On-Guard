@@ -12,7 +12,7 @@ namespace OnGuardCore.Src.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.1.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -333,6 +333,30 @@ namespace OnGuardCore.Src.Properties {
             }
             set {
                 this["UseXML"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\OnGuardDataFiles")]
+        public string DataFileLocation {
+            get {
+                return ((string)(this["DataFileLocation"]));
+            }
+            set {
+                this["DataFileLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\OnGuardDataFiles")]
+        public string DatabaseFileLocation {
+            get {
+                return ((string)(this["DatabaseFileLocation"]));
+            }
+            set {
+                this["DatabaseFileLocation"] = value;
             }
         }
     }

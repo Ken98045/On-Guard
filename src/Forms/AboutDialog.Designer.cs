@@ -116,8 +116,9 @@
       // AboutDialog
       // 
       this.AcceptButton = this.OKButton;
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+      this.AutoScroll = true;
       this.ClientSize = new System.Drawing.Size(938, 583);
       this.Controls.Add(this.assemblyLabel);
       this.Controls.Add(this.label4);

@@ -16,52 +16,24 @@ namespace OnGuardCore
   public partial class CreateAOI : Form
   {
     public AreaOfInterest Area { get; set; }
-    Rectangle _rectangle;
     public int OriginalXResolution { get; set; }
     public int OriginalYResolution { get; set; }
 
     public bool DeleteItem { get; set; }
 
 
-    public CreateAOI(Rectangle imageRect, Point zoneFocus, int xResolution, int yResolution) // The area on the actual image, not the display image
+    public CreateAOI(GridDefinition areaDefine) // The area on the actual image, not the display image
     {
       InitializeComponent();
-      Area = new AreaOfInterest
-      {
-        ZoneFocus = zoneFocus,
-        OriginalXResolution = xResolution,
-        OriginalYResolution = yResolution,
-      };
-
-      _rectangle = imageRect;
+      Area = new AreaOfInterest(areaDefine);
       doorButton.Checked = true;
-      anyActivityButton.Checked = true;
-
-      if (imageRect.X < -5000)
-      {
-        imageRect.X = -5000;
-      }
-
-      if (imageRect.Y < -5000)
-      {
-        imageRect.Y = -5000;
-      }
-
-      xNumeric.Value = imageRect.X;
-      yNumeric.Value = imageRect.Y;
-      widthNumeric.Value = imageRect.Width;
-      heighNumeric.Value = imageRect.Height;
-      OriginalXResolution = xResolution;
-      OriginalYResolution = yResolution;
 
 
       if (!Storage.Instance.GetGlobalBool("EmailSetup"))
       {
         MessageBox.Show("In order to set Areas of Interest you must first set your email contact information.  This is a one time only requirement.");
-        using (OutgoingEmailDialog dlg = new OutgoingEmailDialog())
-        {
-          dlg.ShowDialog();
-        }
+        using OutgoingEmailDialog dlg = new ();
+        dlg.ShowDialog();
       }
 
     }
@@ -73,41 +45,6 @@ namespace OnGuardCore
 
       if (area != null)
       {
-        _rectangle = area.AreaRect;
-        Area.ZoneFocus = area.ZoneFocus;
-        Rectangle rect = area.AreaRect;
-        doorButton.Checked = true;
-        anyActivityButton.Checked = true;
-        OriginalXResolution = area.OriginalXResolution;
-        OriginalYResolution = area.OriginalYResolution;
-
-        if (rect.X > 5000)
-        {
-          rect.X = 5000;
-        }
-
-        if (rect.Y > 3000)
-        {
-          rect.Y = 3000;
-        }
-
-        if (rect.X < -5000)
-        {
-          rect.X = -5000;
-        }
-
-
-        if (rect.Y < -5000)
-        {
-          rect.Y = -5000;
-        }
-
-
-        xNumeric.Value = rect.X;
-        yNumeric.Value = rect.Y;
-        widthNumeric.Value = rect.Width;
-        heighNumeric.Value = rect.Height;
-
         aoiNameText.Text = area.AOIName;
 
         switch (area.AOIType)
@@ -118,6 +55,10 @@ namespace OnGuardCore
 
           case AOIType.PeopleWalking:
             peopleWalkingButton.Checked = true;
+            break;
+
+          case AOIType.FacialRecognition:
+            facialButton.Checked = true;
             break;
 
           case AOIType.GarageDoor:
@@ -134,26 +75,11 @@ namespace OnGuardCore
         }
 
 
-        switch (area.MovementType)
-        {
-          case MovementType.AnyActivity:
-            anyActivityButton.Checked = true;
-            break;
-
-          case MovementType.Arrival:
-            arrivingButton.Checked = true;
-            break;
-
-          case MovementType.Departure:
-            departingButton.Checked = true;
-            break;
-        }
-
         if (null != area.SearchCriteria)
         {
           foreach (ObjectCharacteristics obj in area.SearchCriteria)
           {
-            ListViewItem item = new ListViewItem(new string[]
+            ListViewItem item = new (new string[]
               { obj.ObjectType.ToString(),
                 obj.Confidence.ToString(),
                 obj.MinPercentOverlap.ToString(),
@@ -199,24 +125,15 @@ namespace OnGuardCore
         {
           Area.AOIType = AOIType.PeopleWalking;
         }
+        else if (facialButton.Checked)
+        {
+          Area.AOIType = AOIType.FacialRecognition;
+        }
         else if (ignoreButton.Checked)
         {
           Area.AOIType = AOIType.IgnoreObjects;
         }
 
-        // Set the Movement type
-        if (anyActivityButton.Checked)
-        {
-          Area.MovementType = MovementType.AnyActivity;
-        }
-        else if (arrivingButton.Checked)
-        {
-          Area.MovementType = MovementType.Arrival;
-        }
-        else if (departingButton.Checked)
-        {
-          Area.MovementType = MovementType.Departure;
-        }
 
         if (Area.SearchCriteria != null)
         {
@@ -227,11 +144,6 @@ namespace OnGuardCore
         {
           Area.SearchCriteria.Add((ObjectCharacteristics)item.Tag);
         }
-
-        _rectangle = new Rectangle((int)xNumeric.Value, (int)yNumeric.Value, (int)widthNumeric.Value, (int)heighNumeric.Value);
-        Area.AreaRect = _rectangle;
-        Area.OriginalXResolution = BitmapResolution.XResolution;
-        Area.OriginalYResolution = BitmapResolution.YResolution;
 
         Storage.Instance.SaveArea(Area);
 
@@ -267,11 +179,9 @@ namespace OnGuardCore
 
     private void NotificationsButton_Click(object sender, EventArgs e)
     {
-      using (NotificationOptionsDialog dlg = new NotificationOptionsDialog(Area))
-      {
-        dlg.ShowDialog(this);
-        DialogResult = DialogResult.None;
-      }
+      using NotificationOptionsDialog dlg = new (Area);
+      dlg.ShowDialog(this);
+      DialogResult = DialogResult.None;
     }
 
     private void AreaAdjustButton_Click(object sender, EventArgs e)
@@ -297,24 +207,42 @@ namespace OnGuardCore
 
     private void AddButton_Click(object sender, EventArgs e)
     {
-      using (ObjectDefinitionDialog dlg = new ObjectDefinitionDialog())
+      if (facialButton.Checked)
       {
+        using FacialDefinitionDialog dlg = new ();
         DialogResult result = dlg.ShowDialog();
         if (result == DialogResult.OK)
         {
-          ListViewItem item = new ListViewItem(new string[] { dlg.ObjectType, dlg.Confidence.ToString(), dlg.Overlap.ToString(), dlg.MinX.ToString(), dlg.MinY.ToString(), dlg.History.ToString() });
+          ListViewItem item = new (new string[] { dlg.ObjectType, dlg.Confidence.ToString(), dlg.Overlap.ToString(), dlg.MinX.ToString(), dlg.MinY.ToString() });
           item = ObjectsListView.Items.Add(item);
-          ObjectCharacteristics objChar = new ObjectCharacteristics();
+          ObjectCharacteristics objChar = new ();
           objChar.ObjectType = dlg.ObjectType;
           objChar.Confidence = dlg.Confidence;
           objChar.MinPercentOverlap = dlg.Overlap;
           objChar.MinimumXSize = dlg.MinX;
           objChar.MinimumYSize = dlg.MinY;
-          objChar.TimeFrame = dlg.History;
+          objChar.Faces = dlg.Faces;
 
           item.Tag = objChar;
         }
+      }
+      else
+      {
+        using ObjectDefinitionDialog dlg = new();
+        DialogResult result = dlg.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          ListViewItem item = new (new string[] { dlg.ObjectType, dlg.Confidence.ToString(), dlg.Overlap.ToString(), dlg.MinX.ToString(), dlg.MinY.ToString() });
+          item = ObjectsListView.Items.Add(item);
+          ObjectCharacteristics objChar = new();
+          objChar.ObjectType = dlg.ObjectType;
+          objChar.Confidence = dlg.Confidence;
+          objChar.MinPercentOverlap = dlg.Overlap;
+          objChar.MinimumXSize = dlg.MinX;
+          objChar.MinimumYSize = dlg.MinY;
 
+          item.Tag = objChar;
+        }
       }
     }
 
@@ -322,9 +250,11 @@ namespace OnGuardCore
     private void ObjectsListView_ItemActivate(object sender, EventArgs e)
     {
       ListViewItem item = ObjectsListView.SelectedItems[0];
-      ObjectCharacteristics objChar = (ObjectCharacteristics)item.Tag;
-      using (ObjectDefinitionDialog dlg = new ObjectDefinitionDialog(objChar))
+
+      if (facialButton.Checked)
       {
+        ObjectCharacteristics objChar = (ObjectCharacteristics)item.Tag;
+        using FacialDefinitionDialog dlg = new (objChar);
         DialogResult result = dlg.ShowDialog();
         if (result == DialogResult.OK)
         {
@@ -333,13 +263,34 @@ namespace OnGuardCore
           objChar.MinPercentOverlap = dlg.Overlap;
           objChar.MinimumXSize = dlg.MinX;
           objChar.MinimumYSize = dlg.MinY;
-          objChar.TimeFrame = dlg.History;
+          objChar.Faces = dlg.Faces;
           item.SubItems[0].Text = dlg.ObjectType;
           item.SubItems[1].Text = dlg.Confidence.ToString();
           item.SubItems[2].Text = dlg.Overlap.ToString();
           item.SubItems[3].Text = dlg.MinX.ToString();
           item.SubItems[4].Text = dlg.MinY.ToString();
-          item.SubItems[5].Text = dlg.History.ToString();
+
+          item.Tag = objChar;
+        }
+      }
+      else
+      {
+
+        ObjectCharacteristics objChar = (ObjectCharacteristics)item.Tag;
+        using ObjectDefinitionDialog dlg = new (objChar);
+        DialogResult result = dlg.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          objChar.ObjectType = dlg.ObjectType;
+          objChar.Confidence = dlg.Confidence;
+          objChar.MinPercentOverlap = dlg.Overlap;
+          objChar.MinimumXSize = dlg.MinX;
+          objChar.MinimumYSize = dlg.MinY;
+          item.SubItems[0].Text = dlg.ObjectType;
+          item.SubItems[1].Text = dlg.Confidence.ToString();
+          item.SubItems[2].Text = dlg.Overlap.ToString();
+          item.SubItems[3].Text = dlg.MinX.ToString();
+          item.SubItems[4].Text = dlg.MinY.ToString();
         }
       }
 
@@ -347,10 +298,32 @@ namespace OnGuardCore
 
     private void RemoveButton_Click(object sender, EventArgs e)
     {
-      if(ObjectsListView.SelectedItems.Count > 0)
+      if (ObjectsListView.SelectedItems.Count > 0)
       {
-        ObjectsListView.Items.RemoveAt(ObjectsListView.SelectedIndices[0]);
+        int index = ObjectsListView.SelectedIndices[0];
+        AddButton.Focus();
+        ObjectsListView.Items.RemoveAt(index);
       }
+    }
+
+    private void OnObjectSelectionChanged(object sender, EventArgs e)
+    {
+      if (ObjectsListView.SelectedIndices.Count > 0)
+      {
+        EditButton.Enabled = true;
+        RemoveButton.Enabled = true;
+      }
+      else
+      {
+        EditButton.Enabled = false;
+        RemoveButton.Enabled = false;
+      }
+    }
+
+    private void EditButton_Click(object sender, EventArgs e)
+    {
+      ObjectsListView_ItemActivate(null, null);
     }
   }
 }
+

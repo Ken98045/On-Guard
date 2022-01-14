@@ -2,6 +2,11 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Innovative.SolarCalculator;
+using System.Net;
+using System.Net.Http;
 
 namespace OnGuardCore
 {
@@ -14,8 +19,26 @@ namespace OnGuardCore
   public class CameraData : IDisposable
   {
     public Guid ID { get; }
-    public string CameraPrefix { get; }     // prefix and path can identify the camera
-    public string Path { get; }
+    public string CameraPrefix { get; set; }     // prefix and path can identify the camera
+    public string TriggerPrefix { get; set; }   // The prefix used for the FTP server
+    public string CameraPath { get; set; }
+    public bool MonitorSubdirectories { get; set; }
+
+    public CameraMethod CameraInputMethod { get; set; }
+    public double OnGuardScanIterval { get; set; } // On Guard method ONLY! Get an image and check it this often
+    public bool StorePicturesInAreaOnly { get; set; } // On Guard Method ONLY! If set pictures of types the user cares about, otherwise they must also be in an AOI
+    public double TriggerInterval { get; set; }   // The time between frames when we are manually recording
+    public double RecordTime { get; set; }  // The time to record based on the trigger
+    public double RecordInterval { get; set; } // The time between recordings (avoid recording too much)
+    public DateTime TimeOfLastRecordedFrame { get; set; }  // based on the triggered recording, when did we stop recording?
+    public List<PresetTrigger> ScheduledPresets { get; set; }
+    public Double Longitude { get; set; }
+    public Double Latitude { get; set; }
+    public DateTime Sunrise { get; set; }
+    public DateTime Sunset { get; set; }
+
+    public OnGuardScanner Scanner { get; set; } // NOT copied via copy constructor
+    public TriggerCamera CameraTrigger { get; set; } // NOT copied via copy constructor
 
     // The registration marks allow for slight adjustment of the Areas of Interest if the camera moves.  It also 
     // Allows you to put the camera back at the correct position if you move the camera (accidently or on purpose)
@@ -45,7 +68,7 @@ namespace OnGuardCore
       }
     }
 
-
+    public int Channel { get; set; }
 
     private int registrationX;
     private int registrationY;
@@ -76,7 +99,7 @@ namespace OnGuardCore
 
     public bool Monitoring { get; set; }  // Monitor the camera path for new images created by motion.
 
-    public CameraContactData LiveContactData { get; set; }
+    public CameraContactData Contact { get; set; }
     public int NoMotionTimeout { get; set; }
 
 
@@ -108,45 +131,68 @@ namespace OnGuardCore
     [field: NonSerializedAttribute()]
     public object AccumulateLock { get; set; } = new object();
 
-    [field: NonSerializedAttribute()]
-    public History FrameHistory { get; set; }
-
 
     public CameraData(Guid id, string prefix, string path)
     {
       ID = id;
-      FrameHistory = new History(300);
-      LiveContactData = new CameraContactData();
+      Contact = new CameraContactData();
       CameraPrefix = prefix;
-      Path = path;
+      CameraPath = path;
       Monitoring = true;
-      AOI = new AreasOfInterestCollection(Path, CameraPrefix);
+      AOI = new AreasOfInterestCollection(CameraPath, CameraPrefix);
       NoMotionTimeout = 90;
+      ScheduledPresets = new List<PresetTrigger>();
+
+    }
+
+    public static CameraData CameraCopyFactory(CameraData src)
+    {
+      CameraData dest = new (src);
+      return dest;
     }
 
     public CameraData(CameraData src)
     {
       if (null == src)
       {
-        ArgumentNullException argumentNullException = new ArgumentNullException("src in CameraData copy constructor");
-        throw argumentNullException;
+        ArgumentNullException argumentNull = new("src in CameraData copy constructor");
+        throw argumentNull;
       }
       else
       {
         ID = Guid.NewGuid();
-        FrameHistory = new History(300);
         CameraPrefix = src.CameraPrefix;
-        Path = src.Path;
+        CameraPath = src.CameraPath;
 
         RegistrationX = src.RegistrationX;
         RegistrationY = src.RegistrationY;
         RegistrationXResolution = src.RegistrationXResolution;
         RegistrationYResolution = src.RegistrationYResolution;
         Monitoring = src.Monitoring;
-        LiveContactData = new CameraContactData(src.LiveContactData);
+        Contact = new CameraContactData(src.Contact);
         AOI = new AreasOfInterestCollection(src.AOI);
         Monitor = null;
         NoMotionTimeout = src.NoMotionTimeout;
+        MonitorSubdirectories = src.MonitorSubdirectories;
+        CameraInputMethod = src.CameraInputMethod;
+        OnGuardScanIterval = src.OnGuardScanIterval;
+        StorePicturesInAreaOnly = src.StorePicturesInAreaOnly;
+        TriggerInterval = src.TriggerInterval;
+        RecordTime = src.RecordTime;
+        RecordInterval = src.RecordInterval;
+        TimeOfLastRecordedFrame = src.TimeOfLastRecordedFrame;
+        TriggerPrefix = src.TriggerPrefix;
+
+        Longitude = src.Longitude;
+        Latitude = src.Latitude;
+        Sunrise = src.Sunrise;
+        Sunset = src.Sunset;
+
+        ScheduledPresets = new List<PresetTrigger>();
+        foreach (var preset in src.ScheduledPresets)
+        {
+          ScheduledPresets.Add(new PresetTrigger(preset));
+        }
       }
     }
 
@@ -155,19 +201,160 @@ namespace OnGuardCore
       return CameraPrefix;
     }
 
-    public void Init()
+    public async Task InitAsync()
     {
-      AccumulateLock = new object();
-      if (null == FrameHistory)
-      {
-        FrameHistory = new History(300);
-      }
+      await Contact.InitAsync();
 
+      AccumulateLock = new object();
       // AOI = new AreasOfInterestCollection(Path, CameraPrefix);
       CameraEmailAccumulator = new EmailAccumulator(Storage.Instance.GetGlobalInt("MaxEventTime"));
       if (Monitoring)
       {
         Monitor = new DirectoryMonitor(this);
+      }
+
+      switch (CameraInputMethod)
+      {
+        case CameraMethod.OnGuard:
+          Scanner = new OnGuardScanner(this);
+          break;
+
+        case CameraMethod.CameraTriggered:
+          CameraTrigger = new TriggerCamera(this);
+          break;
+      }
+
+      if (Longitude != 0 && Latitude != 0)
+      {
+        try
+        {
+          Innovative.Geometry.Angle lat = new (Latitude);
+          Innovative.Geometry.Angle lon = new (Longitude);
+
+          SolarTimes solarTimes = new (DateTime.Now, new Innovative.Geometry.Angle(Latitude), new Innovative.Geometry.Angle(Longitude));
+          Sunset = solarTimes.Sunset;
+          Sunrise = solarTimes.Sunrise;
+        }
+        catch (Exception ex)
+        {
+          Dbg.Write("CameraData - Init - Error getting sunrise/sunset: " + ex.Message);
+          return;
+        }
+
+        DateTime midnight = TimeTrigger.GetHourMinute(0, 1);
+        TimeTrigger.AddTimer(midnight, ID);   // 
+        TimeTrigger.OnTimeTriggered += OnUpdateSolar;
+        TimeTrigger.OnTimeTriggered += OnScheduledPreset;
+
+        foreach (var sched in ScheduledPresets)
+        {
+          switch (sched.TriggerType)
+          {
+            case PresetTriggerType.AtTime:
+              TimeTrigger.AddTimer(sched.TriggerTime, sched.ID);
+              break;
+
+            case PresetTriggerType.Sunrise:
+              TimeTrigger.AddTimer(Sunrise, sched.ID);
+              break;
+
+            case PresetTriggerType.Sunset:
+              TimeTrigger.AddTimer(Sunset, sched.ID);
+              break;
+          }
+        }
+      }
+    }
+
+    private async void OnScheduledPreset(Guid id)
+    {
+      PresetTrigger preset = ScheduledPresets.Find(x => x.ID == id);
+      if (null != preset)
+      {
+        if (Contact.PresetSettings.PresetMethod != PTZMethod.None)
+        {
+          try
+          {
+            await MoveToPresetAsync(preset.PresetNumber);
+          }
+          catch (Exception ex)
+          {
+            Dbg.Write("CameraData - OnScheduledPreset - " + ex.Message);
+          }
+        }
+      }
+    }
+
+    private async Task MoveToPresetAsync(int presetNumber)
+    {
+      CameraContactData data = new (Contact);
+
+      if (data.PresetSettings.PresetList.Count > 0)
+      {
+        string urlString;
+
+        if (data.PresetSettings.PresetMethod == PTZMethod.OnVIF)
+        {
+          await data.ONVIF.Ptz.GotoPresetAsync(
+            data.ONVIF.SelectedProfile,
+            data.PresetSettings.PresetList[presetNumber].Command,
+            null);
+        }
+        else
+        {
+          if (data.PresetSettings.PresetMethod == PTZMethod.BlueIris)
+          {
+
+            urlString = string.Format("http://[ADDRESS]/admin?camera=[SHORTNAME]&preset={0}&user=[USERNAME]&pw=[PASSWORD]",
+              data.PresetSettings.PresetList[presetNumber].Command);
+
+            urlString = data.ReplaceParmeters(urlString);
+          }
+          else if (data.PresetSettings.PresetMethod == PTZMethod.HTTP)
+          {
+            urlString = data.PresetSettings.PresetList[0].Command;
+            urlString = GetHttpParam(urlString, presetNumber);
+          }
+          else
+          {
+            urlString = data.PresetSettings.PresetList[presetNumber].Command;
+          }
+
+          try
+          {
+            urlString = data.ReplaceParmeters(urlString);
+            System.Net.HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(new Uri(urlString));
+
+            if (data.JpgContactMethod != PTZMethod.BlueIris)
+            {
+              webRequest.Credentials = new System.Net.NetworkCredential(data.CameraUserName, data.CameraPassword);
+            }
+
+            webRequest.Timeout = 5000;
+
+            using System.Net.WebResponse webResponse = await webRequest.GetResponseAsync().ConfigureAwait(true);
+          }
+          catch (HttpRequestException ex)
+          {
+            Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
+          }
+          catch (Exception ex)
+          {
+            Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
+          }
+
+        }
+      }
+    }
+
+
+    private void OnUpdateSolar(Guid id)
+    {
+      if (id == ID) // only if it is the camera asking for a solar time update
+      {
+        SolarTimes solarTimes = new (DateTime.Now, Latitude, Longitude);
+        Sunset = solarTimes.Sunset;
+        Sunrise = solarTimes.Sunrise;
       }
     }
 
@@ -210,7 +397,7 @@ namespace OnGuardCore
       Debug.Assert(camera != null);
       if (camera != null)
       {
-        return string.Format("{0}\\{1}", camera.Path, camera.CameraPrefix).ToLower();
+        return string.Format("{0}\\{1}", camera.CameraPath, camera.CameraPrefix).ToLower();
       }
       else
       {
@@ -227,17 +414,41 @@ namespace OnGuardCore
 
     private bool disposedValue = false;
 
+    public static string GetHttpParam(string command, int index)
+    {
+      string result = command;
+      int offsetLoc = command.IndexOf("[OFFSET=");
+      if (offsetLoc != -1)
+      {
+        int tagLen = "[OFFSET=".Length;
+        // TODO: Replace with RegularExpression
+        // abc[OFFSET=123]
+        int offsetEnd = result.IndexOf(']', offsetLoc + tagLen);
+        string offsetStr = result[(offsetLoc + tagLen)..offsetEnd];
+        int offset = index + int.Parse(offsetStr);
+        // get rid of the entire tag
+        result = result.Remove(offsetLoc, offsetEnd - offsetLoc + 1);
+        result = result.Insert(offsetLoc, offset.ToString()); // now, just replace the string with the desired value
+      }
+      else
+      {
+        result = command.Replace("[PRESET]", index.ToString());
+      }
+
+      return result;
+    }
+
+
     protected virtual void Dispose(bool disposing)
     {
       if (!disposedValue)
       {
         if (disposing)
         {
-          disposing = true;
           MotionStoppedTimer?.Dispose();
+          Scanner?.Dispose();
+          CameraTrigger?.Dispose();
           Monitor?.Dispose();
-          FrameHistory?.Dispose();
-
           CameraEmailAccumulator?.Dispose();
 
           foreach (AreaOfInterest area in AOI)
@@ -265,5 +476,11 @@ namespace OnGuardCore
     }
   }
 
+  public enum CameraMethod
+  {
+    Application,
+    OnGuard,
+    CameraTriggered
+  }
 
 }

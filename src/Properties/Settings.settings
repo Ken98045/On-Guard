@@ -80,5 +80,11 @@
     <Setting Name="UseXML" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="DataFileLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\OnGuardDataFiles</Value>
+    </Setting>
+    <Setting Name="DatabaseFileLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\OnGuardDataFiles</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

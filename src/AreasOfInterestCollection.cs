@@ -12,7 +12,7 @@ namespace OnGuardCore
   /// <summary>
   /// A collection wrapping a SortedDictionary with added persistence. 
   /// There is one collection per camera.  
-  /// TODO: Replace with a Dictionary?
+  /// TODO: Replace with a Dictionary
   /// </summary>
   public class AreasOfInterestCollection : IEnumerable<AreaOfInterest>, IDisposable
   {
@@ -106,6 +106,8 @@ namespace OnGuardCore
 
     public void Remove(Guid id)
     {
+      AreaOfInterest area = _areas[id];
+      GridDefinition.Delete(area.AOIName);
       _areas.Remove(id);
       Save();
     }
@@ -125,19 +127,9 @@ namespace OnGuardCore
           }
         }
 
-        // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-        // TODO: set large fields to null.
-
         disposedValue = true;
       }
     }
-
-    // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-    // ~AreasOfInterestCollection()
-    // {
-    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-    //   Dispose(false);
-    // }
 
     // This code added to correctly implement the disposable pattern.
     public void Dispose()

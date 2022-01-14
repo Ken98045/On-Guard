@@ -38,7 +38,10 @@ namespace OnGuardCore
     protected virtual void Dispose(bool disposing)
     {
       if (!_disposedValue)
+      {
         Cursor.Current = m_cursorOld;
+        Cursor.Position = Cursor.Position;  // force update
+      }
       _disposedValue = true;
     }
 

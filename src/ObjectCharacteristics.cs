@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace OnGuardCore
 {
 
-/// <summary>
-/// When defining an Area of Interest each object type in an area has optional 
-/// characteristics that define when an object on the screen is consdiered
-/// "Interesting"
-/// </summary>
+  /// <summary>
+  /// When defining an Area of Interest each object type in an area has optional 
+  /// characteristics that define when an object on the screen is consdiered
+  /// "Interesting"
+  /// </summary>
   [Serializable]
   public class ObjectCharacteristics
   {
@@ -21,6 +21,8 @@ namespace OnGuardCore
     public int TimeFrame { get; set; } // Currently not implemented.  When we determine movement direction this will define how many frames we look in
     public int MinimumXSize { get; set; }   //In part this regulates how close the object is to the camera.  I don't see a reason for maximum size
     public int MinimumYSize { get; set; }   //In part this regulates how close the object is to the camera.  I don't see a reason for maximum size
+
+    public List<FaceID> Faces {get; set;}
 
     public string ObjectType { get => objectType; set => objectType = value; } 
 
@@ -35,7 +37,7 @@ namespace OnGuardCore
       TimeFrame = 1;
       MinimumXSize = 0;
       MinimumYSize = 0;
-
+      Faces = new List<FaceID>();
     }
 
     public ObjectCharacteristics(ObjectCharacteristics src)
@@ -47,6 +49,7 @@ namespace OnGuardCore
       TimeFrame = src.TimeFrame;
       MinimumXSize = src.MinimumXSize;
       MinimumYSize = src.MinimumYSize;
+      Faces = src.Faces;
     }
   }
 }

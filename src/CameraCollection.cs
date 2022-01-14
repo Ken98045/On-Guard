@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 
 namespace OnGuardCore
 {
@@ -25,19 +26,29 @@ namespace OnGuardCore
       CurrentCameraPath = string.Empty;
     }
 
-    public CameraCollection(CameraCollection src)
+    public static CameraCollection CopyFactory(CameraCollection src)
     {
-      CameraDictionary = new Dictionary<string, CameraData>();
+
+      CameraCollection copy = new ();
       if (null != src && null != src.CameraDictionary && null != src.CameraDictionary.Values)
       {
         foreach (var cam in src.CameraDictionary.Values)
         {
-          CameraData newCam = new CameraData(cam);
-          CameraDictionary.Add(CameraData.PathAndPrefix(newCam), newCam);
-          newCam.Init();
+          CameraData newCam = CameraData.CameraCopyFactory(cam);
+          copy.CameraDictionary.Add(CameraData.PathAndPrefix(newCam), newCam);
         }
+      }
 
-        CurrentCameraPath = src.CurrentCameraPath;
+      copy.CurrentCameraPath = src.CurrentCameraPath;
+
+      return copy;
+    }
+
+    public async Task InitAsync()
+    {
+      foreach (var cam in CameraDictionary.Values)
+      {
+        await cam.InitAsync();
       }
     }
 
@@ -85,6 +96,7 @@ namespace OnGuardCore
           }
         }
       }
+
     }
 
     public void AddCamera(CameraData camData)
@@ -99,7 +111,7 @@ namespace OnGuardCore
 
     public void StopMonitoring()
     {
-      foreach(var cam in CameraDictionary.Values)
+      foreach (var cam in CameraDictionary.Values)
       {
         if (cam.Monitoring)
         {
@@ -131,12 +143,6 @@ namespace OnGuardCore
     public static CameraCollection Load()
     {
       CameraCollection all = Storage.Instance.GetAllCameras();
-      foreach (var cam in all.CameraDictionary.Values)
-      {
-        cam.Init();
-      }
-
-
       return all;
     }
 
@@ -160,9 +166,6 @@ namespace OnGuardCore
           }
 
         }
-
-        // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-        // TODO: set large fields to null.
 
         disposedValue = true;
       }

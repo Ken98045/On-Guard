@@ -66,8 +66,8 @@ namespace OnGuardCore
 
     private void RemoveButton_Click(object sender, EventArgs e)
     {
+      EmailListBox.SelectedIndex = -1;
       Storage.Instance.RemoveGlobalValue("NotifyAIGoneEmail");
-      DialogResult = DialogResult.OK;
     }
   }
 }

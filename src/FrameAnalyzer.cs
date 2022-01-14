@@ -2,26 +2,19 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OnGuardCore
 {
 
-  public struct InterestingObject
+
+  public class AnalysisResult
   {
-    public InterestingObject(AreaOfInterest area, ImageObject found, int overlap)
+    public AnalysisResult()
     {
-      Area = area;
-      FoundObject = found;
-      Overlap = overlap;
+      InterestingObjects = new();
+      FailureReasons = new();
     }
-
-    public AreaOfInterest Area { get; set; }
-    public ImageObject FoundObject { get; set; }
-    public int Overlap { get; set; }
-  }
-
-  public struct AnalysisResult
-  {
     public List<InterestingObject> InterestingObjects { get; set; }
     public HashSet<string> FailureReasons { get; set; }
   }
@@ -30,41 +23,49 @@ namespace OnGuardCore
   {
 
     readonly AreasOfInterestCollection _areas;
-    readonly List<ImageObject> _imageObjects;
+
     readonly int _bitmapXResolution;
     readonly int _bitmapYResolution;
-
+    Bitmap _pictureImage;
+    List<InterestingObject> PotentialObjects { get; set; }
     List<InterestingObject> InterestingObjects { get; set; }
-    public FrameAnalyzer(AreasOfInterestCollection areas, List<ImageObject> imageObjects, int bitmapXResolution, int bitmapYResolution)
+
+
+    public FrameAnalyzer(AreasOfInterestCollection areas, List<InterestingObject> potentialObjects, int bitmapXResolution, int bitmapYResolution)
     {
       InterestingObjects = new List<InterestingObject>();
+      PotentialObjects = potentialObjects;
       _areas = areas;
-      _imageObjects = imageObjects;
       _bitmapXResolution = bitmapXResolution;
       _bitmapYResolution = bitmapYResolution;
     }
 
-    // because we will probably do this async
-    public AnalysisResult AnalyzeFrame()
+    public async Task<AnalysisResult> AnalyzeFrameAsync(Bitmap pictureImage)
     {
-      AnalysisResult result = new AnalysisResult();
-      InterestingObjects.Clear();
-      HashSet<string> failureReasons = new HashSet<string>();
+      _pictureImage = pictureImage;
+      AnalysisResult result = new();
+
+      var areas = _areas.ToList();
+
       string reason = string.Empty;
 
       if (null != _areas && _areas.Count() > 0)
       {
-        if (null != _imageObjects)
+        if (null != PotentialObjects)
         {
-          foreach (ImageObject imageObject in _imageObjects)
+          for (int i = 0; i < PotentialObjects.Count; i++)
           {
+            InterestingObject pi = PotentialObjects[i];  // shortcut, saves typing
+
             // Each area cares about specific types of objects.
             // The overlap for each type varies as does the confidences.
             // Right now we don't care about the number of frames the object is in or whether
             // the object is moving into or out of the area. 
-            foreach (AreaOfInterest area in _areas)
+            for (int areaNumber = 0; areaNumber < areas.Count; areaNumber++)
             {
-              if (area.IsItemOfAreaInterest(imageObject.Label))
+              AreaOfInterest area = areas[areaNumber];
+
+              if (area.IsItemOfAreaInterest(pi.Label))
               {
                 // The search critera defines whether we are looking for people, vehicles, animals, etc.
                 if (null != area.SearchCriteria)
@@ -76,17 +77,17 @@ namespace OnGuardCore
                     // then we compare the overlap to to minimum overlap to see if we still care
                     // (and yes, there are more elegant ways to do this, but it is easier to debug like this
 
-                    if (MatchesSpecialTag(criteria, imageObject.Label) || criteria.ObjectType == imageObject.Label)
+                    if (MatchesSpecialTag(criteria, pi.Label) || criteria.ObjectType == pi.Label)
                     {
 
-                      int percentOverlap = ObjectToAreaOverlap(imageObject, area, _bitmapXResolution, _bitmapYResolution);
+                      int percentOverlap = ObjectToAreaOverlap(pi, area, _bitmapXResolution, _bitmapYResolution);
 
                       if (percentOverlap >= criteria.MinPercentOverlap)
                       {
                         if (area.AOIType == AOIType.IgnoreObjects)
                         {
-                          reason = area.AOIName + ": Object in ignored area - " + imageObject.Label;
-                          failureReasons.Add(reason);
+                          reason = area.AOIName + ": Object in ignored area - " + pi.Label;
+                          result.FailureReasons.Add(reason);
                           // yes, it met all of our critera, but the critera was to ignore it.
                           // It still may also be in an area we do care about, but we worry about that
                           // in the next loop
@@ -94,49 +95,53 @@ namespace OnGuardCore
                         else
                         {
                           // OK, we probably care, but how confident are we that this object is something we care about
-                          if ((int)Math.Round(imageObject.Confidence * 100) >= criteria.Confidence)
+                          if ((int)Math.Round(pi.Confidence * 100) >= criteria.Confidence)
                           {
                             // BUT WAIT, THERE'S MORE!
-                            if (criteria.MinimumXSize == 0 || imageObject.ObjectRectangle.Width > criteria.MinimumXSize)
+                            if (criteria.MinimumXSize == 0 || pi.ObjectRectangle.Width > criteria.MinimumXSize)
                             {
-                              if (criteria.MinimumYSize == 0 || imageObject.ObjectRectangle.Height > criteria.MinimumYSize)
+                              if (criteria.MinimumYSize == 0 || pi.ObjectRectangle.Height > criteria.MinimumYSize)
                               {
-                                InterestingObject interesting = new InterestingObject(area, imageObject, percentOverlap);
-                                InterestingObjects.Add(interesting);
-                                Dbg.Trace("Adding interesting object before 2nd chance ignore: " + interesting.FoundObject.Label);
+                                pi.Overlap = percentOverlap;
+
+                                InterestingObject added = new(pi);
+                                added.Overlap = percentOverlap;       // so far, the only thing different
+                                added.Area = area;
+                                result.InterestingObjects.Add(added);
+                                Dbg.Trace("Adding interesting object before 2nd chance ignore: " + pi.Label);
 
                               }
                               else
                               {
-                                reason = area.AOIName + ": Minimum height - too low - " + imageObject.Label;
-                                failureReasons.Add(reason);
+                                reason = area.AOIName + ": Minimum height - too low - " + pi.Label;
+                                result.FailureReasons.Add(reason);
                               }
                             }
                             else
                             {
-                              reason = area.AOIName + ": Minimum width too low - " + imageObject.Label;
-                              failureReasons.Add(reason);
+                              reason = area.AOIName + ": Minimum width too low - " + pi.Label;
+                              result.FailureReasons.Add(reason);
                             }
                           }
                           else
                           {
-                            reason = area.AOIName + ": Confidence level too low: " + (imageObject.Confidence * 100).ToString() + " - " + imageObject.Label;
-                            failureReasons.Add(reason);
+                            reason = area.AOIName + ": Confidence level too low: " + (pi.Confidence * 100).ToString() + " - " + pi.Label;
+                            result.FailureReasons.Add(reason);
                           }
                         }
                       }
                       else
                       {
-                        reason = area.AOIName + ": Less than minimum overlap: " + percentOverlap.ToString() + " - " + imageObject.Label;
-                        failureReasons.Add(reason);
+                        reason = area.AOIName + ": Less than minimum overlap: " + percentOverlap.ToString() + " - " + pi.Label;
+                        result.FailureReasons.Add(reason);
                       }
                     }
                     else
                     {
-                      if (!MatchesSpecialTag(criteria, imageObject.Label) && criteria.ObjectType != imageObject.Label)
+                      if (!MatchesSpecialTag(criteria, pi.Label) && criteria.ObjectType != pi.Label)
                       {
-                        reason = area.AOIName + ": Object mismatch: " + criteria.ObjectType + " - " + imageObject.Label;
-                        failureReasons.Add(reason);
+                        reason = area.AOIName + ": Object mismatch: " + criteria.ObjectType + " - " + pi.Label;
+                        result.FailureReasons.Add(reason);
                       }
                     }
                   }
@@ -144,13 +149,13 @@ namespace OnGuardCore
                 else
                 {
                   reason = "No search critera";
-                  failureReasons.Add(reason);
+                  result.FailureReasons.Add(reason);
                 }
               }
               else
               {
-                reason = "Object: " + imageObject.Label + " does not match any search criteria for area: " + area.AOIName;
-                failureReasons.Add(reason);
+                reason = "Object: " + pi.Label + " does not match any search criteria for area: " + area.AOIName;
+                result.FailureReasons.Add(reason);
               }
             }
 
@@ -167,24 +172,31 @@ namespace OnGuardCore
                 {
                   foreach (var criteria in ignore.SearchCriteria)
                   {
-                    if (MatchesSpecialTag(criteria, imageObject.Label) ||  criteria.ObjectType == imageObject.Label)
+                    if (MatchesSpecialTag(criteria, pi.Label) || criteria.ObjectType == pi.Label)
                     {
                       // Yes, it is the type of object we ignore
-                      int ignoreOverlap = ObjectToAreaOverlap(imageObject, ignore, _bitmapXResolution, _bitmapYResolution); // Does it overlap
+                      int ignoreOverlap = ObjectToAreaOverlap(pi, ignore, _bitmapXResolution, _bitmapYResolution); // Does it overlap
                       {
                         if (ignoreOverlap > criteria.MinPercentOverlap) //
                         {
                           bool foundOne = false;
                           do
                           {
-                            var io = InterestingObjects.FirstOrDefault(x => x.FoundObject.ID == imageObject.ID);
-                            if (io.FoundObject != null)
+                            var io = result.InterestingObjects.FirstOrDefault(x => x.ID == pi.ID);
+                            if (io != null)
                             {
                               foundOne = true;
-                              reason = ignore.AOIName + ": Ignore area second pass validation - Object: " + io.FoundObject.Label;
-                              failureReasons.Add(reason);
-                              Dbg.Trace("Removing object on second pass ignore area validation: " + io.FoundObject.Label);
-                              InterestingObjects.Remove(io);
+                              reason = ignore.AOIName + ": Ignore area second pass validation - Object: " + io.Label;
+                              result.FailureReasons.Add(reason);
+                              try
+                              {
+                                Dbg.Trace("Removing object on second pass ignore area validation: " + io.Label);
+                                result.InterestingObjects.Remove(io);
+                              }
+                              catch (Exception ex)
+                              {
+                                Dbg.Write("FrameAnalyzer-AnalyzeFrameAsync- exception removing object in remove from interesting objects : " + ex.Message);
+                              }
 
                             }
                             else
@@ -206,22 +218,137 @@ namespace OnGuardCore
 
           }
         }
-        else { failureReasons.Add("No Interesting Objects"); }
+        else { result.FailureReasons.Add("No Interesting Objects"); }
 
-        // InterestingObjects = RemoveDuplicateAreas(InterestingObjects);
       }
-      else { failureReasons.Add("No areas defined"); }
+      else { result.FailureReasons.Add("No areas defined"); }
 
-      result.InterestingObjects = InterestingObjects;
-      result.FailureReasons = failureReasons;
+      if (result.InterestingObjects.Count > 0)
+      {
+        await CheckForFaces(result).ConfigureAwait(true); // may delete people if we were looking for a face
+      }
 
-      foreach (var failure in failureReasons)
+      InterestingObjects = RemoveDuplicateAreas(InterestingObjects);
+
+      foreach (var failure in result.FailureReasons)
       {
         Dbg.Trace(failure);
       }
 
+
       return result;
     }
+
+
+    // Here we have a fully validated list of interesting objects.
+    // Go through the people and IF we need to try to recognize a face.
+    // If there is a face we are interested in then add it to the result list
+    async Task CheckForFaces(AnalysisResult result)
+    {
+      Dictionary<string, InterestingObject> peopleToDelete = new();
+      Dictionary<string, InterestingObject> peopleNotToDelete = new();
+      List<InterestingObject> InterestingFaces = new();
+
+      foreach (InterestingObject obj in result.InterestingObjects)
+      {
+        if (obj.Label == "person")
+        {
+          if (obj.Area.AOIType == AOIType.FacialRecognition)
+          {
+            foreach (ObjectCharacteristics searchCriteria in obj.Area.SearchCriteria)
+            {
+              int selectedFaces = 0;
+              if (searchCriteria.Faces.Count > 0)
+              {
+                foreach (FaceID face in searchCriteria.Faces)
+                {
+                  if (face.Selected)
+                  {
+                    selectedFaces++;
+                  }
+                }
+
+                if (selectedFaces > 0)
+                {
+                  // OK, here we know we are looking for at least one face
+                  InterestingObject aiFaceObject = await FaceDetection.LookForFaceAsync(_pictureImage, obj, false);
+
+                  if (aiFaceObject != null)
+                  {
+                    // So, we have a face, but is it one we are interested in?
+                    foreach (FaceID face in searchCriteria.Faces)
+                    {
+                      if (face.Name == aiFaceObject.Label)
+                      {
+                        if (face.Selected)
+                        {
+                          if (aiFaceObject.Confidence * 100.0 >= face.Confidence)
+                          {
+                            InterestingObject interestingFace = new InterestingObject
+                            {
+                              IsFace = true,
+                              Label = face.Name,
+                              Area = obj.Area,
+                              ObjectRectangle = aiFaceObject.ObjectRectangle,
+
+                              Confidence = aiFaceObject.Confidence
+                            };
+                            InterestingFaces.Add(interestingFace);
+                          }
+                          else
+                          {
+                            result.FailureReasons.Add("The confidence for face: " + aiFaceObject.Label + " was too low: " + aiFaceObject.Confidence.ToString());
+                          }
+                        }
+                        else
+                        {
+                          result.FailureReasons.Add(" The face " + aiFaceObject.Label + " was not a selected critera.");
+                        }
+                      }
+                      else
+                      {
+                        result.FailureReasons.Add("Face: " + face.Name + " does not match found face " + aiFaceObject.Label);
+                      }
+                    }
+
+                  }
+                }
+              }
+
+            }
+
+            peopleToDelete[obj.ID.ToString()] = obj;
+          }
+          else
+          {
+            peopleNotToDelete[obj.ID.ToString()] = obj;
+          }
+
+        }
+      }
+
+      foreach (InterestingObject io in InterestingFaces)
+      {
+        result.InterestingObjects.Add(io);
+      }
+
+      // OK This was a facial recognition area, and it was a person. 
+      // Regardless of the fact that there was a face we recognized, we delete the "person" 
+      // because we don't care about "people", only faces.
+      // However, if it was also in another area type that WAS LOOKING FOR PEOPLE, then
+      // we keep it.
+
+      foreach (var toDel in peopleToDelete.Values)
+      {
+        if (!peopleNotToDelete.ContainsKey(toDel.ID.ToString()))
+        {
+          result.InterestingObjects.Remove(toDel);
+          result.FailureReasons.Add("person deleted since this area looks only for faces");
+        }
+      }
+
+    }
+
 
     // TODO Not currently used.
     static List<InterestingObject> RemoveDuplicateAreas(List<InterestingObject> objects)
@@ -237,13 +364,13 @@ namespace OnGuardCore
           int i;
           for (i = 0; i < objects.Count - 1; i++)
           {
-            Rectangle r1 = objects[i].FoundObject.ObjectRectangle;
+            Rectangle r1 = objects[i].ObjectRectangle;
 
             for (int j = i + 1; j < objects.Count; j++)
             {
-              Rectangle r2 = objects[j].FoundObject.ObjectRectangle;
+              Rectangle r2 = objects[j].ObjectRectangle;
 
-              if (r1 == r2 && objects[i].FoundObject.Label == objects[j].FoundObject.Label)
+              if (r1 == r2 && objects[i].Label == objects[j].Label)
               {
                 if (objects[i].Overlap > objects[j].Overlap)
                 {
@@ -315,7 +442,7 @@ namespace OnGuardCore
     {
       bool result = false;
 
-      switch(label)
+      switch (label)
       {
         case "car":
         case "truck":
@@ -339,41 +466,41 @@ namespace OnGuardCore
     // and rarely may happen with one person.  While the outline of the car can be changed enough that
     // it is no longer recognized as a car, not much we can do about that.  
     // So, here we do the best we can
-    static bool AnimalOverlapsVehicleEdge(ImageObject vehicle, List<ImageObject> foundObjects)
+    static bool AnimalOverlapsVehicleEdge(InterestingObject vehicle, List<InterestingObject> foundObjects)
     {
       bool result = false;
       // For now we just return false since thi feature is still bing worked on!
       return result;
     }
 
-    public static ImageObjectType ObjectTypeFromLabel(string label)
+    public static InterestingObjectType ObjectTypeFromLabel(string label)
     {
-      ImageObjectType result;
+      InterestingObjectType result;
 
       switch (label)
       {
         case "person":
-          result = ImageObjectType.People;
+          result = InterestingObjectType.People;
           break;
 
         case "car":
-          result = ImageObjectType.Cars;
+          result = InterestingObjectType.Cars;
           break;
 
         case "truck":
-          result = ImageObjectType.Trucks;
+          result = InterestingObjectType.Trucks;
           break;
 
         case "motorbike":
-          result = ImageObjectType.Motorcycles;
+          result = InterestingObjectType.Motorcycles;
           break;
 
         case "bicycle":
-          result = ImageObjectType.Bikes;
+          result = InterestingObjectType.Bikes;
           break;
 
         case "bear":
-          result = ImageObjectType.Bears;
+          result = InterestingObjectType.Bears;
           break;
 
         case "dog":
@@ -381,11 +508,11 @@ namespace OnGuardCore
         case "horse":
         case "sheep":
         case "cow:":
-          result = ImageObjectType.Animals;
+          result = InterestingObjectType.Animals;
           break;
 
         default:
-          result = ImageObjectType.Irrelevant;
+          result = InterestingObjectType.Irrelevant;
           break;
       }
 
@@ -393,22 +520,38 @@ namespace OnGuardCore
       return result;
     }
 
-    static int ObjectToAreaOverlap(ImageObject imageObject, AreaOfInterest area, int xResolution, int yResolution)
+    static int ObjectToAreaOverlap(InterestingObject InterestingObject, AreaOfInterest area, int xResolution, int yResolution)
     {
       int overlap;
 
-      Rectangle adjRect = new Rectangle(area.AreaRect.X, area.AreaRect.Y, area.AreaRect.Width, area.AreaRect.Height);
-      adjRect.X = (int)((double)adjRect.X * ((double)(xResolution) / (double)area.OriginalXResolution));
-      adjRect.Y = (int)((double)adjRect.Y * ((double)(yResolution) / (double)(area.OriginalYResolution)));
-      adjRect.Width = (int)((double)adjRect.Width * ((double)(BitmapResolution.XResolution) / (double)area.OriginalXResolution));
-      adjRect.Height = (int)((double)adjRect.Height * ((double)(yResolution) / (double)area.OriginalYResolution));
+      int totalGrids = 0;
+      int gridsOverlapped = 0;
+      int totalAreaOverlapped = 0;
+      int xStride = xResolution / area.Grid.XDim;
+      int yStride = yResolution / area.Grid.YDim;
 
-      int objectArea = imageObject.ObjectRectangle.Width * imageObject.ObjectRectangle.Height;
-      _ = area.GetRect().Width * area.GetRect().Height;
-      Rectangle intersect = Rectangle.Intersect(imageObject.ObjectRectangle, adjRect);
-      int intersectArea = intersect.Width * intersect.Height;
+      int objectArea = (InterestingObject.X_max - InterestingObject.X_min) * (InterestingObject.Y_max - InterestingObject.Y_min);
 
-      double percentage = (100.0 * intersectArea) / objectArea;
+
+      for (int row = 0; row < area.Grid.YDim; row++)
+      {
+        for (int col = 0; col < area.Grid.XDim; col++)
+        {
+          if (area.Grid.Get(col, row))
+          {
+            ++totalGrids;
+
+            Rectangle gridRect = new Rectangle(col * xStride, row * yStride, xStride, yStride);
+            Rectangle overlapRect = Rectangle.Intersect(gridRect, InterestingObject.ObjectRectangle);
+            int gridArea = gridRect.Width * gridRect.Height;
+            int overlapArea = overlapRect.Width * overlapRect.Height;
+            totalAreaOverlapped += overlapArea;
+          }
+        }
+      }
+
+
+      double percentage = 100.0 * ((double)totalAreaOverlapped) / (double)objectArea;
       overlap = (int)Math.Round(percentage);
       return overlap;
     }

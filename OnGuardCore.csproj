@@ -3,15 +3,15 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
 	<DisableWinExeOutputInference>true</DisableWinExeOutputInference>	
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>2.0.1</Version>
+    <Version>3.0.1</Version>
     <AssemblyName>OnGuard</AssemblyName>
     <Platforms>AnyCPU;x64</Platforms>
     <Configurations>Debug;Release;xsx</Configurations>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,13 +19,52 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\HelpFiles\AddCameraHelp.rtf" />
+    <None Remove="Resources\HelpFiles\CameraAddressHelp.rtf" />
+    <None Remove="Resources\HelpFiles\CameraTriggeredHelp.rtf" />
+    <None Remove="Resources\HelpFiles\DataFilesHelp.rtf" />
+    <None Remove="Resources\HelpFiles\FolderPrefixHelp.rtf" />
+    <None Remove="Resources\HelpFiles\ISpySnapshotHelp.rtf" />
+    <None Remove="Resources\HelpFiles\MMSHelperHelp.rtf" />
+    <None Remove="Resources\HelpFiles\OnGuardCaptureHelp.rtf" />
+    <None Remove="Resources\HelpFiles\OnGuardMonitorHelp.rtf" />
+    <None Remove="Resources\HelpFiles\ONVIFSnapshotHelp.rtf" />
+    <None Remove="Resources\HelpFiles\PresetsHelp.rtf" />
+    <None Remove="Resources\HelpFiles\PTZHelp.rtf" />
+    <None Remove="Resources\HelpFiles\PTZMovementHelp.rtf" />
+    <None Remove="Resources\HelpFiles\SnapshotMethodHelp.rtf" />
+    <None Remove="Resources\HelpFiles\SnapshotResolutionHelp.rtf" />
+    <None Remove="Resources\HelpFiles\SQLConnectionHelp.rtf" />
+    <None Remove="Resources\OnGuard.jpg" />
     <None Remove="Src\Resources\Samples\Street1.jpg" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.9.45-alpha" />
-    <PackageReference Include="MQTTnet" Version="3.0.14" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+    <EmbeddedResource Include="Resources\HelpFiles\AddCameraHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\CameraAddressHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\CameraTriggeredHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\DataFilesHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\FolderPrefixHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\ISpySnapshotHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\MMSHelperHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\OnGuardCaptureHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\OnGuardMonitorHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\ONVIFSnapshotHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\PresetsHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\PTZHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\PTZMovementHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\SnapshotMethodHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\SnapshotResolutionHelp.rtf" />
+    <EmbeddedResource Include="Resources\HelpFiles\SQLConnectionHelp.rtf" />
+    <EmbeddedResource Include="Resources\OnGuard.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.0.63" />
+    <PackageReference Include="Mictlanix.DotNet.OnvifClient" Version="0.0.3" />
+    <PackageReference Include="MQTTnet" Version="3.0.16" />
+    <PackageReference Include="SolarCalculator" Version="3.0.6" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,6 +110,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DBNewMotionFrames.mdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="DBNewMotionFrames_log.ldf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Src\Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

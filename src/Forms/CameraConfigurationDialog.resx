@@ -57,21 +57,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label19.Text" xml:space="preserve">
-    <value>First you need to specify the location for the camera files.  This may or may not be the same for all cameras.  
+  <data name="label22.Text" xml:space="preserve">
+    <value>Only the checked cameras will be monitored for new picture analysis.  To turn off monitoring simply uncheck the box.  This is on by default.
 
-You assigned this location when you configured Blue Iris.   You can get this first from the camera specific Settings under the Record tab.  
-This may be difficult to find because that "Folder" setting then refers back to the main menu folders locations.
-
-You can also just explore your hard drive and find where Blue Iris is putting your videos and/or still images.
-</value>
-  </data>
-  <data name="label21.Text" xml:space="preserve">
-    <value>Enter the camera file name prefix below.
-
-This is the name that Blue Iris assigns at the begining of all images. 
-
-For example, when your camera saves alert/motion images that are inthe format: myFrontYardAI.20200520_133518495.jpg  your camera prefix is "myFrontYardAI".  As each picture is taken the remainder of the file name is the date/time plus the suffix ".jpg".  This application only supports jpeg images (.jpg).
-</value>
+The “Current” camera is selected by selecting/highlighting a camera.  That camera can/must be configured on the other tabs.  That camera also becomes the camera shown on the main window.</value>
   </data>
 </root>

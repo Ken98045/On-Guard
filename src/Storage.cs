@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using OnGuardCore.Src.Properties;
+using System.Windows.Forms;
 using Microsoft.Win32;
 using System.Drawing;
 
@@ -11,25 +13,70 @@ namespace OnGuardCore
 {
   public class Storage
   {
-    private static  bool useRegistry = true;
-    private static IStorage _registryStore = new RegistryStorage();
     private static IStorage _xmlStore = new XMLStorage();
     Storage()
     {
-      
+
+    }
+
+    public static bool DoesDataDirectoryExist()
+    {
+      bool result = false;
+
+      string path = Settings.Default.DataFileLocation;
+      if (Directory.Exists(path))
+      {
+        result = true;
+      }
+      return result;
+    }
+
+    public static bool DoesSettingsFileExist()
+    {
+      bool result = false;
+
+      if (DoesDataDirectoryExist())
+      {
+        string path = GetFilePath("OnGuardStorage.xml");
+        if (File.Exists(path))
+        {
+        result=true;
+        }
+      }
+
+      return result;
     }
 
     static public string GetFilePath(string fileName)
     {
-      string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-      path = Path.Combine(path, "OnGuard");
+      string path = Settings.Default.DataFileLocation;
+      if (string.IsNullOrEmpty(path))
+      {
+        using OnGuardDataDialog dlg = new ();
+        if (DialogResult.OK == dlg.ShowDialog())
+        {
+          path = dlg.FolderLocation;
+          Settings.Default.DataFileLocation = path;
+          Settings.Default.DatabaseFileLocation = dlg.DatabaseFolderLocation;
+          Settings.Default.Save();
+        }
+        else
+        {
+          MessageBox.Show("You must set a data file folder.  The application will now exit", "Exiting!");
+          Application.Exit();
+        }
+      }
 
       if (!Directory.Exists(path))
       {
         Directory.CreateDirectory(path);
       }
 
-      path = Path.Combine(path, fileName);
+      if (!string.IsNullOrEmpty(fileName))
+      {
+        path = Path.Combine(path, fileName);
+      }
+
       return path;
     }
 
@@ -38,18 +85,9 @@ namespace OnGuardCore
     {
       get
       {
-        if (UseRegistry)
-        {
-          return _registryStore;
-        }
-        else
-        {
-          return _xmlStore;
-        }
+        return _xmlStore;
       }
     }
-
-    public static bool UseRegistry { get => useRegistry; set => useRegistry = value; }
 
   }
 

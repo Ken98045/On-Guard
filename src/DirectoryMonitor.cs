@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace OnGuardCore
 {
@@ -13,52 +14,75 @@ namespace OnGuardCore
   public class DirectoryMonitor : IDisposable
   {
     public FileSystemWatcher Watcher { get; set; }
-    public String Path() { return CameraData.PathAndPrefix(cameraData); }
-    public event CameraEventHandler OnNewImage;
+    public FileSystemWatcher TriggerWatcher { get; set; }
+    public event CameraEventHandler OnNewImage = delegate {};
 
-    CameraData cameraData;
+    CameraData _camera;
 
-    public DirectoryMonitor(CameraData location)
+    public DirectoryMonitor(CameraData camera)
     {
-      if (location == null || string.IsNullOrEmpty(location.Path))
+      if (camera == null || string.IsNullOrEmpty(camera.CameraPath))
       {
         string msg = "DirectoryMonitor constructor: The camera is null or the path is null/empty";
 
         Dbg.Write(msg);
-        ArgumentException ex = new ArgumentException(msg);
+        ArgumentException ex = new (msg);
         throw ex;
       }
 
-      if (!Directory.Exists(location.Path))
+      if (!Directory.Exists(camera.CameraPath))
       {
-        string msg = "DirectoryMonitor constructor: The directory being monitored does not exist: " + location.Path + "  Check your camera settings!";
+        string msg = "DirectoryMonitor constructor: The directory being monitored does not exist: " + camera.CameraPath + "  Check your camera settings!";
         Dbg.Write(msg);
-        ArgumentException ex = new ArgumentException(msg);
+        ArgumentException ex = new (msg);
         throw ex;
 
       }
 
-      CreateWatcher(location);
+      _camera = camera;
+
+      Watcher = new FileSystemWatcher(camera.CameraPath);
+      CreateWatcher(Watcher, camera.CameraPath, camera.CameraPrefix);
+
+      if (_camera.CameraInputMethod == CameraMethod.CameraTriggered && !string.IsNullOrEmpty(camera.TriggerPrefix))
+      {
+        TriggerWatcher = new FileSystemWatcher(camera.CameraPath);
+        CreateWatcher(TriggerWatcher, camera.CameraPath, camera.TriggerPrefix);
+      }
     }
 
-    private void CreateWatcher(CameraData location)
+    private void CreateWatcher(FileSystemWatcher aWatcher, string dir, string prefix)
     {
       try
       {
-        cameraData = location;
-        Watcher = new FileSystemWatcher(location.Path, location.CameraPrefix + "*.jpg");
-        Watcher.InternalBufferSize = 1024 * 1024 * 2;
-        Watcher.Changed += FileChanged;
-        Watcher.Error += Watcher_Error;
-        Watcher.NotifyFilter = NotifyFilters.LastWrite;
-        Watcher.EnableRaisingEvents = true;
+
+        aWatcher.NotifyFilter =
+                                 NotifyFilters.CreationTime
+                                 | NotifyFilters.FileName
+                                 | NotifyFilters.LastAccess
+                                 | NotifyFilters.LastWrite
+                                 | NotifyFilters.Size;
+
+        aWatcher.Changed += FileChanged;
+        aWatcher.Created += Watcher_Created;
+        aWatcher.Renamed += Watcher_Created;
+        aWatcher.Error += Watcher_Error;
+
+        aWatcher.IncludeSubdirectories = _camera.MonitorSubdirectories;
+        aWatcher.InternalBufferSize = 1024 * 63;
+        aWatcher.Filter = prefix + "*.jpg";
+
+        aWatcher.EnableRaisingEvents = true;
       }
-#pragma warning disable CA1031 // Do not catch general exception types
       catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
       {
         Dbg.Write("DirectoryMonitor CreateWatcher exception: " + ex.Message);
       }
+    }
+
+    private void Watcher_Created(object sender, FileSystemEventArgs e)
+    {
+      OnNewImage(_camera, e.FullPath);
     }
 
     private void Watcher_Error(object sender, ErrorEventArgs e)
@@ -73,9 +97,26 @@ namespace OnGuardCore
         }
         catch (Exception ex)
         {
+          Dbg.Write("DirectoryMonitor - Watcher_Error - " + ex.Message);
         }
 
-        CreateWatcher(cameraData);
+        try
+        {
+          TriggerWatcher?.Dispose();
+        }
+        catch (Exception ex)
+        {
+          Dbg.Write("DirectoryMonitor - Watcher_Error - " + ex.Message);
+        }
+
+        Watcher = new FileSystemWatcher(_camera.CameraPath);
+        CreateWatcher(Watcher, _camera.CameraPath, _camera.CameraPrefix);
+        if (null != TriggerWatcher)
+        {
+          TriggerWatcher.Dispose();
+          TriggerWatcher = new FileSystemWatcher(_camera.CameraPath);
+          CreateWatcher(TriggerWatcher, _camera.CameraPath, _camera.TriggerPrefix);
+        }
       }
 
     }
@@ -85,11 +126,11 @@ namespace OnGuardCore
     private void FileChanged(object sender, FileSystemEventArgs e)
     {
       if (e.ChangeType == WatcherChangeTypes.Changed)
-      {
+      {/*
         if (null != OnNewImage)
         {
           OnNewImage.Invoke(cameraData, e.FullPath);
-        }
+        }*/
       }
     }
 
@@ -106,6 +147,13 @@ namespace OnGuardCore
           Watcher.EnableRaisingEvents = false;
           Watcher.Changed -= FileChanged;
           Watcher.Dispose();
+
+          if (null != TriggerWatcher)
+          {
+            TriggerWatcher.Changed -= FileChanged;
+            TriggerWatcher.Dispose();
+            TriggerWatcher = null;
+          }
         }
 
         disposedValue = true;
@@ -117,7 +165,6 @@ namespace OnGuardCore
     {
       // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
       Dispose(true);
-      // TODO: uncomment the following line if the finalizer is overridden above.
       GC.SuppressFinalize(this);
     }
     #endregion

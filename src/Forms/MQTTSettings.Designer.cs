@@ -68,7 +68,7 @@ namespace OnGuardCore
       this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label1.Location = new System.Drawing.Point(12, 22);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(557, 106);
+      this.label1.Size = new System.Drawing.Size(557, 53);
       this.label1.TabIndex = 0;
       this.label1.Text = "MQTT allows you to use On Guard with user defined home automation.   Setting up a" +
     "nd using MQTT is strictly optional.  If you don\'t know what MQTT is then Google " +
@@ -78,7 +78,7 @@ namespace OnGuardCore
       // 
       this.label2.AutoSize = true;
       this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label2.Location = new System.Drawing.Point(34, 90);
+      this.label2.Location = new System.Drawing.Point(32, 90);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(200, 20);
       this.label2.TabIndex = 1;
@@ -86,7 +86,7 @@ namespace OnGuardCore
       // 
       // ServerText
       // 
-      this.ServerText.Location = new System.Drawing.Point(245, 92);
+      this.ServerText.Location = new System.Drawing.Point(241, 92);
       this.ServerText.Name = "ServerText";
       this.ServerText.Size = new System.Drawing.Size(308, 23);
       this.ServerText.TabIndex = 0;
@@ -96,7 +96,7 @@ namespace OnGuardCore
       // 
       this.label3.AutoSize = true;
       this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label3.Location = new System.Drawing.Point(182, 119);
+      this.label3.Location = new System.Drawing.Point(180, 119);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(52, 20);
       this.label3.TabIndex = 3;
@@ -104,7 +104,7 @@ namespace OnGuardCore
       // 
       // PortNumeric
       // 
-      this.PortNumeric.Location = new System.Drawing.Point(245, 121);
+      this.PortNumeric.Location = new System.Drawing.Point(241, 121);
       this.PortNumeric.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -128,7 +128,7 @@ namespace OnGuardCore
       // 
       this.label4.AutoSize = true;
       this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label4.Location = new System.Drawing.Point(126, 150);
+      this.label4.Location = new System.Drawing.Point(124, 150);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(108, 20);
       this.label4.TabIndex = 5;
@@ -136,14 +136,14 @@ namespace OnGuardCore
       // 
       // UserText
       // 
-      this.UserText.Location = new System.Drawing.Point(245, 151);
+      this.UserText.Location = new System.Drawing.Point(241, 151);
       this.UserText.Name = "UserText";
       this.UserText.Size = new System.Drawing.Size(197, 23);
       this.UserText.TabIndex = 2;
       // 
       // PasswordText
       // 
-      this.PasswordText.Location = new System.Drawing.Point(245, 181);
+      this.PasswordText.Location = new System.Drawing.Point(241, 181);
       this.PasswordText.Name = "PasswordText";
       this.PasswordText.Size = new System.Drawing.Size(197, 23);
       this.PasswordText.TabIndex = 3;
@@ -153,7 +153,7 @@ namespace OnGuardCore
       // 
       this.label5.AutoSize = true;
       this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label5.Location = new System.Drawing.Point(138, 180);
+      this.label5.Location = new System.Drawing.Point(136, 180);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(96, 20);
       this.label5.TabIndex = 7;
@@ -161,7 +161,7 @@ namespace OnGuardCore
       // 
       // OKButton
       // 
-      this.OKButton.Location = new System.Drawing.Point(212, 685);
+      this.OKButton.Location = new System.Drawing.Point(212, 680);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
       this.OKButton.TabIndex = 4;
@@ -172,7 +172,7 @@ namespace OnGuardCore
       // cancelButton
       // 
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(309, 685);
+      this.cancelButton.Location = new System.Drawing.Point(309, 680);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 5;
@@ -182,7 +182,7 @@ namespace OnGuardCore
       // 
       // CoolDownNumeric
       // 
-      this.CoolDownNumeric.Location = new System.Drawing.Point(245, 232);
+      this.CoolDownNumeric.Location = new System.Drawing.Point(241, 232);
       this.CoolDownNumeric.Maximum = new decimal(new int[] {
             3600,
             0,
@@ -206,7 +206,7 @@ namespace OnGuardCore
       // 
       this.label6.AutoSize = true;
       this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label6.Location = new System.Drawing.Point(41, 230);
+      this.label6.Location = new System.Drawing.Point(39, 230);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(193, 20);
       this.label6.TabIndex = 9;
@@ -216,7 +216,7 @@ namespace OnGuardCore
       // 
       this.label7.AutoSize = true;
       this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-      this.label7.Location = new System.Drawing.Point(358, 234);
+      this.label7.Location = new System.Drawing.Point(354, 234);
       this.label7.Name = "label7";
       this.label7.Size = new System.Drawing.Size(119, 16);
       this.label7.TabIndex = 10;
@@ -235,7 +235,7 @@ namespace OnGuardCore
       // UseSecureLinkCheck
       // 
       this.UseSecureLinkCheck.AutoSize = true;
-      this.UseSecureLinkCheck.Location = new System.Drawing.Point(245, 211);
+      this.UseSecureLinkCheck.Location = new System.Drawing.Point(241, 211);
       this.UseSecureLinkCheck.Name = "UseSecureLinkCheck";
       this.UseSecureLinkCheck.Size = new System.Drawing.Size(15, 14);
       this.UseSecureLinkCheck.TabIndex = 12;
@@ -264,7 +264,7 @@ namespace OnGuardCore
       // 
       this.label11.AutoSize = true;
       this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label11.Location = new System.Drawing.Point(63, 498);
+      this.label11.Location = new System.Drawing.Point(55, 498);
       this.label11.Name = "label11";
       this.label11.Size = new System.Drawing.Size(116, 20);
       this.label11.TabIndex = 15;
@@ -282,7 +282,7 @@ namespace OnGuardCore
       // 
       this.label12.AutoSize = true;
       this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label12.Location = new System.Drawing.Point(49, 568);
+      this.label12.Location = new System.Drawing.Point(41, 568);
       this.label12.Name = "label12";
       this.label12.Size = new System.Drawing.Size(130, 20);
       this.label12.TabIndex = 17;
@@ -308,7 +308,7 @@ namespace OnGuardCore
       // 
       this.label13.AutoSize = true;
       this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label13.Location = new System.Drawing.Point(29, 603);
+      this.label13.Location = new System.Drawing.Point(21, 603);
       this.label13.Name = "label13";
       this.label13.Size = new System.Drawing.Size(150, 20);
       this.label13.TabIndex = 21;
@@ -326,7 +326,7 @@ namespace OnGuardCore
       // 
       this.label14.AutoSize = true;
       this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label14.Location = new System.Drawing.Point(43, 533);
+      this.label14.Location = new System.Drawing.Point(35, 533);
       this.label14.Name = "label14";
       this.label14.Size = new System.Drawing.Size(136, 20);
       this.label14.TabIndex = 23;
@@ -355,7 +355,7 @@ namespace OnGuardCore
       // 
       this.label16.AutoSize = true;
       this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label16.Location = new System.Drawing.Point(6, 636);
+      this.label16.Location = new System.Drawing.Point(-2, 636);
       this.label16.Name = "label16";
       this.label16.Size = new System.Drawing.Size(173, 20);
       this.label16.TabIndex = 26;
@@ -368,7 +368,7 @@ namespace OnGuardCore
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.AutoScroll = true;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(596, 718);
+      this.ClientSize = new System.Drawing.Size(596, 710);
       this.Controls.Add(this.label16);
       this.Controls.Add(this.jjsonFormatPaths);
       this.Controls.Add(this.label15);

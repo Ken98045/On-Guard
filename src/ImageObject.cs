@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace OnGuardCore
 {
-  public class ImageObject
+  public class InterestingObject
   {
-    public ImageObject()
+    public InterestingObject()
     {
-
+      ID = Guid.NewGuid(); 
       Label = "none";
 
       // Some unnecessary initializations, but...
@@ -22,6 +22,7 @@ namespace OnGuardCore
       Y_min = 0;
       X_max = 0;
       Y_max = 0;
+      IsFace = false;
     }
 
     public bool Success { get; set; }
@@ -34,8 +35,13 @@ namespace OnGuardCore
     public Rectangle ObjectRectangle { get; set; }
     public bool InMotion { get; set; }
     public Guid ID { get; set; }
+    public bool IsFace { get; set; }
+    public AreaOfInterest Area { get; set; }
+    public int Overlap { get; set; }
+    public bool IsOfCameraInterest { get; set; }
 
-    public ImageObject(ImageObject src)
+
+    public InterestingObject(InterestingObject src)
     {
       if (src != null)
       {
@@ -49,6 +55,8 @@ namespace OnGuardCore
         ObjectRectangle = src.ObjectRectangle;
         InMotion = src.InMotion;
         ID = src.ID;
+        IsFace = src.IsFace;
+        
       }
     }
   }

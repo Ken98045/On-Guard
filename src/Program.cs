@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace OnGuardCore
 {
@@ -16,11 +17,15 @@ namespace OnGuardCore
     {
       MainWindow main = null;
 
-      Application.SetHighDpiMode(HighDpiMode.DpiUnawareGdiScaled);
+      Application.SetHighDpiMode(HighDpiMode.DpiUnawareGdiScaled);  
       Application.EnableVisualStyles();
+      Font defaultFont = new ("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+      Application.SetDefaultFont(defaultFont);
       Application.SetCompatibleTextRenderingDefault(false);
 
+#if !DEBUG
       try
+#endif
       {
         Application.Run(main = new MainWindow());
       }
@@ -33,11 +38,11 @@ namespace OnGuardCore
       {
         MessageBox.Show("There was an unexpected error in On Guard.  Please report the following information: " + ex.Message, "Unexpected Error!");
       }
-#endif
       finally
       {
         main?.Dispose();
       }
+#endif
 
     }
   }

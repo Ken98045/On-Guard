@@ -34,7 +34,7 @@
       this.oKButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
       this.emailAddressList = new System.Windows.Forms.ListView();
-      this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
       this.SuspendLayout();
       // 
       // AddButton
@@ -71,7 +71,7 @@
       // 
       // oKButton
       // 
-      this.oKButton.Location = new System.Drawing.Point(72, 196);
+      this.oKButton.Location = new System.Drawing.Point(125, 196);
       this.oKButton.Name = "oKButton";
       this.oKButton.Size = new System.Drawing.Size(75, 23);
       this.oKButton.TabIndex = 3;
@@ -81,7 +81,7 @@
       // 
       // cancelButton
       // 
-      this.cancelButton.Location = new System.Drawing.Point(170, 196);
+      this.cancelButton.Location = new System.Drawing.Point(211, 196);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 4;
@@ -96,7 +96,6 @@
       this.emailAddressList.FullRowSelect = true;
       this.emailAddressList.GridLines = true;
       this.emailAddressList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-      this.emailAddressList.HideSelection = false;
       this.emailAddressList.Location = new System.Drawing.Point(12, 27);
       this.emailAddressList.MultiSelect = false;
       this.emailAddressList.Name = "emailAddressList";

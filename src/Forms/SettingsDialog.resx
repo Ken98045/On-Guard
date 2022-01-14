@@ -57,22 +57,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label10.Text" xml:space="preserve">
-    <value>NOTE:
-If you intend to use more than one instance of the AI DO NOT USE "localhost".
-
-Instead, use the IP address of your local machine.  This is due to the fact that "failover" will not work if you use "localhost".
-</value>
-  </data>
-  <data name="label13.Text" xml:space="preserve">
-    <value>Minutes -  After motion is detected it will be this long before a new email motion event is created.  For Entry Door type events this value will be disregarded if the previous event was of lower priority.
-</value>
-  </data>
-  <data name="label8.Text" xml:space="preserve">
-    <value>In Seconds - When motion is detected capture pictures this long.   This is used for email only.  The longer this period is the longer the more pictures are collected and may potentially be sent.  If you are not sending emails and/or pictures with your email alert keep this value low. </value>
-  </data>
-  <data name="label2.Text" xml:space="preserve">
-    <value>On Guard requires SQL (database) support to run.  On Guard needs a way to locate that database.  This is done via the “connection string”. Normally you can just use the default value.  However, you may have another SQL installation you wish to use.  Thus, you have the opportunity to set your own connection string.  The Database definitions are in the files "DBMotionFrames.mdf" and "DBMotionFrames_log.ldf".  These files are installed into the folder Users\YourUserName\AppData\Roaming\OnGuardDatabase.  
-</value>
-  </data>
 </root>

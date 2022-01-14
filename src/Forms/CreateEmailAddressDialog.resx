@@ -60,7 +60,7 @@
   <data name="label13.Text" xml:space="preserve">
     <value>If you are trying to send emails to an MMS address your carrier may limit the email/MMS content size.  If you try to send too many pictures or you don't  resize your picture small enough your carrier may refuse to accept the message, or it may scale pictures down.  Your carrier may or may not return any error messages to On Guard.
 
-Further, some email providers may also set a cap on the sender or receiver email size for "normal" email addresses.  Usually this isn't a problem, but you should be aware of the possibility.  In addition, some providers may consider emails sent too close together to be spam, and may refuse them.
+Further, some email providers may also set a cap on the sender or receiver email size for "normal" email addresses.  Usually this isn't a problem, but you should be aware of the possibility.  In addition, some providers may consider emails sent too close together spam, and may refuse them.
 </value>
   </data>
 </root>

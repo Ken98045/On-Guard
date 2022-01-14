@@ -68,4 +68,8 @@ You can also use this option to rebuild the motion database if you change area d
 
 If you want to stop the rebuild simply select the menu option again.</value>
   </data>
+  <data name="label3.Text" xml:space="preserve">
+    <value>In order to avoid overloading your computer a delay between pictures is necessary.  This is the “ideal” time.  The actual delay will be adjusted up/down depending on the time it takes to process a picture.
+</value>
+  </data>
 </root>

@@ -21,8 +21,6 @@
         theCPUCounter.Dispose();
         _modifyBox?.Dispose();
         _liveTimer?.Dispose();
-        if (null != _screenBitmap) _screenBitmap.Dispose();
-        if (null != _areaBackgroundBitmap) _areaBackgroundBitmap.Dispose();
         if (components != null)
         {
           components.Dispose();
@@ -55,13 +53,8 @@
       this.height = new System.Windows.Forms.ColumnHeader();
       this.label1 = new System.Windows.Forms.Label();
       this.numberOfFilesTextBox = new System.Windows.Forms.TextBox();
-      this.label2 = new System.Windows.Forms.Label();
       this.fileNumberUpDown = new System.Windows.Forms.NumericUpDown();
       this.goToFileButton = new System.Windows.Forms.Button();
-      this.label3 = new System.Windows.Forms.Label();
-      this.currentNumberTextBox = new System.Windows.Forms.TextBox();
-      this.label4 = new System.Windows.Forms.Label();
-      this.fileNameTextBox = new System.Windows.Forms.TextBox();
       this.label5 = new System.Windows.Forms.Label();
       this.goToFileTextBox = new System.Windows.Forms.TextBox();
       this.goToFileNameButton = new System.Windows.Forms.Button();
@@ -70,33 +63,40 @@
       this.xPosLabel = new System.Windows.Forms.Label();
       this.yPosLabel = new System.Windows.Forms.Label();
       this.reverseListButton = new System.Windows.Forms.Button();
-      this.showAreasOfInterestCheck = new System.Windows.Forms.CheckBox();
       this.analyzeButton = new System.Windows.Forms.Button();
       this.liveCameraButton = new System.Windows.Forms.Button();
       this.presetButton = new System.Windows.Forms.Button();
-      this.presetNumeric = new System.Windows.Forms.NumericUpDown();
       this.LiveOnDemandGroup = new System.Windows.Forms.GroupBox();
+      this.PresetsCombo = new System.Windows.Forms.ComboBox();
       this.liveCheck = new System.Windows.Forms.CheckBox();
       this.camZoomOut = new System.Windows.Forms.Button();
-      this.zoomInButton = new System.Windows.Forms.Button();
+      this.camZoomIn = new System.Windows.Forms.Button();
       this.camDownButton = new System.Windows.Forms.Button();
       this.camRightButton = new System.Windows.Forms.Button();
       this.camLeftButton = new System.Windows.Forms.Button();
       this.camUpButton = new System.Windows.Forms.Button();
       this.refreshButton = new System.Windows.Forms.Button();
       this.label8 = new System.Windows.Forms.Label();
-      this.label9 = new System.Windows.Forms.Label();
       this.cameraCombo = new System.Windows.Forms.ComboBox();
       this.ToolsPanel = new System.Windows.Forms.Panel();
-      this.cpuProgress = new OnGuardCore.EnhancedProgressBar();
-      this.FPSProgress = new OnGuardCore.EnhancedProgressBar();
-      this.label13 = new System.Windows.Forms.Label();
+      this.panel4 = new System.Windows.Forms.Panel();
+      this.FullAnalysisButton = new System.Windows.Forms.Button();
+      this.panel3 = new System.Windows.Forms.Panel();
+      this.label2 = new System.Windows.Forms.Label();
       this.motionOnlyCheckbox = new System.Windows.Forms.CheckBox();
-      this.CleanupButton = new System.Windows.Forms.Button();
-      this.buttonRight = new System.Windows.Forms.Button();
       this.buttonLeft = new System.Windows.Forms.Button();
+      this.buttonRight = new System.Windows.Forms.Button();
+      this.panel2 = new System.Windows.Forms.Panel();
+      this.label13 = new System.Windows.Forms.Label();
+      this.FPSProgress = new OnGuardCore.EnhancedProgressBar();
+      this.cpuProgress = new OnGuardCore.EnhancedProgressBar();
+      this.label15 = new System.Windows.Forms.Label();
+      this.AIProgressBar = new OnGuardCore.EnhancedProgressBar();
+      this.panel1 = new System.Windows.Forms.Panel();
+      this.timeLine = new OnGuardCore.TimeLine();
       this.mainPanel = new System.Windows.Forms.Panel();
-      this.locationTrackBar = new System.Windows.Forms.TrackBar();
+      this.picturePanel = new System.Windows.Forms.Panel();
+      this.pictureImage = new OnGuardCore.CameraImage();
       this.StatusPanel = new System.Windows.Forms.Panel();
       this.numberOfImagesLabel = new System.Windows.Forms.Label();
       this.YResLabel = new System.Windows.Forms.Label();
@@ -106,8 +106,6 @@
       this.XResLabel = new System.Windows.Forms.Label();
       this.label14 = new System.Windows.Forms.Label();
       this.label11 = new System.Windows.Forms.Label();
-      this.picturePanel = new System.Windows.Forms.Panel();
-      this.pictureImage = new System.Windows.Forms.PictureBox();
       this.xTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.menuStrip2 = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -115,18 +113,24 @@
       this.showToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.showObjectRectanglesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.showAreasOfInterestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.editAreasOfInterestToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.pictureDisplayOptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.AreasOfInterestToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.editAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.createAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.cleanupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.cleanupOldPicturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.syncToDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.applicationSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.cameraSettingsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.ImageCaptureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.outgoingEmailServerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.addEditEmailAddressesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.mQTTSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.analysisSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.UseXMLDataSourceCheckedMenu = new System.Windows.Forms.ToolStripMenuItem();
       this.aiAlertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.syncMotionToDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.startRestartAIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.logFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -134,14 +138,17 @@
       this.deleteLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).BeginInit();
       this.LiveOnDemandGroup.SuspendLayout();
       this.ToolsPanel.SuspendLayout();
+      this.panel4.SuspendLayout();
+      this.panel3.SuspendLayout();
+      this.panel2.SuspendLayout();
+      this.panel1.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.timeLine)).BeginInit();
       this.mainPanel.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.locationTrackBar)).BeginInit();
-      this.StatusPanel.SuspendLayout();
       this.picturePanel.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureImage)).BeginInit();
+      this.StatusPanel.SuspendLayout();
       this.menuStrip2.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -157,11 +164,10 @@
             this.height});
       this.objectListView.FullRowSelect = true;
       this.objectListView.GridLines = true;
-      this.objectListView.HideSelection = false;
-      this.objectListView.Location = new System.Drawing.Point(3, 8);
+      this.objectListView.Location = new System.Drawing.Point(5, 5);
       this.objectListView.MultiSelect = false;
       this.objectListView.Name = "objectListView";
-      this.objectListView.Size = new System.Drawing.Size(409, 128);
+      this.objectListView.Size = new System.Drawing.Size(407, 114);
       this.objectListView.TabIndex = 3;
       this.objectListView.UseCompatibleStateImageBehavior = false;
       this.objectListView.View = System.Windows.Forms.View.Details;
@@ -223,97 +229,44 @@
       this.numberOfFilesTextBox.Size = new System.Drawing.Size(69, 21);
       this.numberOfFilesTextBox.TabIndex = 5;
       // 
-      // label2
-      // 
-      this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(511, 82);
-      this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(74, 15);
-      this.label2.TabIndex = 6;
-      this.label2.Text = "Go To File: # ";
-      // 
       // fileNumberUpDown
       // 
-      this.fileNumberUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.fileNumberUpDown.Location = new System.Drawing.Point(605, 80);
+      this.fileNumberUpDown.Location = new System.Drawing.Point(36, 37);
       this.fileNumberUpDown.Name = "fileNumberUpDown";
       this.fileNumberUpDown.Size = new System.Drawing.Size(57, 23);
       this.fileNumberUpDown.TabIndex = 7;
       // 
       // goToFileButton
       // 
-      this.goToFileButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.goToFileButton.Location = new System.Drawing.Point(677, 77);
+      this.goToFileButton.Location = new System.Drawing.Point(99, 36);
       this.goToFileButton.Name = "goToFileButton";
-      this.goToFileButton.Size = new System.Drawing.Size(58, 23);
+      this.goToFileButton.Size = new System.Drawing.Size(39, 23);
       this.goToFileButton.TabIndex = 8;
       this.goToFileButton.Text = "Go!";
       this.goToFileButton.UseVisualStyleBackColor = true;
       this.goToFileButton.Click += new System.EventHandler(this.GoToFileButton_Click);
       // 
-      // label3
-      // 
-      this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(418, 83);
-      this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(54, 15);
-      this.label3.TabIndex = 9;
-      this.label3.Text = "Number:";
-      // 
-      // currentNumberTextBox
-      // 
-      this.currentNumberTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.currentNumberTextBox.Location = new System.Drawing.Point(471, 78);
-      this.currentNumberTextBox.Name = "currentNumberTextBox";
-      this.currentNumberTextBox.ReadOnly = true;
-      this.currentNumberTextBox.Size = new System.Drawing.Size(40, 23);
-      this.currentNumberTextBox.TabIndex = 10;
-      // 
-      // label4
-      // 
-      this.label4.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.label4.AutoSize = true;
-      this.label4.Location = new System.Drawing.Point(439, 23);
-      this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(28, 15);
-      this.label4.TabIndex = 11;
-      this.label4.Text = "File:";
-      // 
-      // fileNameTextBox
-      // 
-      this.fileNameTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.fileNameTextBox.Location = new System.Drawing.Point(471, 20);
-      this.fileNameTextBox.Name = "fileNameTextBox";
-      this.fileNameTextBox.ReadOnly = true;
-      this.fileNameTextBox.Size = new System.Drawing.Size(264, 23);
-      this.fileNameTextBox.TabIndex = 12;
-      // 
       // label5
       // 
-      this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label5.AutoSize = true;
-      this.label5.Location = new System.Drawing.Point(425, 51);
+      this.label5.Location = new System.Drawing.Point(3, 8);
       this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(40, 15);
+      this.label5.Size = new System.Drawing.Size(25, 15);
       this.label5.TabIndex = 13;
-      this.label5.Text = "Go To:";
+      this.label5.Text = "File";
       // 
       // goToFileTextBox
       // 
-      this.goToFileTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.goToFileTextBox.Location = new System.Drawing.Point(471, 49);
+      this.goToFileTextBox.Location = new System.Drawing.Point(33, 5);
       this.goToFileTextBox.Name = "goToFileTextBox";
-      this.goToFileTextBox.Size = new System.Drawing.Size(264, 23);
+      this.goToFileTextBox.Size = new System.Drawing.Size(232, 23);
       this.goToFileTextBox.TabIndex = 14;
       // 
       // goToFileNameButton
       // 
-      this.goToFileNameButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.goToFileNameButton.Location = new System.Drawing.Point(752, 46);
+      this.goToFileNameButton.Location = new System.Drawing.Point(271, 5);
       this.goToFileNameButton.Name = "goToFileNameButton";
-      this.goToFileNameButton.Size = new System.Drawing.Size(58, 23);
+      this.goToFileNameButton.Size = new System.Drawing.Size(39, 23);
       this.goToFileNameButton.TabIndex = 15;
       this.goToFileNameButton.Text = "Go!";
       this.goToFileNameButton.UseVisualStyleBackColor = true;
@@ -365,41 +318,27 @@
       // 
       // reverseListButton
       // 
-      this.reverseListButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.reverseListButton.Location = new System.Drawing.Point(752, 18);
+      this.reverseListButton.Location = new System.Drawing.Point(3, 70);
       this.reverseListButton.Name = "reverseListButton";
-      this.reverseListButton.Size = new System.Drawing.Size(58, 23);
+      this.reverseListButton.Size = new System.Drawing.Size(95, 23);
       this.reverseListButton.TabIndex = 20;
       this.reverseListButton.Text = "Reverse!";
       this.reverseListButton.UseVisualStyleBackColor = true;
       this.reverseListButton.Click += new System.EventHandler(this.OnReverseListButton);
       // 
-      // showAreasOfInterestCheck
-      // 
-      this.showAreasOfInterestCheck.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.showAreasOfInterestCheck.AutoSize = true;
-      this.showAreasOfInterestCheck.Location = new System.Drawing.Point(421, 107);
-      this.showAreasOfInterestCheck.Name = "showAreasOfInterestCheck";
-      this.showAreasOfInterestCheck.Size = new System.Drawing.Size(143, 19);
-      this.showAreasOfInterestCheck.TabIndex = 22;
-      this.showAreasOfInterestCheck.Text = "Show Areas of Interest";
-      this.showAreasOfInterestCheck.UseVisualStyleBackColor = true;
-      this.showAreasOfInterestCheck.CheckedChanged += new System.EventHandler(this.ShowAreasOfInterestCheckChanged);
-      // 
       // analyzeButton
       // 
-      this.analyzeButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.analyzeButton.Location = new System.Drawing.Point(752, 106);
+      this.analyzeButton.Location = new System.Drawing.Point(18, 5);
       this.analyzeButton.Name = "analyzeButton";
-      this.analyzeButton.Size = new System.Drawing.Size(58, 23);
+      this.analyzeButton.Size = new System.Drawing.Size(132, 23);
       this.analyzeButton.TabIndex = 23;
-      this.analyzeButton.Text = "Analyze!";
+      this.analyzeButton.Text = "Area Analysis";
       this.analyzeButton.UseVisualStyleBackColor = true;
       this.analyzeButton.Click += new System.EventHandler(this.AnalyzeButton_Click);
       // 
       // liveCameraButton
       // 
-      this.liveCameraButton.Location = new System.Drawing.Point(5, 25);
+      this.liveCameraButton.Location = new System.Drawing.Point(5, 32);
       this.liveCameraButton.Name = "liveCameraButton";
       this.liveCameraButton.Size = new System.Drawing.Size(82, 23);
       this.liveCameraButton.TabIndex = 24;
@@ -409,7 +348,7 @@
       // 
       // presetButton
       // 
-      this.presetButton.Location = new System.Drawing.Point(5, 53);
+      this.presetButton.Location = new System.Drawing.Point(5, 60);
       this.presetButton.Name = "presetButton";
       this.presetButton.Size = new System.Drawing.Size(82, 23);
       this.presetButton.TabIndex = 31;
@@ -417,88 +356,74 @@
       this.presetButton.UseVisualStyleBackColor = true;
       this.presetButton.Click += new System.EventHandler(this.PresetButton_Click);
       // 
-      // presetNumeric
-      // 
-      this.presetNumeric.Location = new System.Drawing.Point(93, 56);
-      this.presetNumeric.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-      this.presetNumeric.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-      this.presetNumeric.Name = "presetNumeric";
-      this.presetNumeric.Size = new System.Drawing.Size(46, 23);
-      this.presetNumeric.TabIndex = 32;
-      this.presetNumeric.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-      // 
       // LiveOnDemandGroup
       // 
       this.LiveOnDemandGroup.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.LiveOnDemandGroup.BackColor = System.Drawing.SystemColors.ControlDark;
+      this.LiveOnDemandGroup.Controls.Add(this.PresetsCombo);
       this.LiveOnDemandGroup.Controls.Add(this.liveCheck);
       this.LiveOnDemandGroup.Controls.Add(this.presetButton);
       this.LiveOnDemandGroup.Controls.Add(this.camZoomOut);
-      this.LiveOnDemandGroup.Controls.Add(this.presetNumeric);
-      this.LiveOnDemandGroup.Controls.Add(this.zoomInButton);
+      this.LiveOnDemandGroup.Controls.Add(this.camZoomIn);
       this.LiveOnDemandGroup.Controls.Add(this.camDownButton);
       this.LiveOnDemandGroup.Controls.Add(this.camRightButton);
       this.LiveOnDemandGroup.Controls.Add(this.liveCameraButton);
       this.LiveOnDemandGroup.Controls.Add(this.camLeftButton);
       this.LiveOnDemandGroup.Controls.Add(this.camUpButton);
-      this.LiveOnDemandGroup.Location = new System.Drawing.Point(989, 12);
+      this.LiveOnDemandGroup.Location = new System.Drawing.Point(1007, 5);
       this.LiveOnDemandGroup.Name = "LiveOnDemandGroup";
-      this.LiveOnDemandGroup.Size = new System.Drawing.Size(279, 112);
+      this.LiveOnDemandGroup.Size = new System.Drawing.Size(273, 113);
       this.LiveOnDemandGroup.TabIndex = 33;
       this.LiveOnDemandGroup.TabStop = false;
-      this.LiveOnDemandGroup.Text = "Live Image - On Demand";
+      // 
+      // PresetsCombo
+      // 
+      this.PresetsCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+      this.PresetsCombo.FormattingEnabled = true;
+      this.PresetsCombo.Location = new System.Drawing.Point(88, 60);
+      this.PresetsCombo.Name = "PresetsCombo";
+      this.PresetsCombo.Size = new System.Drawing.Size(96, 23);
+      this.PresetsCombo.TabIndex = 34;
       // 
       // liveCheck
       // 
       this.liveCheck.Appearance = System.Windows.Forms.Appearance.Button;
-      this.liveCheck.AutoSize = true;
       this.liveCheck.BackColor = System.Drawing.SystemColors.Control;
       this.liveCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
       this.liveCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.liveCheck.Location = new System.Drawing.Point(93, 24);
+      this.liveCheck.Location = new System.Drawing.Point(88, 31);
       this.liveCheck.Name = "liveCheck";
-      this.liveCheck.Size = new System.Drawing.Size(79, 25);
+      this.liveCheck.Size = new System.Drawing.Size(96, 25);
       this.liveCheck.TabIndex = 33;
-      this.liveCheck.Text = "Continuous";
+      this.liveCheck.Text = "Video";
+      this.liveCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.liveCheck.UseVisualStyleBackColor = false;
       this.liveCheck.CheckedChanged += new System.EventHandler(this.LiveCheck_CheckedChanged);
       // 
       // camZoomOut
       // 
       this.camZoomOut.Image = ((System.Drawing.Image)(resources.GetObject("camZoomOut.Image")));
-      this.camZoomOut.Location = new System.Drawing.Point(185, 71);
+      this.camZoomOut.Location = new System.Drawing.Point(188, 73);
       this.camZoomOut.Name = "camZoomOut";
       this.camZoomOut.Size = new System.Drawing.Size(25, 25);
       this.camZoomOut.TabIndex = 30;
       this.camZoomOut.UseVisualStyleBackColor = true;
       this.camZoomOut.Click += new System.EventHandler(this.CamZoomOut_Click);
       // 
-      // zoomInButton
+      // camZoomIn
       // 
-      this.zoomInButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInButton.Image")));
-      this.zoomInButton.Location = new System.Drawing.Point(239, 21);
-      this.zoomInButton.Name = "zoomInButton";
-      this.zoomInButton.Size = new System.Drawing.Size(25, 25);
-      this.zoomInButton.TabIndex = 29;
-      this.zoomInButton.UseVisualStyleBackColor = true;
-      this.zoomInButton.Click += new System.EventHandler(this.ZoomInButton_Click);
+      this.camZoomIn.Image = ((System.Drawing.Image)(resources.GetObject("camZoomIn.Image")));
+      this.camZoomIn.Location = new System.Drawing.Point(242, 23);
+      this.camZoomIn.Name = "camZoomIn";
+      this.camZoomIn.Size = new System.Drawing.Size(25, 25);
+      this.camZoomIn.TabIndex = 29;
+      this.camZoomIn.UseVisualStyleBackColor = true;
+      this.camZoomIn.Click += new System.EventHandler(this.ZoomInButton_Click);
       // 
       // camDownButton
       // 
       this.camDownButton.Image = ((System.Drawing.Image)(resources.GetObject("camDownButton.Image")));
-      this.camDownButton.Location = new System.Drawing.Point(213, 70);
+      this.camDownButton.Location = new System.Drawing.Point(216, 72);
       this.camDownButton.Name = "camDownButton";
       this.camDownButton.Size = new System.Drawing.Size(25, 25);
       this.camDownButton.TabIndex = 26;
@@ -508,7 +433,7 @@
       // camRightButton
       // 
       this.camRightButton.Image = ((System.Drawing.Image)(resources.GetObject("camRightButton.Image")));
-      this.camRightButton.Location = new System.Drawing.Point(239, 46);
+      this.camRightButton.Location = new System.Drawing.Point(242, 48);
       this.camRightButton.Name = "camRightButton";
       this.camRightButton.Size = new System.Drawing.Size(25, 25);
       this.camRightButton.TabIndex = 28;
@@ -518,7 +443,7 @@
       // camLeftButton
       // 
       this.camLeftButton.Image = ((System.Drawing.Image)(resources.GetObject("camLeftButton.Image")));
-      this.camLeftButton.Location = new System.Drawing.Point(185, 46);
+      this.camLeftButton.Location = new System.Drawing.Point(188, 48);
       this.camLeftButton.Name = "camLeftButton";
       this.camLeftButton.Size = new System.Drawing.Size(25, 25);
       this.camLeftButton.TabIndex = 27;
@@ -528,7 +453,7 @@
       // camUpButton
       // 
       this.camUpButton.Image = ((System.Drawing.Image)(resources.GetObject("camUpButton.Image")));
-      this.camUpButton.Location = new System.Drawing.Point(213, 24);
+      this.camUpButton.Location = new System.Drawing.Point(216, 26);
       this.camUpButton.Name = "camUpButton";
       this.camUpButton.Size = new System.Drawing.Size(25, 25);
       this.camUpButton.TabIndex = 25;
@@ -537,10 +462,9 @@
       // 
       // refreshButton
       // 
-      this.refreshButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.refreshButton.Location = new System.Drawing.Point(752, 76);
+      this.refreshButton.Location = new System.Drawing.Point(3, 38);
       this.refreshButton.Name = "refreshButton";
-      this.refreshButton.Size = new System.Drawing.Size(58, 23);
+      this.refreshButton.Size = new System.Drawing.Size(95, 23);
       this.refreshButton.TabIndex = 33;
       this.refreshButton.Text = "Refresh";
       this.refreshButton.UseVisualStyleBackColor = true;
@@ -548,184 +472,259 @@
       // 
       // label8
       // 
-      this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.label8.AutoSize = true;
-      this.label8.Location = new System.Drawing.Point(841, 82);
+      this.label8.Location = new System.Drawing.Point(5, 80);
       this.label8.Name = "label8";
       this.label8.Size = new System.Drawing.Size(59, 15);
       this.label8.TabIndex = 35;
       this.label8.Text = "CPU Load";
       // 
-      // label9
-      // 
-      this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.label9.AutoSize = true;
-      this.label9.Location = new System.Drawing.Point(865, 4);
-      this.label9.Name = "label9";
-      this.label9.Size = new System.Drawing.Size(82, 15);
-      this.label9.TabIndex = 36;
-      this.label9.Text = "Select Camera";
-      // 
       // cameraCombo
       // 
-      this.cameraCombo.Anchor = System.Windows.Forms.AnchorStyles.Left;
+      this.cameraCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.cameraCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.cameraCombo.FormattingEnabled = true;
-      this.cameraCombo.Location = new System.Drawing.Point(844, 24);
+      this.cameraCombo.Location = new System.Drawing.Point(3, 8);
       this.cameraCombo.Name = "cameraCombo";
-      this.cameraCombo.Size = new System.Drawing.Size(132, 21);
+      this.cameraCombo.Size = new System.Drawing.Size(95, 21);
       this.cameraCombo.TabIndex = 37;
+      this.cameraCombo.SelectedIndexChanged += new System.EventHandler(this.cameraCombo_SelectedIndexChanged);
       this.cameraCombo.SelectionChangeCommitted += new System.EventHandler(this.OnCameraSelected);
       // 
       // ToolsPanel
       // 
-      this.ToolsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+      this.ToolsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.ToolsPanel.AutoScroll = true;
       this.ToolsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.ToolsPanel.Controls.Add(this.cpuProgress);
-      this.ToolsPanel.Controls.Add(this.FPSProgress);
-      this.ToolsPanel.Controls.Add(this.label13);
-      this.ToolsPanel.Controls.Add(this.motionOnlyCheckbox);
-      this.ToolsPanel.Controls.Add(this.CleanupButton);
+      this.ToolsPanel.Controls.Add(this.panel4);
+      this.ToolsPanel.Controls.Add(this.panel3);
+      this.ToolsPanel.Controls.Add(this.panel2);
+      this.ToolsPanel.Controls.Add(this.panel1);
+      this.ToolsPanel.Controls.Add(this.timeLine);
       this.ToolsPanel.Controls.Add(this.objectListView);
       this.ToolsPanel.Controls.Add(this.LiveOnDemandGroup);
-      this.ToolsPanel.Controls.Add(this.cameraCombo);
-      this.ToolsPanel.Controls.Add(this.label9);
-      this.ToolsPanel.Controls.Add(this.label4);
-      this.ToolsPanel.Controls.Add(this.label8);
-      this.ToolsPanel.Controls.Add(this.fileNameTextBox);
-      this.ToolsPanel.Controls.Add(this.goToFileTextBox);
-      this.ToolsPanel.Controls.Add(this.label5);
-      this.ToolsPanel.Controls.Add(this.refreshButton);
-      this.ToolsPanel.Controls.Add(this.goToFileButton);
-      this.ToolsPanel.Controls.Add(this.label2);
-      this.ToolsPanel.Controls.Add(this.analyzeButton);
-      this.ToolsPanel.Controls.Add(this.fileNumberUpDown);
-      this.ToolsPanel.Controls.Add(this.reverseListButton);
-      this.ToolsPanel.Controls.Add(this.showAreasOfInterestCheck);
-      this.ToolsPanel.Controls.Add(this.currentNumberTextBox);
-      this.ToolsPanel.Controls.Add(this.label3);
-      this.ToolsPanel.Controls.Add(this.buttonRight);
-      this.ToolsPanel.Controls.Add(this.goToFileNameButton);
-      this.ToolsPanel.Controls.Add(this.buttonLeft);
-      this.ToolsPanel.Location = new System.Drawing.Point(2, 1009);
+      this.ToolsPanel.Location = new System.Drawing.Point(-1, 32);
       this.ToolsPanel.Name = "ToolsPanel";
-      this.ToolsPanel.Size = new System.Drawing.Size(1283, 163);
+      this.ToolsPanel.Size = new System.Drawing.Size(1288, 153);
       this.ToolsPanel.TabIndex = 38;
       // 
-      // cpuProgress
+      // panel4
       // 
-      this.cpuProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.cpuProgress.Location = new System.Drawing.Point(903, 86);
-      this.cpuProgress.Name = "cpuProgress";
-      this.cpuProgress.Size = new System.Drawing.Size(73, 15);
-      this.cpuProgress.TabIndex = 43;
+      this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.panel4.Controls.Add(this.FullAnalysisButton);
+      this.panel4.Controls.Add(this.analyzeButton);
+      this.panel4.Location = new System.Drawing.Point(418, 84);
+      this.panel4.Name = "panel4";
+      this.panel4.Size = new System.Drawing.Size(318, 34);
+      this.panel4.TabIndex = 51;
       // 
-      // FPSProgress
+      // FullAnalysisButton
       // 
-      this.FPSProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.FPSProgress.Location = new System.Drawing.Point(903, 58);
-      this.FPSProgress.Name = "FPSProgress";
-      this.FPSProgress.Size = new System.Drawing.Size(73, 15);
-      this.FPSProgress.TabIndex = 42;
-      this.FPSProgress.Load += new System.EventHandler(this.EnhancedProgressBar1_Load);
+      this.FullAnalysisButton.Location = new System.Drawing.Point(166, 5);
+      this.FullAnalysisButton.Name = "FullAnalysisButton";
+      this.FullAnalysisButton.Size = new System.Drawing.Size(132, 23);
+      this.FullAnalysisButton.TabIndex = 48;
+      this.FullAnalysisButton.Text = "Full Analysis";
+      this.FullAnalysisButton.UseVisualStyleBackColor = true;
+      this.FullAnalysisButton.Click += new System.EventHandler(this.FullAnalysisButton_Click);
       // 
-      // label13
+      // panel3
       // 
-      this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.label13.AutoSize = true;
-      this.label13.Location = new System.Drawing.Point(835, 56);
-      this.label13.Name = "label13";
-      this.label13.Size = new System.Drawing.Size(69, 15);
-      this.label13.TabIndex = 41;
-      this.label13.Text = "Frame Time";
+      this.panel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+      this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.panel3.Controls.Add(this.label2);
+      this.panel3.Controls.Add(this.motionOnlyCheckbox);
+      this.panel3.Controls.Add(this.goToFileButton);
+      this.panel3.Controls.Add(this.buttonLeft);
+      this.panel3.Controls.Add(this.buttonRight);
+      this.panel3.Controls.Add(this.fileNumberUpDown);
+      this.panel3.Controls.Add(this.goToFileTextBox);
+      this.panel3.Controls.Add(this.label5);
+      this.panel3.Controls.Add(this.goToFileNameButton);
+      this.panel3.Location = new System.Drawing.Point(418, 5);
+      this.panel3.Name = "panel3";
+      this.panel3.Size = new System.Drawing.Size(318, 69);
+      this.panel3.TabIndex = 50;
+      // 
+      // label2
+      // 
+      this.label2.AutoSize = true;
+      this.label2.Location = new System.Drawing.Point(14, 39);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(14, 15);
+      this.label2.TabIndex = 40;
+      this.label2.Text = "#";
       // 
       // motionOnlyCheckbox
       // 
-      this.motionOnlyCheckbox.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.motionOnlyCheckbox.Appearance = System.Windows.Forms.Appearance.Button;
       this.motionOnlyCheckbox.AutoSize = true;
-      this.motionOnlyCheckbox.Location = new System.Drawing.Point(572, 106);
+      this.motionOnlyCheckbox.Location = new System.Drawing.Point(251, 34);
       this.motionOnlyCheckbox.Name = "motionOnlyCheckbox";
-      this.motionOnlyCheckbox.Size = new System.Drawing.Size(87, 25);
+      this.motionOnlyCheckbox.Size = new System.Drawing.Size(59, 25);
       this.motionOnlyCheckbox.TabIndex = 39;
-      this.motionOnlyCheckbox.Text = "Motion Only!";
+      this.motionOnlyCheckbox.Text = "Motion!";
       this.motionOnlyCheckbox.UseVisualStyleBackColor = true;
       this.motionOnlyCheckbox.CheckedChanged += new System.EventHandler(this.MotionOnlyCheckbox_CheckedChanged);
       this.motionOnlyCheckbox.CheckStateChanged += new System.EventHandler(this.OnMotionCheckChanged);
       // 
-      // CleanupButton
-      // 
-      this.CleanupButton.Location = new System.Drawing.Point(844, 110);
-      this.CleanupButton.Name = "CleanupButton";
-      this.CleanupButton.Size = new System.Drawing.Size(132, 23);
-      this.CleanupButton.TabIndex = 38;
-      this.CleanupButton.Text = "Cleanup Old Pictures";
-      this.CleanupButton.UseVisualStyleBackColor = true;
-      this.CleanupButton.Click += new System.EventHandler(this.CleanupButton_Click);
-      // 
-      // buttonRight
-      // 
-      this.buttonRight.Anchor = System.Windows.Forms.AnchorStyles.Left;
-      this.buttonRight.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-      this.buttonRight.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.buttonRight.Image = ((System.Drawing.Image)(resources.GetObject("buttonRight.Image")));
-      this.buttonRight.Location = new System.Drawing.Point(696, 106);
-      this.buttonRight.Name = "buttonRight";
-      this.buttonRight.Size = new System.Drawing.Size(31, 23);
-      this.buttonRight.TabIndex = 1;
-      this.buttonRight.UseVisualStyleBackColor = true;
-      this.buttonRight.Click += new System.EventHandler(this.ButtonRight_Click);
-      // 
       // buttonLeft
       // 
-      this.buttonLeft.Anchor = System.Windows.Forms.AnchorStyles.Left;
       this.buttonLeft.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
       this.buttonLeft.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.buttonLeft.Image = ((System.Drawing.Image)(resources.GetObject("buttonLeft.Image")));
-      this.buttonLeft.Location = new System.Drawing.Point(660, 106);
+      this.buttonLeft.Location = new System.Drawing.Point(174, 35);
       this.buttonLeft.Name = "buttonLeft";
       this.buttonLeft.Size = new System.Drawing.Size(31, 23);
       this.buttonLeft.TabIndex = 2;
       this.buttonLeft.UseVisualStyleBackColor = true;
       this.buttonLeft.Click += new System.EventHandler(this.ButtonLeft_Click);
       // 
+      // buttonRight
+      // 
+      this.buttonRight.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+      this.buttonRight.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.buttonRight.Image = ((System.Drawing.Image)(resources.GetObject("buttonRight.Image")));
+      this.buttonRight.Location = new System.Drawing.Point(212, 35);
+      this.buttonRight.Name = "buttonRight";
+      this.buttonRight.Size = new System.Drawing.Size(31, 23);
+      this.buttonRight.TabIndex = 1;
+      this.buttonRight.UseVisualStyleBackColor = true;
+      this.buttonRight.Click += new System.EventHandler(this.ButtonRight_Click);
+      // 
+      // panel2
+      // 
+      this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.panel2.Controls.Add(this.label13);
+      this.panel2.Controls.Add(this.label8);
+      this.panel2.Controls.Add(this.FPSProgress);
+      this.panel2.Controls.Add(this.cpuProgress);
+      this.panel2.Controls.Add(this.label15);
+      this.panel2.Controls.Add(this.AIProgressBar);
+      this.panel2.Location = new System.Drawing.Point(852, 5);
+      this.panel2.Name = "panel2";
+      this.panel2.Size = new System.Drawing.Size(152, 113);
+      this.panel2.TabIndex = 49;
+      // 
+      // label13
+      // 
+      this.label13.AutoSize = true;
+      this.label13.Location = new System.Drawing.Point(1, 16);
+      this.label13.Name = "label13";
+      this.label13.Size = new System.Drawing.Size(69, 15);
+      this.label13.TabIndex = 41;
+      this.label13.Text = "Frame Time";
+      // 
+      // FPSProgress
+      // 
+      this.FPSProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.FPSProgress.Location = new System.Drawing.Point(75, 16);
+      this.FPSProgress.Name = "FPSProgress";
+      this.FPSProgress.Size = new System.Drawing.Size(73, 15);
+      this.FPSProgress.TabIndex = 42;
+      this.FPSProgress.Load += new System.EventHandler(this.EnhancedProgressBar1_Load);
+      // 
+      // cpuProgress
+      // 
+      this.cpuProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.cpuProgress.Location = new System.Drawing.Point(74, 80);
+      this.cpuProgress.Name = "cpuProgress";
+      this.cpuProgress.Size = new System.Drawing.Size(73, 15);
+      this.cpuProgress.TabIndex = 43;
+      // 
+      // label15
+      // 
+      this.label15.AutoSize = true;
+      this.label15.Location = new System.Drawing.Point(17, 48);
+      this.label15.Name = "label15";
+      this.label15.Size = new System.Drawing.Size(47, 15);
+      this.label15.TabIndex = 46;
+      this.label15.Text = "AI Time";
+      // 
+      // AIProgressBar
+      // 
+      this.AIProgressBar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.AIProgressBar.Location = new System.Drawing.Point(75, 48);
+      this.AIProgressBar.Name = "AIProgressBar";
+      this.AIProgressBar.Size = new System.Drawing.Size(73, 15);
+      this.AIProgressBar.TabIndex = 45;
+      // 
+      // panel1
+      // 
+      this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.panel1.Controls.Add(this.reverseListButton);
+      this.panel1.Controls.Add(this.refreshButton);
+      this.panel1.Controls.Add(this.cameraCombo);
+      this.panel1.Location = new System.Drawing.Point(743, 5);
+      this.panel1.Name = "panel1";
+      this.panel1.Size = new System.Drawing.Size(103, 113);
+      this.panel1.TabIndex = 48;
+      // 
+      // timeLine
+      // 
+      this.timeLine.Anchor = System.Windows.Forms.AnchorStyles.Left;
+      this.timeLine.AutoSize = false;
+      this.timeLine.BackColor = System.Drawing.SystemColors.ControlDark;
+      this.timeLine.Location = new System.Drawing.Point(5, 127);
+      this.timeLine.Maximum = 1000000;
+      this.timeLine.Name = "timeLine";
+      this.timeLine.Pause = true;
+      this.timeLine.Size = new System.Drawing.Size(1280, 20);
+      this.timeLine.TabIndex = 41;
+      this.timeLine.TickStyle = System.Windows.Forms.TickStyle.None;
+      this.timeLine.ValueChanged += new System.EventHandler(this.LocationTrackBar_ValueChanged);
+      this.timeLine.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnTimelineKeyUp);
+      // 
       // mainPanel
       // 
-      this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.mainPanel.AutoScroll = true;
+      this.mainPanel.BackColor = System.Drawing.SystemColors.Control;
       this.mainPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
       this.mainPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.mainPanel.Controls.Add(this.locationTrackBar);
-      this.mainPanel.Controls.Add(this.StatusPanel);
       this.mainPanel.Controls.Add(this.picturePanel);
+      this.mainPanel.Controls.Add(this.StatusPanel);
       this.mainPanel.Controls.Add(this.ToolsPanel);
-      this.mainPanel.Location = new System.Drawing.Point(2, 25);
+      this.mainPanel.Location = new System.Drawing.Point(1, 23);
       this.mainPanel.Name = "mainPanel";
-      this.mainPanel.Size = new System.Drawing.Size(1344, 1183);
+      this.mainPanel.Size = new System.Drawing.Size(1302, 1166);
       this.mainPanel.TabIndex = 39;
       // 
-      // locationTrackBar
+      // picturePanel
       // 
-      this.locationTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-      this.locationTrackBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-      this.locationTrackBar.Location = new System.Drawing.Point(1293, 29);
-      this.locationTrackBar.Maximum = 1000000;
-      this.locationTrackBar.Name = "locationTrackBar";
-      this.locationTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
-      this.locationTrackBar.Size = new System.Drawing.Size(45, 963);
-      this.locationTrackBar.TabIndex = 41;
-      this.locationTrackBar.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-      this.locationTrackBar.ValueChanged += new System.EventHandler(this.LocationTrackBar_ValueChanged);
-      this.locationTrackBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LocationBarMouseDown);
-      this.locationTrackBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.locationBarMouseMove);
-      this.locationTrackBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.LocationBarMouseUp);
+      this.picturePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.picturePanel.AutoScroll = true;
+      this.picturePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.picturePanel.Controls.Add(this.pictureImage);
+      this.picturePanel.Location = new System.Drawing.Point(2, 189);
+      this.picturePanel.Name = "picturePanel";
+      this.picturePanel.Size = new System.Drawing.Size(1288, 970);
+      this.picturePanel.TabIndex = 39;
+      // 
+      // pictureImage
+      // 
+      this.pictureImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+      this.pictureImage.ErrorImage = ((System.Drawing.Image)(resources.GetObject("pictureImage.ErrorImage")));
+      this.pictureImage.GridsSelected = null;
+      this.pictureImage.Location = new System.Drawing.Point(0, 0);
+      this.pictureImage.Name = "pictureImage";
+      this.pictureImage.Size = new System.Drawing.Size(1280, 960);
+      this.pictureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+      this.pictureImage.TabIndex = 0;
+      this.pictureImage.TabStop = false;
+      this.pictureImage.SizeChanged += new System.EventHandler(this.OnSizeChanged);
+      this.pictureImage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
+      this.pictureImage.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
+      this.pictureImage.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
       // 
       // StatusPanel
       // 
+      this.StatusPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.StatusPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.StatusPanel.Controls.Add(this.numberOfImagesLabel);
       this.StatusPanel.Controls.Add(this.YResLabel);
@@ -741,9 +740,9 @@
       this.StatusPanel.Controls.Add(this.label14);
       this.StatusPanel.Controls.Add(this.label6);
       this.StatusPanel.Controls.Add(this.label11);
-      this.StatusPanel.Location = new System.Drawing.Point(2, 2);
+      this.StatusPanel.Location = new System.Drawing.Point(2, 4);
       this.StatusPanel.Name = "StatusPanel";
-      this.StatusPanel.Size = new System.Drawing.Size(1286, 24);
+      this.StatusPanel.Size = new System.Drawing.Size(1288, 24);
       this.StatusPanel.TabIndex = 40;
       // 
       // numberOfImagesLabel
@@ -835,35 +834,6 @@
       this.label11.TabIndex = 5;
       this.label11.Text = "X Res";
       // 
-      // picturePanel
-      // 
-      this.picturePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.picturePanel.AutoScroll = true;
-      this.picturePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.picturePanel.Controls.Add(this.pictureImage);
-      this.picturePanel.Location = new System.Drawing.Point(2, 29);
-      this.picturePanel.Name = "picturePanel";
-      this.picturePanel.Size = new System.Drawing.Size(1286, 971);
-      this.picturePanel.TabIndex = 39;
-      // 
-      // pictureImage
-      // 
-      this.pictureImage.ErrorImage = ((System.Drawing.Image)(resources.GetObject("pictureImage.ErrorImage")));
-      this.pictureImage.Location = new System.Drawing.Point(2, 2);
-      this.pictureImage.Name = "pictureImage";
-      this.pictureImage.Size = new System.Drawing.Size(1280, 960);
-      this.pictureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-      this.pictureImage.TabIndex = 0;
-      this.pictureImage.TabStop = false;
-      this.pictureImage.SizeChanged += new System.EventHandler(this.OnSizeChanged);
-      this.pictureImage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
-      this.pictureImage.MouseEnter += new System.EventHandler(this.OnMouseEnter);
-      this.pictureImage.MouseLeave += new System.EventHandler(this.OnMouseLeave);
-      this.pictureImage.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
-      this.pictureImage.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
-      // 
       // xTestToolStripMenuItem
       // 
       this.xTestToolStripMenuItem.Name = "xTestToolStripMenuItem";
@@ -874,15 +844,15 @@
       this.menuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem1,
             this.showToolStripMenuItem1,
-            this.editAreasOfInterestToolStripMenuItem1,
+            this.AreasOfInterestToolStripMenuItem1,
+            this.cleanupToolStripMenuItem,
             this.toolsToolStripMenuItem1,
             this.helpToolStripMenuItem1});
       this.menuStrip2.Location = new System.Drawing.Point(0, 0);
       this.menuStrip2.Name = "menuStrip2";
-      this.menuStrip2.Size = new System.Drawing.Size(1346, 24);
+      this.menuStrip2.Size = new System.Drawing.Size(1306, 24);
       this.menuStrip2.TabIndex = 41;
       this.menuStrip2.Text = "menuStrip2";
-      this.menuStrip2.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip2_ItemClicked);
       // 
       // fileToolStripMenuItem1
       // 
@@ -901,12 +871,14 @@
       // 
       // showToolStripMenuItem1
       // 
+      this.showToolStripMenuItem1.CheckOnClick = true;
       this.showToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showObjectRectanglesToolStripMenuItem,
-            this.showAreasOfInterestToolStripMenuItem});
+            this.showAreasOfInterestToolStripMenuItem,
+            this.pictureDisplayOptionToolStripMenuItem});
       this.showToolStripMenuItem1.Name = "showToolStripMenuItem1";
-      this.showToolStripMenuItem1.Size = new System.Drawing.Size(48, 20);
-      this.showToolStripMenuItem1.Text = "&Show";
+      this.showToolStripMenuItem1.Size = new System.Drawing.Size(44, 20);
+      this.showToolStripMenuItem1.Text = "&View";
       // 
       // showObjectRectanglesToolStripMenuItem
       // 
@@ -923,31 +895,80 @@
       // 
       this.showAreasOfInterestToolStripMenuItem.CheckOnClick = true;
       this.showAreasOfInterestToolStripMenuItem.Name = "showAreasOfInterestToolStripMenuItem";
-      this.showAreasOfInterestToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
       this.showAreasOfInterestToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
       this.showAreasOfInterestToolStripMenuItem.Text = "Show Areas of Interest";
+      this.showAreasOfInterestToolStripMenuItem.CheckedChanged += new System.EventHandler(this.ShowAreasOfInterestCheckChanged);
       this.showAreasOfInterestToolStripMenuItem.Click += new System.EventHandler(this.AreasOfInterestToolStripMenuItem_Click);
       // 
-      // editAreasOfInterestToolStripMenuItem1
+      // pictureDisplayOptionToolStripMenuItem
       // 
-      this.editAreasOfInterestToolStripMenuItem1.Name = "editAreasOfInterestToolStripMenuItem1";
-      this.editAreasOfInterestToolStripMenuItem1.Size = new System.Drawing.Size(127, 20);
-      this.editAreasOfInterestToolStripMenuItem1.Text = "&Edit Areas of Interest";
-      this.editAreasOfInterestToolStripMenuItem1.Click += new System.EventHandler(this.EditAreasOfInterestToolStripMenuItem_Click);
+      this.pictureDisplayOptionToolStripMenuItem.Name = "pictureDisplayOptionToolStripMenuItem";
+      this.pictureDisplayOptionToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+      this.pictureDisplayOptionToolStripMenuItem.Text = "Picture Display Option";
+      this.pictureDisplayOptionToolStripMenuItem.Click += new System.EventHandler(this.OnPictureDisplayOption);
+      // 
+      // AreasOfInterestToolStripMenuItem1
+      // 
+      this.AreasOfInterestToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editAreaToolStripMenuItem,
+            this.createAreaToolStripMenuItem});
+      this.AreasOfInterestToolStripMenuItem1.Name = "AreasOfInterestToolStripMenuItem1";
+      this.AreasOfInterestToolStripMenuItem1.Size = new System.Drawing.Size(104, 20);
+      this.AreasOfInterestToolStripMenuItem1.Text = "Areas of Interest";
+      this.AreasOfInterestToolStripMenuItem1.Click += new System.EventHandler(this.EditAreasOfInterestToolStripMenuItem_Click);
+      // 
+      // editAreaToolStripMenuItem
+      // 
+      this.editAreaToolStripMenuItem.Name = "editAreaToolStripMenuItem";
+      this.editAreaToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+      this.editAreaToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+      this.editAreaToolStripMenuItem.Text = "Edit Area";
+      this.editAreaToolStripMenuItem.Click += new System.EventHandler(this.editAreaToolStripMenuItem_Click);
+      // 
+      // createAreaToolStripMenuItem
+      // 
+      this.createAreaToolStripMenuItem.Name = "createAreaToolStripMenuItem";
+      this.createAreaToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+      this.createAreaToolStripMenuItem.Text = "Create Area";
+      this.createAreaToolStripMenuItem.Click += new System.EventHandler(this.createAreaToolStripMenuItem_Click);
+      // 
+      // cleanupToolStripMenuItem
+      // 
+      this.cleanupToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cleanupOldPicturesToolStripMenuItem,
+            this.syncToDatabaseToolStripMenuItem});
+      this.cleanupToolStripMenuItem.Name = "cleanupToolStripMenuItem";
+      this.cleanupToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+      this.cleanupToolStripMenuItem.Text = "Cleanup";
+      // 
+      // cleanupOldPicturesToolStripMenuItem
+      // 
+      this.cleanupOldPicturesToolStripMenuItem.Name = "cleanupOldPicturesToolStripMenuItem";
+      this.cleanupOldPicturesToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+      this.cleanupOldPicturesToolStripMenuItem.Text = "Cleanup Old Pictures";
+      this.cleanupOldPicturesToolStripMenuItem.Click += new System.EventHandler(this.CleanupButton_Click);
+      // 
+      // syncToDatabaseToolStripMenuItem
+      // 
+      this.syncToDatabaseToolStripMenuItem.CheckOnClick = true;
+      this.syncToDatabaseToolStripMenuItem.Name = "syncToDatabaseToolStripMenuItem";
+      this.syncToDatabaseToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+      this.syncToDatabaseToolStripMenuItem.Text = "Sync Motion To Database";
+      this.syncToDatabaseToolStripMenuItem.Click += new System.EventHandler(this.SyncToDatabase);
       // 
       // toolsToolStripMenuItem1
       // 
       this.toolsToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.applicationSettingsToolStripMenuItem,
             this.cameraSettingsToolStripMenuItem1,
+            this.ImageCaptureMenuItem,
             this.outgoingEmailServerToolStripMenuItem1,
             this.addEditEmailAddressesToolStripMenuItem1,
             this.mQTTSettingsToolStripMenuItem,
             this.analysisSettingsToolStripMenuItem,
-            this.UseXMLDataSourceCheckedMenu,
             this.aiAlertMenuItem,
             this.testImagesToolStripMenuItem,
-            this.syncMotionToDatabaseToolStripMenuItem});
+            this.startRestartAIToolStripMenuItem});
       this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
       this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(46, 20);
       this.toolsToolStripMenuItem1.Text = "&Tools";
@@ -955,74 +976,72 @@
       // applicationSettingsToolStripMenuItem
       // 
       this.applicationSettingsToolStripMenuItem.Name = "applicationSettingsToolStripMenuItem";
-      this.applicationSettingsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.applicationSettingsToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
       this.applicationSettingsToolStripMenuItem.Text = "Application Settings";
       this.applicationSettingsToolStripMenuItem.Click += new System.EventHandler(this.SettingsToolStripMenuItem_Click);
       // 
       // cameraSettingsToolStripMenuItem1
       // 
       this.cameraSettingsToolStripMenuItem1.Name = "cameraSettingsToolStripMenuItem1";
-      this.cameraSettingsToolStripMenuItem1.Size = new System.Drawing.Size(209, 22);
+      this.cameraSettingsToolStripMenuItem1.Size = new System.Drawing.Size(234, 22);
       this.cameraSettingsToolStripMenuItem1.Text = "Camera Settings";
       this.cameraSettingsToolStripMenuItem1.Click += new System.EventHandler(this.CameraSettingsToolStripMenuItem_Click);
+      // 
+      // ImageCaptureMenuItem
+      // 
+      this.ImageCaptureMenuItem.Name = "ImageCaptureMenuItem";
+      this.ImageCaptureMenuItem.Size = new System.Drawing.Size(234, 22);
+      this.ImageCaptureMenuItem.Text = "Global Image Capture Settings";
+      this.ImageCaptureMenuItem.Click += new System.EventHandler(this.ImageCaptureMenuItem_Click);
       // 
       // outgoingEmailServerToolStripMenuItem1
       // 
       this.outgoingEmailServerToolStripMenuItem1.Name = "outgoingEmailServerToolStripMenuItem1";
-      this.outgoingEmailServerToolStripMenuItem1.Size = new System.Drawing.Size(209, 22);
+      this.outgoingEmailServerToolStripMenuItem1.Size = new System.Drawing.Size(234, 22);
       this.outgoingEmailServerToolStripMenuItem1.Text = "Outgoing Email Server";
       this.outgoingEmailServerToolStripMenuItem1.Click += new System.EventHandler(this.OutgoingEmailServerToolStripMenuItem_Click);
       // 
       // addEditEmailAddressesToolStripMenuItem1
       // 
       this.addEditEmailAddressesToolStripMenuItem1.Name = "addEditEmailAddressesToolStripMenuItem1";
-      this.addEditEmailAddressesToolStripMenuItem1.Size = new System.Drawing.Size(209, 22);
+      this.addEditEmailAddressesToolStripMenuItem1.Size = new System.Drawing.Size(234, 22);
       this.addEditEmailAddressesToolStripMenuItem1.Text = "Add/Edit Email Addresses";
       this.addEditEmailAddressesToolStripMenuItem1.Click += new System.EventHandler(this.AddEditEmailAddressesToolStripMenuItem_Click);
       // 
       // mQTTSettingsToolStripMenuItem
       // 
       this.mQTTSettingsToolStripMenuItem.Name = "mQTTSettingsToolStripMenuItem";
-      this.mQTTSettingsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.mQTTSettingsToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
       this.mQTTSettingsToolStripMenuItem.Text = "MQTT Settings";
       this.mQTTSettingsToolStripMenuItem.Click += new System.EventHandler(this.MQTTSettingsToolStripMenuItem_Click);
       // 
       // analysisSettingsToolStripMenuItem
       // 
       this.analysisSettingsToolStripMenuItem.Name = "analysisSettingsToolStripMenuItem";
-      this.analysisSettingsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.analysisSettingsToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
       this.analysisSettingsToolStripMenuItem.Text = "Analysis Settings";
       this.analysisSettingsToolStripMenuItem.Click += new System.EventHandler(this.AnalysisSettingsToolStripMenuItem_Click);
-      // 
-      // UseXMLDataSourceCheckedMenu
-      // 
-      this.UseXMLDataSourceCheckedMenu.CheckOnClick = true;
-      this.UseXMLDataSourceCheckedMenu.Name = "UseXMLDataSourceCheckedMenu";
-      this.UseXMLDataSourceCheckedMenu.Size = new System.Drawing.Size(209, 22);
-      this.UseXMLDataSourceCheckedMenu.Text = "Use XML Data";
-      this.UseXMLDataSourceCheckedMenu.CheckedChanged += new System.EventHandler(this.UseXMLCheckChanged);
       // 
       // aiAlertMenuItem
       // 
       this.aiAlertMenuItem.Name = "aiAlertMenuItem";
-      this.aiAlertMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.aiAlertMenuItem.Size = new System.Drawing.Size(234, 22);
       this.aiAlertMenuItem.Text = "AI Alert Settings";
       this.aiAlertMenuItem.Click += new System.EventHandler(this.AIAlertMenuItemClicked);
       // 
       // testImagesToolStripMenuItem
       // 
       this.testImagesToolStripMenuItem.Name = "testImagesToolStripMenuItem";
-      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
       this.testImagesToolStripMenuItem.Text = "Test Images";
       this.testImagesToolStripMenuItem.Click += new System.EventHandler(this.TestImagesToolStripMenuItem_Click);
       // 
-      // syncMotionToDatabaseToolStripMenuItem
+      // startRestartAIToolStripMenuItem
       // 
-      this.syncMotionToDatabaseToolStripMenuItem.CheckOnClick = true;
-      this.syncMotionToDatabaseToolStripMenuItem.Name = "syncMotionToDatabaseToolStripMenuItem";
-      this.syncMotionToDatabaseToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-      this.syncMotionToDatabaseToolStripMenuItem.Text = "Sync Motion to Database";
-      this.syncMotionToDatabaseToolStripMenuItem.Click += new System.EventHandler(this.SyncToDatabase);
+      this.startRestartAIToolStripMenuItem.Name = "startRestartAIToolStripMenuItem";
+      this.startRestartAIToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+      this.startRestartAIToolStripMenuItem.Text = "Start/Restart AI";
+      this.startRestartAIToolStripMenuItem.Click += new System.EventHandler(this.startRestartAIToolStripMenuItem_Click);
       // 
       // helpToolStripMenuItem1
       // 
@@ -1077,30 +1096,35 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.ClientSize = new System.Drawing.Size(1346, 1208);
+      this.BackColor = System.Drawing.SystemColors.Control;
+      this.ClientSize = new System.Drawing.Size(1306, 1193);
       this.Controls.Add(this.mainPanel);
       this.Controls.Add(this.menuStrip2);
       this.DoubleBuffered = true;
       this.MainMenuStrip = this.menuStrip2;
       this.Name = "MainWindow";
       this.Text = "On Guard";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnClosing);
       this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OnClosed);
       this.Load += new System.EventHandler(this.Form1_Load);
       this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnKeyDown);
+      this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnKeyUp);
       this.Resize += new System.EventHandler(this.OnResize);
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.presetNumeric)).EndInit();
       this.LiveOnDemandGroup.ResumeLayout(false);
-      this.LiveOnDemandGroup.PerformLayout();
       this.ToolsPanel.ResumeLayout(false);
-      this.ToolsPanel.PerformLayout();
+      this.panel4.ResumeLayout(false);
+      this.panel3.ResumeLayout(false);
+      this.panel3.PerformLayout();
+      this.panel2.ResumeLayout(false);
+      this.panel2.PerformLayout();
+      this.panel1.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.timeLine)).EndInit();
       this.mainPanel.ResumeLayout(false);
-      this.mainPanel.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.locationTrackBar)).EndInit();
-      this.StatusPanel.ResumeLayout(false);
-      this.StatusPanel.PerformLayout();
       this.picturePanel.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.pictureImage)).EndInit();
+      this.StatusPanel.ResumeLayout(false);
+      this.StatusPanel.PerformLayout();
       this.menuStrip2.ResumeLayout(false);
       this.menuStrip2.PerformLayout();
       this.ResumeLayout(false);
@@ -1110,7 +1134,7 @@
 
     #endregion
 
-    private System.Windows.Forms.PictureBox pictureImage;
+    private CameraImage pictureImage;
     private System.Windows.Forms.Button buttonRight;
     private System.Windows.Forms.Button buttonLeft;
     private System.Windows.Forms.ListView objectListView;
@@ -1122,13 +1146,8 @@
     private System.Windows.Forms.ColumnHeader height;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.TextBox numberOfFilesTextBox;
-    private System.Windows.Forms.Label label2;
     private System.Windows.Forms.NumericUpDown fileNumberUpDown;
     private System.Windows.Forms.Button goToFileButton;
-    private System.Windows.Forms.Label label3;
-    private System.Windows.Forms.TextBox currentNumberTextBox;
-    private System.Windows.Forms.Label label4;
-    private System.Windows.Forms.TextBox fileNameTextBox;
     private System.Windows.Forms.Label label5;
     private System.Windows.Forms.TextBox goToFileTextBox;
     private System.Windows.Forms.Button goToFileNameButton;
@@ -1137,26 +1156,22 @@
     private System.Windows.Forms.Label xPosLabel;
     private System.Windows.Forms.Label yPosLabel;
     private System.Windows.Forms.Button reverseListButton;
-    private System.Windows.Forms.CheckBox showAreasOfInterestCheck;
     private System.Windows.Forms.Button analyzeButton;
     private System.Windows.Forms.Button liveCameraButton;
     private System.Windows.Forms.Button camUpButton;
     private System.Windows.Forms.Button camDownButton;
     private System.Windows.Forms.Button camLeftButton;
     private System.Windows.Forms.Button camRightButton;
-    private System.Windows.Forms.Button zoomInButton;
+    private System.Windows.Forms.Button camZoomIn;
     private System.Windows.Forms.Button camZoomOut;
     private System.Windows.Forms.Button presetButton;
-    private System.Windows.Forms.NumericUpDown presetNumeric;
     private System.Windows.Forms.GroupBox LiveOnDemandGroup;
     private System.Windows.Forms.Button refreshButton;
     private System.Windows.Forms.Label label8;
-    private System.Windows.Forms.Label label9;
     private System.Windows.Forms.ComboBox cameraCombo;
     private System.Windows.Forms.Panel ToolsPanel;
     private System.Windows.Forms.Panel mainPanel;
     private System.Windows.Forms.ToolStripMenuItem xTestToolStripMenuItem;
-    private System.Windows.Forms.Button CleanupButton;
     private System.Windows.Forms.Label label10;
     private System.Windows.Forms.Label numberOfImagesLabel;
     private System.Windows.Forms.CheckBox liveCheck;
@@ -1167,7 +1182,7 @@
     private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem1;
     private System.Windows.Forms.ToolStripMenuItem showObjectRectanglesToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem showAreasOfInterestToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem editAreasOfInterestToolStripMenuItem1;
+    private System.Windows.Forms.ToolStripMenuItem AreasOfInterestToolStripMenuItem1;
     private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem1;
     private System.Windows.Forms.ToolStripMenuItem applicationSettingsToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem cameraSettingsToolStripMenuItem1;
@@ -1190,13 +1205,28 @@
     private EnhancedProgressBar FPSProgress;
     private EnhancedProgressBar cpuProgress;
     private System.Windows.Forms.ToolStripMenuItem analysisSettingsToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem UseXMLDataSourceCheckedMenu;
     private System.Windows.Forms.ToolStripMenuItem aiAlertMenuItem;
     private System.Windows.Forms.Label label14;
     private System.Windows.Forms.Label AIStatus;
     private System.Windows.Forms.Panel StatusPanel;
-    private System.Windows.Forms.ToolStripMenuItem syncMotionToDatabaseToolStripMenuItem;
-    private System.Windows.Forms.TrackBar locationTrackBar;
+    private TimeLine timeLine;
+    private System.Windows.Forms.ToolStripMenuItem ImageCaptureMenuItem;
+    private System.Windows.Forms.ComboBox PresetsCombo;
+    private System.Windows.Forms.ToolStripMenuItem startRestartAIToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem editAreaToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem createAreaToolStripMenuItem;
+    private System.Windows.Forms.Label label15;
+    private EnhancedProgressBar AIProgressBar;
+    private System.Windows.Forms.ToolStripMenuItem cleanupToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem cleanupOldPicturesToolStripMenuItem;
+    private System.Windows.Forms.Panel panel4;
+    private System.Windows.Forms.Button FullAnalysisButton;
+    private System.Windows.Forms.Panel panel3;
+    private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.Panel panel2;
+    private System.Windows.Forms.Panel panel1;
+    private System.Windows.Forms.ToolStripMenuItem syncToDatabaseToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem pictureDisplayOptionToolStripMenuItem;
   }
 }
 

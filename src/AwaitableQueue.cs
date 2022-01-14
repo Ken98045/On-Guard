@@ -15,8 +15,8 @@ namespace OnGuardCore
     int _waitTime;
     bool _stop;
 
-    ConcurrentQueue<T> _q = new ConcurrentQueue<T>();
-    AsyncAutoResetEvent _available = new AsyncAutoResetEvent(true);
+    ConcurrentQueue<T> _q = new ();
+    AsyncAutoResetEvent _available = new (true);
     private bool disposedValue;
 
     public AwaitableQueue(int waitTimeInSeconds)
@@ -32,7 +32,7 @@ namespace OnGuardCore
 
     public async Task<T> GetAsync()
     {
-      T result = default(T);
+      T result = default;
 
       while (!_stop)
       {
@@ -42,7 +42,7 @@ namespace OnGuardCore
         }
         else
         {
-          CancellationTokenSource source = new CancellationTokenSource();
+          CancellationTokenSource source = new ();
           if (_waitTime > 0)
           {
             source.CancelAfter(_waitTime * 1000);
@@ -51,7 +51,7 @@ namespace OnGuardCore
           DateTime startAIWaitTime = DateTime.Now;
 
           CancellationToken token = source.Token;
-          await _available.WaitAsync(token).ConfigureAwait(false);
+          await _available.WaitAsync(token).ConfigureAwait(true);
           if (token.IsCancellationRequested)
           {
             TimeSpan span = DateTime.Now - startAIWaitTime;

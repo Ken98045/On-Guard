@@ -17,7 +17,7 @@ namespace OnGuardCore
   class Response
   {
     public bool Success { get; set; }
-    public ImageObject[] Predictions { get; set; }
+    public InterestingObject[] Predictions { get; set; }
   }
 
 
@@ -27,39 +27,50 @@ namespace OnGuardCore
   /// /// </summary>
   class AIAnalyzer
   {
-    List<ImageObject> _previousVehicles = new List<ImageObject>();
-    // readonly List<ImageObject> _previousPeople = new List<ImageObject>();  // The usually do move, but
-    readonly private object _fileLock = new object();
+    List<InterestingObject> _previousVehicles = new ();
+    // readonly List<InterestingObject> _previousPeople = new List<InterestingObject>();  // The usually do move, but
+    readonly private object _fileLock = new ();
 
     const int MultiDefinitionOverlap = 95;
-    const int ParkedOverlap = 97;
+    const int ParkedOverlap = 95;
     const double minVehicleConfidence = 0.45;
     const double parkedTargetDistance = 0.04;
-    const double parkedTargetMax = 10.0;
+    const double parkedTargetMax = 15.0;
 
     public AIAnalyzer()
     {
     }
 
 
-    public SortedList<DateTime, string> Init(string cameraNamePrefix, string cameraFilePath)
+    public SortedList<string, PictureInfo> Init(string cameraNamePrefix, string cameraFilePath, bool subDirectories)
     {
-      SortedList<DateTime, string> fileNames = new SortedList<DateTime, string>(new FileTimeComparer());
+      SortedList<string, PictureInfo> fileNames = new (new PictureComparer());
 
       lock (_fileLock)
       {
-        SortedDictionary<DateTime, string> dateSortedList = new SortedDictionary<DateTime, string>();
+        SortedDictionary<string, PictureInfo> dateSortedList = new ();
         string fileSearch = string.Format("{0}*.jpg", cameraNamePrefix);
-        string[] files = Directory.GetFiles(cameraFilePath, fileSearch, SearchOption.TopDirectoryOnly);
+
+        string[] files;
+        if (subDirectories)
+        {
+          files = Directory.GetFiles(cameraFilePath, fileSearch, SearchOption.AllDirectories); 
+        }
+        else
+        {
+          files = Directory.GetFiles(cameraFilePath, fileSearch, SearchOption.TopDirectoryOnly);
+        }
+
         foreach (string file in files)
         {
-          dateSortedList[File.GetCreationTime(file)] = file;
+          PictureInfo pi = new (file);
+          dateSortedList[GlobalFunctions.GetUniqueFileName(file)] = pi;
         }
 
         foreach (var fileName in files.Reverse())
         {
-          FileInfo fi = new FileInfo(fileName);
-          fileNames[fi.LastWriteTime] = fileName;
+          PictureInfo pi = new (fileName);
+          fileNames[GlobalFunctions.GetUniqueFileName(fileName)] = pi;
         }
       }
 
@@ -67,46 +78,14 @@ namespace OnGuardCore
     }
 
 
-    /*public async void AnalyzeAllImages(string path)
-    {
-      int count = 0;
 
-      DateTime start = DateTime.Now;
-      SortedDictionary<DateTime, string> dateSortedList = new SortedDictionary<DateTime, string>();
-
-      string[] files = Directory.GetFiles(path, "*.jpg", SearchOption.TopDirectoryOnly);
-      foreach (string file in files)
-      {
-        dateSortedList.Add(File.GetCreationTime(file), file);
-      }
-
-
-      DebugWriter.Write("Files to be processed: " + files.Length.ToString());
-
-      foreach (var file in dateSortedList)
-      {
-        ++count;
-        DebugWriter.Write("File: " + count.ToString() + " -- " +  file.Value);
-        // List<ImageObject> objectList = ProcessVideoImageViaAI(file.Value).Result;
-        // AnalyzeImage(objectList);
-      }
-
-      var elapsed = DateTime.Now - start;
-      DebugWriter.Write(elapsed.ToString());
-
-      Thread.Sleep(Timeout.Infinite);
-
-    }*/
-
-
-
-    public void RemoveInvalidObjects(CameraData camera, List<ImageObject> images)
+    public void RemoveInvalidObjects(CameraData camera, List<InterestingObject> images)
     {
       if (images != null && camera != null)
       {
         RemoveItemsOfNoInterest(camera, images);  // weed out objects no areas are interested in
 
-        //First, weed out any vehicles that are overlapps within this picture
+        //First, weed out any vehicles that are overlaps within this picture
         // This often happens when the same vehicles is identified as both a car and a truck (SUV, pickup, cars/trucks at an angle)
         RemoveDuplicateVehiclesInImage(images);
         RemoveUnmovedVehicles(camera, images);  // Now, remove vehicles that haven't moved
@@ -119,20 +98,33 @@ namespace OnGuardCore
     /// </summary>
     /// <param name="camera"></param>
     /// <param name="images"></param>
-    public static void RemoveItemsOfNoInterest(CameraData camera, List<ImageObject> images)
+    public static void RemoveItemsOfNoInterest(CameraData camera, List<InterestingObject> images)
     {
-      List<ImageObject> result = new List<ImageObject>();
+      List<InterestingObject> result = new ();
 
       bool addedOne = false;
-      foreach (ImageObject io in images)
+      foreach (InterestingObject io in images)
       {
+        addedOne = false;
         foreach (AreaOfInterest area in camera.AOI)
         {
           if (null != area.SearchCriteria)
           {
             foreach (ObjectCharacteristics objectCritera in area.SearchCriteria)
             {
-              if (objectCritera.ObjectType == io.Label || FrameAnalyzer.MatchesSpecialTag(objectCritera, io.Label))
+              if (io.IsFace)
+              {
+                foreach (var face in objectCritera.Faces)
+                {
+                  if (face.Name == io.Label)
+                  {
+                    result.Add(io);
+                    addedOne = true;
+                    break;
+                  }
+                }
+              }
+              else if (objectCritera.ObjectType == io.Label || FrameAnalyzer.MatchesSpecialTag(objectCritera, io.Label))
               {
                 result.Add(io);
                 addedOne = true;
@@ -165,16 +157,16 @@ namespace OnGuardCore
     // For instance the same object (almost the same outline) may be .50 confident of being a car and 65% confident of being a truck.
     // The AI isn't sure which it is but it is pretty damn sure it IS a vehicle of some sort.  
     // I really dislike doing this, but with the way the AI is now it is better to cheat an be accurate than not cheat and give a misleading result;
-    public static void RemoveDuplicateVehiclesInImage(List<ImageObject> objectList)
+    public static void RemoveDuplicateVehiclesInImage(List<InterestingObject> objectList)
     {
 
-      List<ImageObject> vehicles = new List<ImageObject>();
+      List<InterestingObject> vehicles = new ();
       int nonVehicleObjects = 0;
 
       if (objectList != null && objectList.Count > 0)
       {
 
-        foreach (ImageObject obj in objectList)
+        foreach (InterestingObject obj in objectList)
         {
           if (IsVehicle(obj))
           {
@@ -278,11 +270,11 @@ namespace OnGuardCore
     // I am assuming that if there are people then there is motion.
     // We could further refine this by comparing movement by tracking people in the last image set
     // and comparing there rectangles.  BUT the AI is REALLY good at identifying people
-    static List<ImageObject> GetPeople(List<ImageObject> imageObjects)
+    static List<InterestingObject> GetPeople(List<InterestingObject> InterestingObjects)
     {
-      List<ImageObject> people = new List<ImageObject>();
+      List<InterestingObject> people = new ();
 
-      foreach (ImageObject image in imageObjects)
+      foreach (InterestingObject image in InterestingObjects)
       {
         if (image.Success && image.Confidence > .075) // Again, the AI is good at this (plus we normally look at more than 1 image
         {
@@ -297,158 +289,163 @@ namespace OnGuardCore
     }
 
 
-    void RemoveUnmovedVehicles(CameraData camera, List<ImageObject> objectList)
+    void RemoveUnmovedVehicles(CameraData camera, List<InterestingObject> objectList)
     {
       Dbg.Trace("Object count before removing parked: " + objectList.Count.ToString());
 
-      List<ImageObject> vehicles = new List<ImageObject>();
+      List<InterestingObject> vehicles = new ();
       int nonVehicleObjects = 0;
 
-      if (objectList != null && objectList.Count > 0)
+      lock (_previousVehicles)
       {
 
-        foreach (ImageObject obj in objectList)
+        try
         {
-          if (IsVehicle(obj))
+          if (objectList != null && objectList.Count > 0)
           {
-            if (obj.Confidence > minVehicleConfidence)
+
+            foreach (InterestingObject obj in objectList)
             {
-              vehicles.Add(new ImageObject(obj));
-            }
-          }
-          else
-          {
-            ++nonVehicleObjects;
-          }
-        }
-
-        List<ImageObject> allFoundVehicles = new List<ImageObject>(vehicles);
-
-        int i = 0;
-
-        /*List<Frame> recentFrames = null;  
-        if (vehicles.Count > 0)
-        {
-          recentFrames = camera.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(5), DateTime.Now, TimeDirection.Before);
-        }*/
-
-        while (i < vehicles.Count)
-        {
-
-          bool removedOne = false;
-
-          lock (_previousVehicles)
-          {
-
-            for (int j = 0; j < _previousVehicles.Count; j++)
-            {
-              if (vehicles[i].Label == vehicles[j].Label)    // In this case we only remove  objects that are the same - A = car, B = car (not 100%, but what can we do?)
+              if (IsVehicle(obj))
               {
-                int targetOverlap = ParkedOverlap;
-
-                bool foundParked = false;
-                int overlap = AIAnalyzer.GetOverlap(vehicles[i], _previousVehicles[j]);
-                if (Storage.Instance.GetGlobalBool("ExcludeParkedUsingOverlap", true))
+                if (obj.Confidence > minVehicleConfidence)
                 {
-                  if (overlap >= targetOverlap)   // Shadows, etc. do cause event parked vehicles to shift in outline
-                  {
-                    Dbg.Trace("Vehicle found parked using area overlap - Previous: " + 
-                      "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
-                      " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
-                      " Width: " + _previousVehicles[j].ObjectRectangle.Width.ToString() +
-                      " Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
-                      );
-
-                    Dbg.Trace("Vehicle found parked using area overlap - Current: " +
-                      "X: " + vehicles[i].ObjectRectangle.X.ToString() +
-                      " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
-                      " Width: " + vehicles[i].ObjectRectangle.Width.ToString() +
-                      " Height: " + vehicles[i].ObjectRectangle.Height.ToString()
-                      );
-                    foundParked = true;
-                  }
+                  vehicles.Add(new InterestingObject(obj));
                 }
-                
-                if (!foundParked)
+              }
+              else
+              {
+                ++nonVehicleObjects;
+              }
+            }
+
+            List<InterestingObject> allFoundVehicles = new (vehicles);
+
+            int i = 0;
+
+
+            while (i < vehicles.Count)
+            {
+
+              bool removedOne = false;
+
+              lock (_previousVehicles)
+              {
+
+                for (int j = 0; j < _previousVehicles.Count; j++)
                 {
-                  // Now we consider 2 points on both the parked and the subject vehicle.  If they are close we consider it parked.
-                  // This is because people walking in front of a car may change the outlines.
-                  // This is far from perfect, but it is worth trying.
-                  // Note that this assumes only one edge of the vehicle is covered at a time, but for now is better than nothing.
-                  // If the vehicle is still moving the next frame should tell via the overlap test so that is not a concern
-                  // TODO: keep the parked vehicle locations in a db table?
-                  // TODO: Parked vehicles that are covered by people/animals at both corners (we know where people are) will not be 
-                  // removed from the parked list?  We probably don't care about vehicles covered by vehicles because the moving vehicles are
-                  // movement in themselves, unless we care specifically what kind of vehicles we are concerned with.
-                  Point pPreviousUL = new Point(_previousVehicles[j].ObjectRectangle.Left, _previousVehicles[j].ObjectRectangle.Top);
-                  Point pPreviousLR = new Point(_previousVehicles[j].ObjectRectangle.Right, _previousVehicles[j].ObjectRectangle.Bottom);
-                  Point pVehicleUL = new Point(vehicles[i].ObjectRectangle.Left, vehicles[i].ObjectRectangle.Top);
-                  Point pVehicleLR = new Point(vehicles[i].ObjectRectangle.Right, vehicles[i].ObjectRectangle.Bottom);
-
-                  double ulDistance = GetPointDistance(pPreviousUL, pVehicleUL);
-                  double lrDistance = GetPointDistance(pPreviousLR, pVehicleLR);
-                  double parkedSize = pVehicleLR.X - pVehicleUL.X;  // the width in pixels of the parked vehicle, to get a rough idea of its size
-                  double targetSize = parkedTargetDistance * parkedSize;
-                  if (targetSize > parkedTargetMax)
+                  if (vehicles[i].Label == _previousVehicles[j].Label)    // In this case we only remove  objects that are the same - A = car, B = car (not 100%, but what can we do?)
                   {
-                    targetSize = parkedTargetMax; // just a WAG pending test data
-                  }
+                    int targetOverlap = ParkedOverlap;
 
-                  if (Storage.Instance.GetGlobalBool("ExcludeParkedUsingCorners", true))
-                  {
-                    if (ulDistance < targetSize || lrDistance < targetSize)
+                    bool foundParked = false;
+                    int overlap = AIAnalyzer.GetOverlap(vehicles[i], _previousVehicles[j]);
+                    if (Storage.Instance.GetGlobalBool("ExcludeParkedUsingOverlap", true))
                     {
-                      Dbg.Trace("Parked Target Size: " + targetSize.ToString());
-                      Dbg.Trace("Parked ULDistance: " + ulDistance.ToString());
-                      Dbg.Trace("Parked LRDistance: " + lrDistance.ToString());
+                      if (overlap >= targetOverlap)   // Shadows, etc. do cause event parked vehicles to shift in outline
+                      {
+                        Dbg.Trace("Vehicle found parked using area overlap - Previous: " +
+                          "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
+                          " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
+                          " Width: " + _previousVehicles[j].ObjectRectangle.Width.ToString() +
+                          " Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
+                          );
 
-                      Dbg.Trace("Vehicle found parked using Corners - Previous: " +
-                        "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
-                        " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
-                        " Width: " + _previousVehicles[j].ObjectRectangle.Width.ToString() +
-                        "Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
-                        );
+                        Dbg.Trace("Vehicle found parked using area overlap - Current: " +
+                          "X: " + vehicles[i].ObjectRectangle.X.ToString() +
+                          " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
+                          " Width: " + vehicles[i].ObjectRectangle.Width.ToString() +
+                          " Height: " + vehicles[i].ObjectRectangle.Height.ToString()
+                          );
+                        foundParked = true;
+                      }
+                    }
 
-                      Dbg.Trace("Vehicle found parked using Corners - Current: " +
-                        "X: " + vehicles[i].ObjectRectangle.X.ToString() +
-                        " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
-                        " Width: " + vehicles[i].ObjectRectangle.Width.ToString() +
-                        " Height: " + vehicles[i].ObjectRectangle.Height.ToString()
-                        );
+                    if (!foundParked)
+                    {
+                      // Now we consider 2 points on both the parked and the subject vehicle.  If they are close we consider it parked.
+                      // This is because people walking in front of a car may change the outlines.
+                      // This is far from perfect, but it is worth trying.
+                      // Note that this assumes only one edge of the vehicle is covered at a time, but for now is better than nothing.
+                      // If the vehicle is still moving the next frame should tell via the overlap test so that is not a concern
+                      // TODO: keep the parked vehicle locations in a db table?
+                      // TODO: Parked vehicles that are covered by people/animals at both corners (we know where people are) will not be 
+                      // removed from the parked list?  We probably don't care about vehicles covered by vehicles because the moving vehicles are
+                      // movement in themselves, unless we care specifically what kind of vehicles we are concerned with.
+                      Point pPreviousUL = new (_previousVehicles[j].ObjectRectangle.Left, _previousVehicles[j].ObjectRectangle.Top);
+                      Point pPreviousLR = new (_previousVehicles[j].ObjectRectangle.Right, _previousVehicles[j].ObjectRectangle.Bottom);
+                      Point pVehicleUL = new (vehicles[i].ObjectRectangle.Left, vehicles[i].ObjectRectangle.Top);
+                      Point pVehicleLR = new (vehicles[i].ObjectRectangle.Right, vehicles[i].ObjectRectangle.Bottom);
 
-                      foundParked = true;
+                      double ulDistance = GetPointDistance(pPreviousUL, pVehicleUL);
+                      double lrDistance = GetPointDistance(pPreviousLR, pVehicleLR);
+                      double parkedSize = pVehicleLR.X - pVehicleUL.X;  // the width in pixels of the parked vehicle, to get a rough idea of its size
+                      double targetSize = parkedTargetDistance * parkedSize;
+                      if (targetSize > parkedTargetMax)
+                      {
+                        targetSize = parkedTargetMax; // just a WAG pending test data
+                      }
+
+                      if (Storage.Instance.GetGlobalBool("ExcludeParkedUsingCorners", true))
+                      {
+                        if (ulDistance < targetSize || lrDistance < targetSize)
+                        {
+                          Dbg.Trace("Parked Target Size: " + targetSize.ToString());
+                          Dbg.Trace("Parked ULDistance: " + ulDistance.ToString());
+                          Dbg.Trace("Parked LRDistance: " + lrDistance.ToString());
+
+                          Dbg.Trace("Vehicle found parked using Corners - Previous: " +
+                            "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
+                            " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
+                            " Width: " + _previousVehicles[j].ObjectRectangle.Width.ToString() +
+                            "Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
+                            );
+
+                          Dbg.Trace("Vehicle found parked using Corners - Current: " +
+                            "X: " + vehicles[i].ObjectRectangle.X.ToString() +
+                            " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
+                            " Width: " + vehicles[i].ObjectRectangle.Width.ToString() +
+                            " Height: " + vehicles[i].ObjectRectangle.Height.ToString()
+                            );
+
+                          foundParked = true;
+                        }
+                      }
+                    }
+
+                    if (foundParked)
+                    {
+                      // OK, here we assume that they are the same object.
+                      // We add which ever has the highest confidence level to the result;
+
+                      objectList.RemoveAll(obj => obj.ID == vehicles[i].ID);  // and remove it from the passed list
+                      Dbg.Trace("Removing parked vehicle: " + vehicles[i].Label);
+                      vehicles.RemoveAt(i);   // we are done with this vehicle
+                      removedOne = true;
+                      break;
                     }
                   }
                 }
 
-                if (foundParked)
+                if (removedOne)
                 {
-                  // OK, here we assume that they are the same object.
-                  // TODO: In high frame rate situations this could be a problem.
-                  // We add which ever has the highest confidence level to the result;
-
-                  objectList.RemoveAll(obj => obj.ID == vehicles[i].ID);  // and remove it from the passed list
-                  Dbg.Trace("Removing parked vehicle: " + vehicles[i].Label);
-                  vehicles.RemoveAt(i);   // we are done with this vehicle
-                  removedOne = true;
-                  break;
+                  i = 0; // Since we removed on we need to start over
+                }
+                else
+                {
+                  i++;  // and on to the next
                 }
               }
-            }
 
-            if (removedOne)
-            {
-              i = 0; // Since we removed on we need to start over
-            }
-            else
-            {
-              i++;  // and on to the next
+              // if we have any remaining vehicles add them to the list of previously seen ones
+              _previousVehicles.Clear();
+              _previousVehicles = new List<InterestingObject>(allFoundVehicles);  // because ALL vehicles we found are now "previous"
             }
           }
-
-          // if we have any remaining vehicles add them to the list of previously seen ones
-          _previousVehicles.Clear();
-          _previousVehicles = new List<ImageObject>(allFoundVehicles);  // because ALL vehicles we found are now "previous"
+        }
+        catch (Exception ex)
+        {
+          Dbg.Write("AIAnalyzer - RemoveUnmovedVehicles - Exception caught: " + ex.Message);
         }
       }
 
@@ -467,7 +464,7 @@ namespace OnGuardCore
 
 
 
-    static bool IsVehicle(ImageObject obj)
+    static bool IsVehicle(InterestingObject obj)
     {
       bool isVehicle;
       switch (obj.Label)
@@ -502,7 +499,7 @@ namespace OnGuardCore
      * rect.Intersect(secondRectangle);
   var percentage = (rect.Width * rect.Height) * 100f/(firstRect.Width * firstRect.Height);*/
 
-    public static int GetOverlap(ImageObject obj1, ImageObject obj2)
+    public static int GetOverlap(InterestingObject obj1, InterestingObject obj2)
     {
       int overlap;
       Rectangle intersect = Rectangle.Intersect(obj1.ObjectRectangle, obj2.ObjectRectangle); ;
@@ -518,13 +515,13 @@ namespace OnGuardCore
   public class AIResult
   {
     public PendingItem Item { get; set; }
-    public List<ImageObject> ObjectsFound { get; set; }
+    public List<InterestingObject> ObjectsFound { get; set; }
   }
 
   public class Frame
   {
     public DateTime Timestamp { get; }
-    public System.Timers.Timer WakeupTimer { get; set;}
+    public System.Timers.Timer WakeupTimer { get; set; }
     public PendingItem Item { get; set; }
     public List<InterestingObject> Interesting { get; set; }
 

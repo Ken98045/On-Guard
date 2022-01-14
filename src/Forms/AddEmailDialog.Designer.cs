@@ -37,7 +37,7 @@
       // 
       // okButton
       // 
-      this.okButton.Location = new System.Drawing.Point(131, 163);
+      this.okButton.Location = new System.Drawing.Point(137, 163);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 2;
@@ -47,7 +47,7 @@
       // 
       // cancelButton
       // 
-      this.cancelButton.Location = new System.Drawing.Point(224, 163);
+      this.cancelButton.Location = new System.Drawing.Point(218, 163);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 3;
@@ -58,8 +58,8 @@
       // zdsf
       // 
       this.zdsf.AutoSize = true;
-      this.zdsf.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.zdsf.Location = new System.Drawing.Point(104, 22);
+      this.zdsf.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.zdsf.Location = new System.Drawing.Point(131, 24);
       this.zdsf.Name = "zdsf";
       this.zdsf.Size = new System.Drawing.Size(223, 15);
       this.zdsf.TabIndex = 3;
@@ -70,16 +70,17 @@
       this.label2.AutoSize = true;
       this.label2.Location = new System.Drawing.Point(3, 89);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(79, 13);
+      this.label2.Size = new System.Drawing.Size(87, 15);
       this.label2.TabIndex = 32;
       this.label2.Text = "Email Address: ";
       // 
       // emailAddressList
       // 
       this.emailAddressList.FormattingEnabled = true;
-      this.emailAddressList.Location = new System.Drawing.Point(92, 54);
+      this.emailAddressList.ItemHeight = 15;
+      this.emailAddressList.Location = new System.Drawing.Point(113, 58);
       this.emailAddressList.Name = "emailAddressList";
-      this.emailAddressList.Size = new System.Drawing.Size(246, 95);
+      this.emailAddressList.Size = new System.Drawing.Size(246, 94);
       this.emailAddressList.TabIndex = 33;
       this.emailAddressList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnMouseDoubleClick);
       // 

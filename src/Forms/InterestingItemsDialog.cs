@@ -12,16 +12,16 @@ namespace OnGuardCore
 
       foreach (var interest in analysisResult.InterestingObjects)
       {
-        ListViewItem item = new ListViewItem
+        ListViewItem item = new()
         {
           Text = interest.Area.AOIName
         };
         item.SubItems.Add(interest.Area.AOIType.ToString());
-        item.SubItems.Add(interest.FoundObject.Label);
-        item.SubItems.Add(interest.FoundObject.Confidence.ToString());
+        item.SubItems.Add(interest.Label);
+        item.SubItems.Add(interest.Confidence.ToString());
         item.SubItems.Add(interest.Overlap.ToString());
-        item.SubItems.Add(interest.FoundObject.ObjectRectangle.Width.ToString());
-        item.SubItems.Add(interest.FoundObject.ObjectRectangle.Height.ToString());
+        item.SubItems.Add(interest.ObjectRectangle.Width.ToString());
+        item.SubItems.Add(interest.ObjectRectangle.Height.ToString());
 
         interestingListView.Items.Add(item);
 

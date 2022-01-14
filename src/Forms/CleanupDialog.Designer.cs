@@ -46,7 +46,7 @@ namespace OnGuardCore
       // label1
       // 
       this.label1.AutoSize = true;
-      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label1.Location = new System.Drawing.Point(67, 62);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(385, 18);
@@ -56,8 +56,8 @@ namespace OnGuardCore
       // label2
       // 
       this.label2.AutoSize = true;
-      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label2.Location = new System.Drawing.Point(91, 112);
+      this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.label2.Location = new System.Drawing.Point(91, 103);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(51, 18);
       this.label2.TabIndex = 1;
@@ -66,8 +66,8 @@ namespace OnGuardCore
       // label3
       // 
       this.label3.AutoSize = true;
-      this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label3.Location = new System.Drawing.Point(88, 149);
+      this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.label3.Location = new System.Drawing.Point(88, 140);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(54, 18);
       this.label3.TabIndex = 2;
@@ -75,14 +75,14 @@ namespace OnGuardCore
       // 
       // DaysNumeric
       // 
-      this.DaysNumeric.Location = new System.Drawing.Point(166, 115);
+      this.DaysNumeric.Location = new System.Drawing.Point(166, 106);
       this.DaysNumeric.Maximum = new decimal(new int[] {
             30,
             0,
             0,
             0});
       this.DaysNumeric.Name = "DaysNumeric";
-      this.DaysNumeric.Size = new System.Drawing.Size(68, 20);
+      this.DaysNumeric.Size = new System.Drawing.Size(68, 23);
       this.DaysNumeric.TabIndex = 3;
       this.DaysNumeric.Value = new decimal(new int[] {
             1,
@@ -92,14 +92,14 @@ namespace OnGuardCore
       // 
       // HoursNumeric
       // 
-      this.HoursNumeric.Location = new System.Drawing.Point(166, 152);
+      this.HoursNumeric.Location = new System.Drawing.Point(166, 143);
       this.HoursNumeric.Maximum = new decimal(new int[] {
             24,
             0,
             0,
             0});
       this.HoursNumeric.Name = "HoursNumeric";
-      this.HoursNumeric.Size = new System.Drawing.Size(68, 20);
+      this.HoursNumeric.Size = new System.Drawing.Size(68, 23);
       this.HoursNumeric.TabIndex = 4;
       // 
       // OKButton
@@ -126,7 +126,7 @@ namespace OnGuardCore
       // label4
       // 
       this.label4.AutoSize = true;
-      this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label4.Location = new System.Drawing.Point(171, 19);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(177, 20);
@@ -136,10 +136,10 @@ namespace OnGuardCore
       // AllCamerasCheckbox
       // 
       this.AllCamerasCheckbox.AutoSize = true;
-      this.AllCamerasCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.AllCamerasCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.AllCamerasCheckbox.Location = new System.Drawing.Point(92, 185);
       this.AllCamerasCheckbox.Name = "AllCamerasCheckbox";
-      this.AllCamerasCheckbox.Size = new System.Drawing.Size(411, 22);
+      this.AllCamerasCheckbox.Size = new System.Drawing.Size(371, 20);
       this.AllCamerasCheckbox.TabIndex = 8;
       this.AllCamerasCheckbox.Text = "All Cameras  (If Not Checked Current CameraOnly)\r\n";
       this.AllCamerasCheckbox.UseVisualStyleBackColor = true;
@@ -147,10 +147,10 @@ namespace OnGuardCore
       // DoNotDeleteMotionCheckbox
       // 
       this.DoNotDeleteMotionCheckbox.AutoSize = true;
-      this.DoNotDeleteMotionCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.DoNotDeleteMotionCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.DoNotDeleteMotionCheckbox.Location = new System.Drawing.Point(91, 219);
       this.DoNotDeleteMotionCheckbox.Name = "DoNotDeleteMotionCheckbox";
-      this.DoNotDeleteMotionCheckbox.Size = new System.Drawing.Size(378, 22);
+      this.DoNotDeleteMotionCheckbox.Size = new System.Drawing.Size(342, 20);
       this.DoNotDeleteMotionCheckbox.TabIndex = 9;
       this.DoNotDeleteMotionCheckbox.Text = "Do Not Delete Files with Motion (can be slow!)\r\n";
       this.DoNotDeleteMotionCheckbox.UseVisualStyleBackColor = true;
@@ -160,7 +160,6 @@ namespace OnGuardCore
       this.AcceptButton = this.OKButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.CancelButton = this.CancelButton;
       this.ClientSize = new System.Drawing.Size(518, 291);
       this.Controls.Add(this.DoNotDeleteMotionCheckbox);
       this.Controls.Add(this.AllCamerasCheckbox);
