@@ -121,7 +121,7 @@ namespace OnGuardCore
       this.FormHelpButton.Location = new System.Drawing.Point(582, 67);
       this.FormHelpButton.Name = "FormHelpButton";
       this.FormHelpButton.Size = new System.Drawing.Size(75, 23);
-      this.FormHelpButton.TabIndex = 12;
+      this.FormHelpButton.TabIndex = 3;
       this.FormHelpButton.Text = "Help!";
       this.FormHelpButton.UseVisualStyleBackColor = true;
       this.FormHelpButton.Click += new System.EventHandler(this.HelpButton_Click);
@@ -200,7 +200,7 @@ namespace OnGuardCore
       this.LogViewerText.Location = new System.Drawing.Point(202, 88);
       this.LogViewerText.Name = "LogViewerText";
       this.LogViewerText.Size = new System.Drawing.Size(332, 23);
-      this.LogViewerText.TabIndex = 12;
+      this.LogViewerText.TabIndex = 0;
       this.LogViewerText.Text = "Notepad.exe";
       // 
       // label14
@@ -248,7 +248,7 @@ namespace OnGuardCore
       this.SetDataFolderButton.Location = new System.Drawing.Point(358, 9);
       this.SetDataFolderButton.Name = "SetDataFolderButton";
       this.SetDataFolderButton.Size = new System.Drawing.Size(137, 34);
-      this.SetDataFolderButton.TabIndex = 16;
+      this.SetDataFolderButton.TabIndex = 0;
       this.SetDataFolderButton.Text = "Set Data Folder";
       this.SetDataFolderButton.UseVisualStyleBackColor = false;
       this.SetDataFolderButton.Click += new System.EventHandler(this.SetDataFolderButton_Click);
@@ -291,7 +291,7 @@ namespace OnGuardCore
       this.ipAddressText.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.ipAddressText.Name = "ipAddressText";
       this.ipAddressText.Size = new System.Drawing.Size(156, 20);
-      this.ipAddressText.TabIndex = 13;
+      this.ipAddressText.TabIndex = 0;
       this.ipAddressText.Text = "localhost";
       // 
       // label7
@@ -320,7 +320,7 @@ namespace OnGuardCore
             0});
       this.portNumeric.Name = "portNumeric";
       this.portNumeric.Size = new System.Drawing.Size(67, 20);
-      this.portNumeric.TabIndex = 17;
+      this.portNumeric.TabIndex = 1;
       this.portNumeric.Value = new decimal(new int[] {
             8090,
             0,
@@ -335,7 +335,7 @@ namespace OnGuardCore
       this.testButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.testButton.Name = "testButton";
       this.testButton.Size = new System.Drawing.Size(223, 32);
-      this.testButton.TabIndex = 18;
+      this.testButton.TabIndex = 11;
       this.testButton.Text = "Test DeepStack Connection";
       this.testButton.UseVisualStyleBackColor = false;
       this.testButton.Click += new System.EventHandler(this.testButton_Click);
@@ -369,7 +369,7 @@ namespace OnGuardCore
       this.AutoStartDeepStackCheck.Location = new System.Drawing.Point(295, 120);
       this.AutoStartDeepStackCheck.Name = "AutoStartDeepStackCheck";
       this.AutoStartDeepStackCheck.Size = new System.Drawing.Size(166, 17);
-      this.AutoStartDeepStackCheck.TabIndex = 24;
+      this.AutoStartDeepStackCheck.TabIndex = 4;
       this.AutoStartDeepStackCheck.Text = "Auto Start DeepStack AI";
       this.AutoStartDeepStackCheck.UseVisualStyleBackColor = true;
       // 
@@ -379,7 +379,7 @@ namespace OnGuardCore
       this.FaceCheckbox.Location = new System.Drawing.Point(295, 189);
       this.FaceCheckbox.Name = "FaceCheckbox";
       this.FaceCheckbox.Size = new System.Drawing.Size(139, 17);
-      this.FaceCheckbox.TabIndex = 25;
+      this.FaceCheckbox.TabIndex = 7;
       this.FaceCheckbox.Text = "Use Face Detection";
       this.FaceCheckbox.UseVisualStyleBackColor = true;
       this.FaceCheckbox.CheckedChanged += new System.EventHandler(this.OnFaceCheckChanged);
@@ -420,7 +420,7 @@ namespace OnGuardCore
       this.AutoStopDeepStackCheck.Location = new System.Drawing.Point(295, 143);
       this.AutoStopDeepStackCheck.Name = "AutoStopDeepStackCheck";
       this.AutoStopDeepStackCheck.Size = new System.Drawing.Size(165, 17);
-      this.AutoStopDeepStackCheck.TabIndex = 35;
+      this.AutoStopDeepStackCheck.TabIndex = 5;
       this.AutoStopDeepStackCheck.Text = "Auto Stop DeepStack AI";
       this.AutoStopDeepStackCheck.UseVisualStyleBackColor = true;
       // 
@@ -430,7 +430,7 @@ namespace OnGuardCore
       this.StartAIButton.Location = new System.Drawing.Point(71, 297);
       this.StartAIButton.Name = "StartAIButton";
       this.StartAIButton.Size = new System.Drawing.Size(182, 32);
-      this.StartAIButton.TabIndex = 34;
+      this.StartAIButton.TabIndex = 10;
       this.StartAIButton.Text = "Start/Restart DeepStack AI";
       this.StartAIButton.UseVisualStyleBackColor = false;
       this.StartAIButton.Click += new System.EventHandler(this.StartAIButton_Click);
@@ -440,7 +440,7 @@ namespace OnGuardCore
       this.ButtonCustom.Location = new System.Drawing.Point(417, 223);
       this.ButtonCustom.Name = "ButtonCustom";
       this.ButtonCustom.Size = new System.Drawing.Size(144, 23);
-      this.ButtonCustom.TabIndex = 33;
+      this.ButtonCustom.TabIndex = 9;
       this.ButtonCustom.Text = "Apply Custom Settings";
       this.ButtonCustom.UseVisualStyleBackColor = true;
       this.ButtonCustom.Click += new System.EventHandler(this.ButtonCustom_Click);
@@ -467,7 +467,7 @@ namespace OnGuardCore
       this.CustomTextBox.Location = new System.Drawing.Point(161, 225);
       this.CustomTextBox.Name = "CustomTextBox";
       this.CustomTextBox.Size = new System.Drawing.Size(248, 20);
-      this.CustomTextBox.TabIndex = 29;
+      this.CustomTextBox.TabIndex = 8;
       // 
       // label10
       // 
@@ -486,7 +486,7 @@ namespace OnGuardCore
       this.OutputVisibleCheckbox.Location = new System.Drawing.Point(295, 166);
       this.OutputVisibleCheckbox.Name = "OutputVisibleCheckbox";
       this.OutputVisibleCheckbox.Size = new System.Drawing.Size(163, 17);
-      this.OutputVisibleCheckbox.TabIndex = 27;
+      this.OutputVisibleCheckbox.TabIndex = 6;
       this.OutputVisibleCheckbox.Text = "DeepStack AI  is Visible";
       this.OutputVisibleCheckbox.UseVisualStyleBackColor = true;
       // 
@@ -500,7 +500,7 @@ namespace OnGuardCore
       this.panel5.Location = new System.Drawing.Point(127, 109);
       this.panel5.Name = "panel5";
       this.panel5.Size = new System.Drawing.Size(147, 100);
-      this.panel5.TabIndex = 26;
+      this.panel5.TabIndex = 3;
       // 
       // ModeMediumRadio
       // 
@@ -519,7 +519,7 @@ namespace OnGuardCore
       this.ModeLowRadio.Location = new System.Drawing.Point(14, 74);
       this.ModeLowRadio.Name = "ModeLowRadio";
       this.ModeLowRadio.Size = new System.Drawing.Size(84, 17);
-      this.ModeLowRadio.TabIndex = 23;
+      this.ModeLowRadio.TabIndex = 1;
       this.ModeLowRadio.Text = "Low (Fast)";
       this.ModeLowRadio.UseVisualStyleBackColor = true;
       this.ModeLowRadio.CheckedChanged += new System.EventHandler(this.OnModeChanged);
@@ -544,7 +544,7 @@ namespace OnGuardCore
       this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label9.Name = "label9";
       this.label9.Size = new System.Drawing.Size(105, 13);
-      this.label9.TabIndex = 21;
+      this.label9.TabIndex = 0;
       this.label9.Text = "Detection Mode  ";
       // 
       // SettingsDialog

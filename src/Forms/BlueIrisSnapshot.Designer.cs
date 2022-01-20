@@ -72,14 +72,14 @@ namespace OnGuardCore
       this.textBoxCameraName.Location = new System.Drawing.Point(408, 161);
       this.textBoxCameraName.Name = "textBoxCameraName";
       this.textBoxCameraName.Size = new System.Drawing.Size(144, 23);
-      this.textBoxCameraName.TabIndex = 31;
+      this.textBoxCameraName.TabIndex = 0;
       // 
       // cancelButton
       // 
       this.cancelButton.Location = new System.Drawing.Point(410, 208);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 39;
+      this.cancelButton.TabIndex = 2;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -89,7 +89,7 @@ namespace OnGuardCore
       this.okButton.Location = new System.Drawing.Point(315, 208);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 38;
+      this.okButton.TabIndex = 1;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);

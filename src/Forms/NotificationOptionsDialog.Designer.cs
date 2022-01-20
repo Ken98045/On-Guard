@@ -138,7 +138,7 @@
       this.okButton.Location = new System.Drawing.Point(328, 484);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 0;
+      this.okButton.TabIndex = 1;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);
@@ -149,7 +149,7 @@
       this.cancelButton.Location = new System.Drawing.Point(414, 484);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 1;
+      this.cancelButton.TabIndex = 2;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -270,7 +270,7 @@
       this.NoMotionUrlNotify.Location = new System.Drawing.Point(111, 57);
       this.NoMotionUrlNotify.Name = "NoMotionUrlNotify";
       this.NoMotionUrlNotify.Size = new System.Drawing.Size(404, 23);
-      this.NoMotionUrlNotify.TabIndex = 2;
+      this.NoMotionUrlNotify.TabIndex = 0;
       // 
       // NoMotionMQTTCheck
       // 

@@ -205,7 +205,7 @@ namespace OnGuardCore
       this.OKButton.Location = new System.Drawing.Point(321, 242);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 2;
+      this.OKButton.TabIndex = 0;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -215,7 +215,7 @@ namespace OnGuardCore
       this.FormCancelButton.Location = new System.Drawing.Point(404, 242);
       this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
-      this.FormCancelButton.TabIndex = 3;
+      this.FormCancelButton.TabIndex = 1;
       this.FormCancelButton.Text = "Cancel";
       this.FormCancelButton.UseVisualStyleBackColor = true;
       this.FormCancelButton.Click += new System.EventHandler(this.CancelButton_Click);

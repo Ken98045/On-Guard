@@ -235,7 +235,7 @@ namespace OnGuardCore
       this.personTextBox.Name = "personTextBox";
       this.personTextBox.ReadOnly = true;
       this.personTextBox.Size = new System.Drawing.Size(100, 23);
-      this.personTextBox.TabIndex = 18;
+      this.personTextBox.TabIndex = 0;
       this.personTextBox.Text = "person";
       // 
       // label12
@@ -288,11 +288,11 @@ namespace OnGuardCore
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
       // 
-      // CancelButton
+      // FormCancelButton
       // 
       this.FormCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
       this.FormCancelButton.Location = new System.Drawing.Point(358, 592);
-      this.FormCancelButton.Name = "CancelButton";
+      this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
       this.FormCancelButton.TabIndex = 1;
       this.FormCancelButton.Text = "Cancel";
@@ -371,7 +371,6 @@ namespace OnGuardCore
             this.columnHeader2});
       this.FacesListView.FullRowSelect = true;
       this.FacesListView.GridLines = true;
-      this.FacesListView.HideSelection = false;
       listViewItem1.StateImageIndex = 0;
       this.FacesListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1});

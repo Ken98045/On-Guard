@@ -44,7 +44,7 @@ namespace OnGuardCore
       this.cancelButton.Location = new System.Drawing.Point(485, 537);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 52;
+      this.cancelButton.TabIndex = 2;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -54,7 +54,7 @@ namespace OnGuardCore
       this.OKButton.Location = new System.Drawing.Point(404, 537);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 51;
+      this.OKButton.TabIndex = 1;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -94,7 +94,7 @@ namespace OnGuardCore
       this.textBoxUrl.Location = new System.Drawing.Point(119, 83);
       this.textBoxUrl.Name = "textBoxUrl";
       this.textBoxUrl.Size = new System.Drawing.Size(790, 23);
-      this.textBoxUrl.TabIndex = 50;
+      this.textBoxUrl.TabIndex = 0;
       // 
       // label3
       // 

@@ -44,17 +44,17 @@ namespace OnGuardCore
       this.OKButton.Location = new System.Drawing.Point(101, 123);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 0;
+      this.OKButton.TabIndex = 2;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
       // 
-      // CancelButton
+      // FormCancelButton
       // 
       this.FormCancelButton.Location = new System.Drawing.Point(186, 123);
-      this.FormCancelButton.Name = "CancelButton";
+      this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
-      this.FormCancelButton.TabIndex = 1;
+      this.FormCancelButton.TabIndex = 3;
       this.FormCancelButton.Text = "Cancel";
       this.FormCancelButton.UseVisualStyleBackColor = true;
       this.FormCancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -86,7 +86,7 @@ namespace OnGuardCore
       this.label9.Location = new System.Drawing.Point(205, 73);
       this.label9.Name = "label9";
       this.label9.Size = new System.Drawing.Size(139, 15);
-      this.label9.TabIndex = 15;
+      this.label9.TabIndex = 2;
       this.label9.Text = "Percentage (40 - 99)";
       // 
       // ConfidenceNumeric
@@ -104,7 +104,7 @@ namespace OnGuardCore
             0});
       this.ConfidenceNumeric.Name = "ConfidenceNumeric";
       this.ConfidenceNumeric.Size = new System.Drawing.Size(101, 23);
-      this.ConfidenceNumeric.TabIndex = 16;
+      this.ConfidenceNumeric.TabIndex = 1;
       this.ConfidenceNumeric.Value = new decimal(new int[] {
             50,
             0,
@@ -118,7 +118,7 @@ namespace OnGuardCore
       this.FacesComboBox.Location = new System.Drawing.Point(112, 32);
       this.FacesComboBox.Name = "FacesComboBox";
       this.FacesComboBox.Size = new System.Drawing.Size(121, 23);
-      this.FacesComboBox.TabIndex = 17;
+      this.FacesComboBox.TabIndex = 0;
       // 
       // AddFaceDialog
       // 
@@ -133,7 +133,7 @@ namespace OnGuardCore
       this.Controls.Add(this.label2);
       this.Controls.Add(this.FormCancelButton);
       this.Controls.Add(this.OKButton);
-      this.FaceName = "AddFaceDialog";
+      this.Name = "AddFaceDialog";
       this.Text = "Add Face";
       ((System.ComponentModel.ISupportInitialize)(this.ConfidenceNumeric)).EndInit();
       this.ResumeLayout(false);

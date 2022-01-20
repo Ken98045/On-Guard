@@ -45,7 +45,6 @@ namespace OnGuardCore
       this.OKButton = new System.Windows.Forms.Button();
       this.FormCancelButton = new System.Windows.Forms.Button();
       this.panel1 = new System.Windows.Forms.Panel();
-      this.label9 = new System.Windows.Forms.Label();
       this.zoomOutButton = new System.Windows.Forms.Button();
       this.zoomInButton = new System.Windows.Forms.Button();
       this.camDownButton = new System.Windows.Forms.Button();
@@ -54,10 +53,10 @@ namespace OnGuardCore
       this.camUpButton = new System.Windows.Forms.Button();
       this.label8 = new System.Windows.Forms.Label();
       this.panel2 = new System.Windows.Forms.Panel();
+      this.label6 = new System.Windows.Forms.Label();
       this.PictureImageBox = new System.Windows.Forms.PictureBox();
       this.labelCameraName = new System.Windows.Forms.Label();
       this.FormHelpButton = new System.Windows.Forms.Button();
-      this.label6 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.NumericPanTime)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.NumericTiltTime)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.NumericZoomTime)).BeginInit();
@@ -120,7 +119,7 @@ namespace OnGuardCore
             0});
       this.NumericPanTime.Name = "NumericPanTime";
       this.NumericPanTime.Size = new System.Drawing.Size(120, 23);
-      this.NumericPanTime.TabIndex = 34;
+      this.NumericPanTime.TabIndex = 0;
       this.NumericPanTime.Value = new decimal(new int[] {
             10,
             0,
@@ -138,7 +137,7 @@ namespace OnGuardCore
             0});
       this.NumericTiltTime.Name = "NumericTiltTime";
       this.NumericTiltTime.Size = new System.Drawing.Size(120, 23);
-      this.NumericTiltTime.TabIndex = 35;
+      this.NumericTiltTime.TabIndex = 1;
       this.NumericTiltTime.Value = new decimal(new int[] {
             10,
             0,
@@ -156,7 +155,7 @@ namespace OnGuardCore
             0});
       this.NumericZoomTime.Name = "NumericZoomTime";
       this.NumericZoomTime.Size = new System.Drawing.Size(120, 23);
-      this.NumericZoomTime.TabIndex = 36;
+      this.NumericZoomTime.TabIndex = 2;
       this.NumericZoomTime.Value = new decimal(new int[] {
             10,
             0,
@@ -189,7 +188,7 @@ namespace OnGuardCore
       this.NumericZoomSpeed.Location = new System.Drawing.Point(495, 80);
       this.NumericZoomSpeed.Name = "NumericZoomSpeed";
       this.NumericZoomSpeed.Size = new System.Drawing.Size(120, 23);
-      this.NumericZoomSpeed.TabIndex = 40;
+      this.NumericZoomSpeed.TabIndex = 5;
       this.NumericZoomSpeed.Value = new decimal(new int[] {
             1,
             0,
@@ -202,7 +201,7 @@ namespace OnGuardCore
       this.NumericTiltSpeed.Location = new System.Drawing.Point(325, 80);
       this.NumericTiltSpeed.Name = "NumericTiltSpeed";
       this.NumericTiltSpeed.Size = new System.Drawing.Size(120, 23);
-      this.NumericTiltSpeed.TabIndex = 39;
+      this.NumericTiltSpeed.TabIndex = 4;
       this.NumericTiltSpeed.Value = new decimal(new int[] {
             1,
             0,
@@ -215,7 +214,7 @@ namespace OnGuardCore
       this.NumericPanSpeed.Location = new System.Drawing.Point(141, 80);
       this.NumericPanSpeed.Name = "NumericPanSpeed";
       this.NumericPanSpeed.Size = new System.Drawing.Size(120, 23);
-      this.NumericPanSpeed.TabIndex = 38;
+      this.NumericPanSpeed.TabIndex = 3;
       this.NumericPanSpeed.Value = new decimal(new int[] {
             1,
             0,
@@ -227,7 +226,7 @@ namespace OnGuardCore
       this.OKButton.Location = new System.Drawing.Point(158, 445);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 42;
+      this.OKButton.TabIndex = 0;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -237,7 +236,7 @@ namespace OnGuardCore
       this.FormCancelButton.Location = new System.Drawing.Point(248, 445);
       this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
-      this.FormCancelButton.TabIndex = 43;
+      this.FormCancelButton.TabIndex = 1;
       this.FormCancelButton.Text = "Cancel";
       this.FormCancelButton.UseVisualStyleBackColor = true;
       this.FormCancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -245,7 +244,6 @@ namespace OnGuardCore
       // panel1
       // 
       this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.panel1.Controls.Add(this.label9);
       this.panel1.Controls.Add(this.zoomOutButton);
       this.panel1.Controls.Add(this.zoomInButton);
       this.panel1.Controls.Add(this.camDownButton);
@@ -258,20 +256,11 @@ namespace OnGuardCore
       this.panel1.Size = new System.Drawing.Size(253, 150);
       this.panel1.TabIndex = 44;
       // 
-      // label9
-      // 
-      this.label9.AutoSize = true;
-      this.label9.Location = new System.Drawing.Point(71, 119);
-      this.label9.Name = "label9";
-      this.label9.Size = new System.Drawing.Size(108, 15);
-      this.label9.TabIndex = 37;
-      this.label9.Text = "(Deliberately Slow!)";
-      // 
       // zoomOutButton
       // 
       this.zoomOutButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
       this.zoomOutButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomOutButton.Image")));
-      this.zoomOutButton.Location = new System.Drawing.Point(86, 79);
+      this.zoomOutButton.Location = new System.Drawing.Point(86, 93);
       this.zoomOutButton.Name = "zoomOutButton";
       this.zoomOutButton.Size = new System.Drawing.Size(25, 25);
       this.zoomOutButton.TabIndex = 36;
@@ -282,7 +271,7 @@ namespace OnGuardCore
       // 
       this.zoomInButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
       this.zoomInButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInButton.Image")));
-      this.zoomInButton.Location = new System.Drawing.Point(140, 29);
+      this.zoomInButton.Location = new System.Drawing.Point(140, 43);
       this.zoomInButton.Name = "zoomInButton";
       this.zoomInButton.Size = new System.Drawing.Size(25, 25);
       this.zoomInButton.TabIndex = 35;
@@ -293,7 +282,7 @@ namespace OnGuardCore
       // 
       this.camDownButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
       this.camDownButton.Image = ((System.Drawing.Image)(resources.GetObject("camDownButton.Image")));
-      this.camDownButton.Location = new System.Drawing.Point(114, 78);
+      this.camDownButton.Location = new System.Drawing.Point(114, 92);
       this.camDownButton.Name = "camDownButton";
       this.camDownButton.Size = new System.Drawing.Size(25, 25);
       this.camDownButton.TabIndex = 32;
@@ -304,7 +293,7 @@ namespace OnGuardCore
       // 
       this.camRightButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
       this.camRightButton.Image = ((System.Drawing.Image)(resources.GetObject("camRightButton.Image")));
-      this.camRightButton.Location = new System.Drawing.Point(140, 54);
+      this.camRightButton.Location = new System.Drawing.Point(140, 68);
       this.camRightButton.Name = "camRightButton";
       this.camRightButton.Size = new System.Drawing.Size(25, 25);
       this.camRightButton.TabIndex = 34;
@@ -315,7 +304,7 @@ namespace OnGuardCore
       // 
       this.camLeftButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
       this.camLeftButton.Image = ((System.Drawing.Image)(resources.GetObject("camLeftButton.Image")));
-      this.camLeftButton.Location = new System.Drawing.Point(86, 54);
+      this.camLeftButton.Location = new System.Drawing.Point(86, 68);
       this.camLeftButton.Name = "camLeftButton";
       this.camLeftButton.Size = new System.Drawing.Size(25, 25);
       this.camLeftButton.TabIndex = 33;
@@ -326,7 +315,7 @@ namespace OnGuardCore
       // 
       this.camUpButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
       this.camUpButton.Image = ((System.Drawing.Image)(resources.GetObject("camUpButton.Image")));
-      this.camUpButton.Location = new System.Drawing.Point(114, 32);
+      this.camUpButton.Location = new System.Drawing.Point(114, 46);
       this.camUpButton.Name = "camUpButton";
       this.camUpButton.Size = new System.Drawing.Size(25, 25);
       this.camUpButton.TabIndex = 31;
@@ -364,6 +353,15 @@ namespace OnGuardCore
       this.panel2.Size = new System.Drawing.Size(667, 146);
       this.panel2.TabIndex = 45;
       // 
+      // label6
+      // 
+      this.label6.AutoSize = true;
+      this.label6.Location = new System.Drawing.Point(50, 117);
+      this.label6.Name = "label6";
+      this.label6.Size = new System.Drawing.Size(233, 15);
+      this.label6.TabIndex = 42;
+      this.label6.Text = "*Many cameras do not have speed settings";
+      // 
       // PictureImageBox
       // 
       this.PictureImageBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -389,19 +387,10 @@ namespace OnGuardCore
       this.FormHelpButton.Location = new System.Drawing.Point(640, 510);
       this.FormHelpButton.Name = "FormHelpButton";
       this.FormHelpButton.Size = new System.Drawing.Size(75, 23);
-      this.FormHelpButton.TabIndex = 48;
+      this.FormHelpButton.TabIndex = 2;
       this.FormHelpButton.Text = "Help!";
       this.FormHelpButton.UseVisualStyleBackColor = true;
       this.FormHelpButton.Click += new System.EventHandler(this.HelpButton_Click);
-      // 
-      // label6
-      // 
-      this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(50, 117);
-      this.label6.Name = "label6";
-      this.label6.Size = new System.Drawing.Size(233, 15);
-      this.label6.TabIndex = 42;
-      this.label6.Text = "*Many cameras do not have speed settings";
       // 
       // PTZMovement
       // 
@@ -463,7 +452,6 @@ namespace OnGuardCore
     private System.Windows.Forms.Button camUpButton;
     private System.Windows.Forms.Panel panel2;
     private System.Windows.Forms.PictureBox PictureImageBox;
-    private System.Windows.Forms.Label label9;
     private System.Windows.Forms.Label labelCameraName;
     private System.Windows.Forms.Button FormHelpButton;
     private System.Windows.Forms.Label label6;

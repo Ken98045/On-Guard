@@ -74,7 +74,7 @@ namespace OnGuardCore
       this.StartButton.Location = new System.Drawing.Point(43, 115);
       this.StartButton.Name = "StartButton";
       this.StartButton.Size = new System.Drawing.Size(129, 23);
-      this.StartButton.TabIndex = 23;
+      this.StartButton.TabIndex = 0;
       this.StartButton.Text = "Start";
       this.StartButton.UseVisualStyleBackColor = true;
       this.StartButton.Click += new System.EventHandler(this.StartButton_Click);
@@ -84,7 +84,7 @@ namespace OnGuardCore
       this.DoneButton.Location = new System.Drawing.Point(141, 165);
       this.DoneButton.Name = "DoneButton";
       this.DoneButton.Size = new System.Drawing.Size(75, 23);
-      this.DoneButton.TabIndex = 24;
+      this.DoneButton.TabIndex = 2;
       this.DoneButton.Text = "Done";
       this.DoneButton.UseVisualStyleBackColor = true;
       this.DoneButton.Click += new System.EventHandler(this.DoneButton_Click);
@@ -94,7 +94,7 @@ namespace OnGuardCore
       this.StopButton.Location = new System.Drawing.Point(184, 115);
       this.StopButton.Name = "StopButton";
       this.StopButton.Size = new System.Drawing.Size(129, 23);
-      this.StopButton.TabIndex = 25;
+      this.StopButton.TabIndex = 1;
       this.StopButton.Text = "Stop";
       this.StopButton.UseVisualStyleBackColor = true;
       this.StopButton.Click += new System.EventHandler(this.StopButton_Click);

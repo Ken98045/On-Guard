@@ -42,7 +42,7 @@
       this.AddButton.Location = new System.Drawing.Point(321, 55);
       this.AddButton.Name = "AddButton";
       this.AddButton.Size = new System.Drawing.Size(75, 23);
-      this.AddButton.TabIndex = 0;
+      this.AddButton.TabIndex = 1;
       this.AddButton.Text = "Add";
       this.AddButton.UseVisualStyleBackColor = true;
       this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
@@ -53,7 +53,7 @@
       this.EditButton.Location = new System.Drawing.Point(321, 95);
       this.EditButton.Name = "EditButton";
       this.EditButton.Size = new System.Drawing.Size(75, 23);
-      this.EditButton.TabIndex = 1;
+      this.EditButton.TabIndex = 2;
       this.EditButton.Text = "Edit";
       this.EditButton.UseVisualStyleBackColor = true;
       this.EditButton.Click += new System.EventHandler(this.EditButton_Click);
@@ -64,7 +64,7 @@
       this.DeleteButton.Location = new System.Drawing.Point(321, 135);
       this.DeleteButton.Name = "DeleteButton";
       this.DeleteButton.Size = new System.Drawing.Size(75, 23);
-      this.DeleteButton.TabIndex = 2;
+      this.DeleteButton.TabIndex = 3;
       this.DeleteButton.Text = "Delete";
       this.DeleteButton.UseVisualStyleBackColor = true;
       this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
@@ -74,7 +74,7 @@
       this.oKButton.Location = new System.Drawing.Point(125, 196);
       this.oKButton.Name = "oKButton";
       this.oKButton.Size = new System.Drawing.Size(75, 23);
-      this.oKButton.TabIndex = 3;
+      this.oKButton.TabIndex = 4;
       this.oKButton.Text = "OK";
       this.oKButton.UseVisualStyleBackColor = true;
       this.oKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -84,7 +84,7 @@
       this.cancelButton.Location = new System.Drawing.Point(211, 196);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 4;
+      this.cancelButton.TabIndex = 5;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -100,7 +100,7 @@
       this.emailAddressList.MultiSelect = false;
       this.emailAddressList.Name = "emailAddressList";
       this.emailAddressList.Size = new System.Drawing.Size(298, 148);
-      this.emailAddressList.TabIndex = 5;
+      this.emailAddressList.TabIndex = 0;
       this.emailAddressList.UseCompatibleStateImageBehavior = false;
       this.emailAddressList.View = System.Windows.Forms.View.Details;
       this.emailAddressList.ItemActivate += new System.EventHandler(this.OnActivate);

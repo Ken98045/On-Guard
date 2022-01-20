@@ -108,7 +108,7 @@
             0});
       this.sizeImageToNumeric.Name = "sizeImageToNumeric";
       this.sizeImageToNumeric.Size = new System.Drawing.Size(75, 23);
-      this.sizeImageToNumeric.TabIndex = 2;
+      this.sizeImageToNumeric.TabIndex = 1;
       this.sizeImageToNumeric.Value = new decimal(new int[] {
             100,
             0,
@@ -130,7 +130,7 @@
       this.numberOfImages.Location = new System.Drawing.Point(431, 155);
       this.numberOfImages.Name = "numberOfImages";
       this.numberOfImages.Size = new System.Drawing.Size(75, 23);
-      this.numberOfImages.TabIndex = 1;
+      this.numberOfImages.TabIndex = 0;
       this.numberOfImages.ValueChanged += new System.EventHandler(this.NumberOfImages_ValueChanged);
       // 
       // label2
@@ -168,7 +168,7 @@
             0});
       this.coolDownNumeric.Name = "coolDownNumeric";
       this.coolDownNumeric.Size = new System.Drawing.Size(75, 23);
-      this.coolDownNumeric.TabIndex = 3;
+      this.coolDownNumeric.TabIndex = 2;
       this.coolDownNumeric.Value = new decimal(new int[] {
             1,
             0,
@@ -227,7 +227,7 @@
       this.daysOfWeekList.Location = new System.Drawing.Point(175, 167);
       this.daysOfWeekList.Name = "daysOfWeekList";
       this.daysOfWeekList.Size = new System.Drawing.Size(120, 130);
-      this.daysOfWeekList.TabIndex = 3;
+      this.daysOfWeekList.TabIndex = 4;
       // 
       // label9
       // 
@@ -246,7 +246,7 @@
       this.toTime.Location = new System.Drawing.Point(208, 118);
       this.toTime.Name = "toTime";
       this.toTime.Size = new System.Drawing.Size(90, 23);
-      this.toTime.TabIndex = 2;
+      this.toTime.TabIndex = 3;
       this.toTime.Value = new System.DateTime(2020, 6, 2, 0, 0, 0, 0);
       // 
       // label8
@@ -276,7 +276,7 @@
       this.label6.Location = new System.Drawing.Point(143, 88);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(83, 15);
-      this.label6.TabIndex = 28;
+      this.label6.TabIndex = 1;
       this.label6.Text = "Time of Day";
       // 
       // label10
@@ -296,7 +296,7 @@
       this.fromTime.Location = new System.Drawing.Point(60, 118);
       this.fromTime.Name = "fromTime";
       this.fromTime.Size = new System.Drawing.Size(90, 23);
-      this.fromTime.TabIndex = 1;
+      this.fromTime.TabIndex = 2;
       this.fromTime.Value = new System.DateTime(2020, 6, 2, 0, 0, 0, 0);
       // 
       // check247
@@ -316,7 +316,7 @@
       this.okButton.Location = new System.Drawing.Point(303, 773);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 4;
+      this.okButton.TabIndex = 3;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);
@@ -327,7 +327,7 @@
       this.cancelButton.Location = new System.Drawing.Point(392, 773);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 5;
+      this.cancelButton.TabIndex = 4;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -359,7 +359,7 @@
       this.htmlFormatCheckbox.Location = new System.Drawing.Point(242, 79);
       this.htmlFormatCheckbox.Name = "htmlFormatCheckbox";
       this.htmlFormatCheckbox.Size = new System.Drawing.Size(15, 14);
-      this.htmlFormatCheckbox.TabIndex = 42;
+      this.htmlFormatCheckbox.TabIndex = 1;
       this.htmlFormatCheckbox.UseVisualStyleBackColor = true;
       this.htmlFormatCheckbox.CheckedChanged += new System.EventHandler(this.HtmlFormatCheckbox_CheckedChanged);
       // 
@@ -404,7 +404,7 @@
             0});
       this.MaximumAttachmentSizeNumeric.Name = "MaximumAttachmentSizeNumeric";
       this.MaximumAttachmentSizeNumeric.Size = new System.Drawing.Size(75, 23);
-      this.MaximumAttachmentSizeNumeric.TabIndex = 45;
+      this.MaximumAttachmentSizeNumeric.TabIndex = 2;
       this.MaximumAttachmentSizeNumeric.Value = new decimal(new int[] {
             24,
             0,

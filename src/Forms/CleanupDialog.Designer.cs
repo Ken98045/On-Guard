@@ -83,7 +83,7 @@ namespace OnGuardCore
             0});
       this.DaysNumeric.Name = "DaysNumeric";
       this.DaysNumeric.Size = new System.Drawing.Size(68, 23);
-      this.DaysNumeric.TabIndex = 3;
+      this.DaysNumeric.TabIndex = 0;
       this.DaysNumeric.Value = new decimal(new int[] {
             1,
             0,
@@ -100,14 +100,14 @@ namespace OnGuardCore
             0});
       this.HoursNumeric.Name = "HoursNumeric";
       this.HoursNumeric.Size = new System.Drawing.Size(68, 23);
-      this.HoursNumeric.TabIndex = 4;
+      this.HoursNumeric.TabIndex = 1;
       // 
       // OKButton
       // 
       this.OKButton.Location = new System.Drawing.Point(180, 259);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 5;
+      this.OKButton.TabIndex = 4;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -118,7 +118,7 @@ namespace OnGuardCore
       this.CancelButton.Location = new System.Drawing.Point(263, 259);
       this.CancelButton.Name = "CancelButton";
       this.CancelButton.Size = new System.Drawing.Size(75, 23);
-      this.CancelButton.TabIndex = 6;
+      this.CancelButton.TabIndex = 5;
       this.CancelButton.Text = "Cancel";
       this.CancelButton.UseVisualStyleBackColor = true;
       this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -140,7 +140,7 @@ namespace OnGuardCore
       this.AllCamerasCheckbox.Location = new System.Drawing.Point(92, 185);
       this.AllCamerasCheckbox.Name = "AllCamerasCheckbox";
       this.AllCamerasCheckbox.Size = new System.Drawing.Size(371, 20);
-      this.AllCamerasCheckbox.TabIndex = 8;
+      this.AllCamerasCheckbox.TabIndex = 2;
       this.AllCamerasCheckbox.Text = "All Cameras  (If Not Checked Current CameraOnly)\r\n";
       this.AllCamerasCheckbox.UseVisualStyleBackColor = true;
       // 
@@ -151,7 +151,7 @@ namespace OnGuardCore
       this.DoNotDeleteMotionCheckbox.Location = new System.Drawing.Point(91, 219);
       this.DoNotDeleteMotionCheckbox.Name = "DoNotDeleteMotionCheckbox";
       this.DoNotDeleteMotionCheckbox.Size = new System.Drawing.Size(342, 20);
-      this.DoNotDeleteMotionCheckbox.TabIndex = 9;
+      this.DoNotDeleteMotionCheckbox.TabIndex = 3;
       this.DoNotDeleteMotionCheckbox.Text = "Do Not Delete Files with Motion (can be slow!)\r\n";
       this.DoNotDeleteMotionCheckbox.UseVisualStyleBackColor = true;
       // 

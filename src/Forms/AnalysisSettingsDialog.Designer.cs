@@ -60,7 +60,7 @@ namespace OnGuardCore
       this.ParkedCarsOverlapCheckbox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.ParkedCarsOverlapCheckbox.Name = "ParkedCarsOverlapCheckbox";
       this.ParkedCarsOverlapCheckbox.Size = new System.Drawing.Size(367, 20);
-      this.ParkedCarsOverlapCheckbox.TabIndex = 1;
+      this.ParkedCarsOverlapCheckbox.TabIndex = 0;
       this.ParkedCarsOverlapCheckbox.Text = "Exclude  Parked Cars From Motion Using Overlap";
       this.ParkedCarsOverlapCheckbox.UseVisualStyleBackColor = true;
       // 
@@ -74,7 +74,7 @@ namespace OnGuardCore
       this.ExcludeParkedCornersCheckbox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.ExcludeParkedCornersCheckbox.Name = "ExcludeParkedCornersCheckbox";
       this.ExcludeParkedCornersCheckbox.Size = new System.Drawing.Size(455, 20);
-      this.ExcludeParkedCornersCheckbox.TabIndex = 2;
+      this.ExcludeParkedCornersCheckbox.TabIndex = 1;
       this.ExcludeParkedCornersCheckbox.Text = "Exclude  Parked Cars From Motion Using Corners (Secondary)";
       this.ExcludeParkedCornersCheckbox.UseVisualStyleBackColor = true;
       // 
@@ -84,18 +84,18 @@ namespace OnGuardCore
       this.OKButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(88, 27);
-      this.OKButton.TabIndex = 3;
+      this.OKButton.TabIndex = 0;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
       // 
-      // CancelButton
+      // FormCancelButton
       // 
       this.FormCancelButton.Location = new System.Drawing.Point(268, 218);
       this.FormCancelButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.FormCancelButton.Name = "CancelButton";
+      this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(88, 27);
-      this.FormCancelButton.TabIndex = 4;
+      this.FormCancelButton.TabIndex = 1;
       this.FormCancelButton.Text = "Cancel";
       this.FormCancelButton.UseVisualStyleBackColor = true;
       this.FormCancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -110,7 +110,7 @@ namespace OnGuardCore
       this.BumpVehicleConfidenceCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.BumpVehicleConfidenceCheck.Name = "BumpVehicleConfidenceCheck";
       this.BumpVehicleConfidenceCheck.Size = new System.Drawing.Size(443, 20);
-      this.BumpVehicleConfidenceCheck.TabIndex = 5;
+      this.BumpVehicleConfidenceCheck.TabIndex = 2;
       this.BumpVehicleConfidenceCheck.Text = "Increase Confidence in Multi-Vehicle Overlapping Definitions";
       this.BumpVehicleConfidenceCheck.UseVisualStyleBackColor = true;
       // 

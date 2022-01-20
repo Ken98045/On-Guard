@@ -133,56 +133,56 @@ namespace OnGuardCore
       this.textBoxLeft.Location = new System.Drawing.Point(117, 104);
       this.textBoxLeft.Name = "textBoxLeft";
       this.textBoxLeft.Size = new System.Drawing.Size(573, 23);
-      this.textBoxLeft.TabIndex = 39;
+      this.textBoxLeft.TabIndex = 0;
       // 
       // textBoxRight
       // 
       this.textBoxRight.Location = new System.Drawing.Point(117, 142);
       this.textBoxRight.Name = "textBoxRight";
       this.textBoxRight.Size = new System.Drawing.Size(573, 23);
-      this.textBoxRight.TabIndex = 40;
+      this.textBoxRight.TabIndex = 1;
       // 
       // textBoxUp
       // 
       this.textBoxUp.Location = new System.Drawing.Point(117, 180);
       this.textBoxUp.Name = "textBoxUp";
       this.textBoxUp.Size = new System.Drawing.Size(573, 23);
-      this.textBoxUp.TabIndex = 41;
+      this.textBoxUp.TabIndex = 2;
       // 
       // textBoxDown
       // 
       this.textBoxDown.Location = new System.Drawing.Point(117, 220);
       this.textBoxDown.Name = "textBoxDown";
       this.textBoxDown.Size = new System.Drawing.Size(573, 23);
-      this.textBoxDown.TabIndex = 42;
+      this.textBoxDown.TabIndex = 3;
       // 
       // textBoxZoomIn
       // 
       this.textBoxZoomIn.Location = new System.Drawing.Point(117, 256);
       this.textBoxZoomIn.Name = "textBoxZoomIn";
       this.textBoxZoomIn.Size = new System.Drawing.Size(573, 23);
-      this.textBoxZoomIn.TabIndex = 43;
+      this.textBoxZoomIn.TabIndex = 4;
       // 
       // textBoxZoomOut
       // 
       this.textBoxZoomOut.Location = new System.Drawing.Point(117, 294);
       this.textBoxZoomOut.Name = "textBoxZoomOut";
       this.textBoxZoomOut.Size = new System.Drawing.Size(573, 23);
-      this.textBoxZoomOut.TabIndex = 44;
+      this.textBoxZoomOut.TabIndex = 5;
       // 
       // textBoxStop
       // 
       this.textBoxStop.Location = new System.Drawing.Point(117, 332);
       this.textBoxStop.Name = "textBoxStop";
       this.textBoxStop.Size = new System.Drawing.Size(573, 23);
-      this.textBoxStop.TabIndex = 45;
+      this.textBoxStop.TabIndex = 6;
       // 
       // OKButton
       // 
       this.OKButton.Location = new System.Drawing.Point(299, 385);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 46;
+      this.OKButton.TabIndex = 7;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -192,7 +192,7 @@ namespace OnGuardCore
       this.cancelButton.Location = new System.Drawing.Point(392, 385);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 47;
+      this.cancelButton.TabIndex = 8;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);

@@ -43,7 +43,6 @@
       this.areasListView.FullRowSelect = true;
       this.areasListView.GridLines = true;
       this.areasListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-      this.areasListView.HideSelection = false;
       this.areasListView.Location = new System.Drawing.Point(12, 12);
       this.areasListView.Name = "areasListView";
       this.areasListView.Size = new System.Drawing.Size(304, 275);
@@ -63,7 +62,7 @@
       this.doneButton.Location = new System.Drawing.Point(209, 297);
       this.doneButton.Name = "doneButton";
       this.doneButton.Size = new System.Drawing.Size(75, 23);
-      this.doneButton.TabIndex = 1;
+      this.doneButton.TabIndex = 2;
       this.doneButton.Text = "Exit";
       this.doneButton.UseVisualStyleBackColor = true;
       this.doneButton.Click += new System.EventHandler(this.DoneButton_Click);
@@ -74,7 +73,7 @@
       this.DeleteButton.Location = new System.Drawing.Point(127, 297);
       this.DeleteButton.Name = "DeleteButton";
       this.DeleteButton.Size = new System.Drawing.Size(75, 23);
-      this.DeleteButton.TabIndex = 2;
+      this.DeleteButton.TabIndex = 1;
       this.DeleteButton.Text = "Delete";
       this.DeleteButton.UseVisualStyleBackColor = true;
       this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
@@ -85,7 +84,7 @@
       this.EditButton.Location = new System.Drawing.Point(45, 297);
       this.EditButton.Name = "EditButton";
       this.EditButton.Size = new System.Drawing.Size(75, 23);
-      this.EditButton.TabIndex = 3;
+      this.EditButton.TabIndex = 0;
       this.EditButton.Text = "Edit";
       this.EditButton.UseVisualStyleBackColor = true;
       this.EditButton.Click += new System.EventHandler(this.EditButton_Click);

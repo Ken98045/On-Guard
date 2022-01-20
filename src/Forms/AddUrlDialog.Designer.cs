@@ -88,7 +88,7 @@
       this.urlText.Location = new System.Drawing.Point(44, 38);
       this.urlText.Name = "urlText";
       this.urlText.Size = new System.Drawing.Size(421, 23);
-      this.urlText.TabIndex = 2;
+      this.urlText.TabIndex = 0;
       // 
       // urlCoolDownNumeric
       // 
@@ -100,7 +100,7 @@
             0});
       this.urlCoolDownNumeric.Name = "urlCoolDownNumeric";
       this.urlCoolDownNumeric.Size = new System.Drawing.Size(75, 23);
-      this.urlCoolDownNumeric.TabIndex = 1;
+      this.urlCoolDownNumeric.TabIndex = 2;
       this.urlCoolDownNumeric.Value = new decimal(new int[] {
             300,
             0,
@@ -173,7 +173,7 @@
       this.ConfirmCheckBox.Location = new System.Drawing.Point(6, 58);
       this.ConfirmCheckBox.Name = "ConfirmCheckBox";
       this.ConfirmCheckBox.Size = new System.Drawing.Size(173, 19);
-      this.ConfirmCheckBox.TabIndex = 32;
+      this.ConfirmCheckBox.TabIndex = 1;
       this.ConfirmCheckBox.Text = "Mark Confirmed by Blue Iris";
       this.ConfirmCheckBox.UseVisualStyleBackColor = true;
       this.ConfirmCheckBox.CheckedChanged += new System.EventHandler(this.ConfirmOnCheckChanged);
@@ -204,7 +204,7 @@
       this.ResetCheckBox.Location = new System.Drawing.Point(6, 110);
       this.ResetCheckBox.Name = "ResetCheckBox";
       this.ResetCheckBox.Size = new System.Drawing.Size(271, 19);
-      this.ResetCheckBox.TabIndex = 35;
+      this.ResetCheckBox.TabIndex = 3;
       this.ResetCheckBox.Text = "Reset Confirmed and Flagged State by Blue Iris\r\n";
       this.ResetCheckBox.UseVisualStyleBackColor = true;
       this.ResetCheckBox.CheckedChanged += new System.EventHandler(this.ResetCheckBox_CheckedChanged);
@@ -215,7 +215,7 @@
       this.FlagCheckBox.Location = new System.Drawing.Point(6, 84);
       this.FlagCheckBox.Name = "FlagCheckBox";
       this.FlagCheckBox.Size = new System.Drawing.Size(158, 19);
-      this.FlagCheckBox.TabIndex = 33;
+      this.FlagCheckBox.TabIndex = 2;
       this.FlagCheckBox.Text = "Mark Flagged by Blue Iris";
       this.FlagCheckBox.UseVisualStyleBackColor = true;
       this.FlagCheckBox.CheckedChanged += new System.EventHandler(this.FlagCheckChanged);
@@ -239,7 +239,7 @@
             0});
       this.WaitTimeNumeric.Name = "WaitTimeNumeric";
       this.WaitTimeNumeric.Size = new System.Drawing.Size(75, 23);
-      this.WaitTimeNumeric.TabIndex = 38;
+      this.WaitTimeNumeric.TabIndex = 1;
       // 
       // label7
       // 

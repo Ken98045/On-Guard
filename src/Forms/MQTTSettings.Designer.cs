@@ -164,7 +164,7 @@ namespace OnGuardCore
       this.OKButton.Location = new System.Drawing.Point(212, 680);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 4;
+      this.OKButton.TabIndex = 11;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -175,7 +175,7 @@ namespace OnGuardCore
       this.cancelButton.Location = new System.Drawing.Point(309, 680);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 5;
+      this.cancelButton.TabIndex = 12;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -195,7 +195,7 @@ namespace OnGuardCore
             0});
       this.CoolDownNumeric.Name = "CoolDownNumeric";
       this.CoolDownNumeric.Size = new System.Drawing.Size(97, 23);
-      this.CoolDownNumeric.TabIndex = 8;
+      this.CoolDownNumeric.TabIndex = 5;
       this.CoolDownNumeric.Value = new decimal(new int[] {
             30,
             0,
@@ -238,7 +238,7 @@ namespace OnGuardCore
       this.UseSecureLinkCheck.Location = new System.Drawing.Point(241, 211);
       this.UseSecureLinkCheck.Name = "UseSecureLinkCheck";
       this.UseSecureLinkCheck.Size = new System.Drawing.Size(15, 14);
-      this.UseSecureLinkCheck.TabIndex = 12;
+      this.UseSecureLinkCheck.TabIndex = 4;
       this.UseSecureLinkCheck.UseVisualStyleBackColor = true;
       // 
       // label9
@@ -275,7 +275,7 @@ namespace OnGuardCore
       this.MotionActivityText.Location = new System.Drawing.Point(180, 499);
       this.MotionActivityText.Name = "MotionActivityText";
       this.MotionActivityText.Size = new System.Drawing.Size(404, 23);
-      this.MotionActivityText.TabIndex = 16;
+      this.MotionActivityText.TabIndex = 6;
       this.MotionActivityText.Text = "OnGuard/{Camera}/{Area}/{Object}";
       // 
       // label12
@@ -293,7 +293,7 @@ namespace OnGuardCore
       this.StoppedActivityTopicText.Location = new System.Drawing.Point(180, 569);
       this.StoppedActivityTopicText.Name = "StoppedActivityTopicText";
       this.StoppedActivityTopicText.Size = new System.Drawing.Size(404, 23);
-      this.StoppedActivityTopicText.TabIndex = 18;
+      this.StoppedActivityTopicText.TabIndex = 8;
       this.StoppedActivityTopicText.Text = "OnGuard/{Camera}/Stopped";
       // 
       // MotionActivityPayloadText
@@ -301,7 +301,7 @@ namespace OnGuardCore
       this.MotionActivityPayloadText.Location = new System.Drawing.Point(180, 534);
       this.MotionActivityPayloadText.Name = "MotionActivityPayloadText";
       this.MotionActivityPayloadText.Size = new System.Drawing.Size(404, 23);
-      this.MotionActivityPayloadText.TabIndex = 20;
+      this.MotionActivityPayloadText.TabIndex = 7;
       this.MotionActivityPayloadText.Text = "{File}";
       // 
       // label13
@@ -319,7 +319,7 @@ namespace OnGuardCore
       this.StoppedPayloadText.Location = new System.Drawing.Point(182, 604);
       this.StoppedPayloadText.Name = "StoppedPayloadText";
       this.StoppedPayloadText.Size = new System.Drawing.Size(190, 23);
-      this.StoppedPayloadText.TabIndex = 22;
+      this.StoppedPayloadText.TabIndex = 9;
       this.StoppedPayloadText.Text = "{Motion}";
       // 
       // label14
@@ -347,7 +347,7 @@ namespace OnGuardCore
       this.jjsonFormatPaths.Location = new System.Drawing.Point(182, 639);
       this.jjsonFormatPaths.Name = "jjsonFormatPaths";
       this.jjsonFormatPaths.Size = new System.Drawing.Size(148, 19);
-      this.jjsonFormatPaths.TabIndex = 25;
+      this.jjsonFormatPaths.TabIndex = 10;
       this.jjsonFormatPaths.Text = "(Use Double Backslash)";
       this.jjsonFormatPaths.UseVisualStyleBackColor = true;
       // 

@@ -94,7 +94,7 @@
       this.okButton.Location = new System.Drawing.Point(204, 335);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(76, 23);
-      this.okButton.TabIndex = 2;
+      this.okButton.TabIndex = 0;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);
@@ -105,7 +105,7 @@
       this.cancelButton.Location = new System.Drawing.Point(289, 335);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(76, 23);
-      this.cancelButton.TabIndex = 3;
+      this.cancelButton.TabIndex = 1;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -315,7 +315,7 @@
       this.tabImage.Location = new System.Drawing.Point(4, 24);
       this.tabImage.Name = "tabImage";
       this.tabImage.Padding = new System.Windows.Forms.Padding(3);
-      this.tabImage.Size = new System.Drawing.Size(548, 232);
+      this.tabImage.Size = new System.Drawing.Size(548, 264);
       this.tabImage.TabIndex = 0;
       this.tabImage.Text = "Input Method";
       this.tabImage.UseVisualStyleBackColor = true;
@@ -350,7 +350,7 @@
       this.radioTrigger.Location = new System.Drawing.Point(25, 96);
       this.radioTrigger.Name = "radioTrigger";
       this.radioTrigger.Size = new System.Drawing.Size(189, 19);
-      this.radioTrigger.TabIndex = 23;
+      this.radioTrigger.TabIndex = 3;
       this.radioTrigger.Text = "Camera Triggered (Usually FTP)";
       this.radioTrigger.UseVisualStyleBackColor = true;
       this.radioTrigger.CheckedChanged += new System.EventHandler(this.OnMethodChanged);
@@ -361,7 +361,7 @@
       this.radioScanImages.Location = new System.Drawing.Point(25, 68);
       this.radioScanImages.Name = "radioScanImages";
       this.radioScanImages.Size = new System.Drawing.Size(140, 19);
-      this.radioScanImages.TabIndex = 22;
+      this.radioScanImages.TabIndex = 2;
       this.radioScanImages.Text = "On Guard Image Scan";
       this.radioScanImages.UseVisualStyleBackColor = true;
       this.radioScanImages.CheckedChanged += new System.EventHandler(this.OnMethodChanged);
@@ -373,7 +373,7 @@
       this.radioSoftware.Location = new System.Drawing.Point(25, 40);
       this.radioSoftware.Name = "radioSoftware";
       this.radioSoftware.Size = new System.Drawing.Size(246, 19);
-      this.radioSoftware.TabIndex = 21;
+      this.radioSoftware.TabIndex = 1;
       this.radioSoftware.TabStop = true;
       this.radioSoftware.Text = "Application Filtered/Saved  (Blue Iris/iSpy)";
       this.radioSoftware.UseVisualStyleBackColor = true;
@@ -399,7 +399,7 @@
       this.tabControlCameraMethod.Name = "tabControlCameraMethod";
       this.tabControlCameraMethod.SelectedIndex = 0;
       this.tabControlCameraMethod.Size = new System.Drawing.Size(556, 292);
-      this.tabControlCameraMethod.TabIndex = 21;
+      this.tabControlCameraMethod.TabIndex = 3;
       // 
       // tabPageLocation
       // 

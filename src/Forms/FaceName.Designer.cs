@@ -42,7 +42,7 @@ namespace OnGuardCore
       this.OKButton.Location = new System.Drawing.Point(85, 108);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 0;
+      this.OKButton.TabIndex = 2;
       this.OKButton.Text = "Add Face";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -52,7 +52,7 @@ namespace OnGuardCore
       this.FormCancelButton.Location = new System.Drawing.Point(169, 108);
       this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
-      this.FormCancelButton.TabIndex = 1;
+      this.FormCancelButton.TabIndex = 3;
       this.FormCancelButton.Text = "Cancel";
       this.FormCancelButton.UseVisualStyleBackColor = true;
       this.FormCancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -83,14 +83,14 @@ namespace OnGuardCore
       this.FacesComboBox.Location = new System.Drawing.Point(83, 49);
       this.FacesComboBox.Name = "FacesComboBox";
       this.FacesComboBox.Size = new System.Drawing.Size(121, 23);
-      this.FacesComboBox.TabIndex = 45;
+      this.FacesComboBox.TabIndex = 0;
       // 
       // AddButton
       // 
       this.AddButton.Location = new System.Drawing.Point(210, 48);
       this.AddButton.Name = "AddButton";
       this.AddButton.Size = new System.Drawing.Size(89, 23);
-      this.AddButton.TabIndex = 46;
+      this.AddButton.TabIndex = 1;
       this.AddButton.Text = "Add Person";
       this.AddButton.UseVisualStyleBackColor = true;
       this.AddButton.Click += new System.EventHandler(this.AddButton_Click);

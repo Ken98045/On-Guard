@@ -73,7 +73,7 @@ namespace OnGuardCore
       this.PresetNameTextBox.Location = new System.Drawing.Point(124, 51);
       this.PresetNameTextBox.Name = "PresetNameTextBox";
       this.PresetNameTextBox.Size = new System.Drawing.Size(129, 23);
-      this.PresetNameTextBox.TabIndex = 2;
+      this.PresetNameTextBox.TabIndex = 0;
       // 
       // PresetNumeric
       // 
@@ -85,7 +85,7 @@ namespace OnGuardCore
             0});
       this.PresetNumeric.Name = "PresetNumeric";
       this.PresetNumeric.Size = new System.Drawing.Size(45, 23);
-      this.PresetNumeric.TabIndex = 3;
+      this.PresetNumeric.TabIndex = 1;
       this.PresetNumeric.Value = new decimal(new int[] {
             128,
             0,
@@ -119,7 +119,7 @@ namespace OnGuardCore
       this.TriggerTime.Name = "TriggerTime";
       this.TriggerTime.ShowUpDown = true;
       this.TriggerTime.Size = new System.Drawing.Size(81, 23);
-      this.TriggerTime.TabIndex = 6;
+      this.TriggerTime.TabIndex = 3;
       // 
       // label3
       // 

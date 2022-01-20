@@ -52,7 +52,7 @@ namespace OnGuardCore
       this.ModelCombo.Location = new System.Drawing.Point(569, 56);
       this.ModelCombo.Name = "ModelCombo";
       this.ModelCombo.Size = new System.Drawing.Size(157, 23);
-      this.ModelCombo.TabIndex = 51;
+      this.ModelCombo.TabIndex = 2;
       this.ModelCombo.SelectedIndexChanged += new System.EventHandler(this.OnModelChanged);
       // 
       // MakeCombo
@@ -62,7 +62,7 @@ namespace OnGuardCore
       this.MakeCombo.Location = new System.Drawing.Point(276, 59);
       this.MakeCombo.Name = "MakeCombo";
       this.MakeCombo.Size = new System.Drawing.Size(157, 23);
-      this.MakeCombo.TabIndex = 50;
+      this.MakeCombo.TabIndex = 1;
       this.MakeCombo.SelectedIndexChanged += new System.EventHandler(this.OnMakeChanged);
       // 
       // label4
@@ -90,7 +90,7 @@ namespace OnGuardCore
       this.DownloadPresetsButton.Location = new System.Drawing.Point(32, 58);
       this.DownloadPresetsButton.Name = "DownloadPresetsButton";
       this.DownloadPresetsButton.Size = new System.Drawing.Size(112, 23);
-      this.DownloadPresetsButton.TabIndex = 47;
+      this.DownloadPresetsButton.TabIndex = 0;
       this.DownloadPresetsButton.Text = "Download";
       this.DownloadPresetsButton.UseVisualStyleBackColor = true;
       this.DownloadPresetsButton.Click += new System.EventHandler(this.DownloadPresetsButton_Click);
@@ -110,7 +110,7 @@ namespace OnGuardCore
       this.cancelButton.Location = new System.Drawing.Point(414, 404);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 53;
+      this.cancelButton.TabIndex = 5;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -120,7 +120,7 @@ namespace OnGuardCore
       this.okButton.Location = new System.Drawing.Point(319, 404);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 52;
+      this.okButton.TabIndex = 4;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);
@@ -137,7 +137,7 @@ namespace OnGuardCore
       this.PresetsListView.MultiSelect = false;
       this.PresetsListView.Name = "PresetsListView";
       this.PresetsListView.Size = new System.Drawing.Size(720, 289);
-      this.PresetsListView.TabIndex = 54;
+      this.PresetsListView.TabIndex = 3;
       this.PresetsListView.UseCompatibleStateImageBehavior = false;
       this.PresetsListView.View = System.Windows.Forms.View.Details;
       // 
@@ -156,7 +156,7 @@ namespace OnGuardCore
       this.FormHelpButton.Location = new System.Drawing.Point(665, 404);
       this.FormHelpButton.Name = "FormHelpButton";
       this.FormHelpButton.Size = new System.Drawing.Size(75, 23);
-      this.FormHelpButton.TabIndex = 55;
+      this.FormHelpButton.TabIndex = 6;
       this.FormHelpButton.Text = "Help!";
       this.FormHelpButton.UseVisualStyleBackColor = true;
       this.FormHelpButton.Click += new System.EventHandler(this.HelpButton_Click);

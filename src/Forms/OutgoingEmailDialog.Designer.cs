@@ -52,7 +52,7 @@
       this.okButton.Location = new System.Drawing.Point(238, 249);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 5;
+      this.okButton.TabIndex = 0;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);
@@ -63,7 +63,7 @@
       this.cancelButton.Location = new System.Drawing.Point(322, 249);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 6;
+      this.cancelButton.TabIndex = 1;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -171,7 +171,7 @@
       this.testButton.Location = new System.Drawing.Point(406, 249);
       this.testButton.Name = "testButton";
       this.testButton.Size = new System.Drawing.Size(75, 23);
-      this.testButton.TabIndex = 13;
+      this.testButton.TabIndex = 2;
       this.testButton.Text = "Test";
       this.testButton.UseVisualStyleBackColor = true;
       this.testButton.Click += new System.EventHandler(this.TestButton_Click);

@@ -57,10 +57,10 @@ namespace OnGuardCore
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
       // 
-      // CancelButton
+      // FormCancelButton
       // 
       this.FormCancelButton.Location = new System.Drawing.Point(416, 217);
-      this.FormCancelButton.Name = "CancelButton";
+      this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
       this.FormCancelButton.TabIndex = 1;
       this.FormCancelButton.Text = "Cancel";
@@ -87,7 +87,7 @@ namespace OnGuardCore
       this.DefaultDataButton.Location = new System.Drawing.Point(684, 33);
       this.DefaultDataButton.Name = "DefaultDataButton";
       this.DefaultDataButton.Size = new System.Drawing.Size(91, 23);
-      this.DefaultDataButton.TabIndex = 50;
+      this.DefaultDataButton.TabIndex = 2;
       this.DefaultDataButton.Text = "Use Default";
       this.DefaultDataButton.UseVisualStyleBackColor = true;
       this.DefaultDataButton.Click += new System.EventHandler(this.DefaultDataButton_Click);
@@ -97,7 +97,7 @@ namespace OnGuardCore
       this.BrowseButton.Location = new System.Drawing.Point(603, 33);
       this.BrowseButton.Name = "BrowseButton";
       this.BrowseButton.Size = new System.Drawing.Size(75, 23);
-      this.BrowseButton.TabIndex = 46;
+      this.BrowseButton.TabIndex = 1;
       this.BrowseButton.Text = "Browse";
       this.BrowseButton.UseVisualStyleBackColor = true;
       this.BrowseButton.Click += new System.EventHandler(this.FileBrowseClick);
@@ -107,7 +107,7 @@ namespace OnGuardCore
       this.FileText.Location = new System.Drawing.Point(199, 33);
       this.FileText.Name = "FileText";
       this.FileText.Size = new System.Drawing.Size(394, 23);
-      this.FileText.TabIndex = 45;
+      this.FileText.TabIndex = 0;
       // 
       // label1
       // 
@@ -139,7 +139,7 @@ namespace OnGuardCore
       this.DefaultDBButton.Location = new System.Drawing.Point(684, 34);
       this.DefaultDBButton.Name = "DefaultDBButton";
       this.DefaultDBButton.Size = new System.Drawing.Size(91, 23);
-      this.DefaultDBButton.TabIndex = 51;
+      this.DefaultDBButton.TabIndex = 2;
       this.DefaultDBButton.Text = "Use Default";
       this.DefaultDBButton.UseVisualStyleBackColor = true;
       this.DefaultDBButton.Click += new System.EventHandler(this.DefaultDBButton_Click);
@@ -149,7 +149,7 @@ namespace OnGuardCore
       this.buttonBrowseDatabase.Location = new System.Drawing.Point(603, 35);
       this.buttonBrowseDatabase.Name = "buttonBrowseDatabase";
       this.buttonBrowseDatabase.Size = new System.Drawing.Size(75, 23);
-      this.buttonBrowseDatabase.TabIndex = 49;
+      this.buttonBrowseDatabase.TabIndex = 1;
       this.buttonBrowseDatabase.Text = "Browse";
       this.buttonBrowseDatabase.UseVisualStyleBackColor = true;
       this.buttonBrowseDatabase.Click += new System.EventHandler(this.BrowseDatabaseClick);
@@ -159,7 +159,7 @@ namespace OnGuardCore
       this.pathDatabaseText.Location = new System.Drawing.Point(199, 35);
       this.pathDatabaseText.Name = "pathDatabaseText";
       this.pathDatabaseText.Size = new System.Drawing.Size(394, 23);
-      this.pathDatabaseText.TabIndex = 48;
+      this.pathDatabaseText.TabIndex = 0;
       // 
       // label2
       // 
@@ -181,12 +181,12 @@ namespace OnGuardCore
       this.LiveCameraLabel.TabIndex = 48;
       this.LiveCameraLabel.Text = "Set the Data Files Location";
       // 
-      // HelpButton
+      // FormHelpButton
       // 
       this.FormHelpButton.Location = new System.Drawing.Point(740, 217);
-      this.FormHelpButton.Name = "HelpButton";
+      this.FormHelpButton.Name = "FormHelpButton";
       this.FormHelpButton.Size = new System.Drawing.Size(75, 23);
-      this.FormHelpButton.TabIndex = 49;
+      this.FormHelpButton.TabIndex = 2;
       this.FormHelpButton.Text = "Help!";
       this.FormHelpButton.UseVisualStyleBackColor = true;
       this.FormHelpButton.Click += new System.EventHandler(this.HelpButton_Click);

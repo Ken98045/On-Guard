@@ -57,7 +57,7 @@ namespace OnGuardCore
       this.profileListBox.Location = new System.Drawing.Point(257, 92);
       this.profileListBox.Name = "profileListBox";
       this.profileListBox.Size = new System.Drawing.Size(268, 64);
-      this.profileListBox.TabIndex = 27;
+      this.profileListBox.TabIndex = 0;
       this.profileListBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged);
       // 
       // okButton
@@ -65,7 +65,7 @@ namespace OnGuardCore
       this.okButton.Location = new System.Drawing.Point(310, 216);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 28;
+      this.okButton.TabIndex = 2;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);
@@ -75,7 +75,7 @@ namespace OnGuardCore
       this.cancelButton.Location = new System.Drawing.Point(404, 216);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 29;
+      this.cancelButton.TabIndex = 3;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -85,7 +85,7 @@ namespace OnGuardCore
       this.SnapshotTextBox.Location = new System.Drawing.Point(257, 169);
       this.SnapshotTextBox.Name = "SnapshotTextBox";
       this.SnapshotTextBox.Size = new System.Drawing.Size(334, 23);
-      this.SnapshotTextBox.TabIndex = 30;
+      this.SnapshotTextBox.TabIndex = 1;
       // 
       // label5
       // 
@@ -107,12 +107,12 @@ namespace OnGuardCore
       this.label2.TabIndex = 40;
       this.label2.Text = "Edit if Desired (unusual)";
       // 
-      // HelpButton
+      // FormHelpButton
       // 
       this.FormHelpButton.Location = new System.Drawing.Point(659, 216);
-      this.FormHelpButton.Name = "HelpButton";
+      this.FormHelpButton.Name = "FormHelpButton";
       this.FormHelpButton.Size = new System.Drawing.Size(75, 23);
-      this.FormHelpButton.TabIndex = 41;
+      this.FormHelpButton.TabIndex = 4;
       this.FormHelpButton.Text = "Help!";
       this.FormHelpButton.UseVisualStyleBackColor = true;
       this.FormHelpButton.Click += new System.EventHandler(this.HelpButton_Click);

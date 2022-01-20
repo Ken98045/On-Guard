@@ -79,7 +79,7 @@ namespace OnGuardCore
       this.OKButton.Location = new System.Drawing.Point(277, 439);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(66, 23);
-      this.OKButton.TabIndex = 30;
+      this.OKButton.TabIndex = 4;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -89,7 +89,7 @@ namespace OnGuardCore
       this.FormCancelButton.Location = new System.Drawing.Point(358, 439);
       this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(66, 23);
-      this.FormCancelButton.TabIndex = 31;
+      this.FormCancelButton.TabIndex = 5;
       this.FormCancelButton.Text = "Cancel";
       this.FormCancelButton.UseVisualStyleBackColor = true;
       this.FormCancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -124,7 +124,7 @@ namespace OnGuardCore
             0});
       this.NumericMinRes.Name = "NumericMinRes";
       this.NumericMinRes.Size = new System.Drawing.Size(120, 23);
-      this.NumericMinRes.TabIndex = 37;
+      this.NumericMinRes.TabIndex = 0;
       this.NumericMinRes.Value = new decimal(new int[] {
             320,
             0,
@@ -141,7 +141,7 @@ namespace OnGuardCore
             0});
       this.NumericMaxRes.Name = "NumericMaxRes";
       this.NumericMaxRes.Size = new System.Drawing.Size(120, 23);
-      this.NumericMaxRes.TabIndex = 38;
+      this.NumericMaxRes.TabIndex = 1;
       this.NumericMaxRes.Value = new decimal(new int[] {
             9999,
             0,
@@ -154,7 +154,7 @@ namespace OnGuardCore
       this.SearchButton.Location = new System.Drawing.Point(91, 399);
       this.SearchButton.Name = "SearchButton";
       this.SearchButton.Size = new System.Drawing.Size(97, 23);
-      this.SearchButton.TabIndex = 39;
+      this.SearchButton.TabIndex = 2;
       this.SearchButton.Text = "Search";
       this.SearchButton.UseVisualStyleBackColor = true;
       this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
@@ -195,7 +195,7 @@ namespace OnGuardCore
       this.MakeTextBox.Name = "MakeTextBox";
       this.MakeTextBox.ReadOnly = true;
       this.MakeTextBox.Size = new System.Drawing.Size(120, 23);
-      this.MakeTextBox.TabIndex = 50;
+      this.MakeTextBox.TabIndex = 2;
       // 
       // ModelTextBox
       // 
@@ -203,7 +203,7 @@ namespace OnGuardCore
       this.ModelTextBox.Name = "ModelTextBox";
       this.ModelTextBox.ReadOnly = true;
       this.ModelTextBox.Size = new System.Drawing.Size(120, 23);
-      this.ModelTextBox.TabIndex = 51;
+      this.ModelTextBox.TabIndex = 3;
       // 
       // label7
       // 
@@ -244,7 +244,7 @@ namespace OnGuardCore
       this.StopButton.Location = new System.Drawing.Point(200, 399);
       this.StopButton.Name = "StopButton";
       this.StopButton.Size = new System.Drawing.Size(97, 23);
-      this.StopButton.TabIndex = 56;
+      this.StopButton.TabIndex = 3;
       this.StopButton.Text = "Stop";
       this.StopButton.UseVisualStyleBackColor = true;
       this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
@@ -265,7 +265,7 @@ namespace OnGuardCore
       this.TriedCountTextBox.Name = "TriedCountTextBox";
       this.TriedCountTextBox.ReadOnly = true;
       this.TriedCountTextBox.Size = new System.Drawing.Size(65, 23);
-      this.TriedCountTextBox.TabIndex = 58;
+      this.TriedCountTextBox.TabIndex = 4;
       // 
       // AutoFindCamera
       // 

@@ -219,7 +219,7 @@
       this.EditCameraButton.Location = new System.Drawing.Point(540, 113);
       this.EditCameraButton.Name = "EditCameraButton";
       this.EditCameraButton.Size = new System.Drawing.Size(113, 23);
-      this.EditCameraButton.TabIndex = 20;
+      this.EditCameraButton.TabIndex = 1;
       this.EditCameraButton.Text = "Edit Camera";
       this.EditCameraButton.UseVisualStyleBackColor = true;
       this.EditCameraButton.Click += new System.EventHandler(this.EditCameraButton_Click);
@@ -298,7 +298,7 @@
       this.addCameraButton.Location = new System.Drawing.Point(540, 76);
       this.addCameraButton.Name = "addCameraButton";
       this.addCameraButton.Size = new System.Drawing.Size(113, 23);
-      this.addCameraButton.TabIndex = 1;
+      this.addCameraButton.TabIndex = 0;
       this.addCameraButton.Text = "Add Camera";
       this.addCameraButton.UseVisualStyleBackColor = true;
       this.addCameraButton.Click += new System.EventHandler(this.AddCameraButton_Click);
@@ -418,7 +418,7 @@
             0});
       this.OnVIFPortNumeric.Name = "OnVIFPortNumeric";
       this.OnVIFPortNumeric.Size = new System.Drawing.Size(58, 23);
-      this.OnVIFPortNumeric.TabIndex = 72;
+      this.OnVIFPortNumeric.TabIndex = 2;
       this.OnVIFPortNumeric.Value = new decimal(new int[] {
             8080,
             0,
@@ -448,7 +448,7 @@
       this.cameraIPAddressText.Location = new System.Drawing.Point(187, 25);
       this.cameraIPAddressText.Name = "cameraIPAddressText";
       this.cameraIPAddressText.Size = new System.Drawing.Size(87, 23);
-      this.cameraIPAddressText.TabIndex = 54;
+      this.cameraIPAddressText.TabIndex = 0;
       this.cameraIPAddressText.Text = "localhost";
       // 
       // label15
@@ -475,7 +475,7 @@
             0});
       this.portNumeric.Name = "portNumeric";
       this.portNumeric.Size = new System.Drawing.Size(58, 23);
-      this.portNumeric.TabIndex = 55;
+      this.portNumeric.TabIndex = 1;
       this.portNumeric.Value = new decimal(new int[] {
             80,
             0,
@@ -496,7 +496,7 @@
       this.cameraUserText.Location = new System.Drawing.Point(187, 161);
       this.cameraUserText.Name = "cameraUserText";
       this.cameraUserText.Size = new System.Drawing.Size(87, 23);
-      this.cameraUserText.TabIndex = 56;
+      this.cameraUserText.TabIndex = 3;
       this.cameraUserText.Text = "admin";
       // 
       // label12
@@ -512,7 +512,7 @@
       this.cameraPasswordText.Location = new System.Drawing.Point(187, 201);
       this.cameraPasswordText.Name = "cameraPasswordText";
       this.cameraPasswordText.Size = new System.Drawing.Size(87, 23);
-      this.cameraPasswordText.TabIndex = 57;
+      this.cameraPasswordText.TabIndex = 4;
       this.cameraPasswordText.Text = "admin";
       this.cameraPasswordText.UseSystemPasswordChar = true;
       // 
@@ -607,7 +607,7 @@
             0});
       this.ChannelNumeric.Name = "ChannelNumeric";
       this.ChannelNumeric.Size = new System.Drawing.Size(63, 23);
-      this.ChannelNumeric.TabIndex = 79;
+      this.ChannelNumeric.TabIndex = 2;
       // 
       // cameraXResolutionNumeric
       // 
@@ -619,7 +619,7 @@
             0});
       this.cameraXResolutionNumeric.Name = "cameraXResolutionNumeric";
       this.cameraXResolutionNumeric.Size = new System.Drawing.Size(63, 23);
-      this.cameraXResolutionNumeric.TabIndex = 72;
+      this.cameraXResolutionNumeric.TabIndex = 0;
       this.cameraXResolutionNumeric.Value = new decimal(new int[] {
             2560,
             0,
@@ -662,7 +662,7 @@
             0});
       this.cameraYResolutionNumeric.Name = "cameraYResolutionNumeric";
       this.cameraYResolutionNumeric.Size = new System.Drawing.Size(63, 23);
-      this.cameraYResolutionNumeric.TabIndex = 74;
+      this.cameraYResolutionNumeric.TabIndex = 1;
       this.cameraYResolutionNumeric.Value = new decimal(new int[] {
             1920,
             0,
@@ -739,7 +739,7 @@
       this.uriTextBox.Location = new System.Drawing.Point(107, 92);
       this.uriTextBox.Name = "uriTextBox";
       this.uriTextBox.Size = new System.Drawing.Size(498, 23);
-      this.uriTextBox.TabIndex = 24;
+      this.uriTextBox.TabIndex = 5;
       // 
       // label25
       // 
@@ -924,7 +924,7 @@
       this.radioButtonPTZNone.Location = new System.Drawing.Point(16, 25);
       this.radioButtonPTZNone.Name = "radioButtonPTZNone";
       this.radioButtonPTZNone.Size = new System.Drawing.Size(54, 19);
-      this.radioButtonPTZNone.TabIndex = 20;
+      this.radioButtonPTZNone.TabIndex = 0;
       this.radioButtonPTZNone.TabStop = true;
       this.radioButtonPTZNone.Text = "None";
       this.radioButtonPTZNone.UseVisualStyleBackColor = true;
@@ -944,7 +944,7 @@
       this.radioButtonPTZHTTP.Location = new System.Drawing.Point(16, 136);
       this.radioButtonPTZHTTP.Name = "radioButtonPTZHTTP";
       this.radioButtonPTZHTTP.Size = new System.Drawing.Size(102, 19);
-      this.radioButtonPTZHTTP.TabIndex = 18;
+      this.radioButtonPTZHTTP.TabIndex = 4;
       this.radioButtonPTZHTTP.TabStop = true;
       this.radioButtonPTZHTTP.Text = "HTTP Message";
       this.radioButtonPTZHTTP.UseVisualStyleBackColor = true;
@@ -955,7 +955,7 @@
       this.radioButtonPTZiSpy.Location = new System.Drawing.Point(16, 108);
       this.radioButtonPTZiSpy.Name = "radioButtonPTZiSpy";
       this.radioButtonPTZiSpy.Size = new System.Drawing.Size(123, 19);
-      this.radioButtonPTZiSpy.TabIndex = 17;
+      this.radioButtonPTZiSpy.TabIndex = 3;
       this.radioButtonPTZiSpy.TabStop = true;
       this.radioButtonPTZiSpy.Text = "iSpy Definition File";
       this.radioButtonPTZiSpy.UseVisualStyleBackColor = true;
@@ -966,7 +966,7 @@
       this.radioButtonPTZOnVIF.Location = new System.Drawing.Point(16, 80);
       this.radioButtonPTZOnVIF.Name = "radioButtonPTZOnVIF";
       this.radioButtonPTZOnVIF.Size = new System.Drawing.Size(106, 19);
-      this.radioButtonPTZOnVIF.TabIndex = 16;
+      this.radioButtonPTZOnVIF.TabIndex = 2;
       this.radioButtonPTZOnVIF.TabStop = true;
       this.radioButtonPTZOnVIF.Text = "OnVIF Cameras";
       this.radioButtonPTZOnVIF.UseVisualStyleBackColor = true;
@@ -977,7 +977,7 @@
       this.radioButtonPTZBlueIris.Location = new System.Drawing.Point(16, 52);
       this.radioButtonPTZBlueIris.Name = "radioButtonPTZBlueIris";
       this.radioButtonPTZBlueIris.Size = new System.Drawing.Size(66, 19);
-      this.radioButtonPTZBlueIris.TabIndex = 15;
+      this.radioButtonPTZBlueIris.TabIndex = 1;
       this.radioButtonPTZBlueIris.TabStop = true;
       this.radioButtonPTZBlueIris.Text = "Blue Iris";
       this.radioButtonPTZBlueIris.UseVisualStyleBackColor = true;
@@ -988,7 +988,7 @@
       this.ConfigureMovementButton.Location = new System.Drawing.Point(357, 211);
       this.ConfigureMovementButton.Name = "ConfigureMovementButton";
       this.ConfigureMovementButton.Size = new System.Drawing.Size(143, 23);
-      this.ConfigureMovementButton.TabIndex = 11;
+      this.ConfigureMovementButton.TabIndex = 1;
       this.ConfigureMovementButton.Text = "Configure Movement";
       this.ConfigureMovementButton.UseVisualStyleBackColor = true;
       this.ConfigureMovementButton.Click += new System.EventHandler(this.ConfigureMovementButton_Click);
@@ -998,7 +998,7 @@
       this.SelectPTZMethodButton.Location = new System.Drawing.Point(198, 211);
       this.SelectPTZMethodButton.Name = "SelectPTZMethodButton";
       this.SelectPTZMethodButton.Size = new System.Drawing.Size(143, 23);
-      this.SelectPTZMethodButton.TabIndex = 4;
+      this.SelectPTZMethodButton.TabIndex = 0;
       this.SelectPTZMethodButton.Text = "Select";
       this.SelectPTZMethodButton.UseVisualStyleBackColor = true;
       this.SelectPTZMethodButton.Click += new System.EventHandler(this.SelectPTZMethod);
@@ -1073,7 +1073,7 @@
       this.groupBox2.Location = new System.Drawing.Point(73, 9);
       this.groupBox2.Name = "groupBox2";
       this.groupBox2.Size = new System.Drawing.Size(551, 172);
-      this.groupBox2.TabIndex = 15;
+      this.groupBox2.TabIndex = 0;
       this.groupBox2.TabStop = false;
       this.groupBox2.Text = "Presets Selection Method";
       // 
@@ -1119,7 +1119,7 @@
       this.radioPresetNone.Location = new System.Drawing.Point(16, 31);
       this.radioPresetNone.Name = "radioPresetNone";
       this.radioPresetNone.Size = new System.Drawing.Size(54, 19);
-      this.radioPresetNone.TabIndex = 20;
+      this.radioPresetNone.TabIndex = 0;
       this.radioPresetNone.TabStop = true;
       this.radioPresetNone.Text = "None";
       this.radioPresetNone.UseVisualStyleBackColor = true;
@@ -1139,7 +1139,7 @@
       this.radioPresetHttp.Location = new System.Drawing.Point(16, 142);
       this.radioPresetHttp.Name = "radioPresetHttp";
       this.radioPresetHttp.Size = new System.Drawing.Size(102, 19);
-      this.radioPresetHttp.TabIndex = 18;
+      this.radioPresetHttp.TabIndex = 3;
       this.radioPresetHttp.TabStop = true;
       this.radioPresetHttp.Text = "HTTP Message";
       this.radioPresetHttp.UseVisualStyleBackColor = true;
@@ -1161,7 +1161,7 @@
       this.radioPresetOnvif.Location = new System.Drawing.Point(16, 86);
       this.radioPresetOnvif.Name = "radioPresetOnvif";
       this.radioPresetOnvif.Size = new System.Drawing.Size(106, 19);
-      this.radioPresetOnvif.TabIndex = 16;
+      this.radioPresetOnvif.TabIndex = 2;
       this.radioPresetOnvif.TabStop = true;
       this.radioPresetOnvif.Text = "OnVIF Cameras";
       this.radioPresetOnvif.UseVisualStyleBackColor = true;
@@ -1172,7 +1172,7 @@
       this.radioPresetBlueIris.Location = new System.Drawing.Point(16, 58);
       this.radioPresetBlueIris.Name = "radioPresetBlueIris";
       this.radioPresetBlueIris.Size = new System.Drawing.Size(66, 19);
-      this.radioPresetBlueIris.TabIndex = 15;
+      this.radioPresetBlueIris.TabIndex = 1;
       this.radioPresetBlueIris.TabStop = true;
       this.radioPresetBlueIris.Text = "Blue Iris";
       this.radioPresetBlueIris.UseVisualStyleBackColor = true;
@@ -1182,7 +1182,7 @@
       this.buttonTestPresets.Location = new System.Drawing.Point(357, 211);
       this.buttonTestPresets.Name = "buttonTestPresets";
       this.buttonTestPresets.Size = new System.Drawing.Size(143, 23);
-      this.buttonTestPresets.TabIndex = 11;
+      this.buttonTestPresets.TabIndex = 2;
       this.buttonTestPresets.Text = "Test Presets";
       this.buttonTestPresets.UseVisualStyleBackColor = true;
       this.buttonTestPresets.Click += new System.EventHandler(this.ButtonTestPresets_Click);
@@ -1192,7 +1192,7 @@
       this.buttonSelectPresetMethod.Location = new System.Drawing.Point(198, 211);
       this.buttonSelectPresetMethod.Name = "buttonSelectPresetMethod";
       this.buttonSelectPresetMethod.Size = new System.Drawing.Size(143, 23);
-      this.buttonSelectPresetMethod.TabIndex = 4;
+      this.buttonSelectPresetMethod.TabIndex = 1;
       this.buttonSelectPresetMethod.Text = "Select";
       this.buttonSelectPresetMethod.UseVisualStyleBackColor = true;
       this.buttonSelectPresetMethod.Click += new System.EventHandler(this.ButtonSelectPresetMethod_Click);
@@ -1257,7 +1257,7 @@
             -2147287040});
       this.Latitude.Name = "Latitude";
       this.Latitude.Size = new System.Drawing.Size(79, 23);
-      this.Latitude.TabIndex = 10;
+      this.Latitude.TabIndex = 1;
       // 
       // Longitude
       // 
@@ -1275,7 +1275,7 @@
             -2147287040});
       this.Longitude.Name = "Longitude";
       this.Longitude.Size = new System.Drawing.Size(79, 23);
-      this.Longitude.TabIndex = 9;
+      this.Longitude.TabIndex = 0;
       // 
       // label38
       // 
@@ -1407,7 +1407,7 @@
       this.MonitorSubFoldersCheckbox.Location = new System.Drawing.Point(251, 59);
       this.MonitorSubFoldersCheckbox.Name = "MonitorSubFoldersCheckbox";
       this.MonitorSubFoldersCheckbox.Size = new System.Drawing.Size(175, 21);
-      this.MonitorSubFoldersCheckbox.TabIndex = 2;
+      this.MonitorSubFoldersCheckbox.TabIndex = 0;
       this.MonitorSubFoldersCheckbox.Text = "Monitor All Sub-Folders";
       this.MonitorSubFoldersCheckbox.UseVisualStyleBackColor = true;
       // 
@@ -1480,7 +1480,7 @@
             0});
       this.MotionTimeoutNumeric.Name = "MotionTimeoutNumeric";
       this.MotionTimeoutNumeric.Size = new System.Drawing.Size(77, 23);
-      this.MotionTimeoutNumeric.TabIndex = 2;
+      this.MotionTimeoutNumeric.TabIndex = 0;
       this.MotionTimeoutNumeric.Value = new decimal(new int[] {
             90,
             0,

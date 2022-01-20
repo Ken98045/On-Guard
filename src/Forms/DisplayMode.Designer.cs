@@ -57,7 +57,7 @@
       this.VerticalFillRadio.Location = new System.Drawing.Point(7, 57);
       this.VerticalFillRadio.Name = "VerticalFillRadio";
       this.VerticalFillRadio.Size = new System.Drawing.Size(450, 19);
-      this.VerticalFillRadio.TabIndex = 3;
+      this.VerticalFillRadio.TabIndex = 1;
       this.VerticalFillRadio.TabStop = true;
       this.VerticalFillRadio.Text = "Fill Vertically.  The Picture is Not Distorted.  Horizontal Scroll Bar Usually Re" +
     "quired";
@@ -69,7 +69,7 @@
       this.FixedRadio.Location = new System.Drawing.Point(7, 123);
       this.FixedRadio.Name = "FixedRadio";
       this.FixedRadio.Size = new System.Drawing.Size(569, 19);
-      this.FixedRadio.TabIndex = 2;
+      this.FixedRadio.TabIndex = 3;
       this.FixedRadio.TabStop = true;
       this.FixedRadio.Text = "Fixed Width (1280x960), Variable Height.  Not Distorted.  Vertical/Horizontal Scr" +
     "oll Bars May Be Required";
@@ -81,7 +81,7 @@
       this.FilledRadio.Location = new System.Drawing.Point(7, 90);
       this.FilledRadio.Name = "FilledRadio";
       this.FilledRadio.Size = new System.Drawing.Size(468, 19);
-      this.FilledRadio.TabIndex = 1;
+      this.FilledRadio.TabIndex = 2;
       this.FilledRadio.TabStop = true;
       this.FilledRadio.Text = "Fill Horizontally and Vertically. Usually the Picture is Distorted.  No Picture S" +
     "croll Bars";
@@ -104,7 +104,7 @@
       this.OKButton.Location = new System.Drawing.Point(285, 212);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 1;
+      this.OKButton.TabIndex = 0;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -114,7 +114,7 @@
       this.CancelButton.Location = new System.Drawing.Point(366, 212);
       this.CancelButton.Name = "CancelButton";
       this.CancelButton.Size = new System.Drawing.Size(75, 23);
-      this.CancelButton.TabIndex = 2;
+      this.CancelButton.TabIndex = 1;
       this.CancelButton.Text = "Cancel";
       this.CancelButton.UseVisualStyleBackColor = true;
       this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);

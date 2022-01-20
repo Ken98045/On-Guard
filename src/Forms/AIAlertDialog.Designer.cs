@@ -75,24 +75,24 @@ namespace OnGuardCore
       this.EmailListBox.Location = new System.Drawing.Point(77, 50);
       this.EmailListBox.Name = "EmailListBox";
       this.EmailListBox.Size = new System.Drawing.Size(276, 94);
-      this.EmailListBox.TabIndex = 2;
+      this.EmailListBox.TabIndex = 0;
       // 
       // OKButton
       // 
       this.OKButton.Location = new System.Drawing.Point(143, 565);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 3;
+      this.OKButton.TabIndex = 0;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
       // 
-      // CancelButton
+      // FormCancelButton
       // 
       this.FormCancelButton.Location = new System.Drawing.Point(228, 565);
-      this.FormCancelButton.Name = "CancelButton";
+      this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
-      this.FormCancelButton.TabIndex = 4;
+      this.FormCancelButton.TabIndex = 1;
       this.FormCancelButton.Text = "Cancel";
       this.FormCancelButton.UseVisualStyleBackColor = true;
       this.FormCancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -102,7 +102,7 @@ namespace OnGuardCore
       this.RemoveButton.Location = new System.Drawing.Point(141, 158);
       this.RemoveButton.Name = "RemoveButton";
       this.RemoveButton.Size = new System.Drawing.Size(117, 23);
-      this.RemoveButton.TabIndex = 5;
+      this.RemoveButton.TabIndex = 1;
       this.RemoveButton.Text = "Remove Selection";
       this.RemoveButton.UseVisualStyleBackColor = true;
       this.RemoveButton.Click += new System.EventHandler(this.RemoveButton_Click);
@@ -131,7 +131,7 @@ namespace OnGuardCore
       this.AIDiedPayloadText.Location = new System.Drawing.Point(138, 120);
       this.AIDiedPayloadText.Name = "AIDiedPayloadText";
       this.AIDiedPayloadText.Size = new System.Drawing.Size(211, 23);
-      this.AIDiedPayloadText.TabIndex = 25;
+      this.AIDiedPayloadText.TabIndex = 1;
       // 
       // label11
       // 
@@ -148,7 +148,7 @@ namespace OnGuardCore
       this.AIDiedTopicText.Location = new System.Drawing.Point(138, 77);
       this.AIDiedTopicText.Name = "AIDiedTopicText";
       this.AIDiedTopicText.Size = new System.Drawing.Size(211, 23);
-      this.AIDiedTopicText.TabIndex = 27;
+      this.AIDiedTopicText.TabIndex = 0;
       this.AIDiedTopicText.Text = "OnGuard/AI Died";
       // 
       // sendAIDiedMQTTCheckbox
@@ -158,7 +158,7 @@ namespace OnGuardCore
       this.sendAIDiedMQTTCheckbox.Location = new System.Drawing.Point(115, 167);
       this.sendAIDiedMQTTCheckbox.Name = "sendAIDiedMQTTCheckbox";
       this.sendAIDiedMQTTCheckbox.Size = new System.Drawing.Size(168, 21);
-      this.sendAIDiedMQTTCheckbox.TabIndex = 28;
+      this.sendAIDiedMQTTCheckbox.TabIndex = 2;
       this.sendAIDiedMQTTCheckbox.Text = "Send MQTT on AI Died";
       this.sendAIDiedMQTTCheckbox.UseVisualStyleBackColor = true;
       // 

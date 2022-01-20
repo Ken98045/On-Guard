@@ -357,11 +357,11 @@ namespace OnGuardCore
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
       // 
-      // CancelButton
+      // FormCancelButton
       // 
       this.FormCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
       this.FormCancelButton.Location = new System.Drawing.Point(374, 348);
-      this.FormCancelButton.Name = "CancelButton";
+      this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
       this.FormCancelButton.TabIndex = 1;
       this.FormCancelButton.Text = "Cancel";

@@ -62,7 +62,7 @@
       this.OKButton.Location = new System.Drawing.Point(98, 409);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(107, 23);
-      this.OKButton.TabIndex = 0;
+      this.OKButton.TabIndex = 1;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -73,7 +73,7 @@
       this.cancelButton.Location = new System.Drawing.Point(217, 409);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(117, 23);
-      this.cancelButton.TabIndex = 1;
+      this.cancelButton.TabIndex = 2;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
@@ -101,7 +101,7 @@
       this.facialButton.Location = new System.Drawing.Point(11, 245);
       this.facialButton.Name = "facialButton";
       this.facialButton.Size = new System.Drawing.Size(127, 19);
-      this.facialButton.TabIndex = 6;
+      this.facialButton.TabIndex = 5;
       this.facialButton.TabStop = true;
       this.facialButton.Text = "Facial Recognition*";
       this.facialButton.UseVisualStyleBackColor = true;
@@ -176,7 +176,7 @@
       this.deleteAOIButton.Location = new System.Drawing.Point(342, 409);
       this.deleteAOIButton.Name = "deleteAOIButton";
       this.deleteAOIButton.Size = new System.Drawing.Size(117, 23);
-      this.deleteAOIButton.TabIndex = 2;
+      this.deleteAOIButton.TabIndex = 3;
       this.deleteAOIButton.Text = "Delete AOI";
       this.deleteAOIButton.UseVisualStyleBackColor = true;
       this.deleteAOIButton.Click += new System.EventHandler(this.DeleteAOIButton_Click);
@@ -195,7 +195,7 @@
       this.aoiNameText.Location = new System.Drawing.Point(308, 374);
       this.aoiNameText.Name = "aoiNameText";
       this.aoiNameText.Size = new System.Drawing.Size(225, 23);
-      this.aoiNameText.TabIndex = 3;
+      this.aoiNameText.TabIndex = 0;
       // 
       // notificationsButton
       // 
@@ -203,7 +203,7 @@
       this.notificationsButton.Location = new System.Drawing.Point(467, 409);
       this.notificationsButton.Name = "notificationsButton";
       this.notificationsButton.Size = new System.Drawing.Size(117, 23);
-      this.notificationsButton.TabIndex = 3;
+      this.notificationsButton.TabIndex = 4;
       this.notificationsButton.Text = "Set Notifications";
       this.notificationsButton.UseVisualStyleBackColor = true;
       this.notificationsButton.Click += new System.EventHandler(this.NotificationsButton_Click);
@@ -228,7 +228,7 @@
       this.EditButton.Location = new System.Drawing.Point(229, 297);
       this.EditButton.Name = "EditButton";
       this.EditButton.Size = new System.Drawing.Size(75, 23);
-      this.EditButton.TabIndex = 40;
+      this.EditButton.TabIndex = 1;
       this.EditButton.Text = "Edit";
       this.EditButton.UseVisualStyleBackColor = true;
       this.EditButton.Click += new System.EventHandler(this.EditButton_Click);
@@ -239,7 +239,7 @@
       this.RemoveButton.Location = new System.Drawing.Point(315, 297);
       this.RemoveButton.Name = "RemoveButton";
       this.RemoveButton.Size = new System.Drawing.Size(75, 23);
-      this.RemoveButton.TabIndex = 39;
+      this.RemoveButton.TabIndex = 2;
       this.RemoveButton.Text = "Remove";
       this.RemoveButton.UseVisualStyleBackColor = true;
       this.RemoveButton.Click += new System.EventHandler(this.RemoveButton_Click);
@@ -249,7 +249,7 @@
       this.AddButton.Location = new System.Drawing.Point(143, 297);
       this.AddButton.Name = "AddButton";
       this.AddButton.Size = new System.Drawing.Size(75, 23);
-      this.AddButton.TabIndex = 38;
+      this.AddButton.TabIndex = 0;
       this.AddButton.Text = "Add";
       this.AddButton.UseVisualStyleBackColor = true;
       this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
@@ -310,7 +310,7 @@
       this.areaAdjustButton.Location = new System.Drawing.Point(592, 409);
       this.areaAdjustButton.Name = "areaAdjustButton";
       this.areaAdjustButton.Size = new System.Drawing.Size(117, 23);
-      this.areaAdjustButton.TabIndex = 19;
+      this.areaAdjustButton.TabIndex = 5;
       this.areaAdjustButton.Text = "Adjust Area";
       this.areaAdjustButton.UseVisualStyleBackColor = true;
       this.areaAdjustButton.Click += new System.EventHandler(this.AreaAdjustButton_Click);

@@ -234,14 +234,14 @@
       this.fileNumberUpDown.Location = new System.Drawing.Point(36, 37);
       this.fileNumberUpDown.Name = "fileNumberUpDown";
       this.fileNumberUpDown.Size = new System.Drawing.Size(57, 23);
-      this.fileNumberUpDown.TabIndex = 7;
+      this.fileNumberUpDown.TabIndex = 5;
       // 
       // goToFileButton
       // 
       this.goToFileButton.Location = new System.Drawing.Point(99, 36);
       this.goToFileButton.Name = "goToFileButton";
       this.goToFileButton.Size = new System.Drawing.Size(39, 23);
-      this.goToFileButton.TabIndex = 8;
+      this.goToFileButton.TabIndex = 3;
       this.goToFileButton.Text = "Go!";
       this.goToFileButton.UseVisualStyleBackColor = true;
       this.goToFileButton.Click += new System.EventHandler(this.GoToFileButton_Click);
@@ -260,14 +260,14 @@
       this.goToFileTextBox.Location = new System.Drawing.Point(33, 5);
       this.goToFileTextBox.Name = "goToFileTextBox";
       this.goToFileTextBox.Size = new System.Drawing.Size(232, 23);
-      this.goToFileTextBox.TabIndex = 14;
+      this.goToFileTextBox.TabIndex = 0;
       // 
       // goToFileNameButton
       // 
       this.goToFileNameButton.Location = new System.Drawing.Point(271, 5);
       this.goToFileNameButton.Name = "goToFileNameButton";
       this.goToFileNameButton.Size = new System.Drawing.Size(39, 23);
-      this.goToFileNameButton.TabIndex = 15;
+      this.goToFileNameButton.TabIndex = 1;
       this.goToFileNameButton.Text = "Go!";
       this.goToFileNameButton.UseVisualStyleBackColor = true;
       this.goToFileNameButton.Click += new System.EventHandler(this.GoToFileNameButton_Click);
@@ -321,7 +321,7 @@
       this.reverseListButton.Location = new System.Drawing.Point(3, 70);
       this.reverseListButton.Name = "reverseListButton";
       this.reverseListButton.Size = new System.Drawing.Size(95, 23);
-      this.reverseListButton.TabIndex = 20;
+      this.reverseListButton.TabIndex = 2;
       this.reverseListButton.Text = "Reverse!";
       this.reverseListButton.UseVisualStyleBackColor = true;
       this.reverseListButton.Click += new System.EventHandler(this.OnReverseListButton);
@@ -331,7 +331,7 @@
       this.analyzeButton.Location = new System.Drawing.Point(18, 5);
       this.analyzeButton.Name = "analyzeButton";
       this.analyzeButton.Size = new System.Drawing.Size(132, 23);
-      this.analyzeButton.TabIndex = 23;
+      this.analyzeButton.TabIndex = 0;
       this.analyzeButton.Text = "Area Analysis";
       this.analyzeButton.UseVisualStyleBackColor = true;
       this.analyzeButton.Click += new System.EventHandler(this.AnalyzeButton_Click);
@@ -341,7 +341,7 @@
       this.liveCameraButton.Location = new System.Drawing.Point(5, 32);
       this.liveCameraButton.Name = "liveCameraButton";
       this.liveCameraButton.Size = new System.Drawing.Size(82, 23);
-      this.liveCameraButton.TabIndex = 24;
+      this.liveCameraButton.TabIndex = 0;
       this.liveCameraButton.Text = "Snapshot";
       this.liveCameraButton.UseVisualStyleBackColor = true;
       this.liveCameraButton.Click += new System.EventHandler(this.LiveCameraButton_Click);
@@ -351,7 +351,7 @@
       this.presetButton.Location = new System.Drawing.Point(5, 60);
       this.presetButton.Name = "presetButton";
       this.presetButton.Size = new System.Drawing.Size(82, 23);
-      this.presetButton.TabIndex = 31;
+      this.presetButton.TabIndex = 2;
       this.presetButton.Text = "Go to Preset";
       this.presetButton.UseVisualStyleBackColor = true;
       this.presetButton.Click += new System.EventHandler(this.PresetButton_Click);
@@ -383,7 +383,7 @@
       this.PresetsCombo.Location = new System.Drawing.Point(88, 60);
       this.PresetsCombo.Name = "PresetsCombo";
       this.PresetsCombo.Size = new System.Drawing.Size(96, 23);
-      this.PresetsCombo.TabIndex = 34;
+      this.PresetsCombo.TabIndex = 3;
       // 
       // liveCheck
       // 
@@ -394,7 +394,7 @@
       this.liveCheck.Location = new System.Drawing.Point(88, 31);
       this.liveCheck.Name = "liveCheck";
       this.liveCheck.Size = new System.Drawing.Size(96, 25);
-      this.liveCheck.TabIndex = 33;
+      this.liveCheck.TabIndex = 1;
       this.liveCheck.Text = "Video";
       this.liveCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.liveCheck.UseVisualStyleBackColor = false;
@@ -465,7 +465,7 @@
       this.refreshButton.Location = new System.Drawing.Point(3, 38);
       this.refreshButton.Name = "refreshButton";
       this.refreshButton.Size = new System.Drawing.Size(95, 23);
-      this.refreshButton.TabIndex = 33;
+      this.refreshButton.TabIndex = 1;
       this.refreshButton.Text = "Refresh";
       this.refreshButton.UseVisualStyleBackColor = true;
       this.refreshButton.Click += new System.EventHandler(this.Refresh_Click);
@@ -487,7 +487,7 @@
       this.cameraCombo.Location = new System.Drawing.Point(3, 8);
       this.cameraCombo.Name = "cameraCombo";
       this.cameraCombo.Size = new System.Drawing.Size(95, 21);
-      this.cameraCombo.TabIndex = 37;
+      this.cameraCombo.TabIndex = 0;
       this.cameraCombo.SelectedIndexChanged += new System.EventHandler(this.cameraCombo_SelectedIndexChanged);
       this.cameraCombo.SelectionChangeCommitted += new System.EventHandler(this.OnCameraSelected);
       // 
@@ -517,14 +517,14 @@
       this.panel4.Location = new System.Drawing.Point(418, 84);
       this.panel4.Name = "panel4";
       this.panel4.Size = new System.Drawing.Size(318, 34);
-      this.panel4.TabIndex = 51;
+      this.panel4.TabIndex = 1;
       // 
       // FullAnalysisButton
       // 
       this.FullAnalysisButton.Location = new System.Drawing.Point(166, 5);
       this.FullAnalysisButton.Name = "FullAnalysisButton";
       this.FullAnalysisButton.Size = new System.Drawing.Size(132, 23);
-      this.FullAnalysisButton.TabIndex = 48;
+      this.FullAnalysisButton.TabIndex = 1;
       this.FullAnalysisButton.Text = "Full Analysis";
       this.FullAnalysisButton.UseVisualStyleBackColor = true;
       this.FullAnalysisButton.Click += new System.EventHandler(this.FullAnalysisButton_Click);
@@ -553,7 +553,7 @@
       this.label2.Location = new System.Drawing.Point(14, 39);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(14, 15);
-      this.label2.TabIndex = 40;
+      this.label2.TabIndex = 2;
       this.label2.Text = "#";
       // 
       // motionOnlyCheckbox
@@ -563,7 +563,7 @@
       this.motionOnlyCheckbox.Location = new System.Drawing.Point(251, 34);
       this.motionOnlyCheckbox.Name = "motionOnlyCheckbox";
       this.motionOnlyCheckbox.Size = new System.Drawing.Size(59, 25);
-      this.motionOnlyCheckbox.TabIndex = 39;
+      this.motionOnlyCheckbox.TabIndex = 6;
       this.motionOnlyCheckbox.Text = "Motion!";
       this.motionOnlyCheckbox.UseVisualStyleBackColor = true;
       this.motionOnlyCheckbox.CheckedChanged += new System.EventHandler(this.MotionOnlyCheckbox_CheckedChanged);
@@ -577,7 +577,7 @@
       this.buttonLeft.Location = new System.Drawing.Point(174, 35);
       this.buttonLeft.Name = "buttonLeft";
       this.buttonLeft.Size = new System.Drawing.Size(31, 23);
-      this.buttonLeft.TabIndex = 2;
+      this.buttonLeft.TabIndex = 4;
       this.buttonLeft.UseVisualStyleBackColor = true;
       this.buttonLeft.Click += new System.EventHandler(this.ButtonLeft_Click);
       // 
@@ -589,7 +589,7 @@
       this.buttonRight.Location = new System.Drawing.Point(212, 35);
       this.buttonRight.Name = "buttonRight";
       this.buttonRight.Size = new System.Drawing.Size(31, 23);
-      this.buttonRight.TabIndex = 1;
+      this.buttonRight.TabIndex = 5;
       this.buttonRight.UseVisualStyleBackColor = true;
       this.buttonRight.Click += new System.EventHandler(this.ButtonRight_Click);
       // 
@@ -605,7 +605,7 @@
       this.panel2.Location = new System.Drawing.Point(852, 5);
       this.panel2.Name = "panel2";
       this.panel2.Size = new System.Drawing.Size(152, 113);
-      this.panel2.TabIndex = 49;
+      this.panel2.TabIndex = 0;
       // 
       // label13
       // 
@@ -622,7 +622,7 @@
       this.FPSProgress.Location = new System.Drawing.Point(75, 16);
       this.FPSProgress.Name = "FPSProgress";
       this.FPSProgress.Size = new System.Drawing.Size(73, 15);
-      this.FPSProgress.TabIndex = 42;
+      this.FPSProgress.TabIndex = 0;
       this.FPSProgress.Load += new System.EventHandler(this.EnhancedProgressBar1_Load);
       // 
       // cpuProgress
@@ -631,7 +631,7 @@
       this.cpuProgress.Location = new System.Drawing.Point(74, 80);
       this.cpuProgress.Name = "cpuProgress";
       this.cpuProgress.Size = new System.Drawing.Size(73, 15);
-      this.cpuProgress.TabIndex = 43;
+      this.cpuProgress.TabIndex = 2;
       // 
       // label15
       // 
@@ -648,7 +648,7 @@
       this.AIProgressBar.Location = new System.Drawing.Point(75, 48);
       this.AIProgressBar.Name = "AIProgressBar";
       this.AIProgressBar.Size = new System.Drawing.Size(73, 15);
-      this.AIProgressBar.TabIndex = 45;
+      this.AIProgressBar.TabIndex = 1;
       // 
       // panel1
       // 

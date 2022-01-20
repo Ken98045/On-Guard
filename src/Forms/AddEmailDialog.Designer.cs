@@ -40,7 +40,7 @@
       this.okButton.Location = new System.Drawing.Point(137, 163);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 2;
+      this.okButton.TabIndex = 0;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
       this.okButton.Click += new System.EventHandler(this.OkButton_Click);
@@ -50,7 +50,7 @@
       this.cancelButton.Location = new System.Drawing.Point(218, 163);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
-      this.cancelButton.TabIndex = 3;
+      this.cancelButton.TabIndex = 1;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);

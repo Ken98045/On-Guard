@@ -338,7 +338,7 @@ namespace OnGuardCore.Src.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\OnGuardDataFiles")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\OnGuardDataFiles")]
         public string DataFileLocation {
             get {
                 return ((string)(this["DataFileLocation"]));
@@ -350,7 +350,7 @@ namespace OnGuardCore.Src.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\OnGuardDataFiles")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\OnGuardDataFiles")]
         public string DatabaseFileLocation {
             get {
                 return ((string)(this["DatabaseFileLocation"]));

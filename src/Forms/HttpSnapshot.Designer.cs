@@ -72,14 +72,14 @@ namespace OnGuardCore
       this.textBoxURL.Location = new System.Drawing.Point(130, 231);
       this.textBoxURL.Name = "textBoxURL";
       this.textBoxURL.Size = new System.Drawing.Size(597, 23);
-      this.textBoxURL.TabIndex = 31;
+      this.textBoxURL.TabIndex = 0;
       // 
       // OKButton
       // 
       this.OKButton.Location = new System.Drawing.Point(318, 277);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
-      this.OKButton.TabIndex = 32;
+      this.OKButton.TabIndex = 1;
       this.OKButton.Text = "OK";
       this.OKButton.UseVisualStyleBackColor = true;
       this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -89,7 +89,7 @@ namespace OnGuardCore
       this.FormCancelButton.Location = new System.Drawing.Point(408, 277);
       this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
-      this.FormCancelButton.TabIndex = 33;
+      this.FormCancelButton.TabIndex = 2;
       this.FormCancelButton.Text = "Cancel";
       this.FormCancelButton.UseVisualStyleBackColor = true;
       this.FormCancelButton.Click += new System.EventHandler(this.CancelButton_Click);
