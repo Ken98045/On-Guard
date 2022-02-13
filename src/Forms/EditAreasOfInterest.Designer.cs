@@ -63,7 +63,7 @@
       this.doneButton.Name = "doneButton";
       this.doneButton.Size = new System.Drawing.Size(75, 23);
       this.doneButton.TabIndex = 2;
-      this.doneButton.Text = "Exit";
+      this.doneButton.Text = "Done";
       this.doneButton.UseVisualStyleBackColor = true;
       this.doneButton.Click += new System.EventHandler(this.DoneButton_Click);
       // 

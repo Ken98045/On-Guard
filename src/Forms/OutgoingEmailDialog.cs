@@ -95,9 +95,8 @@ namespace OnGuardCore
               mail.Body = "This is a test of your email server settings<br />";
 
               SmtpServer.Port = (int)portNumeric.Value;
-              SmtpServer.Credentials = new System.Net.NetworkCredential(userText.Text, passwordText.Text);
+              SmtpServer.Credentials =  new System.Net.NetworkCredential(userText.Text, passwordText.Text);
               SmtpServer.EnableSsl = sslCheck.Checked;
-
               SmtpServer.Send(mail);
             }
           }

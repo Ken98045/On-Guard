@@ -23,7 +23,7 @@ namespace OnGuardCore
   public class EmailAccumulator : FrameAccumulator
   {
 
-    static AwaitableQueue<EmailInfo> _emailQueue = new (0);
+    static AwaitableQueue<EmailInfo> _emailQueue = new(0);
 
     public EmailAccumulator(int timeToAccumulate)
     {
@@ -51,15 +51,15 @@ namespace OnGuardCore
     public override void ProcessAccumulatedFrames(List<Frame> frames)
     {
       // The priority and interesting list contain indexes into the frames list
-      List<int> priority = new ();     // door events have high priority, everything else, not
-      List<int> interesting = new ();  // frames with objects but not "priority
+      List<int> priority = new();     // door events have high priority, everything else, not
+      List<int> interesting = new();  // frames with objects but not "priority
 
       Dbg.Trace("EmailAccumulator - Done accumulating email frames with: " + frames.Count.ToString());
 
       // The collection of area descriptions does not depend on the number of outgoing pictures.
       // It depends on all the pictures.  Each picture may have zero or more than, each object may
       // be in a different area. Only frames with Interesting Objects have areas, and therefore descriptions
-      HashSet<string> descriptions = new ();
+      HashSet<string> descriptions = new();
 
       // First, let's get lists of priority and interesting indexes
       int i = 0;
@@ -101,7 +101,7 @@ namespace OnGuardCore
       }
 
       // Now, let's get the list of email addresses to send to based on time of day, day of week, normally just 1 to a small number
-      Dictionary<string, string> emailAddresses = new ();
+      Dictionary<string, string> emailAddresses = new();
 
       // Yes, these could be combined, but for debugging we look at them separately
       // Go through the "priority"/door frames we already selected and add the related email addresses
@@ -183,7 +183,7 @@ namespace OnGuardCore
       // OK, we have FINALLY culled the list of email addreses to send to.
       // Now, we need to go through email recipients and then select the frames we want to send and then
       // send them.
-      SortedList<DateTime, Frame> outgoing = new ();
+      SortedList<DateTime, Frame> outgoing = new();
 
       foreach (string addr in emailAddresses.Values)
       {
@@ -261,7 +261,7 @@ namespace OnGuardCore
 
         count = 0;
         double totalSize = 0;
-        List<string> outputFiles = new ();
+        List<string> outputFiles = new();
 
         foreach (string file in theFiles)
         {
@@ -273,7 +273,7 @@ namespace OnGuardCore
 
           if (null != outFile)
           {
-            FileInfo fi = new (outFile);
+            FileInfo fi = new(outFile);
             totalSize += fi.Length;
 
             if (totalSize < (double)opt.MaximumAttachmentSize * 1000.0 * 1000.0)
@@ -480,14 +480,14 @@ namespace OnGuardCore
 
       mail.To.Add(emailRecipient);
 
-      EmailInfo emailInfo = new (mail, frames);
+      EmailInfo emailInfo = new(mail, frames);
       Dbg.Trace("Enqueued for sending email to: " + emailRecipient);
       _emailQueue.Add(emailInfo);
     }
 
     static MailMessage BuildAttachmentMessage(string[] frames, string[] activityDesc)
     {
-      MailMessage mail = new ();
+      MailMessage mail = new();
       mail.BodyEncoding = Encoding.UTF8;
       mail.IsBodyHtml = true;
 
@@ -508,47 +508,59 @@ namespace OnGuardCore
 
     static MailMessage BuildInlineMessage(string[] frames, string[] activityDesc)
     {
-      MailMessage mail = new ();
+      MailMessage mail = new();
       mail.BodyEncoding = Encoding.UTF8;
       mail.IsBodyHtml = true;
 
-      string htmlOut = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">";
-      htmlOut += "<HTML><HEAD><META http-equiv=Content-Type content=\"text/html; charset=iso-8859-1\"></HEAD>";
-      htmlOut += "<BODY>";
+      string htmlOut = "<html><body>";
 
       foreach (var desc in activityDesc)
       {
         htmlOut += desc + "<br>";
       }
 
-      htmlOut += "<b>";
-      htmlOut += "</b><br><br>";
+      htmlOut += "<br>";
 
       System.Net.Mail.Attachment attachment;
+      // Create the HTML view
+
+      // Form the inline html
+      int j = 0;
+      foreach (var frame in frames)
+      {
+        string imageStr = string.Format(@"<img src='cid:Picture{0}' <br><br>", j);  // width={1} height={2}  , resize.width, resize.height)
+        htmlOut += imageStr;
+        j++;
+      }
+
+      htmlOut += @"</body> </html>";
+
+
+      AlternateView htmlView = AlternateView.CreateAlternateViewFromString(
+                                                   htmlOut,
+                                                   Encoding.UTF8,
+                                                   System.Net.Mime.MediaTypeNames.Text.Html);
+
+
       int i = 0;
+      string mediaType = MediaTypeNames.Image.Jpeg;
 
       foreach (var frame in frames)
       {
-        attachment = new System.Net.Mail.Attachment(frame);
-        attachment.ContentDisposition.DispositionType = DispositionTypeNames.Attachment;
-        attachment.ContentType.Name = Path.GetFileName(frame);
-        attachment.ContentDisposition.FileName = Path.GetFileName(frame);
-        string contentID = string.Format("Picture{0}", i);
-        attachment.ContentId = contentID;
-        attachment.ContentType.MediaType = "image/jpg";
-        mail.Attachments.Add(attachment);
-        htmlOut += string.Format("<img src=\"cid:{0}\" alt=\"\"><br><br>", contentID);
+        LinkedResource img = new LinkedResource(frame, mediaType);
+        img.ContentId = string.Format("Picture{0}", i);
+        img.ContentType.Name = img.ContentId;
+        img.ContentLink = new Uri("cid:" + img.ContentId);
+        img.ContentType.MediaType = mediaType;
+        img.TransferEncoding = TransferEncoding.Base64;
+        htmlView.LinkedResources.Add(img);
         i++;
       }
 
-      byte[] buffer;
-      MemoryStream mem;
+      mail.AlternateViews.Add(htmlView);
+      mail.IsBodyHtml = true;
 
-      buffer = Encoding.ASCII.GetBytes(htmlOut);
-      mem = new (buffer); // TODO: Dispose this?
-      mem.Position = 0;
-      AlternateView alternate = new (mem, MediaTypeNames.Text.Html);
-      mail.AlternateViews.Add(alternate);
+
       return mail;
     }
 
@@ -573,21 +585,22 @@ namespace OnGuardCore
 
           Dbg.Trace("EmailAccumulator - Starting email send to: " + mail.To[0].Address);
 
-          using SmtpClient SmtpServer = new(Storage.Instance.GetGlobalString("EmailServer"));
-
-          mail.From = new MailAddress(emailUserName);
-          mail.Subject = "Security Camera Alert";   // todo get via ui
-          SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
-
-          if (!string.IsNullOrEmpty(emailUserName))
+          using (SmtpClient SmtpServer = new(Storage.Instance.GetGlobalString("EmailServer")))
           {
-            SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
-          }
+            mail.From = new MailAddress(emailUserName);
+            mail.Subject = "Security Camera Alert";   // todo get via ui
+            SmtpServer.Port = Storage.Instance.GetGlobalInt("EmailPort");
 
-          SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
-          SmtpServer.Timeout = 120 * 1000;
-          SmtpServer.Send(mail);
-          Dbg.Write("Email sent to: " + mail.To[0].Address);
+            if (!string.IsNullOrEmpty(emailUserName))
+            {
+              SmtpServer.Credentials = new System.Net.NetworkCredential(emailUserName, emailPassword);
+            }
+
+            SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
+            SmtpServer.Timeout = 180 * 1000;
+            SmtpServer.Send(mail);
+            Dbg.Write("Email sent to: " + mail.To[0].Address);
+          }
         }
         catch (SmtpException ex)
         {
@@ -595,6 +608,7 @@ namespace OnGuardCore
         }
 
         mail.Dispose();
+
 
         foreach (var file in emailInfo.Frames)
         {
@@ -608,6 +622,7 @@ namespace OnGuardCore
           }
         }
 
+        Thread.Sleep(10_000);
       }
     }
   }

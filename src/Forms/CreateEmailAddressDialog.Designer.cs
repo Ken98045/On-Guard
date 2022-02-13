@@ -170,7 +170,7 @@
       this.coolDownNumeric.Size = new System.Drawing.Size(75, 23);
       this.coolDownNumeric.TabIndex = 2;
       this.coolDownNumeric.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
             0});
@@ -356,6 +356,8 @@
       // htmlFormatCheckbox
       // 
       this.htmlFormatCheckbox.AutoSize = true;
+      this.htmlFormatCheckbox.Checked = true;
+      this.htmlFormatCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
       this.htmlFormatCheckbox.Location = new System.Drawing.Point(242, 79);
       this.htmlFormatCheckbox.Name = "htmlFormatCheckbox";
       this.htmlFormatCheckbox.Size = new System.Drawing.Size(15, 14);

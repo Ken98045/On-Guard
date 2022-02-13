@@ -48,6 +48,7 @@ namespace OnGuardCore
         OutputVisibleCheckbox.Checked = Storage.Instance.GetGlobalBool("DeepStackVisible", true);
         FaceCheckbox.Checked = Storage.Instance.GetGlobalBool("UseFaceAPI", false);
         CustomTextBox.Text = Storage.Instance.GetGlobalString("CustomDeepStackParameters");
+        threadCountNumeric.Value = Storage.Instance.GetGlobalIntWithDefault("AIThreadCount", 10);
 
         int deepStackMode = Storage.Instance.GetGlobalInt("DeepStackMode");
         switch (deepStackMode)
@@ -177,11 +178,14 @@ namespace OnGuardCore
         mode += "Low ";
       }
 
-      FinalDeepStackTextBox.Text =  string.Format("--VISION-DETECTION True {0} {1} {2} {3}",
+      string threadCount = string.Format("--THREADCOUNT {0}", threadCountNumeric.Value);
+
+      FinalDeepStackTextBox.Text =  string.Format("--VISION-DETECTION True {0} {1} {2} {3} {4}",
         face,
         "--PORT " + ((int)portNumeric.Value).ToString() + " ",
         mode,
-        CustomTextBox.Text);
+        CustomTextBox.Text,
+        threadCount);
     }
 
     private void SaveDeepStackSettings()
@@ -193,6 +197,7 @@ namespace OnGuardCore
       Storage.Instance.SetGlobalBool("DeepStackVisible", OutputVisibleCheckbox.Checked);
       Storage.Instance.SetGlobalBool("UseFaceAPI", FaceCheckbox.Checked);
       Storage.Instance.SetGlobalString("CustomDeepStackParameters", CustomTextBox.Text);
+      Storage.Instance.SetGlobalInt("AIThreadCount", Convert.ToInt32(threadCountNumeric.Value));
 
       int mode = 0;
       if (ModeHighRadio.Checked)

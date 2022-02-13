@@ -19,6 +19,7 @@ namespace OnGuardCore
     bool GetGlobalBool(string keyName, bool useDefault);
     double GetGlobalDouble(string keyName);
     int GetGlobalInt(string keyName);
+    int GetGlobalIntWithDefault(string keyName, int defaultValue);
     int GetGlobalIntExcept(string keyName);
     string GetGlobalString(string keyName);
     string GetGlobalStringNull(string keyName);

@@ -72,12 +72,15 @@ namespace OnGuardCore
       this.ModeLowRadio = new System.Windows.Forms.RadioButton();
       this.ModeHighRadio = new System.Windows.Forms.RadioButton();
       this.label9 = new System.Windows.Forms.Label();
+      this.threadCountNumeric = new System.Windows.Forms.NumericUpDown();
+      this.label16 = new System.Windows.Forms.Label();
       this.SQLPanel.SuspendLayout();
       this.LogPanel.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).BeginInit();
       this.AIPanel.SuspendLayout();
       this.panel5.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.threadCountNumeric)).BeginInit();
       this.SuspendLayout();
       // 
       // okButton
@@ -297,7 +300,7 @@ namespace OnGuardCore
       // label7
       // 
       this.label7.AutoSize = true;
-      this.label7.Location = new System.Drawing.Point(136, 81);
+      this.label7.Location = new System.Drawing.Point(68, 81);
       this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label7.Name = "label7";
       this.label7.Size = new System.Drawing.Size(146, 13);
@@ -306,7 +309,7 @@ namespace OnGuardCore
       // 
       // portNumeric
       // 
-      this.portNumeric.Location = new System.Drawing.Point(297, 79);
+      this.portNumeric.Location = new System.Drawing.Point(229, 79);
       this.portNumeric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.portNumeric.Maximum = new decimal(new int[] {
             65535,
@@ -387,6 +390,8 @@ namespace OnGuardCore
       // AIPanel
       // 
       this.AIPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.AIPanel.Controls.Add(this.threadCountNumeric);
+      this.AIPanel.Controls.Add(this.label16);
       this.AIPanel.Controls.Add(this.AutoStopDeepStackCheck);
       this.AIPanel.Controls.Add(this.StartAIButton);
       this.AIPanel.Controls.Add(this.ButtonCustom);
@@ -547,6 +552,39 @@ namespace OnGuardCore
       this.label9.TabIndex = 0;
       this.label9.Text = "Detection Mode  ";
       // 
+      // threadCountNumeric
+      // 
+      this.threadCountNumeric.Location = new System.Drawing.Point(427, 79);
+      this.threadCountNumeric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      this.threadCountNumeric.Maximum = new decimal(new int[] {
+            128,
+            0,
+            0,
+            0});
+      this.threadCountNumeric.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+      this.threadCountNumeric.Name = "threadCountNumeric";
+      this.threadCountNumeric.Size = new System.Drawing.Size(48, 20);
+      this.threadCountNumeric.TabIndex = 33;
+      this.threadCountNumeric.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+      // 
+      // label16
+      // 
+      this.label16.AutoSize = true;
+      this.label16.Location = new System.Drawing.Point(314, 81);
+      this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label16.Name = "label16";
+      this.label16.Size = new System.Drawing.Size(100, 13);
+      this.label16.TabIndex = 34;
+      this.label16.Text = "AI Thread Count";
+      // 
       // SettingsDialog
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -573,6 +611,7 @@ namespace OnGuardCore
       this.AIPanel.PerformLayout();
       this.panel5.ResumeLayout(false);
       this.panel5.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.threadCountNumeric)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -622,5 +661,7 @@ namespace OnGuardCore
     private System.Windows.Forms.Button StartAIButton;
     private System.Windows.Forms.CheckBox AutoStopDeepStackCheck;
     private System.Windows.Forms.Label label11;
+    private System.Windows.Forms.NumericUpDown threadCountNumeric;
+    private System.Windows.Forms.Label label16;
   }
 }

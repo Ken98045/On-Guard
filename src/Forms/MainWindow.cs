@@ -112,6 +112,9 @@ namespace OnGuardCore
       AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
       //}
 
+      Settings.Default.SettingsKey = "OnGuard";
+      Settings.Default.Reload();
+
       _loading = true;
 
       InitializeComponent();
@@ -243,9 +246,6 @@ namespace OnGuardCore
       int currentCPU = (int)theCPUCounter.NextValue();
       currentCPU = (int)theCPUCounter.NextValue();
       _monitorQueueThread.Start();
-
-      Settings.Default.SettingsKey = "OnGuard";
-      Settings.Default.Reload();
 
       _analyzer = new AIAnalyzer();
       _allCameras = CameraCollection.Load();
@@ -3760,14 +3760,12 @@ namespace OnGuardCore
       DialogResult result = dlg.ShowDialog();
       if (result == DialogResult.OK)
       {
+        faceBitmap.Save(dlg.NameOfPerson);
+
         bool registerResult = await FaceDetection.RegisterFaceAsync(dlg.Person);
         if (!registerResult)
         {
           MessageBox.Show("The AI was unable to detect this picture as a face.  Try another picture!", "Face Detection Error!");
-        }
-        else
-        {
-          faceBitmap.Save(dlg.NameOfPerson);
         }
       }
     }

@@ -162,7 +162,7 @@ namespace OnGuardCore
                 if (!_camera.StorePicturesInAreaOnly)
                 {
                   // Write the bitmap if this is the kind of object the user cares about.  Might not be in an area we care about (anyplace in the picture)
-                  Dbg.Write("OnGuardScanner-CheckForObjectsAsync-About to write bitmap (1) - Object count: " + result.ObjectsFound.Count.ToString());
+                  Dbg.Trace("OnGuardScanner-CheckForObjectsAsync-About to write bitmap (1) - Object count: " + result.ObjectsFound.Count.ToString());
                   WriteBitmapToFile(bitmap);
                 }
 
@@ -173,7 +173,7 @@ namespace OnGuardCore
                 if (_camera.StorePicturesInAreaOnly && interesting.Count > 0)
                 {
                   // In this case we only write a bitmap if it has objects in an AOI
-                  Dbg.Write("OnGuardScanner-CheckForObjectsAsync-About to write bitmap (2) - Object count: " + interesting.Count.ToString());
+                  Dbg.Trace("OnGuardScanner-CheckForObjectsAsync-About to write bitmap (2) - Object count: " + interesting.Count.ToString());
                   WriteBitmapToFile(bitmap);
                 }
 

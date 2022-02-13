@@ -178,6 +178,34 @@ namespace OnGuardCore
       return result;
     }
 
+    
+    public int GetGlobalIntWithDefault(string name, int defaultValue)
+    {
+      int result = 0;
+      string strResult = string.Empty;
+
+
+      try
+      {
+        strResult = GetGlobal(name);
+      }
+      catch (Exception)
+      {
+      }
+
+      if (strResult == string.Empty)
+      {
+        result = defaultValue;
+      }
+      else
+      {
+        result = (int)SafeParse.Parse(typeof(int), strResult);
+      }
+
+      return result;
+    }
+
+
     public double GetGlobalDouble(string name)
     {
       string strResult = GetGlobal(name);

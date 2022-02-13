@@ -79,6 +79,17 @@ namespace OnGuardCore
       return location;
     }
 
+    public static bool IsAIDead()
+    {
+      if (!s_AIDead)
+      {
+        return false;
+      }
+      else
+      {
+        return RestartAI(false);
+      }
+    }
 
 
     // We can ONLY restart the AI if the user has setup auto start or if the user is calling this directly
@@ -87,40 +98,6 @@ namespace OnGuardCore
       return RestartAI(false, forceStart);
     }
 
-    public static bool StartAIWithDefaults()
-    {
-      bool result = false;
-
-      ProcessStartInfo startInfo = new ("deepstack", "--VISION-DETECTION True --PORT 8090 --MODE Low");
-      startInfo.LoadUserProfile = true;
-      Process p = Process.Start(startInfo);
-      Thread.Sleep(1000 * 2); // just to be sure
-      if (p != null)
-      {
-        p.Refresh();
-        if (!p.HasExited)
-        {
-          // At this point we will assume that we have a fresh copy of the AI that is good to go!
-          Dbg.Write("AILocation - RestartAI - The restart was successful!");
-          s_timeLastSuccess = DateTime.Now;
-          s_AIDead = false;
-          result = true;
-        }
-      }
-
-      if (result)
-      {
-        Dbg.Write("Starting the AI with Default Values Succeeded!");
-      }
-      else
-      {
-        Dbg.Write("Starting the AI with Default Values FAILED!");
-      }
-
-      return result;
-    }
-
-
     public static bool RestartAI(bool ignoreRestartTime, bool forceStart)
     {
       bool result = false;
@@ -128,7 +105,7 @@ namespace OnGuardCore
       Dbg.Write("AILocation - Atttempting to restart the AI");
 
       TimeSpan timeSinceRestart = DateTime.Now - s_timeOfLastRestart;
-      if (ignoreRestartTime || timeSinceRestart.TotalMinutes > 5)  // Don't try restarting constantly - even 6 min is pushing it!
+      if (ignoreRestartTime || timeSinceRestart.TotalMinutes > 1)
       {
 
         bool canRestart = false;
@@ -180,6 +157,7 @@ namespace OnGuardCore
             if (!p.HasExited)
             {
               // At this point we will assume that we have a fresh copy of the AI that is good to go!
+              s_AIDead = false;
               AIStateChange(true);
               Dbg.Write("AILocation - RestartAI - The restart was successful!");
               s_timeLastSuccess = DateTime.Now;
@@ -278,7 +256,7 @@ namespace OnGuardCore
       bool waitResult;
       url = string.Format("http://{0}:{1}/{2}", IPAddress, Port, url);
 
-      if (s_AIDead)
+      if (IsAIDead())
       {
         throw new AiNotFoundException(url);
       }
@@ -291,7 +269,7 @@ namespace OnGuardCore
       if (!waitResult)
       {
         // maybe some other request determined that the AI is dead.
-        if (s_AIDead)
+        if (IsAIDead())
         {
           throw new AiNotFoundException(url);
         }
