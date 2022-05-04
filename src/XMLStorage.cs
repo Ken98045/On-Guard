@@ -549,6 +549,7 @@ namespace OnGuardCore
         camera.RegistrationXResolution = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "RegistrationXResolution"));
         camera.RegistrationYResolution = (int)SafeParse.Parse(typeof(int), GetAttribute(cameraNode, "RegistrationYResolution"));
         camera.Monitoring = (bool)SafeParse.Parse(typeof(bool), GetAttribute(cameraNode, "Monitoring"));
+        camera.CameraView = (DisplayOption) SafeParse.Parse(typeof(DisplayOption), GetAttribute(cameraNode, "CameraView"));
 
         camera.CameraInputMethod = (CameraMethod)SafeParse.Parse(typeof(CameraMethod), GetAttribute(cameraNode, "CameraMethod"));
         camera.OnGuardScanIterval = (double)SafeParse.Parse(typeof(double), GetAttribute(cameraNode, "CheckInterval"));
@@ -1004,6 +1005,7 @@ namespace OnGuardCore
       AddUpdateAttribute(cameraNode, "RecordTime", camera.RecordTime.ToString());
       AddUpdateAttribute(cameraNode, "RecordInterval", camera.RecordInterval.ToString());
       AddUpdateAttribute(cameraNode, "TriggerPrefix", camera.TriggerPrefix);
+      AddUpdateAttribute(cameraNode, "CameraView", camera.CameraView.ToString());
 
       if (camera.Contact.ONVIF != null)
       {

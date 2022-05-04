@@ -62,6 +62,11 @@ namespace OnGuardCore
     {
       DialogResult = DialogResult.Cancel;
     }
+
+    private void FilledRadio_CheckedChanged(object sender, EventArgs e)
+    {
+
+    }
   }
 
   public enum DisplayOption

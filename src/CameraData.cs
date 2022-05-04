@@ -102,6 +102,8 @@ namespace OnGuardCore
     public CameraContactData Contact { get; set; }
     public int NoMotionTimeout { get; set; }
 
+    public DisplayOption CameraView { get; set; }
+
 
     [NonSerialized]
     public AreasOfInterestCollection AOI;   // Each camera has its own collection of areas
@@ -142,6 +144,7 @@ namespace OnGuardCore
       AOI = new AreasOfInterestCollection(CameraPath, CameraPrefix);
       NoMotionTimeout = 90;
       ScheduledPresets = new List<PresetTrigger>();
+      CameraView = DisplayOption.FilledHorizontally;
 
     }
 
@@ -180,6 +183,7 @@ namespace OnGuardCore
         TriggerInterval = src.TriggerInterval;
         RecordTime = src.RecordTime;
         RecordInterval = src.RecordInterval;
+        CameraView = src.CameraView;
         TimeOfLastRecordedFrame = src.TimeOfLastRecordedFrame;
         TriggerPrefix = src.TriggerPrefix;
 

@@ -59,6 +59,8 @@ namespace OnGuardCore
       this.AutoStartDeepStackCheck = new System.Windows.Forms.CheckBox();
       this.FaceCheckbox = new System.Windows.Forms.CheckBox();
       this.AIPanel = new System.Windows.Forms.Panel();
+      this.threadCountNumeric = new System.Windows.Forms.NumericUpDown();
+      this.label16 = new System.Windows.Forms.Label();
       this.AutoStopDeepStackCheck = new System.Windows.Forms.CheckBox();
       this.StartAIButton = new System.Windows.Forms.Button();
       this.ButtonCustom = new System.Windows.Forms.Button();
@@ -72,15 +74,13 @@ namespace OnGuardCore
       this.ModeLowRadio = new System.Windows.Forms.RadioButton();
       this.ModeHighRadio = new System.Windows.Forms.RadioButton();
       this.label9 = new System.Windows.Forms.Label();
-      this.threadCountNumeric = new System.Windows.Forms.NumericUpDown();
-      this.label16 = new System.Windows.Forms.Label();
       this.SQLPanel.SuspendLayout();
       this.LogPanel.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).BeginInit();
       this.AIPanel.SuspendLayout();
-      this.panel5.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.threadCountNumeric)).BeginInit();
+      this.panel5.SuspendLayout();
       this.SuspendLayout();
       // 
       // okButton
@@ -417,6 +417,29 @@ namespace OnGuardCore
       this.AIPanel.Size = new System.Drawing.Size(678, 343);
       this.AIPanel.TabIndex = 11;
       // 
+      // threadCountNumeric
+      // 
+      this.threadCountNumeric.Location = new System.Drawing.Point(427, 79);
+      this.threadCountNumeric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      this.threadCountNumeric.Maximum = new decimal(new int[] {
+            128,
+            0,
+            0,
+            0});
+      this.threadCountNumeric.Name = "threadCountNumeric";
+      this.threadCountNumeric.Size = new System.Drawing.Size(48, 20);
+      this.threadCountNumeric.TabIndex = 33;
+      // 
+      // label16
+      // 
+      this.label16.AutoSize = true;
+      this.label16.Location = new System.Drawing.Point(314, 81);
+      this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label16.Name = "label16";
+      this.label16.Size = new System.Drawing.Size(100, 13);
+      this.label16.TabIndex = 34;
+      this.label16.Text = "AI Thread Count";
+      // 
       // AutoStopDeepStackCheck
       // 
       this.AutoStopDeepStackCheck.AutoSize = true;
@@ -552,39 +575,6 @@ namespace OnGuardCore
       this.label9.TabIndex = 0;
       this.label9.Text = "Detection Mode  ";
       // 
-      // threadCountNumeric
-      // 
-      this.threadCountNumeric.Location = new System.Drawing.Point(427, 79);
-      this.threadCountNumeric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.threadCountNumeric.Maximum = new decimal(new int[] {
-            128,
-            0,
-            0,
-            0});
-      this.threadCountNumeric.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-      this.threadCountNumeric.Name = "threadCountNumeric";
-      this.threadCountNumeric.Size = new System.Drawing.Size(48, 20);
-      this.threadCountNumeric.TabIndex = 33;
-      this.threadCountNumeric.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-      // 
-      // label16
-      // 
-      this.label16.AutoSize = true;
-      this.label16.Location = new System.Drawing.Point(314, 81);
-      this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label16.Name = "label16";
-      this.label16.Size = new System.Drawing.Size(100, 13);
-      this.label16.TabIndex = 34;
-      this.label16.Text = "AI Thread Count";
-      // 
       // SettingsDialog
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -609,9 +599,9 @@ namespace OnGuardCore
       ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).EndInit();
       this.AIPanel.ResumeLayout(false);
       this.AIPanel.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.threadCountNumeric)).EndInit();
       this.panel5.ResumeLayout(false);
       this.panel5.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.threadCountNumeric)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 

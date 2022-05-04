@@ -62,7 +62,6 @@ namespace OnGuardCore
     int _defineBrushSize = 1;
     Guid _modifyingAreaID = Guid.Empty;
     MainWindow _main;
-    DisplayOption DisplayType = DisplayOption.FilledHorizontally;
 
     MovementDirection _moveDirection = MovementDirection.Still; // So we know what direction the user intended if a file goes missing (it happens)
 
@@ -607,7 +606,7 @@ namespace OnGuardCore
       int y = 0;
       int x = 0;
 
-      switch (DisplayType)
+      switch (CurrentCam.CameraView)
       {
         case DisplayOption.Fixed:
           x = _originalImageWidth;
@@ -2018,8 +2017,7 @@ namespace OnGuardCore
 
         if (notify.Url.Contains("{Auto Fill"))
         {
-          // "http://jasdfsafjifia.com/jasf";
-          urlStr = string.Format("http://{0}:{1}/admin?trigger&camera={2}&user={3}&pw={4}&jpeg={5}&memo={6}",
+            urlStr = string.Format("http://{0}:{1}/admin?trigger&camera={2}&user={3}&pw={4}&jpeg={5}&memo={6}",
             frame.Item.CamData.Contact.CameraIPAddress,
             frame.Item.CamData.Contact.Port,
             HttpUtility.UrlEncode(frame.Item.CamData.Contact.CameraShortName),
@@ -3971,12 +3969,15 @@ namespace OnGuardCore
 
     private void OnPictureDisplayOption(object sender, EventArgs e)
     {
-      using (DisplayMode dlg = new DisplayMode(DisplayType))
+      using (DisplayMode dlg = new DisplayMode(CurrentCam.CameraView))
       {
         DialogResult result = dlg.ShowDialog();
         if (result == DialogResult.OK)
         {
-          DisplayType = dlg.DisplayType;
+          CurrentCam.CameraView = dlg.DisplayType;
+          Storage.Instance.SaveCameras(_allCameras);
+          Storage.Instance.Update();
+          
           if (_displayedPicture != null)
           {
             AdjustPictureImageSize(_displayedPicture);

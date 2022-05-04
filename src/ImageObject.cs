@@ -17,7 +17,7 @@ namespace OnGuardCore
       // Some unnecessary initializations, but...
       Success = false;
       InMotion = false;
-      Confidence = 0.0;
+      Confidence = 80.0;
       X_min = 0;
       Y_min = 0;
       X_max = 0;

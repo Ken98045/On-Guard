@@ -207,7 +207,7 @@ namespace OnGuardCore
           now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, sequence);
       path += unique;
 
-      Dbg.Write("OnGuardScanner - WriteBitmapToFile - " + path);
+      Dbg.Trace("OnGuardScanner - WriteBitmapToFile - " + path);
 
       bitmap.Save(path);
 

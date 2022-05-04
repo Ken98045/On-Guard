@@ -904,7 +904,7 @@
       // 
       this.pictureDisplayOptionToolStripMenuItem.Name = "pictureDisplayOptionToolStripMenuItem";
       this.pictureDisplayOptionToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
-      this.pictureDisplayOptionToolStripMenuItem.Text = "Picture Display Option";
+      this.pictureDisplayOptionToolStripMenuItem.Text = "Camera Display Options";
       this.pictureDisplayOptionToolStripMenuItem.Click += new System.EventHandler(this.OnPictureDisplayOption);
       // 
       // AreasOfInterestToolStripMenuItem1

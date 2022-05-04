@@ -56,11 +56,11 @@
       this.VerticalFillRadio.AutoSize = true;
       this.VerticalFillRadio.Location = new System.Drawing.Point(7, 57);
       this.VerticalFillRadio.Name = "VerticalFillRadio";
-      this.VerticalFillRadio.Size = new System.Drawing.Size(450, 19);
+      this.VerticalFillRadio.Size = new System.Drawing.Size(442, 19);
       this.VerticalFillRadio.TabIndex = 1;
       this.VerticalFillRadio.TabStop = true;
-      this.VerticalFillRadio.Text = "Fill Vertically.  The Picture is Not Distorted.  Horizontal Scroll Bar Usually Re" +
-    "quired";
+      this.VerticalFillRadio.Text = "Fill Vertically.  The Picture is Not Distorted.  Horizontal Scroll Bar Often Requ" +
+    "ired";
       this.VerticalFillRadio.UseVisualStyleBackColor = true;
       // 
       // FixedRadio
@@ -80,23 +80,24 @@
       this.FilledRadio.AutoSize = true;
       this.FilledRadio.Location = new System.Drawing.Point(7, 90);
       this.FilledRadio.Name = "FilledRadio";
-      this.FilledRadio.Size = new System.Drawing.Size(468, 19);
+      this.FilledRadio.Size = new System.Drawing.Size(460, 19);
       this.FilledRadio.TabIndex = 2;
       this.FilledRadio.TabStop = true;
-      this.FilledRadio.Text = "Fill Horizontally and Vertically. Usually the Picture is Distorted.  No Picture S" +
-    "croll Bars";
+      this.FilledRadio.Text = "Fill Horizontally and Vertically. Often the Picture is Distorted.  No Picture Scr" +
+    "oll Bars";
       this.FilledRadio.UseVisualStyleBackColor = true;
+      this.FilledRadio.CheckedChanged += new System.EventHandler(this.FilledRadio_CheckedChanged);
       // 
       // HorizontalFillRadio
       // 
       this.HorizontalFillRadio.AutoSize = true;
       this.HorizontalFillRadio.Location = new System.Drawing.Point(7, 24);
       this.HorizontalFillRadio.Name = "HorizontalFillRadio";
-      this.HorizontalFillRadio.Size = new System.Drawing.Size(450, 19);
+      this.HorizontalFillRadio.Size = new System.Drawing.Size(442, 19);
       this.HorizontalFillRadio.TabIndex = 0;
       this.HorizontalFillRadio.TabStop = true;
-      this.HorizontalFillRadio.Text = "Fill Horizontally.  The Picture is Not Distorted.  Vertical Scroll Bar Usually Re" +
-    "quired";
+      this.HorizontalFillRadio.Text = "Fill Horizontally.  The Picture is Not Distorted.  Vertical Scroll Bar Often Requ" +
+    "ired";
       this.HorizontalFillRadio.UseVisualStyleBackColor = true;
       // 
       // OKButton
@@ -140,7 +141,7 @@
       this.Controls.Add(this.OKButton);
       this.Controls.Add(this.panel1);
       this.Name = "DisplayMode";
-      this.Text = "PIcture Display Mode";
+      this.Text = "Camera Display Mode";
       this.panel1.ResumeLayout(false);
       this.panel1.PerformLayout();
       this.ResumeLayout(false);

@@ -81,13 +81,16 @@ namespace OnGuardCore
 
     public static bool IsAIDead()
     {
-      if (!s_AIDead)
+      lock (s_lock)
       {
-        return false;
-      }
-      else
-      {
-        return RestartAI(false);
+        if (!s_AIDead)
+        {
+          return false;
+        }
+        else
+        {
+          return RestartAI(false);
+        }
       }
     }
 
@@ -95,101 +98,109 @@ namespace OnGuardCore
     // We can ONLY restart the AI if the user has setup auto start or if the user is calling this directly
     public static bool RestartAI(bool forceStart)
     {
-      return RestartAI(false, forceStart);
+      lock (s_lock)
+      {
+        return RestartAI(false, forceStart);
+      }
     }
 
     public static bool RestartAI(bool ignoreRestartTime, bool forceStart)
     {
       bool result = false;
 
-      Dbg.Write("AILocation - Atttempting to restart the AI");
-
-      TimeSpan timeSinceRestart = DateTime.Now - s_timeOfLastRestart;
-      if (ignoreRestartTime || timeSinceRestart.TotalMinutes > 1)
+      lock (s_lock)
       {
 
-        bool canRestart = false;
-        if (forceStart)
-        {
-          canRestart = true;
-        }
-        else
-        {
-          canRestart = Storage.Instance.GetGlobalBool("AutoStartDeepStack");
-        }
+        Dbg.Write("AILocation - Atttempting to restart the AI");
 
-        if (canRestart)
+        TimeSpan timeSinceRestart = DateTime.Now - s_timeOfLastRestart;
+        if (ignoreRestartTime || timeSinceRestart.TotalMinutes > 1)
         {
-          s_timeOfLastRestart = DateTime.Now;
 
-          // First, if it currently exists then kill it.
-          // Note that with the current (9/1/21) DeepStack there can be only one
-          foreach (var process in Process.GetProcessesByName("deepstack"))
+          bool canRestart = false;
+          if (forceStart)
           {
-            Dbg.Write("AILocation - Restart AI - Killing off the existing AI");
-            process.Kill(true);
-            Thread.Sleep(1000);
-            break;
-          }
-
-
-          string startParameters = Storage.Instance.GetGlobalString("DeepStackParameters");
-          ProcessStartInfo startInfo = new ("deepstack", startParameters);
-          startInfo.UseShellExecute = true;
-
-          bool visible = Storage.Instance.GetGlobalBool("DeepStackVisible");
-          if (!visible)
-          {
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            canRestart = true;
           }
           else
           {
-            startInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            canRestart = Storage.Instance.GetGlobalBool("AutoStartDeepStack");
           }
 
-          startInfo.LoadUserProfile = true;
-
-          Process p = Process.Start(startInfo);
-          Thread.Sleep(1000 * 2); // just to be sure
-          if (p != null)
+          if (canRestart)
           {
-            p.Refresh();
-            if (!p.HasExited)
-            {
-              // At this point we will assume that we have a fresh copy of the AI that is good to go!
-              s_AIDead = false;
-              AIStateChange(true);
-              Dbg.Write("AILocation - RestartAI - The restart was successful!");
-              s_timeLastSuccess = DateTime.Now;
+            s_timeOfLastRestart = DateTime.Now;
 
-              if ((s_maxInstances - s_semaphore.CurrentCount) > 0)
-              {
-                try
-                {
-                  s_semaphore.Release(s_maxInstances - s_semaphore.CurrentCount);  // reset the counter so we can proceeed!
-                }
-                catch (SemaphoreFullException)
-                {
-                  // possibly a race condition
-                }
-              }
-              result = true;
+            // First, if it currently exists then kill it.
+            // Note that with the current (9/1/21) DeepStack there can be only one
+            foreach (var process in Process.GetProcessesByName("deepstack"))
+            {
+              Dbg.Write("AILocation - Restart AI - Killing off the existing AI");
+              process.Kill(true);
+              Thread.Sleep(1000);
+              break;
+            }
+
+
+            string startParameters = Storage.Instance.GetGlobalString("DeepStackParameters");
+            ProcessStartInfo startInfo = new("deepstack", startParameters);
+            startInfo.UseShellExecute = true;
+
+            bool visible = Storage.Instance.GetGlobalBool("DeepStackVisible");
+            if (!visible)
+            {
+              startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             }
             else
             {
-              Dbg.Write("AILocation - RestartAI - The DeepStack process started and then stopped!");
+              startInfo.WindowStyle = ProcessWindowStyle.Minimized;
             }
+
+            startInfo.LoadUserProfile = true;
+
+            Process p = Process.Start(startInfo);
+            Thread.Sleep(1000 * 2); // just to be sure
+            if (p != null)
+            {
+              p.Refresh();
+              Thread.Sleep(500);
+              if (!p.HasExited)
+              {
+                // At this point we will assume that we have a fresh copy of the AI that is good to go!
+                s_AIDead = false;
+                AIStateChange(true);
+                Dbg.Write("AILocation - RestartAI - The restart was successful!");
+                s_timeLastSuccess = DateTime.Now;
+
+                if ((s_maxInstances - s_semaphore.CurrentCount) > 0)
+                {
+                  try
+                  {
+                    s_semaphore.Release(s_maxInstances - s_semaphore.CurrentCount);  // reset the counter so we can proceeed!
+                  }
+                  catch (SemaphoreFullException)
+                  {
+                    // possibly a race condition
+                  }
+                }
+                result = true;
+              }
+              else
+              {
+                Dbg.Write("AILocation - RestartAI - The DeepStack process started and then stopped!");
+              }
+            }
+          }
+          else
+          {
+            Dbg.Write("AILocation - Restart AI - The current settings do not allow for an AI restart");
+            s_timeOfLastRestart = DateTime.Now;
           }
         }
         else
         {
-          Dbg.Write("AILocation - Restart AI - The current settings do not allow for an AI restart");
-          s_timeOfLastRestart = DateTime.Now;
+          Dbg.Trace("AILocation - RestartAI - We are attempting to restart the AI too frequently");
         }
-      }
-      else
-      {
-        Dbg.Trace("AILocation - RestartAI - We are attempting to restart the AI too frequently");
       }
 
       return result;
@@ -293,7 +304,7 @@ namespace OnGuardCore
       {
 
         int retryCount = 0;
-        client.Timeout = TimeSpan.FromSeconds(60);
+        client.Timeout = TimeSpan.FromSeconds(70);
 
         do
         {
@@ -301,6 +312,7 @@ namespace OnGuardCore
           {
             DateTime postStart = DateTime.Now;
             output = await client.PostAsync(new Uri(url), requestData);
+
             AITimeUpdater.UpdateAITime(DateTime.Now - postStart);
 
             retryCount = 0; // don't need no retry do we
@@ -364,9 +376,10 @@ namespace OnGuardCore
       return output;
     }
 
-    static void AIStateChange(bool aiGone)
+    static void AIStateChange(bool aiAlive)
     {
-      OnAIStateChange(aiGone);
+      s_AIDead = !aiAlive;
+      OnAIStateChange(aiAlive);
     }
   }
 

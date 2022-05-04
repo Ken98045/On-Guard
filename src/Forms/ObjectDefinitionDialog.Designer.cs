@@ -225,7 +225,7 @@ namespace OnGuardCore
       this.ConfidenceNumeric.TabIndex = 1;
       this.ConfidenceNumeric.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       this.ConfidenceNumeric.Value = new decimal(new int[] {
-            50,
+            80,
             0,
             0,
             0});
