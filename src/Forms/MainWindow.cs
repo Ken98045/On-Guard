@@ -672,8 +672,12 @@ namespace OnGuardCore
           subItems[1] = (100.0 * io.Confidence).ToString();
           subItems[2] = io.ObjectRectangle.X.ToString();
           subItems[3] = io.ObjectRectangle.Y.ToString();
-          subItems[4] = io.ObjectRectangle.Width.ToString();
-          subItems[5] = io.ObjectRectangle.Height.ToString();
+
+          double screenWidthPercent = Math.Round((100.0 * io.ObjectRectangle.Width)/ BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
+          double screenHeightPercent = Math.Round((100.0 * io.ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
+
+          subItems[4] = screenWidthPercent.ToString();
+          subItems[5] = screenHeightPercent.ToString();
           ListViewItem item = new(subItems);
           objectListView.Items.Add(item);
         }

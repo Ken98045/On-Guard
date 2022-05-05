@@ -344,18 +344,25 @@ namespace OnGuardCore
                     {
                       if (overlap >= targetOverlap)   // Shadows, etc. do cause event parked vehicles to shift in outline
                       {
+                        double previousScreenWidthPercent = Math.Round((100.0 * _previousVehicles[j].ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
+                        double previousScreenHeightPercent = Math.Round((100.0 * _previousVehicles[j].ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
+
                         Dbg.Trace("Vehicle found parked using area overlap - Previous: " +
                           "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
                           " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
-                          " Width: " + _previousVehicles[j].ObjectRectangle.Width.ToString() +
-                          " Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
+                          " Width: " + previousScreenWidthPercent.ToString() +
+                          " Height: " + previousScreenHeightPercent.ToString()
                           );
+
+
+                        double currentScreenWidthPercent = Math.Round((100.0 * vehicles[i].ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
+                        double currentScreenHeightPercent = Math.Round((100.0 * vehicles[i].ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
 
                         Dbg.Trace("Vehicle found parked using area overlap - Current: " +
                           "X: " + vehicles[i].ObjectRectangle.X.ToString() +
                           " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
-                          " Width: " + vehicles[i].ObjectRectangle.Width.ToString() +
-                          " Height: " + vehicles[i].ObjectRectangle.Height.ToString()
+                          " Width: " + currentScreenWidthPercent.ToString() +
+                          " Height: " + currentScreenHeightPercent.ToString()
                           );
                         foundParked = true;
                       }
@@ -394,18 +401,24 @@ namespace OnGuardCore
                           Dbg.Trace("Parked ULDistance: " + ulDistance.ToString());
                           Dbg.Trace("Parked LRDistance: " + lrDistance.ToString());
 
+                          double previousScreenWidthPercent = Math.Round((100.0 * _previousVehicles[j].ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
+                          double previousScreenHeightPercent = Math.Round((100.0 * _previousVehicles[j].ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
+
                           Dbg.Trace("Vehicle found parked using Corners - Previous: " +
                             "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
                             " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
-                            " Width: " + _previousVehicles[j].ObjectRectangle.Width.ToString() +
-                            "Height: " + _previousVehicles[j].ObjectRectangle.Height.ToString()
+                            " Width: " + previousScreenWidthPercent.ToString() +
+                            "Height: " + previousScreenHeightPercent.ToString()
                             );
+
+                          double currentScreenWidthPercent = Math.Round((100.0 * vehicles[i].ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
+                          double currentScreenHeightPercent = Math.Round((100.0 * vehicles[i].ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
 
                           Dbg.Trace("Vehicle found parked using Corners - Current: " +
                             "X: " + vehicles[i].ObjectRectangle.X.ToString() +
                             " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
-                            " Width: " + vehicles[i].ObjectRectangle.Width.ToString() +
-                            " Height: " + vehicles[i].ObjectRectangle.Height.ToString()
+                            " Width: " + currentScreenWidthPercent.ToString() +
+                            " Height: " + currentScreenHeightPercent.ToString()
                             );
 
                           foundParked = true;

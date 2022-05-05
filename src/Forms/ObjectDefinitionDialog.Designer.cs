@@ -250,12 +250,8 @@ namespace OnGuardCore
       // 
       // minWidthNumeric
       // 
+      this.minWidthNumeric.DecimalPlaces = 1;
       this.minWidthNumeric.Location = new System.Drawing.Point(235, 184);
-      this.minWidthNumeric.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
       this.minWidthNumeric.Name = "minWidthNumeric";
       this.minWidthNumeric.Size = new System.Drawing.Size(74, 23);
       this.minWidthNumeric.TabIndex = 3;
@@ -263,12 +259,8 @@ namespace OnGuardCore
       // 
       // minHeightNumeric
       // 
+      this.minHeightNumeric.DecimalPlaces = 1;
       this.minHeightNumeric.Location = new System.Drawing.Point(235, 226);
-      this.minHeightNumeric.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
       this.minHeightNumeric.Name = "minHeightNumeric";
       this.minHeightNumeric.Size = new System.Drawing.Size(74, 23);
       this.minHeightNumeric.TabIndex = 4;
@@ -313,9 +305,9 @@ namespace OnGuardCore
       this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label11.Location = new System.Drawing.Point(371, 226);
       this.label11.Name = "label11";
-      this.label11.Size = new System.Drawing.Size(241, 15);
+      this.label11.Size = new System.Drawing.Size(279, 15);
       this.label11.TabIndex = 16;
-      this.label11.Text = "Height in Pixels (0 = Don\'t Consider)";
+      this.label11.Text = "Height in % of Screen (0 = Don\'t Consider)";
       // 
       // label10
       // 
@@ -323,9 +315,9 @@ namespace OnGuardCore
       this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.label10.Location = new System.Drawing.Point(377, 184);
       this.label10.Name = "label10";
-      this.label10.Size = new System.Drawing.Size(235, 15);
+      this.label10.Size = new System.Drawing.Size(273, 15);
       this.label10.TabIndex = 15;
-      this.label10.Text = "Width in Pixels (0 = Don\'t Consider)";
+      this.label10.Text = "Width in % of Screen (0 = Don\'t Consider)";
       // 
       // label9
       // 

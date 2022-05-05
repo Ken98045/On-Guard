@@ -16,12 +16,16 @@ namespace OnGuardCore
         {
           Text = interest.Area.AOIName
         };
+
+        double screenWidthPercent = Math.Round((100.0 * interest.ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
+        double screenHeightPercent = Math.Round((100.0 * interest.ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
+
         item.SubItems.Add(interest.Area.AOIType.ToString());
         item.SubItems.Add(interest.Label);
         item.SubItems.Add(interest.Confidence.ToString());
         item.SubItems.Add(interest.Overlap.ToString());
-        item.SubItems.Add(interest.ObjectRectangle.Width.ToString());
-        item.SubItems.Add(interest.ObjectRectangle.Height.ToString());
+        item.SubItems.Add(screenWidthPercent.ToString());
+        item.SubItems.Add(screenHeightPercent.ToString());
 
         interestingListView.Items.Add(item);
 

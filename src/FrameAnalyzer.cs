@@ -98,9 +98,12 @@ namespace OnGuardCore
                           if ((int)Math.Round(pi.Confidence * 100) >= criteria.Confidence)
                           {
                             // BUT WAIT, THERE'S MORE!
-                            if (criteria.MinimumXSize == 0 || pi.ObjectRectangle.Width > criteria.MinimumXSize)
+                            double screenWidthPercent = Math.Round((100.0 * pi.ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
+                            double screenHeightPercent = Math.Round((100.0 * pi.ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
+
+                            if (criteria.MinimumXSize == 0 || screenWidthPercent > criteria.MinimumXSize)
                             {
-                              if (criteria.MinimumYSize == 0 || pi.ObjectRectangle.Height > criteria.MinimumYSize)
+                              if (criteria.MinimumYSize == 0 || screenHeightPercent > criteria.MinimumYSize)
                               {
                                 pi.Overlap = percentOverlap;
 
