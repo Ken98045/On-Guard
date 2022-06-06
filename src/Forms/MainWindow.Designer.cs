@@ -121,16 +121,17 @@
       this.cleanupOldPicturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.syncToDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.applicationSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.cameraSettingsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.ImageCaptureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.outgoingEmailServerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.addEditEmailAddressesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.mQTTSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.analysisSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.aiAlertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.startRestartAIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.applicationSettingsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.cameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.globalImageCaptureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.outgoingEmailServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.mQTTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.analysisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.aIAlertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.addEditEmailAddressesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.logFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -847,6 +848,7 @@
             this.AreasOfInterestToolStripMenuItem1,
             this.cleanupToolStripMenuItem,
             this.toolsToolStripMenuItem1,
+            this.settingsToolStripMenuItem,
             this.helpToolStripMenuItem1});
       this.menuStrip2.Location = new System.Drawing.Point(0, 0);
       this.menuStrip2.Name = "menuStrip2";
@@ -959,89 +961,96 @@
       // toolsToolStripMenuItem1
       // 
       this.toolsToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.applicationSettingsToolStripMenuItem,
-            this.cameraSettingsToolStripMenuItem1,
-            this.ImageCaptureMenuItem,
-            this.outgoingEmailServerToolStripMenuItem1,
-            this.addEditEmailAddressesToolStripMenuItem1,
-            this.mQTTSettingsToolStripMenuItem,
-            this.analysisSettingsToolStripMenuItem,
-            this.aiAlertMenuItem,
             this.testImagesToolStripMenuItem,
             this.startRestartAIToolStripMenuItem});
       this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
       this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(46, 20);
       this.toolsToolStripMenuItem1.Text = "&Tools";
       // 
-      // applicationSettingsToolStripMenuItem
-      // 
-      this.applicationSettingsToolStripMenuItem.Name = "applicationSettingsToolStripMenuItem";
-      this.applicationSettingsToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
-      this.applicationSettingsToolStripMenuItem.Text = "Application Settings";
-      this.applicationSettingsToolStripMenuItem.Click += new System.EventHandler(this.SettingsToolStripMenuItem_Click);
-      // 
-      // cameraSettingsToolStripMenuItem1
-      // 
-      this.cameraSettingsToolStripMenuItem1.Name = "cameraSettingsToolStripMenuItem1";
-      this.cameraSettingsToolStripMenuItem1.Size = new System.Drawing.Size(234, 22);
-      this.cameraSettingsToolStripMenuItem1.Text = "Camera Settings";
-      this.cameraSettingsToolStripMenuItem1.Click += new System.EventHandler(this.CameraSettingsToolStripMenuItem_Click);
-      // 
-      // ImageCaptureMenuItem
-      // 
-      this.ImageCaptureMenuItem.Name = "ImageCaptureMenuItem";
-      this.ImageCaptureMenuItem.Size = new System.Drawing.Size(234, 22);
-      this.ImageCaptureMenuItem.Text = "Global Image Capture Settings";
-      this.ImageCaptureMenuItem.Click += new System.EventHandler(this.ImageCaptureMenuItem_Click);
-      // 
-      // outgoingEmailServerToolStripMenuItem1
-      // 
-      this.outgoingEmailServerToolStripMenuItem1.Name = "outgoingEmailServerToolStripMenuItem1";
-      this.outgoingEmailServerToolStripMenuItem1.Size = new System.Drawing.Size(234, 22);
-      this.outgoingEmailServerToolStripMenuItem1.Text = "Outgoing Email Server";
-      this.outgoingEmailServerToolStripMenuItem1.Click += new System.EventHandler(this.OutgoingEmailServerToolStripMenuItem_Click);
-      // 
-      // addEditEmailAddressesToolStripMenuItem1
-      // 
-      this.addEditEmailAddressesToolStripMenuItem1.Name = "addEditEmailAddressesToolStripMenuItem1";
-      this.addEditEmailAddressesToolStripMenuItem1.Size = new System.Drawing.Size(234, 22);
-      this.addEditEmailAddressesToolStripMenuItem1.Text = "Add/Edit Email Addresses";
-      this.addEditEmailAddressesToolStripMenuItem1.Click += new System.EventHandler(this.AddEditEmailAddressesToolStripMenuItem_Click);
-      // 
-      // mQTTSettingsToolStripMenuItem
-      // 
-      this.mQTTSettingsToolStripMenuItem.Name = "mQTTSettingsToolStripMenuItem";
-      this.mQTTSettingsToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
-      this.mQTTSettingsToolStripMenuItem.Text = "MQTT Settings";
-      this.mQTTSettingsToolStripMenuItem.Click += new System.EventHandler(this.MQTTSettingsToolStripMenuItem_Click);
-      // 
-      // analysisSettingsToolStripMenuItem
-      // 
-      this.analysisSettingsToolStripMenuItem.Name = "analysisSettingsToolStripMenuItem";
-      this.analysisSettingsToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
-      this.analysisSettingsToolStripMenuItem.Text = "Analysis Settings";
-      this.analysisSettingsToolStripMenuItem.Click += new System.EventHandler(this.AnalysisSettingsToolStripMenuItem_Click);
-      // 
-      // aiAlertMenuItem
-      // 
-      this.aiAlertMenuItem.Name = "aiAlertMenuItem";
-      this.aiAlertMenuItem.Size = new System.Drawing.Size(234, 22);
-      this.aiAlertMenuItem.Text = "AI Alert Settings";
-      this.aiAlertMenuItem.Click += new System.EventHandler(this.AIAlertMenuItemClicked);
-      // 
       // testImagesToolStripMenuItem
       // 
       this.testImagesToolStripMenuItem.Name = "testImagesToolStripMenuItem";
-      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
       this.testImagesToolStripMenuItem.Text = "Test Images";
       this.testImagesToolStripMenuItem.Click += new System.EventHandler(this.TestImagesToolStripMenuItem_Click);
       // 
       // startRestartAIToolStripMenuItem
       // 
       this.startRestartAIToolStripMenuItem.Name = "startRestartAIToolStripMenuItem";
-      this.startRestartAIToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+      this.startRestartAIToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
       this.startRestartAIToolStripMenuItem.Text = "Start/Restart AI";
       this.startRestartAIToolStripMenuItem.Click += new System.EventHandler(this.startRestartAIToolStripMenuItem_Click);
+      // 
+      // settingsToolStripMenuItem
+      // 
+      this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.applicationSettingsToolStripMenuItem1,
+            this.cameraToolStripMenuItem,
+            this.globalImageCaptureToolStripMenuItem,
+            this.outgoingEmailServerToolStripMenuItem,
+            this.mQTTToolStripMenuItem,
+            this.analysisToolStripMenuItem,
+            this.aIAlertToolStripMenuItem,
+            this.addEditEmailAddressesToolStripMenuItem});
+      this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+      this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+      this.settingsToolStripMenuItem.Text = "Settings";
+      // 
+      // applicationSettingsToolStripMenuItem1
+      // 
+      this.applicationSettingsToolStripMenuItem1.Name = "applicationSettingsToolStripMenuItem1";
+      this.applicationSettingsToolStripMenuItem1.Size = new System.Drawing.Size(209, 22);
+      this.applicationSettingsToolStripMenuItem1.Text = "Application";
+      this.applicationSettingsToolStripMenuItem1.Click += new System.EventHandler(this.SettingsToolStripMenuItem_Click);
+      // 
+      // cameraToolStripMenuItem
+      // 
+      this.cameraToolStripMenuItem.Name = "cameraToolStripMenuItem";
+      this.cameraToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.cameraToolStripMenuItem.Text = "Camera";
+      this.cameraToolStripMenuItem.Click += new System.EventHandler(this.CameraSettingsToolStripMenuItem_Click);
+      // 
+      // globalImageCaptureToolStripMenuItem
+      // 
+      this.globalImageCaptureToolStripMenuItem.Name = "globalImageCaptureToolStripMenuItem";
+      this.globalImageCaptureToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.globalImageCaptureToolStripMenuItem.Text = "Global Image Capture";
+      this.globalImageCaptureToolStripMenuItem.Click += new System.EventHandler(this.ImageCaptureMenuItem_Click);
+      // 
+      // outgoingEmailServerToolStripMenuItem
+      // 
+      this.outgoingEmailServerToolStripMenuItem.Name = "outgoingEmailServerToolStripMenuItem";
+      this.outgoingEmailServerToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.outgoingEmailServerToolStripMenuItem.Text = "Outgoing Email Server";
+      this.outgoingEmailServerToolStripMenuItem.Click += new System.EventHandler(this.OutgoingEmailServerToolStripMenuItem_Click);
+      // 
+      // mQTTToolStripMenuItem
+      // 
+      this.mQTTToolStripMenuItem.Name = "mQTTToolStripMenuItem";
+      this.mQTTToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.mQTTToolStripMenuItem.Text = "MQTT";
+      this.mQTTToolStripMenuItem.Click += new System.EventHandler(this.MQTTSettingsToolStripMenuItem_Click);
+      // 
+      // analysisToolStripMenuItem
+      // 
+      this.analysisToolStripMenuItem.Name = "analysisToolStripMenuItem";
+      this.analysisToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.analysisToolStripMenuItem.Text = "Picture Analysis";
+      this.analysisToolStripMenuItem.Click += new System.EventHandler(this.AnalysisSettingsToolStripMenuItem_Click);
+      // 
+      // aIAlertToolStripMenuItem
+      // 
+      this.aIAlertToolStripMenuItem.Name = "aIAlertToolStripMenuItem";
+      this.aIAlertToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.aIAlertToolStripMenuItem.Text = "AI Alert";
+      this.aIAlertToolStripMenuItem.Click += new System.EventHandler(this.AIAlertMenuItemClicked);
+      // 
+      // addEditEmailAddressesToolStripMenuItem
+      // 
+      this.addEditEmailAddressesToolStripMenuItem.Name = "addEditEmailAddressesToolStripMenuItem";
+      this.addEditEmailAddressesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+      this.addEditEmailAddressesToolStripMenuItem.Text = "Add/Edit Email Addresses";
+      this.addEditEmailAddressesToolStripMenuItem.Click += new System.EventHandler(this.AddEditEmailAddressesToolStripMenuItem_Click);
       // 
       // helpToolStripMenuItem1
       // 
@@ -1184,16 +1193,11 @@
     private System.Windows.Forms.ToolStripMenuItem showAreasOfInterestToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem AreasOfInterestToolStripMenuItem1;
     private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem1;
-    private System.Windows.Forms.ToolStripMenuItem applicationSettingsToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem cameraSettingsToolStripMenuItem1;
-    private System.Windows.Forms.ToolStripMenuItem outgoingEmailServerToolStripMenuItem1;
-    private System.Windows.Forms.ToolStripMenuItem addEditEmailAddressesToolStripMenuItem1;
     private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
     private System.Windows.Forms.NotifyIcon notifyIcon;
     private System.Windows.Forms.ToolStripMenuItem logFileToolStripMenuItem;
     private System.Windows.Forms.CheckBox motionOnlyCheckbox;
-    private System.Windows.Forms.ToolStripMenuItem mQTTSettingsToolStripMenuItem;
     private System.Windows.Forms.Label label11;
     private System.Windows.Forms.Label label12;
     private System.Windows.Forms.Label XResLabel;
@@ -1204,13 +1208,10 @@
     private System.Windows.Forms.Label label13;
     private EnhancedProgressBar FPSProgress;
     private EnhancedProgressBar cpuProgress;
-    private System.Windows.Forms.ToolStripMenuItem analysisSettingsToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem aiAlertMenuItem;
     private System.Windows.Forms.Label label14;
     private System.Windows.Forms.Label AIStatus;
     private System.Windows.Forms.Panel StatusPanel;
     private TimeLine timeLine;
-    private System.Windows.Forms.ToolStripMenuItem ImageCaptureMenuItem;
     private System.Windows.Forms.ComboBox PresetsCombo;
     private System.Windows.Forms.ToolStripMenuItem startRestartAIToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem editAreaToolStripMenuItem;
@@ -1227,6 +1228,15 @@
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.ToolStripMenuItem syncToDatabaseToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem pictureDisplayOptionToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem applicationSettingsToolStripMenuItem1;
+    private System.Windows.Forms.ToolStripMenuItem globalImageCaptureToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem outgoingEmailServerToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem mQTTToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem analysisToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem aIAlertToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem cameraToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem addEditEmailAddressesToolStripMenuItem;
   }
 }
 

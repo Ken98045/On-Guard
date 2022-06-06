@@ -298,15 +298,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OnGuard"
-        "ProductCode" = "8:{254D8D8D-DEFF-4446-9A98-90F1442FF0D1}"
-        "PackageCode" = "8:{CA823D6E-626C-441E-BD8C-9C9B925E1D07}"
+        "ProductCode" = "8:{D2032E9D-8514-4F68-9D30-D1FE07E1CA51}"
+        "PackageCode" = "8:{3327B699-847F-4C04-94A3-1A2B17705261}"
         "UpgradeCode" = "8:{D3BCA8E0-0468-46F2-B474-C2AF858BCFFC}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:3.0.2"
+        "ProductVersion" = "8:3.1.0"
         "Manufacturer" = "8:OnGuard"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -862,7 +862,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5CF35CD2B3914F518CE1F0E9F6F750B1"
             {
-            "SourcePath" = "8:..\\obj\\x64\\Release\\net6.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\obj\\x64\\Debug\\net6.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9D1BF3C221954DD58595691CF32403A4"

@@ -168,7 +168,14 @@ namespace OnGuardCore
     {
       this.Focus();
       CreateErrorPicture();
-      await InitAsync();
+      try
+      {
+        await InitAsync();
+      }
+      catch (Exception ex)
+      {
+        Dbg.Write("Exception initializing main window form: " + ex.Message);
+      }
     }
 
     private async Task InitAsync()
@@ -248,7 +255,19 @@ namespace OnGuardCore
 
       _analyzer = new AIAnalyzer();
       _allCameras = CameraCollection.Load();
-      await _allCameras.InitAsync();
+
+      try
+      {
+        await _allCameras.InitAsync();
+      }
+      catch (CameraStartupException ex)
+      {
+        foreach (var cam in ex.FailedCameras)
+        {
+          _allCameras.CameraDictionary.Remove(cam);
+          MessageBox.Show(this, "This camera failed to startup: " + cam, "Camera Startup Error!");
+        }
+      }
 
       if (CurrentCam != null)
       {
@@ -1673,7 +1692,6 @@ namespace OnGuardCore
     {
       await GetLiveImageAsync(false);
     }
-
     private async void OnLiveImageTimer(Object o, EventArgs e)
     {
       if (_continueLiveVideo)
@@ -2307,7 +2325,18 @@ namespace OnGuardCore
         cameraCombo.SelectedItem = CurrentCam;
       }
 
-      await _allCameras.InitAsync();
+      try
+      {
+        await _allCameras.InitAsync();
+      }
+      catch (CameraStartupException ex)
+      {
+        foreach(var cam in ex.FailedCameras)
+        {
+          _allCameras.CameraDictionary.Remove(cam);
+          MessageBox.Show(this, "This camera failed to startup: " + cam, "Camera Startup Error!");
+        }
+      }
 
       // And reconnnect all cameras to this form for new images
       foreach (var cam in _allCameras.CameraDictionary.Values)
@@ -3562,14 +3591,6 @@ namespace OnGuardCore
     }
 
 
-    private void Button1_Click(object sender, EventArgs e)
-    {
-      /*_test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Before);
-      _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.After);
-      _test.Item.CamData.FrameHistory.GetFramesInTimespan(TimeSpan.FromSeconds(200), _test.Item.TimeEnqueued, TimeDirection.Both);
-      */
-    }
-
     private async void TestImagesToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (MessageBox.Show(this, "You are about to send test images to all cameras.  There is no guarantee that this images will match your Areas of Interest.  After the test pictures are saved your workspace will refresh.  Proceed?", "Send Test Images", MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -3941,11 +3962,6 @@ namespace OnGuardCore
       }
     }
 
-    private void OnSizeToFrameChecked(object sender, EventArgs e)
-    {
-
-    }
-
     private void OnResize(object sender, EventArgs e)
     {
       if (this.WindowState == FormWindowState.Minimized)
@@ -3965,10 +3981,7 @@ namespace OnGuardCore
 
     private void sizePictureToFrameMenuItem_Click(object sender, EventArgs e)
     {
-      if (_displayedPicture != null)
-      {
-        AdjustPictureImageSize(_displayedPicture);
-      }
+
     }
 
     private void OnPictureDisplayOption(object sender, EventArgs e)

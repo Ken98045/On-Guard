@@ -271,7 +271,7 @@ namespace OnGuardCore
             outFile = ResizeImage(theFiles[count], opt.SizeDownToPercent);
           }
 
-          if (null != outFile)
+          if (!string.IsNullOrEmpty(outFile))
           {
             FileInfo fi = new(outFile);
             totalSize += fi.Length;
@@ -469,13 +469,13 @@ namespace OnGuardCore
       {
         // This format puts the pictures in the body of the email using an HTML format.
         // Most email clients can display these
-        mail = BuildInlineMessage(frames, activityDesc);
+        mail = BuildMailMessage(frames, activityDesc, true);
       }
       else
       {
         // MMS clients (and others) may not be able to handle HTML fomattted mail message.
         // For these we just attach the images and hope for the best.
-        mail = BuildAttachmentMessage(frames, activityDesc);
+        mail = BuildMailMessage(frames, activityDesc, false);
       }
 
       mail.To.Add(emailRecipient);
@@ -485,62 +485,57 @@ namespace OnGuardCore
       _emailQueue.Add(emailInfo);
     }
 
-    static MailMessage BuildAttachmentMessage(string[] frames, string[] activityDesc)
+    static MailMessage BuildMailMessage(string[] frames, string[] activityDesc, bool useHTML)
     {
       MailMessage mail = new();
       mail.BodyEncoding = Encoding.UTF8;
-      mail.IsBodyHtml = true;
 
-      foreach (var desc in activityDesc)
+      string bodyOut = "";
+
+      if (useHTML)
       {
-        mail.Body += desc + Environment.NewLine;
-      }
+        bodyOut = "<html><body>";
 
-      System.Net.Mail.Attachment attachment;
-      foreach (var frame in frames)
+        foreach (var desc in activityDesc)
+        {
+          bodyOut += desc + "<br>";
+        }
+
+        bodyOut += "<br>";
+
+        // Create the HTML view
+
+        // Form the inline html
+        int j = 0;
+        foreach (var frame in frames)
+        {
+          string imageStr = string.Format(@"<img src='cid:Picture{0}' <br><br>", j);  // width={1} height={2}  , resize.width, resize.height)
+          bodyOut += imageStr;
+          j++;
+        }
+
+        bodyOut += @"</body> </html>";
+        mail.IsBodyHtml = true;
+      }
+      else
       {
-        attachment = new System.Net.Mail.Attachment(frame);
-        mail.Attachments.Add(attachment);
+        foreach (var desc in activityDesc)
+        {
+          bodyOut += desc + Environment.NewLine;
+        }
+
+        if (!string.IsNullOrEmpty(bodyOut))
+        {
+          bodyOut += Environment.NewLine;
+        }
+
       }
-
-      return mail;
-    }
-
-    static MailMessage BuildInlineMessage(string[] frames, string[] activityDesc)
-    {
-      MailMessage mail = new();
-      mail.BodyEncoding = Encoding.UTF8;
-      mail.IsBodyHtml = true;
-
-      string htmlOut = "<html><body>";
-
-      foreach (var desc in activityDesc)
-      {
-        htmlOut += desc + "<br>";
-      }
-
-      htmlOut += "<br>";
-
-      System.Net.Mail.Attachment attachment;
-      // Create the HTML view
-
-      // Form the inline html
-      int j = 0;
-      foreach (var frame in frames)
-      {
-        string imageStr = string.Format(@"<img src='cid:Picture{0}' <br><br>", j);  // width={1} height={2}  , resize.width, resize.height)
-        htmlOut += imageStr;
-        j++;
-      }
-
-      htmlOut += @"</body> </html>";
 
 
       AlternateView htmlView = AlternateView.CreateAlternateViewFromString(
-                                                   htmlOut,
+                                                   bodyOut,
                                                    Encoding.UTF8,
                                                    System.Net.Mime.MediaTypeNames.Text.Html);
-
 
       int i = 0;
       string mediaType = MediaTypeNames.Image.Jpeg;
@@ -558,11 +553,10 @@ namespace OnGuardCore
       }
 
       mail.AlternateViews.Add(htmlView);
-      mail.IsBodyHtml = true;
-
 
       return mail;
     }
+
 
     private static async Task SendEmailFromQueueAsync()
     {

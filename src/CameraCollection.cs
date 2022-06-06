@@ -46,9 +46,26 @@ namespace OnGuardCore
 
     public async Task InitAsync()
     {
+      List<string> badCameras = new();
+
       foreach (var cam in CameraDictionary.Values)
       {
-        await cam.InitAsync();
+        try
+        {
+          await cam.InitAsync();
+        }
+        catch (Exception ex)
+        {
+          string err = "Error Initializing Camera: " + cam.CameraPrefix + " " + ex.Message;
+          Dbg.Write(err);
+          badCameras.Add(CameraData.PathAndPrefix(cam));
+        }
+      }
+
+      if (badCameras.Count > 0)
+      {
+        CameraStartupException ex = new CameraStartupException(badCameras);
+        throw ex; 
       }
     }
 
@@ -180,4 +197,26 @@ namespace OnGuardCore
     #endregion
 
   }
+
+  public class CameraStartupException : Exception
+  {
+    public List<string> FailedCameras {get; set;}
+
+    public CameraStartupException(List<string> cameras) : base("One or more cameraa could not startup Ensure that all cameras are online!")
+    {
+      FailedCameras = cameras;
+    }
+
+    public CameraStartupException() : base() 
+    {
+      FailedCameras = new();
+    }
+
+    public CameraStartupException(string message, System.Exception inner) : base(message, inner) { }
+
+    protected CameraStartupException(System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+
+  }
+
 }

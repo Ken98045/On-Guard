@@ -37,6 +37,7 @@ namespace OnGuardCore
       if (this.WindowState == FormWindowState.Normal)
       {
         this.BringToFront();
+        this.Update();
       }
     }
 
@@ -61,6 +62,7 @@ namespace OnGuardCore
       LabelMessage.Left = this.Width / 2 - size.Width / 2;
       this.Show();
       this.BringToFront();
+      this.Update();
     }
 
     public void Destroy()
