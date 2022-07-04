@@ -102,7 +102,7 @@ namespace OnGuardCore
       }
       catch (Exception ex)
       {
-        Dbg.Write("SafeParse - Unexpected exception: " + ex.Message);
+        Dbg.Write(LogLevel.Error, "SafeParse - Unexpected exception: " + ex.Message);
       }
 
       return o;

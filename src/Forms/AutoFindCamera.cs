@@ -103,7 +103,7 @@ namespace OnGuardCore
       }
       catch (Exception ex)
       {
-        Dbg.Write("AutoFindCamera - SearchButton_Click: " + ex.Message);
+        Dbg.Write(LogLevel.DetailedInfo, "AutoFindCamera - SearchButton_Click: " + ex.Message);
       }
       MessageBox.Show("Search Complete!", "Done");
     }

@@ -29,19 +29,19 @@ namespace OnGuardCore
 
     public string SearchInnerDown(string nameName, string seachFor)
     {
-      string result = string.Format(".//{0}[text() = '{1}']", nameName, seachFor);
+      string result = $".//{nameName}[text() = '{seachFor}']";
       return result;
     }
 
     public string FindElementNameDown(string nodeName)
     {
-      string result = string.Format(".//{0}", nodeName);
+      string result = $".//{nodeName}";
       return result;
     }
 
     public string SearchAttributeDown(string nodeName, string attributeName, string searchForAttribute)
     {
-      string result = string.Format(".//{0}[@{1} = '{2}']", nodeName, attributeName, searchForAttribute);
+      string result = $".//{nodeName}[@{attributeName} = '{searchForAttribute}']";
       return result;
     }
 
@@ -123,7 +123,7 @@ namespace OnGuardCore
         }
         catch (XmlException xmlEx)
         {
-          Dbg.Write("Error writing OnGuardStorage.xml");
+          Dbg.Write(LogLevel.Error, "Error writing OnGuardStorage.xml");
 
         }
       }
@@ -149,14 +149,14 @@ namespace OnGuardCore
         }
         catch (Exception ex)
         {
-          Dbg.Write("XMLStorage - Exception Saving XML Document: " + ex.Message);
+          Dbg.Write(LogLevel.Error, "XMLStorage - Exception Saving XML Document: " + ex.Message);
         }
       }
     }
 
     public string FormQuery(string label, string val)
     {
-      string result = string.Format("./{0}[{0}='{1}']", label, val);
+      string result = $"./{label}[{0}='{val}']";
       return result;
     }
 

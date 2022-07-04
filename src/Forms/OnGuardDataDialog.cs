@@ -17,30 +17,35 @@ namespace OnGuardCore
   {
     public string FolderLocation { get; set; }
     private string _originalDBPath = string.Empty;    // So we know if we need to copy the DB files
+    private string _originalSettingsPath = string.Empty;
     public string DatabaseFolderLocation { get; set; }
 
     public OnGuardDataDialog()
     {
       InitializeComponent();
 
+      FileText.Text = Settings.Default.DataFileLocation; // a setting that must come from the settings.settings for the app in order to find the xml settings file (or use app.config, which isn't happening now)
+      _originalSettingsPath = FileText.Text;
 
-      string storagePath = Settings.Default.DataFileLocation; // a setting that must come from the settings.settings for the app in order to find the xml settings file
-      string existingLocation = string.Empty;
-
-      FileText.Text = storagePath;
-
-      if (Directory.Exists(storagePath) && File.Exists(Path.Combine(storagePath, "OnGuardStorage.xml")))
+      if (Directory.Exists(FileText.Text) && File.Exists(Path.Combine(FileText.Text, "OnGuardStorage.xml")))
       {
+        _originalDBPath = Storage.Instance.GetGlobalString("DatabasePath");
       }
 
-      _originalDBPath = DBConnection.GetDatabasePath();
-      pathDatabaseText.Text = _originalDBPath;
+      // If the datbase path was not found, make it the same as the file path
+      if (string.IsNullOrEmpty(_originalDBPath))
+      {
+        _originalDBPath = _originalSettingsPath;
+      }
 
+      pathDatabaseText.Text = _originalDBPath;
     }
 
 
     private void OKButton_Click(object sender, EventArgs e)
     {
+      bool exitRequired = false;
+
       if (string.IsNullOrEmpty(FileText.Text))
       {
         MessageBox.Show("You must either browse to the data files location or press 'Use Default'", "Configuration Error!");
@@ -51,8 +56,6 @@ namespace OnGuardCore
         MessageBox.Show("You must either browse to the database file location or press 'Use Default'", "Configuration Error!");
       }
 
-      // First, save the data files location and create the folder if necessary
-      Settings.Default.DataFileLocation = FileText.Text;
       try
       {
         if (!Directory.Exists(FileText.Text))
@@ -66,62 +69,49 @@ namespace OnGuardCore
         return;
       }
 
-      Settings.Default.Save();
-
-      // Now we need to handle the DB location.  This is more complex because you can't just set it
-      // If the location has changed we need to copy the DB files over to the new location and change the
-      // DBConnection path
-      string destPath = pathDatabaseText.Text;
-      destPath = Path.Combine(destPath, "DBNewMotionFrames.mdf");
-      if (!File.Exists(destPath))
+      if (_originalSettingsPath != FileText.Text)
       {
-        string srcPath = _originalDBPath;
-        srcPath = Path.Combine(srcPath, "DBNewMotionFrames.mdf");
-
-        if (File.Exists(srcPath))
+        DialogResult confirm = MessageBox.Show(this, "The Data Files Folder location has changed.  On Guard must exit if you continue.  You may then restart it.  Continue? ", "Data Files Folder Changed!", MessageBoxButtons.YesNo);
+        if (confirm == DialogResult.Yes)
         {
-          if (MessageBox.Show("The database files do not exist in the new location.  Copy them?", "Copy Files?", MessageBoxButtons.YesNo) == DialogResult.Yes)
-          {
-            File.Copy(srcPath, destPath);
-            srcPath = Path.Combine(_originalDBPath, "DBNewMotionFrames_log.ldf");
-            destPath = Path.Combine(pathDatabaseText.Text, "DBNewMotionFrames_log.ldf");
-            File.Copy(srcPath, destPath);
-          }
-        }
-        else
-        {
-          AppDomain domain = AppDomain.CurrentDomain;
-          string baseLocation = domain.BaseDirectory;
-          if (!string.IsNullOrEmpty(baseLocation))
-          {
-            srcPath = Path.Combine(baseLocation, "DBNewMotionFrames.mdf");
-            if (File.Exists(srcPath))
-            {
-              destPath = Path.Combine(pathDatabaseText.Text, "DBNewMotionFrames.mdf");
-              File.Copy(srcPath, destPath);
-              srcPath = Path.Combine(baseLocation, "DBNewMotionFrames_log.ldf");
-              destPath = Path.Combine(pathDatabaseText.Text, "DBNewMotionFrames_log.ldf");
-              File.Copy(srcPath, destPath);
-            }
+          // First, save the data files location and create the folder if necessary
+          Settings.Default.DataFileLocation = FileText.Text;
 
-          }
+          Settings.Default.Save();
+          exitRequired = true;
         }
       }
 
-      FolderLocation = pathDatabaseText.Text;
-      DBConnection.SetDatabasePath(pathDatabaseText.Text);
+      if (_originalDBPath != pathDatabaseText.Text)
+      {
+        DialogResult confirm = MessageBox.Show(this, "The Motion Database Files Folder location has changed.  On Guard must exit if you continue.  You may then restart it.  Continue? ", "Motion Database Folder Changed!", MessageBoxButtons.YesNo);
+        if (confirm == DialogResult.Yes)
+        {
+          DBConnection.SetDatabasePath(pathDatabaseText.Text);
+          MotionDBContext.SetupDatabase(pathDatabaseText.Text);
+          exitRequired = true;
+        }
+      }
+
+      if (exitRequired)
+      {
+        Application.Exit();
+      }
+
       DialogResult = DialogResult.OK;
+      this.Close();
     }
 
     private void HelpButton_Click(object sender, EventArgs e)
     {
-      using HelpBox dlg = new ("Set Data File Location", new Size(500, 400), "DataFilesHelp.rtf");
+      using HelpBox dlg = new("Set Data File Location", new Size(500, 400), "DataFilesHelp.rtf");
       dlg.ShowDialog();
     }
 
     private void CancelButton_Click(object sender, EventArgs e)
     {
       DialogResult = DialogResult.Cancel;
+      this.Close();
     }
 
     private void FileBrowseClick(object sender, EventArgs e)

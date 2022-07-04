@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Threading;
+using System.IO;
 
 namespace OnGuardCore
 {
@@ -39,24 +40,8 @@ namespace OnGuardCore
 
       double snapshotInterval = interval;
 
-      using SqlConnection con = new (connectionString);
-      try
-      {
-        await con.OpenAsync().ConfigureAwait(true);
-      }
-      catch (SqlException ex)
-      {
-        Dbg.Write("MainWindow -  PerformMotionSync - Sql Exception on opening database connection: " + ex.Message);
-        return;
-      }
-      catch (InvalidOperationException ex)
-      {
-        Dbg.Write("MainWindow -  PerformMotionSync - InvalidOperation Exception on opening database connection: " + ex.Message);
-        return;
 
-      }
-
-      Dbg.Write("Starting Sync to Motion Database");
+      Dbg.Write(LogLevel.Info, "Starting Sync to Motion Database");
 
       double lastAITime = (double)0.0;
       double multiplier = 2.0;
@@ -128,7 +113,7 @@ namespace OnGuardCore
                   int result = await MainWindow.InsertMotionIfNecessaryAsync(cam, fileName);
                   if (result > 0)
                   {
-                    // Dbg.Trace("PerformMotionSync - Inserted file into motion database: " + fileName);
+                    // Dbg.Write("PerformMotionSync - Inserted file into motion database: " + fileName);
                   }
                 }
                 else
@@ -136,7 +121,7 @@ namespace OnGuardCore
                   int removed = await MainWindow.DeleteMissingMotionAsync(fileName).ConfigureAwait(true);
                   if (removed > 0)
                   {
-                    Dbg.Trace("PerformMotionSync - Removed file from motion list: " + fileName);
+                    Dbg.Write(LogLevel.Verbose, "PerformMotionSync - Removed file from motion list: " + fileName);
                   }
                 }
               }
@@ -152,10 +137,10 @@ namespace OnGuardCore
       }
       catch (Exception ex)
       {
-        Dbg.Write("MainWindow - PerformMotionSync - Exception: " + ex.Message);
+        Dbg.Write(LogLevel.Warning, "MainWindow - PerformMotionSync - Exception: " + ex.Message);
       }
 
-      Dbg.Write("Ending Sync to Motion Database");
+      Dbg.Write(LogLevel.Info, "Ending Sync to Motion Database");
     }
 
   }

@@ -32,13 +32,6 @@ namespace OnGuardCore
     {
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
-      this.SQLPanel = new System.Windows.Forms.Panel();
-      this.FormHelpButton = new System.Windows.Forms.Button();
-      this.UseCustomButton = new System.Windows.Forms.Button();
-      this.GetDefaultButton = new System.Windows.Forms.Button();
-      this.ConnectionStringText = new System.Windows.Forms.TextBox();
-      this.label3 = new System.Windows.Forms.Label();
-      this.label1 = new System.Windows.Forms.Label();
       this.LogPanel = new System.Windows.Forms.Panel();
       this.label15 = new System.Windows.Forms.Label();
       this.LogViewerText = new System.Windows.Forms.TextBox();
@@ -74,7 +67,7 @@ namespace OnGuardCore
       this.ModeLowRadio = new System.Windows.Forms.RadioButton();
       this.ModeHighRadio = new System.Windows.Forms.RadioButton();
       this.label9 = new System.Windows.Forms.Label();
-      this.SQLPanel.SuspendLayout();
+      this.label1 = new System.Windows.Forms.Label();
       this.LogPanel.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.portNumeric)).BeginInit();
@@ -86,7 +79,7 @@ namespace OnGuardCore
       // okButton
       // 
       this.okButton.Enabled = false;
-      this.okButton.Location = new System.Drawing.Point(274, 713);
+      this.okButton.Location = new System.Drawing.Point(275, 609);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(85, 23);
       this.okButton.TabIndex = 0;
@@ -96,84 +89,13 @@ namespace OnGuardCore
       // 
       // cancelButton
       // 
-      this.cancelButton.Location = new System.Drawing.Point(366, 713);
+      this.cancelButton.Location = new System.Drawing.Point(364, 609);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(85, 23);
       this.cancelButton.TabIndex = 1;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
       this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
-      // 
-      // SQLPanel
-      // 
-      this.SQLPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.SQLPanel.Controls.Add(this.FormHelpButton);
-      this.SQLPanel.Controls.Add(this.UseCustomButton);
-      this.SQLPanel.Controls.Add(this.GetDefaultButton);
-      this.SQLPanel.Controls.Add(this.ConnectionStringText);
-      this.SQLPanel.Controls.Add(this.label3);
-      this.SQLPanel.Controls.Add(this.label1);
-      this.SQLPanel.Enabled = false;
-      this.SQLPanel.Location = new System.Drawing.Point(26, 463);
-      this.SQLPanel.Name = "SQLPanel";
-      this.SQLPanel.Size = new System.Drawing.Size(678, 101);
-      this.SQLPanel.TabIndex = 12;
-      // 
-      // FormHelpButton
-      // 
-      this.FormHelpButton.Location = new System.Drawing.Point(582, 67);
-      this.FormHelpButton.Name = "FormHelpButton";
-      this.FormHelpButton.Size = new System.Drawing.Size(75, 23);
-      this.FormHelpButton.TabIndex = 3;
-      this.FormHelpButton.Text = "Help!";
-      this.FormHelpButton.UseVisualStyleBackColor = true;
-      this.FormHelpButton.Click += new System.EventHandler(this.HelpButton_Click);
-      // 
-      // UseCustomButton
-      // 
-      this.UseCustomButton.Location = new System.Drawing.Point(344, 67);
-      this.UseCustomButton.Name = "UseCustomButton";
-      this.UseCustomButton.Size = new System.Drawing.Size(128, 23);
-      this.UseCustomButton.TabIndex = 2;
-      this.UseCustomButton.Text = "Use Custom Setting";
-      this.UseCustomButton.UseVisualStyleBackColor = true;
-      this.UseCustomButton.Click += new System.EventHandler(this.UseCustomButton_Click);
-      // 
-      // GetDefaultButton
-      // 
-      this.GetDefaultButton.Location = new System.Drawing.Point(204, 67);
-      this.GetDefaultButton.Name = "GetDefaultButton";
-      this.GetDefaultButton.Size = new System.Drawing.Size(128, 23);
-      this.GetDefaultButton.TabIndex = 1;
-      this.GetDefaultButton.Text = "Get Default Setting";
-      this.GetDefaultButton.UseVisualStyleBackColor = true;
-      this.GetDefaultButton.Click += new System.EventHandler(this.GetDefaultButton_Click);
-      // 
-      // ConnectionStringText
-      // 
-      this.ConnectionStringText.Location = new System.Drawing.Point(145, 31);
-      this.ConnectionStringText.Name = "ConnectionStringText";
-      this.ConnectionStringText.Size = new System.Drawing.Size(512, 23);
-      this.ConnectionStringText.TabIndex = 0;
-      // 
-      // label3
-      // 
-      this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(22, 34);
-      this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(103, 15);
-      this.label3.TabIndex = 11;
-      this.label3.Text = "Connection String";
-      // 
-      // label1
-      // 
-      this.label1.AutoSize = true;
-      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label1.Location = new System.Drawing.Point(248, 10);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(161, 16);
-      this.label1.TabIndex = 9;
-      this.label1.Text = "SQL Connection String";
       // 
       // LogPanel
       // 
@@ -183,7 +105,7 @@ namespace OnGuardCore
       this.LogPanel.Controls.Add(this.label14);
       this.LogPanel.Controls.Add(this.label12);
       this.LogPanel.Enabled = false;
-      this.LogPanel.Location = new System.Drawing.Point(26, 570);
+      this.LogPanel.Location = new System.Drawing.Point(26, 467);
       this.LogPanel.Name = "LogPanel";
       this.LogPanel.Size = new System.Drawing.Size(678, 131);
       this.LogPanel.TabIndex = 13;
@@ -390,6 +312,7 @@ namespace OnGuardCore
       // AIPanel
       // 
       this.AIPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.AIPanel.Controls.Add(this.label1);
       this.AIPanel.Controls.Add(this.threadCountNumeric);
       this.AIPanel.Controls.Add(this.label16);
       this.AIPanel.Controls.Add(this.AutoStopDeepStackCheck);
@@ -412,7 +335,7 @@ namespace OnGuardCore
       this.AIPanel.Controls.Add(this.label4);
       this.AIPanel.Enabled = false;
       this.AIPanel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.AIPanel.Location = new System.Drawing.Point(26, 107);
+      this.AIPanel.Location = new System.Drawing.Point(26, 109);
       this.AIPanel.Name = "AIPanel";
       this.AIPanel.Size = new System.Drawing.Size(678, 343);
       this.AIPanel.TabIndex = 11;
@@ -575,23 +498,31 @@ namespace OnGuardCore
       this.label9.TabIndex = 0;
       this.label9.Text = "Detection Mode  ";
       // 
+      // label1
+      // 
+      this.label1.AutoSize = true;
+      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+      this.label1.Location = new System.Drawing.Point(483, 81);
+      this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(167, 13);
+      this.label1.TabIndex = 35;
+      this.label1.Text = "(0 = Not Used - Older DeepStack)";
+      // 
       // SettingsDialog
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.AutoScroll = true;
-      this.ClientSize = new System.Drawing.Size(724, 743);
+      this.ClientSize = new System.Drawing.Size(724, 642);
       this.Controls.Add(this.panel2);
       this.Controls.Add(this.label6);
       this.Controls.Add(this.LogPanel);
-      this.Controls.Add(this.SQLPanel);
       this.Controls.Add(this.AIPanel);
       this.Controls.Add(this.cancelButton);
       this.Controls.Add(this.okButton);
       this.Name = "SettingsDialog";
       this.Text = "Application Settings";
-      this.SQLPanel.ResumeLayout(false);
-      this.SQLPanel.PerformLayout();
       this.LogPanel.ResumeLayout(false);
       this.LogPanel.PerformLayout();
       this.panel2.ResumeLayout(false);
@@ -611,12 +542,6 @@ namespace OnGuardCore
 
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
-    private System.Windows.Forms.Panel SQLPanel;
-    private System.Windows.Forms.Button UseCustomButton;
-    private System.Windows.Forms.Button GetDefaultButton;
-    private System.Windows.Forms.TextBox ConnectionStringText;
-    private System.Windows.Forms.Label label3;
-    private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Panel LogPanel;
     private System.Windows.Forms.Label label15;
     private System.Windows.Forms.TextBox LogViewerText;
@@ -626,7 +551,6 @@ namespace OnGuardCore
     private System.Windows.Forms.Label label6;
     private System.Windows.Forms.Button SetDataFolderButton;
     private System.Windows.Forms.Panel panel2;
-    private System.Windows.Forms.Button FormHelpButton;
     private System.Windows.Forms.Label label4;
     private System.Windows.Forms.TextBox ipAddressText;
     private System.Windows.Forms.Label label7;
@@ -653,5 +577,6 @@ namespace OnGuardCore
     private System.Windows.Forms.Label label11;
     private System.Windows.Forms.NumericUpDown threadCountNumeric;
     private System.Windows.Forms.Label label16;
-  }
+        private System.Windows.Forms.Label label1;
+    }
 }

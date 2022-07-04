@@ -98,7 +98,7 @@ namespace OnGuardCore
       // 
       this.label4.AutoSize = true;
       this.label4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label4.Location = new System.Drawing.Point(360, 77);
+      this.label4.Location = new System.Drawing.Point(336, 77);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(60, 15);
       this.label4.TabIndex = 3;
@@ -115,8 +115,8 @@ namespace OnGuardCore
       // 
       // IntervalNumeric
       // 
-      this.IntervalNumeric.DecimalPlaces = 3;
-      this.IntervalNumeric.Location = new System.Drawing.Point(233, 75);
+      this.IntervalNumeric.DecimalPlaces = 2;
+      this.IntervalNumeric.Location = new System.Drawing.Point(263, 75);
       this.IntervalNumeric.Maximum = new decimal(new int[] {
             10,
             0,
@@ -128,10 +128,10 @@ namespace OnGuardCore
             0,
             196608});
       this.IntervalNumeric.Name = "IntervalNumeric";
-      this.IntervalNumeric.Size = new System.Drawing.Size(120, 23);
+      this.IntervalNumeric.Size = new System.Drawing.Size(66, 23);
       this.IntervalNumeric.TabIndex = 1;
       this.IntervalNumeric.Value = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
             65536});
@@ -140,7 +140,7 @@ namespace OnGuardCore
       // 
       this.label2.AutoSize = true;
       this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.label2.Location = new System.Drawing.Point(94, 77);
+      this.label2.Location = new System.Drawing.Point(124, 77);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(127, 15);
       this.label2.TabIndex = 0;

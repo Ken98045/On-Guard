@@ -154,7 +154,7 @@ namespace OnGuardCore
             catch (Exception ex)
             {
               Type t = ex.GetType();
-              Dbg.Write("Picture -- Load -- Unexpected Exception: " + ex.Message);
+              Dbg.Write(LogLevel.Error, "Picture -- Load -- Unexpected Exception: " + ex.Message);
             }
           }
           else
@@ -292,7 +292,7 @@ namespace OnGuardCore
           label.Height = 70;
           label.Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold);
           label.AutoSize = false;
-          string confidence = string.Format("{0:0.##}", 100.0 * obj.Confidence);
+          string confidence = $"{(100.0 * obj.Confidence),0:0.##}";
 
           label.Text = obj.Label + Environment.NewLine + confidence + Environment.NewLine;
           var labelSize = TextRenderer.MeasureText(obj.Label, label.Font);
@@ -361,7 +361,7 @@ namespace OnGuardCore
       }
       catch (Exception ex)
       {
-        Dbg.Write("Picure = PictureAvailable - Exception: " + ex.Message);
+        Dbg.Write(LogLevel.Error, "Picure = PictureAvailable - Exception: " + ex.Message);
       }
     }
 

@@ -22,8 +22,11 @@ namespace OnGuardCore
       if (!string.IsNullOrEmpty(fileName))
       {
         FileInfo fi = new FileInfo(fileName);
-        long fileTime = fi.CreationTime.ToFileTime();
-        result = GetFileKey(fi, fileName);
+        if (fi.Exists)
+        {
+          long fileTime = fi.CreationTime.ToFileTime();
+          result = GetFileKey(fi, fileName);
+        }
       }
 
       return result;
@@ -35,12 +38,21 @@ namespace OnGuardCore
       if (!string.IsNullOrEmpty(fileName))
       {
         long fileTime = fi.CreationTime.ToFileTime();
-        result = string.Format("{0:0000000000000000000}-{1}", fileTime, Path.GetFileName(fileName));
+        result = $"{fileTime,0:0000000000000000000}-{Path.GetFileName(fileName).ToLower()}";
         result = result.ToLower();
       }
 
       return result;
     }
+
+    public static string GetComparisonKey(DateTime compTime)
+    {
+      string result = string.Empty;
+      long fileTime = compTime.ToFileTime();
+      result = $"{fileTime,0:0000000000000000000}-";
+      return result;
+    }
+
 
   }
 }

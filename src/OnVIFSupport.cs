@@ -72,10 +72,9 @@ namespace OnGuardCore
 
     public async Task Init(string address, int port, string userName, string password)
     {
-      IpAddress = string.Format("{0}:{1}", address, port);
+      IpAddress = $"{address}:{port}";
       UserName = userName;
       Password = password;
-
 
       try
       {
@@ -156,7 +155,7 @@ namespace OnGuardCore
       }
       catch (Exception ex)
       {
-        Dbg.Write("OnVIFSupport - Init - Exception: " + ex.Message);
+        Dbg.Write(LogLevel.Error, "OnVIFSupport - Init - Exception: " + ex.Message);
       }
 
 

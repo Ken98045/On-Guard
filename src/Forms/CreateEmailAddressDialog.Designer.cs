@@ -241,10 +241,11 @@
       // 
       // toTime
       // 
-      this.toTime.CustomFormat = "hh:mmtt";
-      this.toTime.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+      this.toTime.CustomFormat = "hh:mm tt";
+      this.toTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
       this.toTime.Location = new System.Drawing.Point(208, 118);
       this.toTime.Name = "toTime";
+      this.toTime.ShowUpDown = true;
       this.toTime.Size = new System.Drawing.Size(90, 23);
       this.toTime.TabIndex = 3;
       this.toTime.Value = new System.DateTime(2020, 6, 2, 0, 0, 0, 0);
@@ -291,10 +292,11 @@
       // 
       // fromTime
       // 
-      this.fromTime.CustomFormat = "hh:mm:tt";
-      this.fromTime.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+      this.fromTime.CustomFormat = "hh:mm tt";
+      this.fromTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
       this.fromTime.Location = new System.Drawing.Point(60, 118);
       this.fromTime.Name = "fromTime";
+      this.fromTime.ShowUpDown = true;
       this.fromTime.Size = new System.Drawing.Size(90, 23);
       this.fromTime.TabIndex = 2;
       this.fromTime.Value = new System.DateTime(2020, 6, 2, 0, 0, 0, 0);

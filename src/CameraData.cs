@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Innovative.SolarCalculator;
 using System.Net;
 using System.Net.Http;
+using System.IO;
 
 namespace OnGuardCore
 {
@@ -241,7 +242,7 @@ namespace OnGuardCore
         }
         catch (Exception ex)
         {
-          Dbg.Write("CameraData - Init - Error getting sunrise/sunset: " + ex.Message);
+          Dbg.Write(LogLevel.Warning, "CameraData - Init - Error getting sunrise/sunset: " + ex.Message);
           return;
         }
 
@@ -283,7 +284,7 @@ namespace OnGuardCore
           }
           catch (Exception ex)
           {
-            Dbg.Write("CameraData - OnScheduledPreset - " + ex.Message);
+            Dbg.Write(LogLevel.Info, "CameraData - OnScheduledPreset - " + ex.Message);
           }
         }
       }
@@ -309,8 +310,7 @@ namespace OnGuardCore
           if (data.PresetSettings.PresetMethod == PTZMethod.BlueIris)
           {
 
-            urlString = string.Format("http://[ADDRESS]/admin?camera=[SHORTNAME]&preset={0}&user=[USERNAME]&pw=[PASSWORD]",
-              data.PresetSettings.PresetList[presetNumber].Command);
+            urlString = $"http://[ADDRESS]/admin?camera=[SHORTNAME]&preset={data.PresetSettings.PresetList[presetNumber].Command}&user=[USERNAME]&pw=[PASSWORD]";
 
             urlString = data.ReplaceParmeters(urlString);
           }
@@ -340,11 +340,11 @@ namespace OnGuardCore
           }
           catch (HttpRequestException ex)
           {
-            Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
+            Dbg.Write(LogLevel.Warning, "MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
           }
           catch (Exception ex)
           {
-            Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
+            Dbg.Write(LogLevel.Error, "MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
           }
 
         }
@@ -401,7 +401,7 @@ namespace OnGuardCore
       Debug.Assert(camera != null);
       if (camera != null)
       {
-        return string.Format("{0}\\{1}", camera.CameraPath, camera.CameraPrefix).ToLower();
+        return Path.Combine(camera.CameraPath, camera.CameraPrefix.ToLower());
       }
       else
       {

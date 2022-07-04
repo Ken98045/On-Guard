@@ -27,7 +27,7 @@ namespace OnGuardCore
 
     public OnGuardScanner(CameraData camera)
     {
-      Dbg.Write("OnGuardScanner - Constructor");
+      Dbg.Write(LogLevel.Verbose, "OnGuardScanner - Constructor");
       _camera = camera;
       _analyzer = new AIAnalyzer();
       Task.Run(() => ScanCamera());
@@ -71,7 +71,7 @@ namespace OnGuardCore
 
           if (null == bitmap)
           {
-            Dbg.Write("OnGuardStreamer - There was an error obtaining the snapshot/video.  Please check your Live Camera settings");
+            Dbg.Write(LogLevel.Warning, "OnGuardStreamer - There was an error obtaining the snapshot/video.  Please check your Live Camera settings");
             break;
           }
 
@@ -115,13 +115,13 @@ namespace OnGuardCore
 
             if (modifiedWaitTime != previousWaitTime)
             {
-              Dbg.Trace("OnGuardScanner - Modified wait time to: " + modifiedWaitTime.ToString());
+              Dbg.Write(LogLevel.Verbose, "OnGuardScanner - Modified wait time to: " + modifiedWaitTime.ToString());
             }
           }
         }
         catch (Exception ex)
         {
-          Dbg.Write("OnGuardScanner - ScanCamera: " + ex.Message);
+          Dbg.Write(LogLevel.Error, "OnGuardScanner - ScanCamera: " + ex.Message);
         }
       }
     }
@@ -142,7 +142,7 @@ namespace OnGuardCore
         if (null != objectsFound)
         {
 
-          Dbg.Trace("OnGuardScanner - CheckForObjects - Objects found: " + objectsFound.Count.ToString());
+          Dbg.Write(LogLevel.DetailedInfo, "OnGuardScanner - CheckForObjects - Objects found: " + objectsFound.Count.ToString());
           AIResult result = new ();
           result.Item = pendingItem;
           result.ObjectsFound = objectsFound;
@@ -162,7 +162,7 @@ namespace OnGuardCore
                 if (!_camera.StorePicturesInAreaOnly)
                 {
                   // Write the bitmap if this is the kind of object the user cares about.  Might not be in an area we care about (anyplace in the picture)
-                  Dbg.Trace("OnGuardScanner-CheckForObjectsAsync-About to write bitmap (1) - Object count: " + result.ObjectsFound.Count.ToString());
+                  Dbg.Write(LogLevel.Verbose, "OnGuardScanner-CheckForObjectsAsync-About to write bitmap (1) - Object count: " + result.ObjectsFound.Count.ToString());
                   WriteBitmapToFile(bitmap);
                 }
 
@@ -173,7 +173,7 @@ namespace OnGuardCore
                 if (_camera.StorePicturesInAreaOnly && interesting.Count > 0)
                 {
                   // In this case we only write a bitmap if it has objects in an AOI
-                  Dbg.Trace("OnGuardScanner-CheckForObjectsAsync-About to write bitmap (2) - Object count: " + interesting.Count.ToString());
+                  Dbg.Write(LogLevel.Verbose, "OnGuardScanner-CheckForObjectsAsync-About to write bitmap (2) - Object count: " + interesting.Count.ToString());
                   WriteBitmapToFile(bitmap);
                 }
 
@@ -185,11 +185,11 @@ namespace OnGuardCore
       }
       catch (AggregateException ex)
       {
-        Dbg.Write("OnGuardScanner - An AI Died Or Was Not Found - Remaining: " + AI.AICount.ToString());
+        Dbg.Write(LogLevel.Warning, "OnGuardScanner - An AI Died Or Was Not Found - Remaining: " + AI.AICount.ToString());
       }
       catch (AiNotFoundException)
       {
-        Dbg.Write("OnGuardScanner - The AI Died Or Was Not Found");
+        Dbg.Write(LogLevel.Warning, "OnGuardScanner - The AI Died Or Was Not Found");
       }
 
     }
@@ -203,11 +203,11 @@ namespace OnGuardCore
       DateTime now = DateTime.Now;
       path = Path.Combine(path, _camera.CameraPrefix.ToLower());
       Interlocked.Increment(ref sequence);
-      string unique = string.Format("_{0}{1:00}{2:00}{3:00}{4:00}{5:00}{6:0000000}.jpg",
-          now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, sequence);
+      string unique = $"_{now.Year}{now.Month,00}{now.Day,00}{now.Hour,00}{now.Minute,00}{now.Second,00}{sequence,0000000}.jpg";
+
       path += unique;
 
-      Dbg.Trace("OnGuardScanner - WriteBitmapToFile - " + path);
+      Dbg.Write(LogLevel.DetailedInfo, "OnGuardScanner - WriteBitmapToFile - " + path);
 
       bitmap.Save(path);
 
@@ -224,7 +224,7 @@ namespace OnGuardCore
       {
         if (disposing)
         {
-          Dbg.Write("OnGuardScanner - Dispose");
+          Dbg.Write(LogLevel.Verbose, "OnGuardScanner - Dispose");
           _stopEvent.Set();
         }
 

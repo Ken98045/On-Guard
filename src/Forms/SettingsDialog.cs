@@ -32,14 +32,6 @@ namespace OnGuardCore
         ipAddressText.Text = location.IPAddress;
         portNumeric.Value = location.Port;
 
-
-        // Database Stuff
-        string customConnectionString = Storage.Instance.GetGlobalString("CustomDatabaseConnectionString");
-        if (string.IsNullOrEmpty(customConnectionString))
-        {
-          ConnectionStringText.Text = Storage.Instance.GetGlobalString("DBConnectionString");  // the fully formatted one that is in use!
-        }
-
         Storage.Instance.SetGlobalString("LogViewer", LogViewerText.Text);
 
         // DeepStack startup stuff
@@ -74,7 +66,6 @@ namespace OnGuardCore
         Storage.Instance.Update();
         okButton.Enabled = true;
         AIPanel.Enabled = true;
-        SQLPanel.Enabled = true;
         LogPanel.Enabled = true;
       }
     }
@@ -83,25 +74,6 @@ namespace OnGuardCore
     {
       DialogResult = DialogResult.Cancel;
     }
-
-
-    // This does not just get the exiting value, it reforms it from the base components!
-    private void GetDefaultButton_Click(object sender, EventArgs e)
-    {
-      ConnectionStringText.Text = Storage.Instance.GetGlobalString("DBConnectionString");  // the one we use
-      Storage.Instance.RemoveGlobalValue("CustomDatabaseConnectionString");  // nuke any custom stuff the user set.
-    }
-
-    private void UseCustomButton_Click(object sender, EventArgs e)
-    {
-      if (!string.IsNullOrEmpty(ConnectionStringText.Text))
-      {
-        Storage.Instance.SetGlobalString("CustomDatabaseConnectionString", ConnectionStringText.Text); // His custom string stored here so we can get it back (unless nuked)!
-        Storage.Instance.SetGlobalString("DBConnectionString", ConnectionStringText.Text);   // This is the one actually used!
-        Storage.Instance.Update();
-      }
-    }
-
 
     private void OkButton_Click(object sender, EventArgs e)
     {
@@ -118,15 +90,8 @@ namespace OnGuardCore
       {
         okButton.Enabled = true;
         AIPanel.Enabled = true;
-        SQLPanel.Enabled = true;
         LogPanel.Enabled = true;
       }
-    }
-
-    private void HelpButton_Click(object sender, EventArgs e)
-    {
-      using HelpBox dlg = new ("Database Connection String", new Size(500, 300), "SQLConnectionHelp.rtf");
-      dlg.ShowDialog();
     }
 
     private async void testButton_Click(object sender, EventArgs e)
@@ -184,12 +149,7 @@ namespace OnGuardCore
         threadCount = string.Format("--THREADCOUNT {0}", threadCountNumeric.Value);
       }
 
-      FinalDeepStackTextBox.Text =  string.Format("--VISION-DETECTION True {0} {1} {2} {3} {4}",
-        face,
-        "--PORT " + ((int)portNumeric.Value).ToString() + " ",
-        mode,
-        CustomTextBox.Text,
-        threadCount);
+      FinalDeepStackTextBox.Text = $"--VISION-DETECTION True {face} --PORT {portNumeric.Value} {mode} {CustomTextBox.Text} {threadCount}";
     }
 
     private void SaveDeepStackSettings()

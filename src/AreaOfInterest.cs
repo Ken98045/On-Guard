@@ -38,7 +38,7 @@ namespace OnGuardCore
   /// </summary>
 
   [Serializable]
-  public class AreaOfInterest : IDisposable
+   public class AreaOfInterest : IDisposable
   {
     public string AOIName { get; set; }             // The name to identify the area.  Also sent in any email notifications
     public AOIType AOIType { get; set; }            // Ignore, Door, Garage Door, Driveway.  Door has priority characteristincs

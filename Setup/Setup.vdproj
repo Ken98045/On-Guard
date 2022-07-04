@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_253015C3B4DC4DB69638C7537BD046A6"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_44719A92832243089A2B13176AF820AB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -28,12 +22,6 @@
         "Entry"
         {
         "MsmKey" = "8:_5CF35CD2B3914F518CE1F0E9F6F750B1"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9102E02584F847C88F6272AFE30F2AA3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -149,52 +137,12 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_253015C3B4DC4DB69638C7537BD046A6"
-            {
-            "SourcePath" = "8:..\\DBNewMotionFrames.mdf"
-            "TargetName" = "8:DBNewMotionFrames.mdf"
-            "Tag" = "8:"
-            "Folder" = "8:_C4C594B07A7C4E75B1FB8A3678AA3A34"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_44719A92832243089A2B13176AF820AB"
             {
             "SourcePath" = "8:..\\docs\\OnGuard-ReadMe.docx"
             "TargetName" = "8:OnGuard-ReadMe.docx"
             "Tag" = "8:"
             "Folder" = "8:_95CB9BEDC58444E591EE658E38ABEC20"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9102E02584F847C88F6272AFE30F2AA3"
-            {
-            "SourcePath" = "8:..\\DBNewMotionFrames_log.ldf"
-            "TargetName" = "8:DBNewMotionFrames_log.ldf"
-            "Tag" = "8:"
-            "Folder" = "8:_C4C594B07A7C4E75B1FB8A3678AA3A34"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -297,16 +245,16 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:OnGuard"
-        "ProductCode" = "8:{2E0D2EEB-B4DC-4369-8186-D9AC9E40216A}"
-        "PackageCode" = "8:{AAC8BE25-23EC-45FC-A315-A3AFEE774AAE}"
+        "ProductName" = "8:On Guard"
+        "ProductCode" = "8:{2921D75A-A444-4711-86EA-B181ADF64D94}"
+        "PackageCode" = "8:{0BD79C1E-783A-4478-AA02-1F36807D597F}"
         "UpgradeCode" = "8:{D3BCA8E0-0468-46F2-B474-C2AF858BCFFC}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:3.1.1"
+        "ProductVersion" = "8:4.0.0"
         "Manufacturer" = "8:OnGuard"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

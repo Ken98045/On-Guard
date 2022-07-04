@@ -54,7 +54,7 @@ namespace OnGuardCore
       List<int> priority = new();     // door events have high priority, everything else, not
       List<int> interesting = new();  // frames with objects but not "priority
 
-      Dbg.Trace("EmailAccumulator - Done accumulating email frames with: " + frames.Count.ToString());
+      Dbg.Write(LogLevel.DetailedInfo, "EmailAccumulator - Done accumulating email frames with: " + frames.Count.ToString());
 
       // The collection of area descriptions does not depend on the number of outgoing pictures.
       // It depends on all the pictures.  Each picture may have zero or more than, each object may
@@ -152,7 +152,7 @@ namespace OnGuardCore
 
       } while (emailAddresses.Count > 0 && removedOne);
 
-      Dbg.Trace("EmailAccumulator - Email address count before cooldown check: " + emailAddresses.Count.ToString());
+      Dbg.Write(LogLevel.Verbose, "EmailAccumulator - Email address count before cooldown check: " + emailAddresses.Count.ToString());
 
       // ok, we know that we MAY want to notify some email address, but each
       // address may have a different cool down time, so we cull the list further (yes we could do it differently)
@@ -168,7 +168,7 @@ namespace OnGuardCore
             TimeSpan span = DateTime.Now - option.CoolDown.LastSent;
             if (span.TotalMinutes < option.CoolDown.CooldownTime)
             {
-              Dbg.Write("Email address in cool down: " + emailAddress);
+              Dbg.Write(LogLevel.DetailedInfo, "Email address in cool down: " + emailAddress);
               emailAddresses.Remove(emailAddress);
               removedOne = true;
               break;  // go through the entire list again - it may have changed (not the most efficient, but a small list so....)
@@ -178,7 +178,7 @@ namespace OnGuardCore
 
       } while (emailAddresses.Count > 0 && removedOne);
 
-      Dbg.Trace("EmailAccumulator - Email address count after cooldown check: " + emailAddresses.Count.ToString());
+      Dbg.Write(LogLevel.Verbose, "EmailAccumulator - Email address count after cooldown check: " + emailAddresses.Count.ToString());
 
       // OK, we have FINALLY culled the list of email addreses to send to.
       // Now, we need to go through email recipients and then select the frames we want to send and then
@@ -187,7 +187,7 @@ namespace OnGuardCore
 
       foreach (string addr in emailAddresses.Values)
       {
-        Dbg.Trace("EmailAccumulator - ProcessAccumlatedFrames - Getting frames for email address: " + addr + " -- total frames: " + frames.Count.ToString());
+        Dbg.Write(LogLevel.Verbose, "EmailAccumulator - ProcessAccumlatedFrames - Getting frames for email address: " + addr + " -- total frames: " + frames.Count.ToString());
         outgoing.Clear();
 
         EmailOptions opt = EmailAddresses.GetEmailOptions(addr);
@@ -239,7 +239,7 @@ namespace OnGuardCore
           } // end else
         } // end we do have an option (which we should)
 
-        Dbg.Trace("EmailAccumulator - ProcessAccumlatedFrames - Number of frames to send: " + outgoing.Count.ToString());
+        Dbg.Write(LogLevel.DetailedInfo, "EmailAccumulator - ProcessAccumlatedFrames - Number of frames to send: " + outgoing.Count.ToString());
 
         // We copy off the list of files and the list of descriptions because we are
         // going to clear these lists for the next email address
@@ -283,13 +283,13 @@ namespace OnGuardCore
             }
             else
             {
-              Dbg.Write("EmailAccumulator - ProcessAccumulatedFrames - Email attachement size limit reached" + outFile + " " + count.ToString());
+              Dbg.Write(LogLevel.Info, "EmailAccumulator - ProcessAccumulatedFrames - Email attachement size limit reached" + outFile + " " + count.ToString());
               break;
             }
           }
           else
           {
-            Dbg.Write("EmailAccumulator - ProcessAccumulatedFrames - Unable to create resized picture for: " + file);
+            Dbg.Write(LogLevel.Warning, "EmailAccumulator - ProcessAccumulatedFrames - Unable to create resized picture for: " + file);
           }
         }
 
@@ -333,31 +333,45 @@ namespace OnGuardCore
 
           if (day < 7)
           {
-            // OK, the day was correct.  Let's look at the time.  Can't just compare DateTime because we never look at the date
-            if (now.Hour == option.StartTime.Hour)
-            {
-              // need to check minutes too
-              if (now.Minute >= option.StartTime.Minute)
-              {
-                result = true;  // tentative
-              }
+            // OK, the day was correct.  Let's look at the time.  
+            TimeOnly startTime = new TimeOnly(option.StartTime.Hour, option.StartTime.Minute);
+            TimeOnly endTime = new TimeOnly(option.EndTime.Hour, option.EndTime.Minute);
+            TimeOnly currentTime = new TimeOnly(now.Hour, now.Minute);
 
-              if (option.EndTime.Minute > now.Minute)
+            if (startTime < endTime)
+            {
+              // the easy case - start = 8:00am, end = 6:00pm
+              if (currentTime >= startTime)
               {
-                result = false; // It was greater than start, but also greater than end - unusual, but....
+                if (currentTime < endTime)
+                {
+                  result = true;
+                }
               }
             }
-            else if (now.Hour > option.StartTime.Hour)
+            else
             {
-              result = true;
+              // The slightly harder case where there is a wrap in start to end - example start = 10:00am, end = 8:00am
+              if (currentTime >= startTime)
+              {
+                // The easy case so far, current = 11:00am, don't check the end at all cause it is less than the start
+                result = true;
+              }
+              else
+              {
+                // example current  = 9:00am
+                if (currentTime < endTime)
+                {
+                  result = true;  // now check the end
+                }
+              }
             }
-            else { } // less than remains false
 
           }
         }
       }
 
-      Dbg.Trace("EmailAccumulator - CheckEmailTODDOW - EmailAddress: " + emailAddress + " Result: " + result.ToString());
+      Dbg.Write(LogLevel.Verbose, "EmailAccumulator - CheckEmailTODDOW - EmailAddress: " + emailAddress + " Result: " + result.ToString());
 
       return result;
     }
@@ -396,7 +410,7 @@ namespace OnGuardCore
         }
         catch (Exception ex)
         {
-          Dbg.Write("EmailAccumulator - GetBitmap Unexpected Exception: " + ex.Message);
+          Dbg.Write(LogLevel.Error, "EmailAccumulator - GetBitmap Unexpected Exception: " + ex.Message);
           continueTrying = false;
         }
       } while (continueTrying);
@@ -446,7 +460,7 @@ namespace OnGuardCore
       catch (Exception ex)
       {
         string err = "EmailAccumulator - There was an error attempting to create a resized image for file: " + fileName + " at scale factor: " + scaleFactor.ToString() + Environment.NewLine + ex.Message;
-        Dbg.Write(err);
+        Dbg.Write(LogLevel.Error, err);
       }
 
       return destFile;
@@ -481,7 +495,7 @@ namespace OnGuardCore
       mail.To.Add(emailRecipient);
 
       EmailInfo emailInfo = new(mail, frames);
-      Dbg.Trace("Enqueued for sending email to: " + emailRecipient);
+      Dbg.Write(LogLevel.Verbose, "Enqueued for sending email to: " + emailRecipient);
       _emailQueue.Add(emailInfo);
     }
 
@@ -509,7 +523,7 @@ namespace OnGuardCore
         int j = 0;
         foreach (var frame in frames)
         {
-          string imageStr = string.Format(@"<img src='cid:Picture{0}' <br><br>", j);  // width={1} height={2}  , resize.width, resize.height)
+          string imageStr = $"<img src='cid:Picture{j}' <br><br>";
           bodyOut += imageStr;
           j++;
         }
@@ -543,7 +557,7 @@ namespace OnGuardCore
       foreach (var frame in frames)
       {
         LinkedResource img = new LinkedResource(frame, mediaType);
-        img.ContentId = string.Format("Picture{0}", i);
+        img.ContentId = $"Picture{i}";
         img.ContentType.Name = img.ContentId;
         img.ContentLink = new Uri("cid:" + img.ContentId);
         img.ContentType.MediaType = mediaType;
@@ -577,7 +591,7 @@ namespace OnGuardCore
 
           EmailOptions option = EmailAddresses.GetEmailOptions(mail.To[0].Address);
 
-          Dbg.Trace("EmailAccumulator - Starting email send to: " + mail.To[0].Address);
+          Dbg.Write(LogLevel.Verbose, "EmailAccumulator - Starting email send to: " + mail.To[0].Address);
 
           using (SmtpClient SmtpServer = new(Storage.Instance.GetGlobalString("EmailServer")))
           {
@@ -593,12 +607,12 @@ namespace OnGuardCore
             SmtpServer.EnableSsl = Storage.Instance.GetGlobalBool("EmailSSL");
             SmtpServer.Timeout = 180 * 1000;
             SmtpServer.Send(mail);
-            Dbg.Write("Email sent to: " + mail.To[0].Address);
+            Dbg.Write(LogLevel.Info, "Email sent to: " + mail.To[0].Address);
           }
         }
         catch (SmtpException ex)
         {
-          Dbg.Write("Email exception: " + ex.ToString());
+          Dbg.Write(LogLevel.Warning, "Email exception: " + ex.ToString());
         }
 
         mail.Dispose();
@@ -612,7 +626,7 @@ namespace OnGuardCore
           }
           catch (Exception ex)
           {
-            Dbg.Write("EmailAccumulator - Error deleting email temporary file: " + file);
+            Dbg.Write(LogLevel.Warning, "EmailAccumulator - Error deleting email temporary file: " + file);
           }
         }
 

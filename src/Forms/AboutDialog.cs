@@ -18,7 +18,7 @@ namespace OnGuardCore
     public AboutDialog()
     {
       InitializeComponent();
-      assemblyLabel.Text = String.Format(AssemblyVersion);
+      assemblyLabel.Text = AssemblyVersion;
     }
 
     public static string AssemblyTitle

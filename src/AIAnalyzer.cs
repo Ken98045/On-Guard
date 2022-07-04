@@ -49,7 +49,7 @@ namespace OnGuardCore
       lock (_fileLock)
       {
         SortedDictionary<string, PictureInfo> dateSortedList = new ();
-        string fileSearch = string.Format("{0}*.jpg", cameraNamePrefix);
+        string fileSearch = $"{cameraNamePrefix}*.jpg";
 
         string[] files;
         if (subDirectories)
@@ -140,7 +140,7 @@ namespace OnGuardCore
 
         if (!addedOne)
         {
-          Dbg.Trace("AIAnalyzer - RemoveItemsOfNoInterest - Camera: " + camera.CameraPrefix + " - Weeded out: " + io.Label);
+          Dbg.Write(LogLevel.DetailedInfo, "AIAnalyzer - RemoveItemsOfNoInterest - Camera: " + camera.CameraPrefix + " - Weeded out: " + io.Label);
         }
       }
 
@@ -220,10 +220,10 @@ namespace OnGuardCore
                         vehicles[i].Confidence = 0.9999;  // this number is below 1 and is magic in the sense that it can be recognized by the user
                       }
 
-                      Dbg.Trace("Boosting vehicle confidence from: " + beforeConfidence.ToString() + " After: " + vehicles[i].Confidence.ToString());
+                      Dbg.Write(LogLevel.DetailedInfo, "Boosting vehicle confidence from: " + beforeConfidence.ToString() + " After: " + vehicles[i].Confidence.ToString());
                     }
 
-                    Dbg.Trace("Removing duplicate vehicle (1) " + vehicles[j].Label);
+                    Dbg.Write(LogLevel.DetailedInfo, "Removing duplicate vehicle (1) " + vehicles[j].Label);
                     // Since there was an overlap, remove the lower confidence vehicle
                     objectList.RemoveAll(obj => obj.ID == vehicles[j].ID);  // and remove it from the passed list
                     vehicles.RemoveAt(j);
@@ -240,9 +240,9 @@ namespace OnGuardCore
                       vehicles[j].Confidence = 0.9999;  // this number is below 1 and is magic in the sense that it can be recognized by the user
                     }
 
-                    Dbg.Trace("Boosting vehicle confidence from: " + beforeConfidence.ToString() + " After: " + vehicles[j].Confidence.ToString());
+                    Dbg.Write(LogLevel.DetailedInfo, "Boosting vehicle confidence from: " + beforeConfidence.ToString() + " After: " + vehicles[j].Confidence.ToString());
 
-                    Dbg.Trace("Removing duplicate vehicle (2): " + vehicles[i].Label);
+                    Dbg.Write(LogLevel.DetailedInfo, "Removing duplicate vehicle (2): " + vehicles[i].Label);
                     objectList.RemoveAll(obj => obj.ID == vehicles[i].ID);  // and remove it from the passed list
                     vehicles.RemoveAt(i);   // We only do the vehicle once.
                     removedOne = true;
@@ -264,7 +264,7 @@ namespace OnGuardCore
         }
       }
 
-      Dbg.Trace("Objects after duplicate vehicle check: " + objectList.Count.ToString());
+      Dbg.Write(LogLevel.DetailedInfo, "Objects after duplicate vehicle check: " + objectList.Count.ToString());
     }
 
     // I am assuming that if there are people then there is motion.
@@ -291,7 +291,7 @@ namespace OnGuardCore
 
     void RemoveUnmovedVehicles(CameraData camera, List<InterestingObject> objectList)
     {
-      Dbg.Trace("Object count before removing parked: " + objectList.Count.ToString());
+      Dbg.Write(LogLevel.DetailedInfo, "Object count before removing parked: " + objectList.Count.ToString());
 
       List<InterestingObject> vehicles = new ();
       int nonVehicleObjects = 0;
@@ -347,7 +347,7 @@ namespace OnGuardCore
                         double previousScreenWidthPercent = Math.Round((100.0 * _previousVehicles[j].ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
                         double previousScreenHeightPercent = Math.Round((100.0 * _previousVehicles[j].ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
 
-                        Dbg.Trace("Vehicle found parked using area overlap - Previous: " +
+                        Dbg.Write(LogLevel.DetailedInfo, "Vehicle found parked using area overlap - Previous: " +
                           "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
                           " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
                           " Width: " + previousScreenWidthPercent.ToString() +
@@ -358,7 +358,7 @@ namespace OnGuardCore
                         double currentScreenWidthPercent = Math.Round((100.0 * vehicles[i].ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
                         double currentScreenHeightPercent = Math.Round((100.0 * vehicles[i].ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
 
-                        Dbg.Trace("Vehicle found parked using area overlap - Current: " +
+                        Dbg.Write(LogLevel.DetailedInfo, "Vehicle found parked using area overlap - Current: " +
                           "X: " + vehicles[i].ObjectRectangle.X.ToString() +
                           " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
                           " Width: " + currentScreenWidthPercent.ToString() +
@@ -397,14 +397,14 @@ namespace OnGuardCore
                       {
                         if (ulDistance < targetSize || lrDistance < targetSize)
                         {
-                          Dbg.Trace("Parked Target Size: " + targetSize.ToString());
-                          Dbg.Trace("Parked ULDistance: " + ulDistance.ToString());
-                          Dbg.Trace("Parked LRDistance: " + lrDistance.ToString());
+                          Dbg.Write(LogLevel.Verbose, "Parked Target Size: " + targetSize.ToString());
+                          Dbg.Write(LogLevel.Verbose, "Parked ULDistance: " + ulDistance.ToString());
+                          Dbg.Write(LogLevel.Verbose, "Parked LRDistance: " + lrDistance.ToString());
 
                           double previousScreenWidthPercent = Math.Round((100.0 * _previousVehicles[j].ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
                           double previousScreenHeightPercent = Math.Round((100.0 * _previousVehicles[j].ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
 
-                          Dbg.Trace("Vehicle found parked using Corners - Previous: " +
+                          Dbg.Write(LogLevel.Verbose, "Vehicle found parked using Corners - Previous: " +
                             "X: " + _previousVehicles[j].ObjectRectangle.X.ToString() +
                             " Y: " + _previousVehicles[j].ObjectRectangle.Y.ToString() +
                             " Width: " + previousScreenWidthPercent.ToString() +
@@ -414,7 +414,7 @@ namespace OnGuardCore
                           double currentScreenWidthPercent = Math.Round((100.0 * vehicles[i].ObjectRectangle.Width) / BitmapResolution.XResolution, 1, MidpointRounding.AwayFromZero);
                           double currentScreenHeightPercent = Math.Round((100.0 * vehicles[i].ObjectRectangle.Height) / BitmapResolution.YResolution, 1, MidpointRounding.AwayFromZero);
 
-                          Dbg.Trace("Vehicle found parked using Corners - Current: " +
+                          Dbg.Write(LogLevel.DetailedInfo, "Vehicle found parked using Corners - Current: " +
                             "X: " + vehicles[i].ObjectRectangle.X.ToString() +
                             " Y: " + vehicles[i].ObjectRectangle.Y.ToString() +
                             " Width: " + currentScreenWidthPercent.ToString() +
@@ -432,7 +432,7 @@ namespace OnGuardCore
                       // We add which ever has the highest confidence level to the result;
 
                       objectList.RemoveAll(obj => obj.ID == vehicles[i].ID);  // and remove it from the passed list
-                      Dbg.Trace("Removing parked vehicle: " + vehicles[i].Label);
+                      Dbg.Write(LogLevel.DetailedInfo, "Removing parked vehicle: " + vehicles[i].Label);
                       vehicles.RemoveAt(i);   // we are done with this vehicle
                       removedOne = true;
                       break;
@@ -458,11 +458,11 @@ namespace OnGuardCore
         }
         catch (Exception ex)
         {
-          Dbg.Write("AIAnalyzer - RemoveUnmovedVehicles - Exception caught: " + ex.Message);
+          Dbg.Write(LogLevel.Error, "AIAnalyzer - RemoveUnmovedVehicles - Exception caught: " + ex.Message);
         }
       }
 
-      Dbg.Trace("Total objects after parked vehicle check: " + objectList.Count.ToString() + " Vehicles remaining: " + vehicles.Count.ToString());
+      Dbg.Write(LogLevel.DetailedInfo, "Total objects after parked vehicle check: " + objectList.Count.ToString() + " Vehicles remaining: " + vehicles.Count.ToString());
     }
 
     public static double GetPointDistance(Point p1, Point p2)

@@ -339,7 +339,7 @@ namespace OnGuardCore
 
       for (int i = 0; i < availableCamerasList.Items.Count; i++)
       {
-        string target = string.Format("{0}\\{1}", availableCamerasList.Items[i].SubItems[1].Text, availableCamerasList.Items[i].SubItems[0].Text);
+        string target = Path.Combine(availableCamerasList.Items[i].SubItems[1].Text, availableCamerasList.Items[i].SubItems[0].Text);
         if (target.ToLower() == key)
         {
           result = i;
@@ -357,7 +357,7 @@ namespace OnGuardCore
       using AddCameraDialog dlg = new(null);
       if (dlg.ShowDialog() == DialogResult.OK)
       {
-        string cameraID = string.Format("{0}\\{1}", dlg.CameraFilePath, dlg.CameraPrefix);
+        string cameraID = Path.Combine(dlg.CameraFilePath, dlg.CameraPrefix);
         if (CameraFromList(cameraID) >= 0)
         {
           MessageBox.Show("This camera file path and camera prefix already exists. Please select it or add a different camera.");
@@ -366,7 +366,7 @@ namespace OnGuardCore
         {
           SelectedCamera = dlg.Camera;  // new or old camera definition
 
-          ListViewItem item = new (new string[] { SelectedCamera.CameraPrefix, SelectedCamera.CameraPath })
+          ListViewItem item = new(new string[] { SelectedCamera.CameraPrefix, SelectedCamera.CameraPath })
           {
             Tag = SelectedCamera
           };
@@ -776,17 +776,20 @@ namespace OnGuardCore
       var cam = (CameraData)availableCamerasList.SelectedItems[0].Tag;
       ListViewItem item = availableCamerasList.SelectedItems[0];
 
-      string originalID = string.Format("{0}\\{1}", cam.CameraPath, cam.CameraPrefix);
+      string originalID = Path.Combine(cam.CameraPath, cam.CameraPrefix);
 
       using AddCameraDialog dlg = new(cam);
       DialogResult result = dlg.ShowDialog();
 
-      string cameraID = string.Format("{0}\\{1}", dlg.CameraFilePath, dlg.CameraPrefix);
-      if (cameraID != originalID)
+      if (result == DialogResult.OK)
       {
-        item.SubItems[0].Text = cam.CameraPrefix;
-        item.SubItems[1].Text = cam.CameraPath;
-        UpdateUIFromCamera();
+        string cameraID = Path.Combine(dlg.CameraFilePath, dlg.CameraPrefix);
+        if (cameraID != originalID)
+        {
+          item.SubItems[0].Text = cam.CameraPrefix;
+          item.SubItems[1].Text = cam.CameraPath;
+          UpdateUIFromCamera();
+        }
       }
     }
     private void OnCameraSelectionChanged(object sender, EventArgs e)

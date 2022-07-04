@@ -55,7 +55,7 @@ namespace OnGuardCore
           if (token.IsCancellationRequested)
           {
             TimeSpan span = DateTime.Now - startAIWaitTime;
-            Dbg.Trace("AIDetection - Timeout trying to get an AI instance with time: " + span.TotalSeconds.ToString());
+            Dbg.Write(LogLevel.Warning, "AIDetection - Timeout trying to get an AI instance with time: " + span.TotalSeconds.ToString());
             break;
           }
         }

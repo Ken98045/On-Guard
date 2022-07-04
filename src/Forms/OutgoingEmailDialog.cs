@@ -104,7 +104,7 @@ namespace OnGuardCore
         catch (SmtpException ex)
         {
           MessageBox.Show("There was an error sending a test email to your email address: " + ex.Message, "Email Error!");
-          Dbg.Write("Email exception: " + ex.ToString());
+          Dbg.Write(LogLevel.Warning, "Email exception: " + ex.ToString());
           return;
         }
 

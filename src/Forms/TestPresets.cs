@@ -126,13 +126,7 @@ namespace OnGuardCore
 
     private async Task BlueIrisMove(string preset)
     {
-      string urlString = string.Format("http://{0}:{1}/admin?camera={2}&preset={3}&user={4}&pw={5}",
-      _camera.Contact.CameraIPAddress,
-      _camera.Contact.Port.ToString(),
-      HttpUtility.UrlEncode(_camera.Contact.CameraShortName),
-      preset,
-      HttpUtility.UrlEncode(_camera.Contact.CameraUserName),
-      HttpUtility.UrlEncode(_camera.Contact.CameraPassword));
+      string urlString = $"http://{_camera.Contact.CameraIPAddress}:{_camera.Contact.Port}/admin?camera={HttpUtility.UrlEncode(_camera.Contact.CameraShortName)}&preset={preset}&user={HttpUtility.UrlEncode(_camera.Contact.CameraUserName)}&pw={HttpUtility.UrlEncode(_camera.Contact.CameraPassword)}";
 
       try
       {
@@ -147,11 +141,11 @@ namespace OnGuardCore
       }
       catch (HttpRequestException ex)
       {
-        Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
+        Dbg.Write(LogLevel.Warning, "MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
       }
       catch (Exception ex)
       {
-        Dbg.Write("MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
+        Dbg.Write(LogLevel.Error, "MainWindow - PresetButton_Click - HttpWebRequest - " + ex.Message);
       }
 
     }

@@ -50,7 +50,7 @@ namespace OnGuardCore
       {
         if (!_moving)
         {
-          Dbg.Trace("timeline setting to: " + position.ToString());
+          Dbg.Write(LogLevel.Verbose, "timeline setting to: " + position.ToString());
           Value = position;
         }
       }
@@ -127,7 +127,6 @@ namespace OnGuardCore
         }
 
         Pause = false;
-        Dbg.Write("Key Down: " + Value.ToString());
         OnValueChanged(null);
         Pause = true;
       }

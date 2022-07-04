@@ -114,15 +114,17 @@
       this.showObjectRectanglesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.showAreasOfInterestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.pictureDisplayOptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.pictureDateTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.setPictureDateTimeBehaviorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.AreasOfInterestToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.editAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.createAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.cleanupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.cleanupOldPicturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.syncToDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.testImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.startRestartAIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.CleanupOldPicturesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.SyncMotionToMotionDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.applicationSettingsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.cameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -134,8 +136,8 @@
       this.addEditEmailAddressesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.setLogLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.logFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.logDetailedInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.deleteLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       ((System.ComponentModel.ISupportInitialize)(this.fileNumberUpDown)).BeginInit();
@@ -489,7 +491,6 @@
       this.cameraCombo.Name = "cameraCombo";
       this.cameraCombo.Size = new System.Drawing.Size(95, 21);
       this.cameraCombo.TabIndex = 0;
-      this.cameraCombo.SelectedIndexChanged += new System.EventHandler(this.cameraCombo_SelectedIndexChanged);
       this.cameraCombo.SelectionChangeCommitted += new System.EventHandler(this.OnCameraSelected);
       // 
       // ToolsPanel
@@ -845,8 +846,8 @@
       this.menuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem1,
             this.showToolStripMenuItem1,
+            this.goToToolStripMenuItem,
             this.AreasOfInterestToolStripMenuItem1,
-            this.cleanupToolStripMenuItem,
             this.toolsToolStripMenuItem1,
             this.settingsToolStripMenuItem,
             this.helpToolStripMenuItem1});
@@ -906,8 +907,31 @@
       // 
       this.pictureDisplayOptionToolStripMenuItem.Name = "pictureDisplayOptionToolStripMenuItem";
       this.pictureDisplayOptionToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
-      this.pictureDisplayOptionToolStripMenuItem.Text = "Camera Display Options";
+      this.pictureDisplayOptionToolStripMenuItem.Text = "Picture Display Options";
       this.pictureDisplayOptionToolStripMenuItem.Click += new System.EventHandler(this.OnPictureDisplayOption);
+      // 
+      // goToToolStripMenuItem
+      // 
+      this.goToToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pictureDateTimeToolStripMenuItem,
+            this.setPictureDateTimeBehaviorToolStripMenuItem});
+      this.goToToolStripMenuItem.Name = "goToToolStripMenuItem";
+      this.goToToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
+      this.goToToolStripMenuItem.Text = "Date/Time";
+      // 
+      // pictureDateTimeToolStripMenuItem
+      // 
+      this.pictureDateTimeToolStripMenuItem.Name = "pictureDateTimeToolStripMenuItem";
+      this.pictureDateTimeToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+      this.pictureDateTimeToolStripMenuItem.Text = "Search for Picture Date/Time";
+      this.pictureDateTimeToolStripMenuItem.Click += new System.EventHandler(this.GoToPictureTime);
+      // 
+      // setPictureDateTimeBehaviorToolStripMenuItem
+      // 
+      this.setPictureDateTimeBehaviorToolStripMenuItem.Name = "setPictureDateTimeBehaviorToolStripMenuItem";
+      this.setPictureDateTimeBehaviorToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+      this.setPictureDateTimeBehaviorToolStripMenuItem.Text = "Set Initial Picture Date/Time  Behavior";
+      this.setPictureDateTimeBehaviorToolStripMenuItem.Click += new System.EventHandler(this.setPictureDateTimeBehaviorToolStripMenuItem_Click);
       // 
       // AreasOfInterestToolStripMenuItem1
       // 
@@ -934,35 +958,13 @@
       this.createAreaToolStripMenuItem.Text = "Create Area";
       this.createAreaToolStripMenuItem.Click += new System.EventHandler(this.createAreaToolStripMenuItem_Click);
       // 
-      // cleanupToolStripMenuItem
-      // 
-      this.cleanupToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cleanupOldPicturesToolStripMenuItem,
-            this.syncToDatabaseToolStripMenuItem});
-      this.cleanupToolStripMenuItem.Name = "cleanupToolStripMenuItem";
-      this.cleanupToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
-      this.cleanupToolStripMenuItem.Text = "Cleanup";
-      // 
-      // cleanupOldPicturesToolStripMenuItem
-      // 
-      this.cleanupOldPicturesToolStripMenuItem.Name = "cleanupOldPicturesToolStripMenuItem";
-      this.cleanupOldPicturesToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-      this.cleanupOldPicturesToolStripMenuItem.Text = "Cleanup Old Pictures";
-      this.cleanupOldPicturesToolStripMenuItem.Click += new System.EventHandler(this.CleanupButton_Click);
-      // 
-      // syncToDatabaseToolStripMenuItem
-      // 
-      this.syncToDatabaseToolStripMenuItem.CheckOnClick = true;
-      this.syncToDatabaseToolStripMenuItem.Name = "syncToDatabaseToolStripMenuItem";
-      this.syncToDatabaseToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-      this.syncToDatabaseToolStripMenuItem.Text = "Sync Motion To Database";
-      this.syncToDatabaseToolStripMenuItem.Click += new System.EventHandler(this.SyncToDatabase);
-      // 
       // toolsToolStripMenuItem1
       // 
       this.toolsToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.testImagesToolStripMenuItem,
-            this.startRestartAIToolStripMenuItem});
+            this.startRestartAIToolStripMenuItem,
+            this.CleanupOldPicturesToolStripMenuItem1,
+            this.SyncMotionToMotionDatabaseToolStripMenuItem});
       this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
       this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(46, 20);
       this.toolsToolStripMenuItem1.Text = "&Tools";
@@ -970,28 +972,43 @@
       // testImagesToolStripMenuItem
       // 
       this.testImagesToolStripMenuItem.Name = "testImagesToolStripMenuItem";
-      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-      this.testImagesToolStripMenuItem.Text = "Test Images";
+      this.testImagesToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
+      this.testImagesToolStripMenuItem.Text = "Test Pictures";
       this.testImagesToolStripMenuItem.Click += new System.EventHandler(this.TestImagesToolStripMenuItem_Click);
       // 
       // startRestartAIToolStripMenuItem
       // 
       this.startRestartAIToolStripMenuItem.Name = "startRestartAIToolStripMenuItem";
-      this.startRestartAIToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+      this.startRestartAIToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
       this.startRestartAIToolStripMenuItem.Text = "Start/Restart AI";
       this.startRestartAIToolStripMenuItem.Click += new System.EventHandler(this.startRestartAIToolStripMenuItem_Click);
+      // 
+      // CleanupOldPicturesToolStripMenuItem1
+      // 
+      this.CleanupOldPicturesToolStripMenuItem1.Name = "CleanupOldPicturesToolStripMenuItem1";
+      this.CleanupOldPicturesToolStripMenuItem1.Size = new System.Drawing.Size(248, 22);
+      this.CleanupOldPicturesToolStripMenuItem1.Text = "Cleanup Old Pictures";
+      this.CleanupOldPicturesToolStripMenuItem1.Click += new System.EventHandler(this.cleanupOldPicturesToolStripMenuItem1_Click);
+      // 
+      // SyncMotionToMotionDatabaseToolStripMenuItem
+      // 
+      this.SyncMotionToMotionDatabaseToolStripMenuItem.CheckOnClick = true;
+      this.SyncMotionToMotionDatabaseToolStripMenuItem.Name = "SyncMotionToMotionDatabaseToolStripMenuItem";
+      this.SyncMotionToMotionDatabaseToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
+      this.SyncMotionToMotionDatabaseToolStripMenuItem.Text = "Sync Motion to Motion Database";
+      this.SyncMotionToMotionDatabaseToolStripMenuItem.Click += new System.EventHandler(this.syncMotionToMotionDatabaseToolStripMenuItem_Click);
       // 
       // settingsToolStripMenuItem
       // 
       this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.applicationSettingsToolStripMenuItem1,
             this.cameraToolStripMenuItem,
-            this.globalImageCaptureToolStripMenuItem,
             this.outgoingEmailServerToolStripMenuItem,
+            this.addEditEmailAddressesToolStripMenuItem,
+            this.globalImageCaptureToolStripMenuItem,
             this.mQTTToolStripMenuItem,
             this.analysisToolStripMenuItem,
-            this.aIAlertToolStripMenuItem,
-            this.addEditEmailAddressesToolStripMenuItem});
+            this.aIAlertToolStripMenuItem});
       this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
       this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
       this.settingsToolStripMenuItem.Text = "Settings";
@@ -1056,8 +1073,8 @@
       // 
       this.helpToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem1,
+            this.setLogLevelToolStripMenuItem,
             this.logFileToolStripMenuItem,
-            this.logDetailedInformationToolStripMenuItem,
             this.deleteLogFileToolStripMenuItem});
       this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
       this.helpToolStripMenuItem1.Size = new System.Drawing.Size(44, 20);
@@ -1066,29 +1083,28 @@
       // aboutToolStripMenuItem1
       // 
       this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-      this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(206, 22);
+      this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
       this.aboutToolStripMenuItem1.Text = "About";
       this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.AboutToolStripMenuItem_Click);
+      // 
+      // setLogLevelToolStripMenuItem
+      // 
+      this.setLogLevelToolStripMenuItem.Name = "setLogLevelToolStripMenuItem";
+      this.setLogLevelToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+      this.setLogLevelToolStripMenuItem.Text = "Set Log Level";
+      this.setLogLevelToolStripMenuItem.Click += new System.EventHandler(this.setLogLevelToolStripMenuItem_Click);
       // 
       // logFileToolStripMenuItem
       // 
       this.logFileToolStripMenuItem.Name = "logFileToolStripMenuItem";
-      this.logFileToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-      this.logFileToolStripMenuItem.Text = "Log File";
+      this.logFileToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+      this.logFileToolStripMenuItem.Text = "Display Log File";
       this.logFileToolStripMenuItem.Click += new System.EventHandler(this.LogFileToolStripMenuItem_Click);
-      // 
-      // logDetailedInformationToolStripMenuItem
-      // 
-      this.logDetailedInformationToolStripMenuItem.CheckOnClick = true;
-      this.logDetailedInformationToolStripMenuItem.Name = "logDetailedInformationToolStripMenuItem";
-      this.logDetailedInformationToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-      this.logDetailedInformationToolStripMenuItem.Text = "Log Detailed Information";
-      this.logDetailedInformationToolStripMenuItem.Click += new System.EventHandler(this.LogDetailedInformationToolStripMenuItem_Click);
       // 
       // deleteLogFileToolStripMenuItem
       // 
       this.deleteLogFileToolStripMenuItem.Name = "deleteLogFileToolStripMenuItem";
-      this.deleteLogFileToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+      this.deleteLogFileToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
       this.deleteLogFileToolStripMenuItem.Text = "Delete Log File";
       this.deleteLogFileToolStripMenuItem.Click += new System.EventHandler(this.DeleteLogFileToolStripMenuItem_Click);
       // 
@@ -1202,7 +1218,6 @@
     private System.Windows.Forms.Label label12;
     private System.Windows.Forms.Label XResLabel;
     private System.Windows.Forms.Label YResLabel;
-    private System.Windows.Forms.ToolStripMenuItem logDetailedInformationToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem deleteLogFileToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem testImagesToolStripMenuItem;
     private System.Windows.Forms.Label label13;
@@ -1218,15 +1233,12 @@
     private System.Windows.Forms.ToolStripMenuItem createAreaToolStripMenuItem;
     private System.Windows.Forms.Label label15;
     private EnhancedProgressBar AIProgressBar;
-    private System.Windows.Forms.ToolStripMenuItem cleanupToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem cleanupOldPicturesToolStripMenuItem;
     private System.Windows.Forms.Panel panel4;
     private System.Windows.Forms.Button FullAnalysisButton;
     private System.Windows.Forms.Panel panel3;
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Panel panel2;
     private System.Windows.Forms.Panel panel1;
-    private System.Windows.Forms.ToolStripMenuItem syncToDatabaseToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem pictureDisplayOptionToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem applicationSettingsToolStripMenuItem1;
@@ -1237,6 +1249,12 @@
     private System.Windows.Forms.ToolStripMenuItem aIAlertToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem cameraToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem addEditEmailAddressesToolStripMenuItem;
-  }
+    private System.Windows.Forms.ToolStripMenuItem goToToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem pictureDateTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setPictureDateTimeBehaviorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setLogLevelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem CleanupOldPicturesToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem SyncMotionToMotionDatabaseToolStripMenuItem;
+    }
 }
 

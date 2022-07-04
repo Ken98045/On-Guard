@@ -16,7 +16,7 @@ namespace OnGuardCore
     {
       bool result = false;
 
-      string url = string.Format("http://{0}:{1}/v1/vision/detection", ipAddress, port);
+      string url = $"http://{ipAddress}:{port}/v1/vision/detection";
 
       using (var request = new MultipartFormDataContent())
       {
@@ -57,7 +57,7 @@ namespace OnGuardCore
         }
         catch (Exception ex)
         {
-          Dbg.Write("AIDetection - ProcessTestImage - The AI could not be found - exception: " + ex.Message);
+          Dbg.Write(LogLevel.Error, "AIDetection - ProcessTestImage - The AI could not be found - exception: " + ex.Message);
         }
       }
 
@@ -75,20 +75,20 @@ namespace OnGuardCore
       }
       catch (HttpRequestException)
       {
-        Dbg.Write("The AI Died Or Was Not Found ");
+        Dbg.Write(LogLevel.Error, "The AI Died Or Was Not Found ");
       }
       catch (AggregateException ex)
       {
-        Dbg.Write("The AI Died Or Was Not Found");
+        Dbg.Write(LogLevel.Error, "The AI Died Or Was Not Found");
       }
       catch (AiNotFoundException)
       {
-        Dbg.Write("The AI Died Or Was Not Found");
+        Dbg.Write(LogLevel.Error, "The AI Died Or Was Not Found");
         throw;
       }
       catch (Exception ex)
       {
-        Dbg.Write("The AI Died Or Was Not Found");
+        Dbg.Write(LogLevel.Error, "The AI Died Or Was Not Found");
       }
       return result;
     }
@@ -99,7 +99,7 @@ namespace OnGuardCore
       List<InterestingObject> objectsFound = null;
       AIResult aiResult = null;
 
-      Dbg.Trace("AIDetection - DetectObjectsAsync starting analysis of: " + pending.PendingFile);
+      Dbg.Write(LogLevel.Verbose, "AIDetection - DetectObjectsAsync starting analysis of: " + pending.PendingFile);
 
       try
       {
@@ -111,7 +111,7 @@ namespace OnGuardCore
         {
           dbg += " with: " + objectsFound.Count.ToString() + " objects";
         }
-        Dbg.Trace(dbg);
+        Dbg.Write(LogLevel.DetailedInfo, dbg);
 
         aiResult = new ();
         aiResult.ObjectsFound = objectsFound;
@@ -121,18 +121,18 @@ namespace OnGuardCore
         {
           foreach (var result in aiResult.ObjectsFound)
           {
-            string o = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", result.Label, result.Confidence, result.X_min, result.Y_min, result.X_max, result.Y_max);
-            Dbg.Trace(o);
+            string o = $"{result.Label}\t{result.Confidence}\t{result.X_min}\t{result.Y_min}\t{result.X_max}\t{result.Y_max}";
+            Dbg.Write(LogLevel.Verbose, o);
           }
         }
       }
       catch (AggregateException ex)
       {
-        Dbg.Write("An AI Died Or Was Not Found - Remaining: " + AI.AICount.ToString());
+        Dbg.Write(LogLevel.Warning, "An AI Died Or Was Not Found - Remaining: " + AI.AICount.ToString());
       }
       catch (AiNotFoundException ex)
       {
-        Dbg.Write("The AI Died Or Was Not Found: " + ex.Message);
+        Dbg.Write(LogLevel.Warning, "The AI Died Or Was Not Found: " + ex.Message);
         throw;
       }
 

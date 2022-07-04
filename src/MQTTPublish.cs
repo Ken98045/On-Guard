@@ -93,7 +93,7 @@ namespace OnGuardCore
       {
         if (!_loggedNotConnected)
         {
-          Dbg.Write("MQTTPublish - Client NotConnected");
+          Dbg.Write(LogLevel.Warning, "MQTTPublish - Client NotConnected");
           _loggedNotConnected = true;
         }
 
@@ -109,7 +109,7 @@ namespace OnGuardCore
       {
         if (!_loggedNotConnected)
         {
-          Dbg.Write("MQTTPublish - Client NotConnected");
+          Dbg.Write(LogLevel.Warning, "MQTTPublish - Client NotConnected");
           _loggedNotConnected = true;
         }
       }
@@ -129,11 +129,11 @@ namespace OnGuardCore
         try
         {
           await s_client.PublishAsync(message).ConfigureAwait(true);
-          Dbg.Write("MQTT Message Sent");
+          Dbg.Write(LogLevel.Info, "MQTT Message Sent");
         }
         catch (Exception ex)
         {
-          Dbg.Write("MQTTPublish - Error publishing message: " + ex.Message);
+          Dbg.Write(LogLevel.Warning, "MQTTPublish - Error publishing message: " + ex.Message);
           try
           {
             if (s_client.IsConnected)
@@ -143,7 +143,7 @@ namespace OnGuardCore
           }
           catch (Exception)
           {
-            Dbg.Trace("MQTTPublish - Exception closing connection after publish error - client still connected");
+            Dbg.Write(LogLevel.Info, "MQTTPublish - Exception closing connection after publish error - client still connected");
             // Expected if the publish failed (but, probably not if the client still thinks it is connected).
           }
         }
@@ -183,7 +183,7 @@ namespace OnGuardCore
           MqttClientAuthenticateResult result = await s_client.ConnectAsync(options, CancellationToken.None).ConfigureAwait(true);
           if (result.ResultCode == MqttClientConnectResultCode.Success)
           {
-            Dbg.Write("MQTTPublish - Connected to server!");
+            Dbg.Write(LogLevel.DetailedInfo, "MQTTPublish - Connected to server!");
             _loggedError = false;
             _loggedNotConnected = false;
           }
@@ -196,7 +196,7 @@ namespace OnGuardCore
         {
           if (!_loggedNotConnected)
           {
-            Dbg.Write("MQTTPublish - The Connection to server failed - it is unreachable - check your server status and your MQTT settings: " + ex.Message);
+            Dbg.Write(LogLevel.Warning, "MQTTPublish - The Connection to server failed - it is unreachable - check your server status and your MQTT settings: " + ex.Message);
             _loggedNotConnected = true;
           }
 
@@ -207,7 +207,7 @@ namespace OnGuardCore
         {
           if (!_loggedNotConnected)
           {
-            Dbg.Write("MQTTPublish - Connection to server failed: " + ex.Message);
+            Dbg.Write(LogLevel.Warning, "MQTTPublish - Connection to server failed: " + ex.Message);
             _loggedNotConnected = true;
           }
           return;
@@ -248,7 +248,7 @@ namespace OnGuardCore
 
       if (!_loggedError)
       {
-        Dbg.Write(err);
+        Dbg.Write(LogLevel.Warning, err);
       }
 
       _loggedError = true;
@@ -305,7 +305,7 @@ namespace OnGuardCore
     {
       if (null != s_client)
       {
-        Dbg.Write("MQTTPublish - Disposing - Cannot Continue");
+        Dbg.Write(LogLevel.Warning, "MQTTPublish - Disposing - Cannot Continue");
         s_client.Dispose();
         s_client = null;
       }

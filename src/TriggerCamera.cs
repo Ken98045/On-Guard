@@ -23,7 +23,7 @@ namespace OnGuardCore
 
     public TriggerCamera(CameraData camera)
     {
-      Dbg.Write("TriggerCamera - Created");
+      Dbg.Write(LogLevel.Info, "TriggerCamera - Created");
       _camera = camera;
 
       _firstTrigger = DateTime.MinValue;
@@ -143,7 +143,7 @@ namespace OnGuardCore
       {
         if (disposing)
         {
-          Dbg.Write("TriggerCamera - Dispose");
+          Dbg.Write(LogLevel.Verbose, "TriggerCamera - Dispose");
           _stopEvent.Set();
         }
 

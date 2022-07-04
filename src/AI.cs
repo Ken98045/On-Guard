@@ -111,7 +111,7 @@ namespace OnGuardCore
       lock (s_lock)
       {
 
-        Dbg.Write("AILocation - Atttempting to restart the AI");
+        Dbg.Write(LogLevel.Warning, "AILocation - Atttempting to restart the AI");
 
         TimeSpan timeSinceRestart = DateTime.Now - s_timeOfLastRestart;
         if (ignoreRestartTime || timeSinceRestart.TotalMinutes > 1)
@@ -135,7 +135,7 @@ namespace OnGuardCore
             // Note that with the current (9/1/21) DeepStack there can be only one
             foreach (var process in Process.GetProcessesByName("deepstack"))
             {
-              Dbg.Write("AILocation - Restart AI - Killing off the existing AI");
+              Dbg.Write(LogLevel.Warning, "AILocation - Restart AI - Killing off the existing AI");
               process.Kill(true);
               Thread.Sleep(1000);
               break;
@@ -169,7 +169,7 @@ namespace OnGuardCore
                 // At this point we will assume that we have a fresh copy of the AI that is good to go!
                 s_AIDead = false;
                 AIStateChange(true);
-                Dbg.Write("AILocation - RestartAI - The restart was successful!");
+                Dbg.Write(LogLevel.Info, "AILocation - RestartAI - The restart was successful!");
                 s_timeLastSuccess = DateTime.Now;
 
                 if ((s_maxInstances - s_semaphore.CurrentCount) > 0)
@@ -187,19 +187,19 @@ namespace OnGuardCore
               }
               else
               {
-                Dbg.Write("AILocation - RestartAI - The DeepStack process started and then stopped!");
+                Dbg.Write(LogLevel.Error, "AILocation - RestartAI - The DeepStack process started and then stopped!");
               }
             }
           }
           else
           {
-            Dbg.Write("AILocation - Restart AI - The current settings do not allow for an AI restart");
+            Dbg.Write(LogLevel.Warning, "AILocation - Restart AI - The current settings do not allow for an AI restart");
             s_timeOfLastRestart = DateTime.Now;
           }
         }
         else
         {
-          Dbg.Trace("AILocation - RestartAI - We are attempting to restart the AI too frequently");
+          Dbg.Write(LogLevel.Warning, "AILocation - RestartAI - We are attempting to restart the AI too frequently");
         }
       }
 
@@ -253,7 +253,7 @@ namespace OnGuardCore
     {
       foreach (var process in Process.GetProcessesByName("deepstack"))
       {
-        Dbg.Write("AILocation - StopAI - Killing off the existing AI");
+        Dbg.Write(LogLevel.Warning, "AILocation - StopAI - Killing off the existing AI");
         process.Kill(true);
         Thread.Sleep(1000);
         break;
@@ -265,7 +265,7 @@ namespace OnGuardCore
 
       HttpResponseMessage output = null;
       bool waitResult;
-      url = string.Format("http://{0}:{1}/{2}", IPAddress, Port, url);
+      url = $"http://{IPAddress}:{Port}/{url}";
 
       if (IsAIDead())
       {

@@ -40,7 +40,7 @@ namespace OnGuardCore
 
         foreach (ProfileData profileData in _onVIFSupport.Profiles)
         {
-          profileListBox.Items.Add(string.Format("{0} - {1} {2}", profileData.Name, profileData.Width, profileData.Height));
+          profileListBox.Items.Add($"{profileData.Name} - {profileData.Width} {profileData.Height}");
         }
 
 

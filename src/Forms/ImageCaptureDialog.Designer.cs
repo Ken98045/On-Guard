@@ -63,12 +63,12 @@ namespace OnGuardCore
       this.panel2.Controls.Add(this.snapshotNumeric);
       this.panel2.Location = new System.Drawing.Point(12, 42);
       this.panel2.Name = "panel2";
-      this.panel2.Size = new System.Drawing.Size(765, 189);
+      this.panel2.Size = new System.Drawing.Size(765, 206);
       this.panel2.TabIndex = 1;
       // 
       // label13
       // 
-      this.label13.Location = new System.Drawing.Point(233, 119);
+      this.label13.Location = new System.Drawing.Point(233, 127);
       this.label13.Name = "label13";
       this.label13.Size = new System.Drawing.Size(479, 52);
       this.label13.TabIndex = 16;
@@ -77,7 +77,7 @@ namespace OnGuardCore
       // label11
       // 
       this.label11.AutoSize = true;
-      this.label11.Location = new System.Drawing.Point(21, 130);
+      this.label11.Location = new System.Drawing.Point(21, 138);
       this.label11.Name = "label11";
       this.label11.Size = new System.Drawing.Size(124, 15);
       this.label11.TabIndex = 1;
@@ -85,7 +85,7 @@ namespace OnGuardCore
       // 
       // eventIntervalNumeric
       // 
-      this.eventIntervalNumeric.Location = new System.Drawing.Point(160, 128);
+      this.eventIntervalNumeric.Location = new System.Drawing.Point(160, 136);
       this.eventIntervalNumeric.Maximum = new decimal(new int[] {
             120,
             0,
@@ -109,7 +109,7 @@ namespace OnGuardCore
       // 
       this.label8.Location = new System.Drawing.Point(233, 54);
       this.label8.Name = "label8";
-      this.label8.Size = new System.Drawing.Size(499, 47);
+      this.label8.Size = new System.Drawing.Size(499, 60);
       this.label8.TabIndex = 13;
       this.label8.Text = resources.GetString("label8.Text");
       // 
@@ -202,7 +202,7 @@ namespace OnGuardCore
       // 
       // OKButton
       // 
-      this.OKButton.Location = new System.Drawing.Point(321, 242);
+      this.OKButton.Location = new System.Drawing.Point(322, 267);
       this.OKButton.Name = "OKButton";
       this.OKButton.Size = new System.Drawing.Size(75, 23);
       this.OKButton.TabIndex = 0;
@@ -212,7 +212,7 @@ namespace OnGuardCore
       // 
       // FormCancelButton
       // 
-      this.FormCancelButton.Location = new System.Drawing.Point(404, 242);
+      this.FormCancelButton.Location = new System.Drawing.Point(403, 267);
       this.FormCancelButton.Name = "FormCancelButton";
       this.FormCancelButton.Size = new System.Drawing.Size(75, 23);
       this.FormCancelButton.TabIndex = 1;
@@ -225,7 +225,7 @@ namespace OnGuardCore
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.AutoScroll = true;
-      this.ClientSize = new System.Drawing.Size(800, 271);
+      this.ClientSize = new System.Drawing.Size(800, 308);
       this.Controls.Add(this.FormCancelButton);
       this.Controls.Add(this.OKButton);
       this.Controls.Add(this.panel2);

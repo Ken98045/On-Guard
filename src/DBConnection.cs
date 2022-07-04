@@ -54,24 +54,8 @@ namespace OnGuardCore
       string path = Storage.Instance.GetGlobalString("DatabasePath");
       if (string.IsNullOrEmpty(path))
       {
-        AppDomain domain = AppDomain.CurrentDomain;
-        string dataDirectory = (string)domain.GetData("DataDirectory"); // might be set by the installer
-        if (!string.IsNullOrEmpty(dataDirectory))
-        {
-          Storage.Instance.SetGlobalInt("DBLocationType", 1); // an absolute path
-          Dbg.Write("DBConnection - GetDatabasePath - The path was set by DataDirectory - " + dataDirectory);
-          path = dataDirectory;
-        }
-        else
-        {
-          path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-          path = Path.Combine(path, "OnGuard");   // where the installer puts things TODO: Double Check this!
-          Storage.Instance.SetGlobalInt("DBLocationType", 0);   // the user directory
-        }
-      }
-      else
-      {
-        Storage.Instance.SetGlobalInt("DBLocationType", 1); // Now an absolut path regardless of what it was
+        path = Settings.Default.DataFileLocation;
+        Storage.Instance.SetGlobalInt("DBLocationType", 0);   // the user directory
       }
 
       return path;

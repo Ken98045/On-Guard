@@ -111,7 +111,7 @@ namespace OnGuardCore
                                 added.Overlap = percentOverlap;       // so far, the only thing different
                                 added.Area = area;
                                 result.InterestingObjects.Add(added);
-                                Dbg.Trace("Adding interesting object before 2nd chance ignore: " + pi.Label);
+                                Dbg.Write(LogLevel.Verbose, "Adding interesting object before 2nd chance ignore: " + pi.Label);
 
                               }
                               else
@@ -193,12 +193,12 @@ namespace OnGuardCore
                               result.FailureReasons.Add(reason);
                               try
                               {
-                                Dbg.Trace("Removing object on second pass ignore area validation: " + io.Label);
+                                Dbg.Write(LogLevel.Verbose, "Removing object on second pass ignore area validation: " + io.Label);
                                 result.InterestingObjects.Remove(io);
                               }
                               catch (Exception ex)
                               {
-                                Dbg.Write("FrameAnalyzer-AnalyzeFrameAsync- exception removing object in remove from interesting objects : " + ex.Message);
+                                Dbg.Write(LogLevel.Verbose, "FrameAnalyzer-AnalyzeFrameAsync- exception removing object in remove from interesting objects : " + ex.Message);
                               }
 
                             }
@@ -214,7 +214,7 @@ namespace OnGuardCore
                 }
                 else
                 {
-                  Dbg.Write("FrameAnalyzer.AnalyzeFrame - On double check ignore areas no search critera found ");
+                  Dbg.Write(LogLevel.Verbose, "FrameAnalyzer.AnalyzeFrame - On double check ignore areas no search critera found ");
                 }
               }
             }
@@ -235,7 +235,7 @@ namespace OnGuardCore
 
       foreach (var failure in result.FailureReasons)
       {
-        Dbg.Trace(failure);
+        Dbg.Write(LogLevel.DetailedInfo, failure);
       }
 
 

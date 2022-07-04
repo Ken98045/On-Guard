@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Management;
 
 namespace OnGuardCore
 {
@@ -15,39 +16,43 @@ namespace OnGuardCore
   {
     public FileSystemWatcher Watcher { get; set; }
     public FileSystemWatcher TriggerWatcher { get; set; }
-    public event CameraEventHandler OnNewImage = delegate {};
+    public event CameraEventHandler OnNewImage = delegate { };
 
     CameraData _camera;
+    bool _handledError = false;
 
     public DirectoryMonitor(CameraData camera)
     {
-      if (camera == null || string.IsNullOrEmpty(camera.CameraPath))
+      string path = ConvertMappedDrive(camera.CameraPath);
+      if (camera == null || string.IsNullOrEmpty(path))
       {
         string msg = "DirectoryMonitor constructor: The camera is null or the path is null/empty";
-
-        Dbg.Write(msg);
-        ArgumentException ex = new (msg);
+        _handledError = true;
+        Dbg.Write(LogLevel.Error, msg);
+        ArgumentException ex = new(msg);
         throw ex;
       }
 
-      if (!Directory.Exists(camera.CameraPath))
+      if (!Directory.Exists(path))
       {
-        string msg = "DirectoryMonitor constructor: The directory being monitored does not exist: " + camera.CameraPath + "  Check your camera settings!";
-        Dbg.Write(msg);
-        ArgumentException ex = new (msg);
+        string msg = "DirectoryMonitor constructor: The directory being monitored does not exist: " + path + "  Check your camera settings!";
+        _handledError = true;
+        Dbg.Write(LogLevel.Error, msg);
+        ArgumentException ex = new(msg);
         throw ex;
 
       }
 
       _camera = camera;
 
-      Watcher = new FileSystemWatcher(camera.CameraPath);
-      CreateWatcher(Watcher, camera.CameraPath, camera.CameraPrefix);
+      Watcher = new FileSystemWatcher(path);
+      CreateWatcher(Watcher, path, camera.CameraPrefix);
 
       if (_camera.CameraInputMethod == CameraMethod.CameraTriggered && !string.IsNullOrEmpty(camera.TriggerPrefix))
       {
-        TriggerWatcher = new FileSystemWatcher(camera.CameraPath);
-        CreateWatcher(TriggerWatcher, camera.CameraPath, camera.TriggerPrefix);
+        TriggerWatcher = new FileSystemWatcher(path);
+        CreateWatcher(TriggerWatcher, path, camera.TriggerPrefix);
+        _handledError |= false;
       }
     }
 
@@ -76,46 +81,54 @@ namespace OnGuardCore
       }
       catch (Exception ex)
       {
-        Dbg.Write("DirectoryMonitor CreateWatcher exception: " + ex.Message);
+        _handledError = true;
+        Dbg.Write(LogLevel.Error, "DirectoryMonitor CreateWatcher exception: " + ex.Message);
       }
     }
 
     private void Watcher_Created(object sender, FileSystemEventArgs e)
     {
+      _handledError = false;
       OnNewImage(_camera, e.FullPath);
     }
 
     private void Watcher_Error(object sender, ErrorEventArgs e)
     {
-      Dbg.Write("DirectoryMonitory - File System Watcher Error! " + e.GetException().Message);
-      if (!disposedValue)
+      string path = ConvertMappedDrive(_camera.CameraPath);
+      if (!_handledError)
       {
-        Dbg.Write("Attempting to recreate the DirectoryMonitor");
-        try
+        _handledError = true;
+        Dbg.Write(LogLevel.Error, "DirectoryMonitory - File System Watcher Error! " + e.GetException().Message);
+        if (!disposedValue)
         {
-          Watcher?.Dispose();
-        }
-        catch (Exception ex)
-        {
-          Dbg.Write("DirectoryMonitor - Watcher_Error - " + ex.Message);
-        }
+          Dbg.Write(LogLevel.Warning, "Attempting to recreate the DirectoryMonitor");
+          try
+          {
+            Watcher?.Dispose();
+          }
+          catch (Exception ex)
+          {
+            Dbg.Write(LogLevel.Error, "DirectoryMonitor - Watcher_Error - " + ex.Message);
+          }
 
-        try
-        {
-          TriggerWatcher?.Dispose();
-        }
-        catch (Exception ex)
-        {
-          Dbg.Write("DirectoryMonitor - Watcher_Error - " + ex.Message);
-        }
+          try
+          {
+            TriggerWatcher?.Dispose();
+          }
+          catch (Exception ex)
+          {
+            Dbg.Write(LogLevel.Error, "DirectoryMonitor - Watcher_Error - " + ex.Message);
+          }
 
-        Watcher = new FileSystemWatcher(_camera.CameraPath);
-        CreateWatcher(Watcher, _camera.CameraPath, _camera.CameraPrefix);
-        if (null != TriggerWatcher)
-        {
-          TriggerWatcher.Dispose();
-          TriggerWatcher = new FileSystemWatcher(_camera.CameraPath);
-          CreateWatcher(TriggerWatcher, _camera.CameraPath, _camera.TriggerPrefix);
+
+          Watcher = new FileSystemWatcher(path);
+          CreateWatcher(Watcher, path, _camera.CameraPrefix);
+          if (null != TriggerWatcher)
+          {
+            TriggerWatcher.Dispose();
+            TriggerWatcher = new FileSystemWatcher(_camera.CameraPath);
+            CreateWatcher(TriggerWatcher, _camera.CameraPath, _camera.TriggerPrefix);
+          }
         }
       }
 
@@ -125,15 +138,36 @@ namespace OnGuardCore
     // created and on when it is written to.  The client (main UI) must be able to handle that.
     private void FileChanged(object sender, FileSystemEventArgs e)
     {
-      if (e.ChangeType == WatcherChangeTypes.Changed)
-      {/*
-        if (null != OnNewImage)
-        {
-          OnNewImage.Invoke(cameraData, e.FullPath);
-        }*/
-      }
     }
 
+    // If the user has passed in a mapped drive it may be necessary to convert the path to something FileWatcher can handle.
+    // Note that only windows directories can be watched
+    static string ConvertMappedDrive(string path)
+    {
+      string result = path;
+      string drivePrefix = path.Substring(0, 2);
+      string unc;
+
+      if (drivePrefix != "\\")
+      {
+        ManagementObject mo = new ManagementObject();
+        try
+        {
+          mo.Path = new ManagementPath($"Win32_LogicalDisk='{drivePrefix}'");
+          unc = (string)mo["ProviderName"];
+          if (!string.IsNullOrEmpty(unc))
+          {
+            result = path.Replace(drivePrefix, unc);
+          }
+        }
+        catch
+        {
+          throw;
+        }
+      }
+
+      return result;
+    }
 
     #region IDisposable Support
     private bool disposedValue = false; // To detect redundant calls

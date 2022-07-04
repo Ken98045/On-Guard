@@ -57,7 +57,7 @@ namespace OnGuardCore
         catch (Exception ex)
         {
           string err = "Error Initializing Camera: " + cam.CameraPrefix + " " + ex.Message;
-          Dbg.Write(err);
+          Dbg.Write(LogLevel.Error, err);
           badCameras.Add(CameraData.PathAndPrefix(cam));
         }
       }

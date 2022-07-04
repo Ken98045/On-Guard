@@ -317,12 +317,12 @@ namespace OnGuardCore
         }
         catch (WebException ex)
         {
-          Dbg.Write("PTZMovement - Move - Exception: " + ex.Message);
+          Dbg.Write(LogLevel.Warning, "PTZMovement - Move - Exception: " + ex.Message);
         }
       }
       catch (Exception ex)
       {
-        Dbg.Write("PTZMovement - Move - Exception: " + ex.Message);
+        Dbg.Write(LogLevel.Warning, "PTZMovement - Move - Exception: " + ex.Message);
       }
     }
 

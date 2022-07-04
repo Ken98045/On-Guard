@@ -150,9 +150,9 @@ namespace OnGuardCore
       this.DoNotDeleteMotionCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.DoNotDeleteMotionCheckbox.Location = new System.Drawing.Point(91, 219);
       this.DoNotDeleteMotionCheckbox.Name = "DoNotDeleteMotionCheckbox";
-      this.DoNotDeleteMotionCheckbox.Size = new System.Drawing.Size(342, 20);
+      this.DoNotDeleteMotionCheckbox.Size = new System.Drawing.Size(242, 20);
       this.DoNotDeleteMotionCheckbox.TabIndex = 3;
-      this.DoNotDeleteMotionCheckbox.Text = "Do Not Delete Files with Motion (can be slow!)\r\n";
+      this.DoNotDeleteMotionCheckbox.Text = "Do Not Delete Files with Motion\r\n";
       this.DoNotDeleteMotionCheckbox.UseVisualStyleBackColor = true;
       // 
       // CleanupDialog

@@ -738,7 +738,7 @@
       // 
       this.uriTextBox.Location = new System.Drawing.Point(107, 92);
       this.uriTextBox.Name = "uriTextBox";
-      this.uriTextBox.Size = new System.Drawing.Size(498, 23);
+      this.uriTextBox.Size = new System.Drawing.Size(587, 23);
       this.uriTextBox.TabIndex = 5;
       // 
       // label25
@@ -1303,7 +1303,8 @@
       this.label30.Size = new System.Drawing.Size(243, 71);
       this.label30.TabIndex = 6;
       this.label30.Text = "In order to know Sunrise/Sunset On Guard needs the camera location. This value is" +
-    " in degrees (ex: -123.456)";
+    " in degrees (ex: -123.456).  You can get this information from your GPS or phone" +
+    " app.  Optional!";
       // 
       // label19
       // 
@@ -1500,7 +1501,7 @@
       // 
       // okButton
       // 
-      this.okButton.Location = new System.Drawing.Point(305, 477);
+      this.okButton.Location = new System.Drawing.Point(300, 477);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(67, 23);
       this.okButton.TabIndex = 0;
@@ -1511,7 +1512,7 @@
       // cancelButton
       // 
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(383, 478);
+      this.cancelButton.Location = new System.Drawing.Point(375, 478);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(67, 23);
       this.cancelButton.TabIndex = 1;
@@ -1526,7 +1527,7 @@
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
       this.AutoScroll = true;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(742, 525);
+      this.ClientSize = new System.Drawing.Size(742, 511);
       this.Controls.Add(this.cancelButton);
       this.Controls.Add(this.okButton);
       this.Controls.Add(this.configurationTabControl);
